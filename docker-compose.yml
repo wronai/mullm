@@ -68,21 +68,35 @@ services:
       context: ./services/web
       dockerfile: Dockerfile
     environment:
-      - REACT_APP_API_URL=http://localhost:8001
+      - ORCHESTRATOR_URL=http://orchestrator:8000
+      - PROJECTOR_URL=http://projector:8000
     ports:
       - "3000:3000"
     depends_on:
       - orchestrator
+      - projector
     networks:
       - mullm_network
 
-  shell-agent:
+  shell-agent-a:
     build:
       context: ./agents/shell-agent
       dockerfile: Dockerfile
     environment:
       - NATS_URL=nats://nats:4222
-      - AGENT_ID=shell-agent-1
+      - AGENT_ID=shell-agent-a
+    depends_on:
+      - nats
+    networks:
+      - mullm_network
+
+  shell-agent-b:
+    build:
+      context: ./agents/shell-agent
+      dockerfile: Dockerfile
+    environment:
+      - NATS_URL=nats://nats:4222
+      - AGENT_ID=shell-agent-b
     depends_on:
       - nats
     networks:

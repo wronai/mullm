@@ -1,6 +1,7 @@
 fastapi==0.104.1
 uvicorn[standard]==0.24.0
 pydantic==2.5.0
+pydantic-settings==2.1.0
 sqlalchemy==2.0.23
 asyncpg==0.29.0
 nats-py==2.7.0
@@ -10,6 +11,4 @@ python-jose[cryptography]==3.3.0
 passlib[bcrypt]==1.7.4
 python-dotenv==1.0.0
 structlog==23.2.0
-uuid==1.30
-datetime==5.4
 typing-extensions==4.8.0

@@ -42,3 +42,8 @@ class NATSBus:
             return
         data = payload if isinstance(payload, bytes) else json.dumps(payload, default=str).encode()
         await self.client.publish(subject, data)
+
+    async def subscribe(self, subject: str, callback):
+        if not self.client or not self.connected:
+            return None
+        return await self.client.subscribe(subject, cb=callback)

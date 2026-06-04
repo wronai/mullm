@@ -4,10 +4,22 @@ from typing import Any
 from uuid import uuid4
 
 from app.domain.aggregates.agent import Agent
+from app.domain.aggregates.approval import Approval
+from app.domain.aggregates.plugin import Plugin
 from app.domain.aggregates.task import Task
 from app.domain.aggregates.workflow import Workflow
 from app.domain.events import AgentMarkedIdle, TaskAssignedToAgent
-from app.domain.value_objects import AgentId, ExecutionMode, Priority, TaskId
+from app.domain.aggregates.plugin import PluginStatus
+from app.domain.value_objects import (
+    AgentId,
+    ApprovalId,
+    ExecutionMode,
+    PluginId,
+    Priority,
+    TaskId,
+    WorkflowId,
+    WorkflowStatus,
+)
 
 
 class CommandBus:
@@ -43,6 +55,44 @@ class CommandBus:
             return await self._agent_heartbeat(command_id, data, correlation_id, metadata)
         if command_type == "StartWorkflow":
             return await self._start_workflow(command_id, data, correlation_id, metadata)
+        if command_type == "ProposeWorkflowVersion":
+            return await self._propose_workflow_version(
+                command_id, data, correlation_id, metadata
+            )
+        if command_type == "ValidateWorkflowVersion":
+            return await self._validate_workflow_version(
+                command_id, data, correlation_id, metadata
+            )
+        if command_type == "ApproveWorkflowVersion":
+            return await self._approve_workflow_version(
+                command_id, data, correlation_id, metadata
+            )
+        if command_type == "ActivateWorkflowVersion":
+            return await self._activate_workflow_version(
+                command_id, data, correlation_id, metadata
+            )
+        if command_type == "RollbackWorkflowVersion":
+            return await self._rollback_workflow_version(
+                command_id, data, correlation_id, metadata
+            )
+        if command_type == "ProposePlugin":
+            return await self._propose_plugin(command_id, data, correlation_id, metadata)
+        if command_type == "ValidatePlugin":
+            return await self._validate_plugin(command_id, data, correlation_id, metadata)
+        if command_type == "InstallPlugin":
+            return await self._install_plugin(command_id, data, correlation_id, metadata)
+        if command_type == "ActivatePlugin":
+            return await self._activate_plugin(command_id, data, correlation_id, metadata)
+        if command_type == "RollbackPlugin":
+            return await self._rollback_plugin(command_id, data, correlation_id, metadata)
+        if command_type == "CreateApprovalRequest":
+            return await self._create_approval(command_id, data, correlation_id, metadata)
+        if command_type == "ApproveRequest":
+            return await self._approve_request(command_id, data, correlation_id, metadata)
+        if command_type == "RejectRequest":
+            return await self._reject_request(command_id, data, correlation_id, metadata)
+        if command_type == "ExpireApproval":
+            return await self._expire_approval(command_id, data, correlation_id, metadata)
 
         raise ValueError(f"Unsupported command type: {command_type}")
 
@@ -286,6 +336,291 @@ class CommandBus:
         )
         workflow.mark_events_committed()
         return self._result(str(workflow.workflow_id), records)
+
+    async def _propose_workflow_version(
+        self,
+        command_id: str,
+        data: dict[str, Any],
+        correlation_id: str | None,
+        metadata: dict[str, Any] | None,
+    ) -> dict[str, Any]:
+        workflow = Workflow.propose_version(
+            workflow_id=data["workflow_id"],
+            version=int(data["version"]),
+            definition=data.get("definition") or {},
+        )
+        return await self._persist_workflow(
+            workflow, command_id, correlation_id, metadata
+        )
+
+    async def _validate_workflow_version(
+        self,
+        command_id: str,
+        data: dict[str, Any],
+        correlation_id: str | None,
+        metadata: dict[str, Any] | None,
+    ) -> dict[str, Any]:
+        workflow = await self._load_workflow(data["workflow_id"])
+        workflow.validate_version()
+        return await self._persist_workflow(
+            workflow, command_id, correlation_id, metadata
+        )
+
+    async def _approve_workflow_version(
+        self,
+        command_id: str,
+        data: dict[str, Any],
+        correlation_id: str | None,
+        metadata: dict[str, Any] | None,
+    ) -> dict[str, Any]:
+        workflow = await self._load_workflow(data["workflow_id"])
+        workflow.approve_version(data.get("approved_by", "system"))
+        return await self._persist_workflow(
+            workflow, command_id, correlation_id, metadata
+        )
+
+    async def _activate_workflow_version(
+        self,
+        command_id: str,
+        data: dict[str, Any],
+        correlation_id: str | None,
+        metadata: dict[str, Any] | None,
+    ) -> dict[str, Any]:
+        workflow = await self._load_workflow(data["workflow_id"])
+        workflow.activate_version()
+        return await self._persist_workflow(
+            workflow, command_id, correlation_id, metadata
+        )
+
+    async def _rollback_workflow_version(
+        self,
+        command_id: str,
+        data: dict[str, Any],
+        correlation_id: str | None,
+        metadata: dict[str, Any] | None,
+    ) -> dict[str, Any]:
+        workflow = await self._load_workflow(data["workflow_id"])
+        workflow.rollback_version(data.get("reason", ""))
+        return await self._persist_workflow(
+            workflow, command_id, correlation_id, metadata
+        )
+
+    async def _propose_plugin(
+        self,
+        command_id: str,
+        data: dict[str, Any],
+        correlation_id: str | None,
+        metadata: dict[str, Any] | None,
+    ) -> dict[str, Any]:
+        plugin = Plugin.propose(
+            plugin_id=data["plugin_id"],
+            version=data["version"],
+            capabilities=data.get("capabilities") or [],
+            manifest=data.get("manifest") or {},
+        )
+        return await self._persist_plugin(plugin, command_id, correlation_id, metadata)
+
+    async def _validate_plugin(
+        self,
+        command_id: str,
+        data: dict[str, Any],
+        correlation_id: str | None,
+        metadata: dict[str, Any] | None,
+    ) -> dict[str, Any]:
+        plugin = await self._load_plugin(data["plugin_id"])
+        plugin.validate()
+        return await self._persist_plugin(plugin, command_id, correlation_id, metadata)
+
+    async def _install_plugin(
+        self,
+        command_id: str,
+        data: dict[str, Any],
+        correlation_id: str | None,
+        metadata: dict[str, Any] | None,
+    ) -> dict[str, Any]:
+        plugin = await self._load_plugin(data["plugin_id"])
+        plugin.install()
+        return await self._persist_plugin(plugin, command_id, correlation_id, metadata)
+
+    async def _activate_plugin(
+        self,
+        command_id: str,
+        data: dict[str, Any],
+        correlation_id: str | None,
+        metadata: dict[str, Any] | None,
+    ) -> dict[str, Any]:
+        plugin = await self._load_plugin(data["plugin_id"])
+        plugin.activate()
+        return await self._persist_plugin(plugin, command_id, correlation_id, metadata)
+
+    async def _rollback_plugin(
+        self,
+        command_id: str,
+        data: dict[str, Any],
+        correlation_id: str | None,
+        metadata: dict[str, Any] | None,
+    ) -> dict[str, Any]:
+        plugin = await self._load_plugin(data["plugin_id"])
+        plugin.rollback(data.get("reason", ""))
+        return await self._persist_plugin(plugin, command_id, correlation_id, metadata)
+
+    async def _create_approval(
+        self,
+        command_id: str,
+        data: dict[str, Any],
+        correlation_id: str | None,
+        metadata: dict[str, Any] | None,
+    ) -> dict[str, Any]:
+        approval = Approval.create_request(
+            action_type=data["action_type"],
+            target_id=data["target_id"],
+            risk_level=data.get("risk_level", "medium"),
+            requested_by=data["requested_by"],
+            approval_id=data.get("approval_id"),
+        )
+        return await self._persist_approval(
+            approval, command_id, correlation_id, metadata
+        )
+
+    async def _approve_request(
+        self,
+        command_id: str,
+        data: dict[str, Any],
+        correlation_id: str | None,
+        metadata: dict[str, Any] | None,
+    ) -> dict[str, Any]:
+        approval = await self._load_approval(data["approval_id"])
+        approval.approve(data["approved_by"])
+        return await self._persist_approval(
+            approval, command_id, correlation_id, metadata
+        )
+
+    async def _reject_request(
+        self,
+        command_id: str,
+        data: dict[str, Any],
+        correlation_id: str | None,
+        metadata: dict[str, Any] | None,
+    ) -> dict[str, Any]:
+        approval = await self._load_approval(data["approval_id"])
+        approval.reject(data["rejected_by"], data.get("reason", ""))
+        return await self._persist_approval(
+            approval, command_id, correlation_id, metadata
+        )
+
+    async def _expire_approval(
+        self,
+        command_id: str,
+        data: dict[str, Any],
+        correlation_id: str | None,
+        metadata: dict[str, Any] | None,
+    ) -> dict[str, Any]:
+        approval = await self._load_approval(data["approval_id"])
+        approval.expire()
+        return await self._persist_approval(
+            approval, command_id, correlation_id, metadata
+        )
+
+    async def _persist_workflow(
+        self,
+        workflow: Workflow,
+        command_id: str,
+        correlation_id: str | None,
+        metadata: dict[str, Any] | None,
+    ) -> dict[str, Any]:
+        records = await self._append_and_publish(
+            "workflow",
+            str(workflow.workflow_id),
+            workflow.get_uncommitted_events(),
+            command_id=command_id,
+            correlation_id=correlation_id,
+            metadata=metadata,
+        )
+        workflow.mark_events_committed()
+        return self._result(str(workflow.workflow_id), records)
+
+    async def _persist_plugin(
+        self,
+        plugin: Plugin,
+        command_id: str,
+        correlation_id: str | None,
+        metadata: dict[str, Any] | None,
+    ) -> dict[str, Any]:
+        records = await self._append_and_publish(
+            "plugin",
+            str(plugin.plugin_id),
+            plugin.get_uncommitted_events(),
+            command_id=command_id,
+            correlation_id=correlation_id,
+            metadata=metadata,
+        )
+        plugin.mark_events_committed()
+        return self._result(str(plugin.plugin_id), records)
+
+    async def _persist_approval(
+        self,
+        approval: Approval,
+        command_id: str,
+        correlation_id: str | None,
+        metadata: dict[str, Any] | None,
+    ) -> dict[str, Any]:
+        records = await self._append_and_publish(
+            "approval",
+            str(approval.approval_id),
+            approval.get_uncommitted_events(),
+            command_id=command_id,
+            correlation_id=correlation_id,
+            metadata=metadata,
+        )
+        approval.mark_events_committed()
+        return self._result(str(approval.approval_id), records)
+
+    async def _load_workflow(self, workflow_id: str) -> Workflow:
+        events = await self.event_store.get_events_for_aggregate("workflow", workflow_id)
+        if not events:
+            raise ValueError(f"Workflow not found: {workflow_id}")
+        last = events[-1].data
+        workflow = Workflow(
+            workflow_id=WorkflowId(workflow_id),
+            version=int(last.get("version", 1)),
+        )
+        status = last.get("status", "proposed")
+        for candidate in WorkflowStatus:
+            if candidate.value == status:
+                workflow.status = candidate
+                break
+        workflow.definition = last.get("definition") or {}
+        return workflow
+
+    async def _load_plugin(self, plugin_id: str) -> Plugin:
+        events = await self.event_store.get_events_for_aggregate("plugin", plugin_id)
+        if not events:
+            raise ValueError(f"Plugin not found: {plugin_id}")
+        last = events[-1].data
+        plugin = Plugin(
+            plugin_id=PluginId(plugin_id),
+            version=last.get("version", "0.1.0"),
+            capabilities=last.get("capabilities") or [],
+            manifest=last.get("manifest") or {},
+            status=last.get("status", PluginStatus.PROPOSED),
+        )
+        return plugin
+
+    async def _load_approval(self, approval_id: str) -> Approval:
+        events = await self.event_store.get_events_for_aggregate("approval", approval_id)
+        if not events:
+            raise ValueError(f"Approval not found: {approval_id}")
+        first = events[0].data
+        last = events[-1].data
+        approval = Approval(
+            approval_id=ApprovalId(approval_id),
+            action_type=first.get("action_type", ""),
+            target_id=first.get("target_id", ""),
+            risk_level=first.get("risk_level", "medium"),
+            requested_by=first.get("requested_by", ""),
+            status=last.get("status", "pending"),
+        )
+        return approval
 
     async def _load_task(self, task_id: str) -> Task:
         events = await self.event_store.get_events_for_aggregate("task", task_id)

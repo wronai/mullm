@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8" />
+  <title>Mullm Control Plane</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 2rem; background: #0f1419; color: #e7ecf3; }
+    h1 { margin-bottom: 0.25rem; }
+    .muted { color: #8b9bb4; }
+    section { margin-top: 2rem; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    th, td { text-align: left; padding: 0.5rem; border-bottom: 1px solid #2a3548; }
+    th { color: #8b9bb4; font-weight: 600; }
+    .status { text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.04em; }
+  </style>
+</head>
+<body>
+  <h1>Mullm</h1>
+  <p class="muted">Event-sourced multi-agent control plane</p>
+
+  <section>
+    <h2>Task board</h2>
+    <table>
+      <thead><tr><th>ID</th><th>Title</th><th>Status</th><th>Agent</th><th>Priority</th></tr></thead>
+      <tbody>
+        {% for t in tasks %}
+        <tr>
+          <td>{{ t.task_id }}</td>
+          <td>{{ t.title }}</td>
+          <td class="status">{{ t.status }}</td>
+          <td>{{ t.assigned_agent_id or "—" }}</td>
+          <td>{{ t.priority }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5">Brak zadań (uruchom orchestrator + projector)</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Agent fleet</h2>
+    <table>
+      <thead><tr><th>ID</th><th>Type</th><th>Status</th><th>Task</th></tr></thead>
+      <tbody>
+        {% for a in agents %}
+        <tr>
+          <td>{{ a.agent_id }}</td>
+          <td>{{ a.agent_type }}</td>
+          <td class="status">{{ a.status }}</td>
+          <td>{{ a.current_task_id or "—" }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="4">Brak agentów</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Operational feed</h2>
+    <table>
+      <thead><tr><th>When</th><th>Event</th><th>Summary</th></tr></thead>
+      <tbody>
+        {% for e in feed %}
+        <tr>
+          <td>{{ e.occurred_at }}</td>
+          <td>{{ e.event_type }}</td>
+          <td>{{ e.summary or e.title or e.aggregate_id }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="3">Brak zdarzeń</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+</body>
+</html>

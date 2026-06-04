@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
 from typing import Dict, Any, Optional, List
 import uuid
@@ -28,11 +28,11 @@ class TaskListQuery(BaseModel):
 @router.get("/tasks/{task_id}")
 async def get_task(
     task_id: str,
-    event_store=Depends(lambda: router.app.state.event_store)
+    request: Request,
 ):
     """Get task by ID"""
     try:
-        events = await event_store.get_events_for_aggregate("task", task_id)
+        events = await request.app.state.event_store.get_events_for_aggregate("task", task_id)
         if not events:
             raise HTTPException(status_code=404, detail="Task not found")
         
@@ -41,7 +41,9 @@ async def get_task(
         for event in events:
             task_state.update(event.data)
         
-        return {"task_id": task_id, "state": task_state, "events": events}
+        return {"task_id": task_id, "state": task_state, "events": [_event_to_dict(event) for event in events]}
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -49,11 +51,11 @@ async def get_task(
 @router.get("/agents/{agent_id}")
 async def get_agent(
     agent_id: str,
-    event_store=Depends(lambda: router.app.state.event_store)
+    request: Request,
 ):
     """Get agent by ID"""
     try:
-        events = await event_store.get_events_for_aggregate("agent", agent_id)
+        events = await request.app.state.event_store.get_events_for_aggregate("agent", agent_id)
         if not events:
             raise HTTPException(status_code=404, detail="Agent not found")
         
@@ -62,7 +64,9 @@ async def get_agent(
         for event in events:
             agent_state.update(event.data)
         
-        return {"agent_id": agent_id, "state": agent_state, "events": events}
+        return {"agent_id": agent_id, "state": agent_state, "events": [_event_to_dict(event) for event in events]}
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -70,11 +74,11 @@ async def get_agent(
 @router.get("/workflows/{workflow_id}")
 async def get_workflow(
     workflow_id: str,
-    event_store=Depends(lambda: router.app.state.event_store)
+    request: Request,
 ):
     """Get workflow by ID"""
     try:
-        events = await event_store.get_events_for_aggregate("workflow", workflow_id)
+        events = await request.app.state.event_store.get_events_for_aggregate("workflow", workflow_id)
         if not events:
             raise HTTPException(status_code=404, detail="Workflow not found")
         
@@ -83,22 +87,25 @@ async def get_workflow(
         for event in events:
             workflow_state.update(event.data)
         
-        return {"workflow_id": workflow_id, "state": workflow_state, "events": events}
+        return {"workflow_id": workflow_id, "state": workflow_state, "events": [_event_to_dict(event) for event in events]}
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.get("/tasks")
 async def list_tasks(
+    request: Request,
     status: Optional[str] = None,
     agent_id: Optional[str] = None,
     limit: int = 50,
     offset: int = 0,
-    event_store=Depends(lambda: router.app.state.event_store)
 ):
     """List tasks with optional filtering"""
     try:
         # Get all task aggregates
+        event_store = request.app.state.event_store
         task_ids = await event_store.get_aggregate_ids("task")
         tasks = []
         
@@ -129,12 +136,13 @@ async def list_tasks(
 
 @router.get("/agents")
 async def list_agents(
+    request: Request,
     limit: int = 50,
     offset: int = 0,
-    event_store=Depends(lambda: router.app.state.event_store)
 ):
     """List all agents"""
     try:
+        event_store = request.app.state.event_store
         agent_ids = await event_store.get_aggregate_ids("agent")
         agents = []
         
@@ -155,3 +163,18 @@ async def list_agents(
         return {"agents": agents, "total": len(agent_ids)}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+def _event_to_dict(event):
+    if hasattr(event, "to_message"):
+        return event.to_message()
+    return {
+        "event_id": getattr(event, "event_id", None),
+        "aggregate_type": getattr(event, "aggregate_type", None),
+        "aggregate_id": getattr(event, "aggregate_id", None),
+        "event_type": getattr(event, "event_type", None),
+        "revision": getattr(event, "revision", None),
+        "occurred_at": getattr(event, "timestamp", None),
+        "payload": getattr(event, "data", {}),
+        "metadata": getattr(event, "metadata", {}),
+    }

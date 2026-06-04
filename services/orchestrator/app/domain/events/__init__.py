@@ -5,7 +5,15 @@ from datetime import datetime
 from typing import Any, ClassVar
 from uuid import uuid4
 
-from app.domain.value_objects import AgentId, ExecutionMode, Priority, TaskId, WorkflowId
+from app.domain.value_objects import (
+    AgentId,
+    ApprovalId,
+    ExecutionMode,
+    PluginId,
+    Priority,
+    TaskId,
+    WorkflowId,
+)
 
 
 def _utc_now() -> datetime:
@@ -296,4 +304,316 @@ class WorkflowStarted(DomainEvent):
                 "input_data": self.input_data,
                 "agent_assignments": self.agent_assignments or {},
             },
+        }
+
+
+@dataclass(frozen=True)
+class WorkflowVersionProposed(DomainEvent):
+    workflow_id: WorkflowId = WorkflowId("")
+    version: int = 1
+    definition: dict[str, Any] = field(default_factory=dict)
+
+    event_type: ClassVar[str] = "WorkflowVersionProposed"
+    aggregate_type: ClassVar[str] = "workflow"
+
+    @property
+    def aggregate_id(self) -> str:
+        return str(self.workflow_id)
+
+    @property
+    def data(self) -> dict[str, Any]:
+        return {
+            "workflow_id": str(self.workflow_id),
+            "version": self.version,
+            "status": "proposed",
+            "definition": self.definition,
+        }
+
+
+@dataclass(frozen=True)
+class WorkflowVersionValidated(DomainEvent):
+    workflow_id: WorkflowId = WorkflowId("")
+    version: int = 1
+
+    event_type: ClassVar[str] = "WorkflowVersionValidated"
+    aggregate_type: ClassVar[str] = "workflow"
+
+    @property
+    def aggregate_id(self) -> str:
+        return str(self.workflow_id)
+
+    @property
+    def data(self) -> dict[str, Any]:
+        return {
+            "workflow_id": str(self.workflow_id),
+            "version": self.version,
+            "status": "validated",
+        }
+
+
+@dataclass(frozen=True)
+class WorkflowVersionApproved(DomainEvent):
+    workflow_id: WorkflowId = WorkflowId("")
+    version: int = 1
+    approved_by: str = ""
+
+    event_type: ClassVar[str] = "WorkflowVersionApproved"
+    aggregate_type: ClassVar[str] = "workflow"
+
+    @property
+    def aggregate_id(self) -> str:
+        return str(self.workflow_id)
+
+    @property
+    def data(self) -> dict[str, Any]:
+        return {
+            "workflow_id": str(self.workflow_id),
+            "version": self.version,
+            "status": "approved",
+            "approved_by": self.approved_by,
+        }
+
+
+@dataclass(frozen=True)
+class WorkflowVersionActivated(DomainEvent):
+    workflow_id: WorkflowId = WorkflowId("")
+    version: int = 1
+
+    event_type: ClassVar[str] = "WorkflowVersionActivated"
+    aggregate_type: ClassVar[str] = "workflow"
+
+    @property
+    def aggregate_id(self) -> str:
+        return str(self.workflow_id)
+
+    @property
+    def data(self) -> dict[str, Any]:
+        return {
+            "workflow_id": str(self.workflow_id),
+            "version": self.version,
+            "status": "active",
+        }
+
+
+@dataclass(frozen=True)
+class WorkflowVersionRolledBack(DomainEvent):
+    workflow_id: WorkflowId = WorkflowId("")
+    version: int = 1
+    reason: str = ""
+
+    event_type: ClassVar[str] = "WorkflowVersionRolledBack"
+    aggregate_type: ClassVar[str] = "workflow"
+
+    @property
+    def aggregate_id(self) -> str:
+        return str(self.workflow_id)
+
+    @property
+    def data(self) -> dict[str, Any]:
+        return {
+            "workflow_id": str(self.workflow_id),
+            "version": self.version,
+            "status": "rolled_back",
+            "reason": self.reason,
+        }
+
+
+@dataclass(frozen=True)
+class PluginProposed(DomainEvent):
+    plugin_id: PluginId = PluginId("")
+    version: str = "0.1.0"
+    capabilities: list[str] = field(default_factory=list)
+    manifest: dict[str, Any] = field(default_factory=dict)
+
+    event_type: ClassVar[str] = "PluginProposed"
+    aggregate_type: ClassVar[str] = "plugin"
+
+    @property
+    def aggregate_id(self) -> str:
+        return str(self.plugin_id)
+
+    @property
+    def data(self) -> dict[str, Any]:
+        return {
+            "plugin_id": str(self.plugin_id),
+            "version": self.version,
+            "status": "proposed",
+            "capabilities": self.capabilities,
+            "manifest": self.manifest,
+        }
+
+
+@dataclass(frozen=True)
+class PluginValidated(DomainEvent):
+    plugin_id: PluginId = PluginId("")
+    version: str = "0.1.0"
+
+    event_type: ClassVar[str] = "PluginValidated"
+    aggregate_type: ClassVar[str] = "plugin"
+
+    @property
+    def aggregate_id(self) -> str:
+        return str(self.plugin_id)
+
+    @property
+    def data(self) -> dict[str, Any]:
+        return {
+            "plugin_id": str(self.plugin_id),
+            "version": self.version,
+            "status": "validated",
+        }
+
+
+@dataclass(frozen=True)
+class PluginInstalled(DomainEvent):
+    plugin_id: PluginId = PluginId("")
+    version: str = "0.1.0"
+
+    event_type: ClassVar[str] = "PluginInstalled"
+    aggregate_type: ClassVar[str] = "plugin"
+
+    @property
+    def aggregate_id(self) -> str:
+        return str(self.plugin_id)
+
+    @property
+    def data(self) -> dict[str, Any]:
+        return {
+            "plugin_id": str(self.plugin_id),
+            "version": self.version,
+            "status": "installed",
+        }
+
+
+@dataclass(frozen=True)
+class PluginActivated(DomainEvent):
+    plugin_id: PluginId = PluginId("")
+    version: str = "0.1.0"
+
+    event_type: ClassVar[str] = "PluginActivated"
+    aggregate_type: ClassVar[str] = "plugin"
+
+    @property
+    def aggregate_id(self) -> str:
+        return str(self.plugin_id)
+
+    @property
+    def data(self) -> dict[str, Any]:
+        return {
+            "plugin_id": str(self.plugin_id),
+            "version": self.version,
+            "status": "active",
+        }
+
+
+@dataclass(frozen=True)
+class PluginRolledBack(DomainEvent):
+    plugin_id: PluginId = PluginId("")
+    version: str = "0.1.0"
+    reason: str = ""
+
+    event_type: ClassVar[str] = "PluginRolledBack"
+    aggregate_type: ClassVar[str] = "plugin"
+
+    @property
+    def aggregate_id(self) -> str:
+        return str(self.plugin_id)
+
+    @property
+    def data(self) -> dict[str, Any]:
+        return {
+            "plugin_id": str(self.plugin_id),
+            "version": self.version,
+            "status": "rolled_back",
+            "reason": self.reason,
+        }
+
+
+@dataclass(frozen=True)
+class ApprovalRequested(DomainEvent):
+    approval_id: ApprovalId = ApprovalId("")
+    action_type: str = ""
+    target_id: str = ""
+    risk_level: str = "medium"
+    requested_by: str = ""
+
+    event_type: ClassVar[str] = "ApprovalRequested"
+    aggregate_type: ClassVar[str] = "approval"
+
+    @property
+    def aggregate_id(self) -> str:
+        return str(self.approval_id)
+
+    @property
+    def data(self) -> dict[str, Any]:
+        return {
+            "approval_id": str(self.approval_id),
+            "action_type": self.action_type,
+            "target_id": self.target_id,
+            "risk_level": self.risk_level,
+            "requested_by": self.requested_by,
+            "status": "pending",
+        }
+
+
+@dataclass(frozen=True)
+class ApprovalGranted(DomainEvent):
+    approval_id: ApprovalId = ApprovalId("")
+    approved_by: str = ""
+
+    event_type: ClassVar[str] = "ApprovalGranted"
+    aggregate_type: ClassVar[str] = "approval"
+
+    @property
+    def aggregate_id(self) -> str:
+        return str(self.approval_id)
+
+    @property
+    def data(self) -> dict[str, Any]:
+        return {
+            "approval_id": str(self.approval_id),
+            "approved_by": self.approved_by,
+            "status": "granted",
+        }
+
+
+@dataclass(frozen=True)
+class ApprovalRejected(DomainEvent):
+    approval_id: ApprovalId = ApprovalId("")
+    rejected_by: str = ""
+    reason: str = ""
+
+    event_type: ClassVar[str] = "ApprovalRejected"
+    aggregate_type: ClassVar[str] = "approval"
+
+    @property
+    def aggregate_id(self) -> str:
+        return str(self.approval_id)
+
+    @property
+    def data(self) -> dict[str, Any]:
+        return {
+            "approval_id": str(self.approval_id),
+            "rejected_by": self.rejected_by,
+            "reason": self.reason,
+            "status": "rejected",
+        }
+
+
+@dataclass(frozen=True)
+class ApprovalExpired(DomainEvent):
+    approval_id: ApprovalId = ApprovalId("")
+
+    event_type: ClassVar[str] = "ApprovalExpired"
+    aggregate_type: ClassVar[str] = "approval"
+
+    @property
+    def aggregate_id(self) -> str:
+        return str(self.approval_id)
+
+    @property
+    def data(self) -> dict[str, Any]:
+        return {
+            "approval_id": str(self.approval_id),
+            "status": "expired",
         }

@@ -15,6 +15,22 @@ class WorkflowId(str):
     pass
 
 
+class PluginId(str):
+    pass
+
+
+class ApprovalId(str):
+    pass
+
+
+class PluginId(str):
+    pass
+
+
+class ApprovalId(str):
+    pass
+
+
 class Priority(str, Enum):
     LOW = "low"
     MEDIUM = "medium"

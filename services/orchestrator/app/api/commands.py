@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Request
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Dict, Any, Optional
 import uuid
 
@@ -24,7 +24,7 @@ class CreateTaskCommand(BaseModel):
     agent_id: Optional[str] = None
     priority: str = "medium"
     execution_mode: str = "semi_auto"
-    required_capabilities: list[str] = []
+    required_capabilities: list[str] = Field(default_factory=list)
     metadata: Optional[Dict[str, Any]] = None
 
 
