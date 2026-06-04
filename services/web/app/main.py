@@ -33,11 +33,17 @@ async def health():
 
 
 @app.get("/", response_class=HTMLResponse)
-async def workspace(request: Request):
+@app.get("/t/{task_id}", response_class=HTMLResponse)
+async def workspace_home(request: Request, task_id: str | None = None):
     return templates.TemplateResponse(
         "workspace.html",
-        {"request": request},
+        {"request": request, "deep_link_ticket": task_id},
     )
+
+
+@app.get("/workroom", response_class=HTMLResponse)
+async def agent_workroom_page(request: Request):
+    return templates.TemplateResponse("workroom.html", {"request": request})
 
 
 @app.get("/dashboard", response_class=HTMLResponse)
@@ -49,6 +55,10 @@ async def dashboard(request: Request):
     plugins: list = []
     resources: list = []
     rag_documents: list = []
+    incidents: list = []
+    service_health: list = []
+    remediations: list = []
+    rag_quality: list = []
     async with httpx.AsyncClient(timeout=5.0) as client:
         async def _fetch(path: str, *, limit: int | None = None) -> list:
             try:
@@ -66,6 +76,10 @@ async def dashboard(request: Request):
         plugins = await _fetch("/projections/plugins")
         resources = await _fetch("/projections/resources")
         rag_documents = await _fetch("/projections/rag/documents")
+        incidents = await _fetch("/projections/incidents", limit=20)
+        service_health = await _fetch("/projections/service-health")
+        remediations = await _fetch("/projections/remediations", limit=20)
+        rag_quality = await _fetch("/projections/rag/quality")
     return templates.TemplateResponse(
         "dashboard.html",
         {
@@ -77,5 +91,9 @@ async def dashboard(request: Request):
             "plugins": plugins,
             "resources": resources,
             "rag_documents": rag_documents,
+            "incidents": incidents,
+            "service_health": service_health,
+            "remediations": remediations,
+            "rag_quality": rag_quality,
         },
     )

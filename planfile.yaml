@@ -1,0 +1,1319 @@
+name: Code Quality Improvement
+project_name: ''
+project_type: prefactoring
+domain: dev-tools
+goal: Improve code quality using prefact
+goals:
+- Fix all prefact-detected issues
+- Improve code maintainability
+- Ensure consistent code style
+quality_gates:
+- metric: Prefact Issues
+  threshold: '0'
+sprints:
+- id: sprint-1
+  name: Code Quality Improvements
+  duration: 2 weeks
+  objectives:
+  - Fix code quality issues
+  task_patterns:
+  - id: ticket-3a5af6fe
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in agents/shell-agent/app/main.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - agents/shell-agent/app/main.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-266fc850
+    name: Fix ai-boilerplate issues
+    description: Resolve 1 ai-boilerplate issues in agents/shell-agent/app/main.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - agents/shell-agent/app/main.py
+    rule_id: ai-boilerplate
+    count: 1
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-6e82225b
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in agents/shell-agent/app/nats_consumer.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - agents/shell-agent/app/nats_consumer.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-e0de77cd
+    name: Fix magic-numbers issues
+    description: Resolve 1 magic-numbers issues in agents/shell-agent/app/nats_consumer.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - agents/shell-agent/app/nats_consumer.py
+    rule_id: magic-numbers
+    count: 1
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-4372b735
+    name: Fix string-concat issues
+    description: Resolve 1 string-concat issues in agents/shell-agent/app/executor.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - agents/shell-agent/app/executor.py
+    rule_id: string-concat
+    count: 1
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-bcfad57f
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in agents/shell-agent/app/executor.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - agents/shell-agent/app/executor.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-ecb4ba17
+    name: Fix magic-numbers issues
+    description: Resolve 4 magic-numbers issues in agents/shell-agent/app/executor.py
+    task_type: prefactor
+    priority: medium
+    estimate: 2d
+    files:
+    - agents/shell-agent/app/executor.py
+    rule_id: magic-numbers
+    count: 4
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-795eb58c
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in services/orchestrator/app/access/adapters/base.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/orchestrator/app/access/adapters/base.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-5fb7fa0b
+    name: Fix string-concat issues
+    description: Resolve 1 string-concat issues in services/orchestrator/app/access/adapters/http_adapter.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/orchestrator/app/access/adapters/http_adapter.py
+    rule_id: string-concat
+    count: 1
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-baba9bb5
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in services/orchestrator/app/access/adapters/http_adapter.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/orchestrator/app/access/adapters/http_adapter.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-831cffa2
+    name: Fix magic-numbers issues
+    description: Resolve 1 magic-numbers issues in services/orchestrator/app/access/adapters/http_adapter.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/orchestrator/app/access/adapters/http_adapter.py
+    rule_id: magic-numbers
+    count: 1
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-d7095ca0
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in services/orchestrator/app/access/adapters/localfs.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/orchestrator/app/access/adapters/localfs.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-3423178e
+    name: Fix magic-numbers issues
+    description: Resolve 1 magic-numbers issues in services/orchestrator/app/access/adapters/localfs.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/orchestrator/app/access/adapters/localfs.py
+    rule_id: magic-numbers
+    count: 1
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-8f64fe4a
+    name: Fix unused-imports issues
+    description: Resolve 6 unused-imports issues in services/orchestrator/app/access/transport.py
+    task_type: prefactor
+    priority: high
+    estimate: 2d
+    files:
+    - services/orchestrator/app/access/transport.py
+    rule_id: unused-imports
+    count: 6
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-7c8e6ae8
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in services/orchestrator/app/access/uri.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/orchestrator/app/access/uri.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-e29f06bd
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in services/orchestrator/app/api/catalog.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/orchestrator/app/api/catalog.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-f4ab8e10
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in services/orchestrator/app/api/access.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/orchestrator/app/api/access.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-ac58453a
+    name: Fix magic-numbers issues
+    description: Resolve 7 magic-numbers issues in services/orchestrator/app/api/access.py
+    task_type: prefactor
+    priority: high
+    estimate: 2d
+    files:
+    - services/orchestrator/app/api/access.py
+    rule_id: magic-numbers
+    count: 7
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-1a403ab6
+    name: Fix magic-numbers issues
+    description: Resolve 13 magic-numbers issues in services/orchestrator/app/api/commands.py
+    task_type: prefactor
+    priority: high
+    estimate: 3d
+    files:
+    - services/orchestrator/app/api/commands.py
+    rule_id: magic-numbers
+    count: 13
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-4b33dc56
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in services/orchestrator/app/api/evolution.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/orchestrator/app/api/evolution.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-a0c7fad6
+    name: Fix magic-numbers issues
+    description: Resolve 4 magic-numbers issues in services/orchestrator/app/api/evolution.py
+    task_type: prefactor
+    priority: medium
+    estimate: 2d
+    files:
+    - services/orchestrator/app/api/evolution.py
+    rule_id: magic-numbers
+    count: 4
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-b174e821
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in services/orchestrator/app/api/observability.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/orchestrator/app/api/observability.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-a40713b1
+    name: Fix magic-numbers issues
+    description: Resolve 2 magic-numbers issues in services/orchestrator/app/api/observability.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/orchestrator/app/api/observability.py
+    rule_id: magic-numbers
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-436e44e0
+    name: Fix unused-imports issues
+    description: Resolve 6 unused-imports issues in services/orchestrator/app/application/command_bus.py
+    task_type: prefactor
+    priority: high
+    estimate: 2d
+    files:
+    - services/orchestrator/app/application/command_bus.py
+    rule_id: unused-imports
+    count: 6
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-1341a609
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in services/orchestrator/app/application/sagas/approval_gate.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/orchestrator/app/application/sagas/approval_gate.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-75a938af
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in services/orchestrator/app/application/sagas/task_routing.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/orchestrator/app/application/sagas/task_routing.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-4d12af69
+    name: Fix string-concat issues
+    description: Resolve 2 string-concat issues in services/orchestrator/app/api/queries.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/orchestrator/app/api/queries.py
+    rule_id: string-concat
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-f4d80f35
+    name: Fix unused-imports issues
+    description: Resolve 16 unused-imports issues in services/orchestrator/app/api/queries.py
+    task_type: prefactor
+    priority: high
+    estimate: 3d
+    files:
+    - services/orchestrator/app/api/queries.py
+    rule_id: unused-imports
+    count: 16
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-ac93a76f
+    name: Fix magic-numbers issues
+    description: Resolve 11 magic-numbers issues in services/orchestrator/app/api/queries.py
+    task_type: prefactor
+    priority: high
+    estimate: 3d
+    files:
+    - services/orchestrator/app/api/queries.py
+    rule_id: magic-numbers
+    count: 11
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-f9eef657
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in services/orchestrator/app/api/rag.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/orchestrator/app/api/rag.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-62cd6f93
+    name: Fix magic-numbers issues
+    description: Resolve 4 magic-numbers issues in services/orchestrator/app/api/rag.py
+    task_type: prefactor
+    priority: medium
+    estimate: 2d
+    files:
+    - services/orchestrator/app/api/rag.py
+    rule_id: magic-numbers
+    count: 4
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-8b9fb2d2
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in services/orchestrator/app/domain/aggregates/agent.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/orchestrator/app/domain/aggregates/agent.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-6abf4554
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in services/orchestrator/app/domain/aggregates/approval.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/orchestrator/app/domain/aggregates/approval.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-1086575d
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in services/orchestrator/app/domain/aggregates/plugin.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/orchestrator/app/domain/aggregates/plugin.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-994678ab
+    name: Fix unused-imports issues
+    description: Resolve 4 unused-imports issues in services/orchestrator/app/config.py
+    task_type: prefactor
+    priority: medium
+    estimate: 2d
+    files:
+    - services/orchestrator/app/config.py
+    rule_id: unused-imports
+    count: 4
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-7c9dc915
+    name: Fix magic-numbers issues
+    description: Resolve 1 magic-numbers issues in services/orchestrator/app/config.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/orchestrator/app/config.py
+    rule_id: magic-numbers
+    count: 1
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-981c03ba
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in services/orchestrator/app/domain/aggregates/resource.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/orchestrator/app/domain/aggregates/resource.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-d45374aa
+    name: Fix relative-imports issues
+    description: Resolve 4 relative-imports issues in services/orchestrator/app/domain/aggregates/task.py
+    task_type: prefactor
+    priority: medium
+    estimate: 2d
+    files:
+    - services/orchestrator/app/domain/aggregates/task.py
+    rule_id: relative-imports
+    count: 4
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-2cd9c465
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in services/orchestrator/app/domain/aggregates/workflow.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/orchestrator/app/domain/aggregates/workflow.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-619c750b
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in services/orchestrator/app/domain/value_objects/__init__.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/orchestrator/app/domain/value_objects/__init__.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-3fe9af39
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in services/orchestrator/app/evolution/catalog.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/orchestrator/app/evolution/catalog.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-0bc02fd1
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in services/orchestrator/app/domain/events/__init__.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/orchestrator/app/domain/events/__init__.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-668586ef
+    name: Fix string-concat issues
+    description: Resolve 5 string-concat issues in services/orchestrator/app/evolution/evaluation.py
+    task_type: prefactor
+    priority: medium
+    estimate: 2d
+    files:
+    - services/orchestrator/app/evolution/evaluation.py
+    rule_id: string-concat
+    count: 5
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-d5678f8f
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in services/orchestrator/app/evolution/evaluation.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/orchestrator/app/evolution/evaluation.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-43d97d77
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in services/orchestrator/app/evolution/experiments.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/orchestrator/app/evolution/experiments.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-ba500ef1
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in services/orchestrator/app/evolution/policy_engine.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/orchestrator/app/evolution/policy_engine.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-bc79d625
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in services/orchestrator/app/incidents/pipeline.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/orchestrator/app/incidents/pipeline.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-67aaf9f8
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in services/orchestrator/app/infrastructure/eventstore.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/orchestrator/app/infrastructure/eventstore.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-de6959cb
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in services/orchestrator/app/infrastructure/eventstore_dual.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/orchestrator/app/infrastructure/eventstore_dual.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-e613f956
+    name: Fix string-concat issues
+    description: Resolve 5 string-concat issues in services/orchestrator/app/infrastructure/eventstore_esdb.py
+    task_type: prefactor
+    priority: medium
+    estimate: 2d
+    files:
+    - services/orchestrator/app/infrastructure/eventstore_esdb.py
+    rule_id: string-concat
+    count: 5
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-77f3a6fa
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in services/orchestrator/app/infrastructure/eventstore_esdb.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/orchestrator/app/infrastructure/eventstore_esdb.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-826f568d
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in services/orchestrator/app/infrastructure/eventstore_factory.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/orchestrator/app/infrastructure/eventstore_factory.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-d152ae12
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in services/orchestrator/app/infrastructure/nats_bus.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/orchestrator/app/infrastructure/nats_bus.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-de9482d9
+    name: Fix unused-imports issues
+    description: Resolve 8 unused-imports issues in services/orchestrator/app/main.py
+    task_type: prefactor
+    priority: high
+    estimate: 2d
+    files:
+    - services/orchestrator/app/main.py
+    rule_id: unused-imports
+    count: 8
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-7dcbda85
+    name: Fix magic-numbers issues
+    description: Resolve 1 magic-numbers issues in services/orchestrator/app/main.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/orchestrator/app/main.py
+    rule_id: magic-numbers
+    count: 1
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-c5bfbb84
+    name: Fix ai-boilerplate issues
+    description: Resolve 1 ai-boilerplate issues in services/orchestrator/app/main.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/orchestrator/app/main.py
+    rule_id: ai-boilerplate
+    count: 1
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-9d141343
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in services/orchestrator/app/infrastructure/postgres.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/orchestrator/app/infrastructure/postgres.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-e627a76f
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in services/orchestrator/app/observability/context.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/orchestrator/app/observability/context.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-f952be53
+    name: Fix magic-numbers issues
+    description: Resolve 1 magic-numbers issues in services/orchestrator/app/observability/context.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/orchestrator/app/observability/context.py
+    rule_id: magic-numbers
+    count: 1
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-645bb3a4
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in services/orchestrator/app/observability/export.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/orchestrator/app/observability/export.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-951ed781
+    name: Fix magic-numbers issues
+    description: Resolve 3 magic-numbers issues in services/orchestrator/app/observability/export.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/orchestrator/app/observability/export.py
+    rule_id: magic-numbers
+    count: 3
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-71cad0c5
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in services/orchestrator/app/observability/logging.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/orchestrator/app/observability/logging.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-e0fb33c1
+    name: Fix unused-imports issues
+    description: Resolve 6 unused-imports issues in services/orchestrator/app/observability/incidents.py
+    task_type: prefactor
+    priority: high
+    estimate: 2d
+    files:
+    - services/orchestrator/app/observability/incidents.py
+    rule_id: unused-imports
+    count: 6
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-e6dc8739
+    name: Fix magic-numbers issues
+    description: Resolve 2 magic-numbers issues in services/orchestrator/app/observability/incidents.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/orchestrator/app/observability/incidents.py
+    rule_id: magic-numbers
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-de410bff
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in services/orchestrator/app/observability/middleware.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/orchestrator/app/observability/middleware.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-b3c371b9
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in services/orchestrator/app/observability/rag_diagnostics.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/orchestrator/app/observability/rag_diagnostics.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-d69a01c4
+    name: Fix magic-numbers issues
+    description: Resolve 1 magic-numbers issues in services/orchestrator/app/observability/rag_diagnostics.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/orchestrator/app/observability/rag_diagnostics.py
+    rule_id: magic-numbers
+    count: 1
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-f3a9d3b0
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in services/orchestrator/app/observability/rag_pipeline.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/orchestrator/app/observability/rag_pipeline.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-1593843c
+    name: Fix magic-numbers issues
+    description: Resolve 1 magic-numbers issues in services/orchestrator/app/observability/rag_pipeline.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/orchestrator/app/observability/rag_pipeline.py
+    rule_id: magic-numbers
+    count: 1
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-5858dbc4
+    name: Fix string-concat issues
+    description: Resolve 1 string-concat issues in services/orchestrator/app/rag/chunking.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/orchestrator/app/rag/chunking.py
+    rule_id: string-concat
+    count: 1
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-d9773289
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in services/orchestrator/app/rag/chunking.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/orchestrator/app/rag/chunking.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-9d4dff35
+    name: Fix magic-numbers issues
+    description: Resolve 2 magic-numbers issues in services/orchestrator/app/rag/chunking.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/orchestrator/app/rag/chunking.py
+    rule_id: magic-numbers
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-1fc828b1
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in services/orchestrator/app/rag/indexer.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/orchestrator/app/rag/indexer.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-a23576f9
+    name: Fix magic-numbers issues
+    description: Resolve 1 magic-numbers issues in services/orchestrator/app/rag/indexer.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/orchestrator/app/rag/indexer.py
+    rule_id: magic-numbers
+    count: 1
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-b149d684
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in services/orchestrator/app/rag/openrouter.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/orchestrator/app/rag/openrouter.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-df5eb201
+    name: Fix magic-numbers issues
+    description: Resolve 3 magic-numbers issues in services/orchestrator/app/rag/openrouter.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/orchestrator/app/rag/openrouter.py
+    rule_id: magic-numbers
+    count: 3
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-01624207
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in services/orchestrator/app/rag/retriever.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/orchestrator/app/rag/retriever.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-728b2019
+    name: Fix magic-numbers issues
+    description: Resolve 1 magic-numbers issues in services/orchestrator/app/rag/retriever.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/orchestrator/app/rag/retriever.py
+    rule_id: magic-numbers
+    count: 1
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-31182dc9
+    name: Fix string-concat issues
+    description: Resolve 1 string-concat issues in services/orchestrator/app/rag/store.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/orchestrator/app/rag/store.py
+    rule_id: string-concat
+    count: 1
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-5bee1f1a
+    name: Fix unused-imports issues
+    description: Resolve 10 unused-imports issues in services/orchestrator/app/rag/store.py
+    task_type: prefactor
+    priority: high
+    estimate: 2d
+    files:
+    - services/orchestrator/app/rag/store.py
+    rule_id: unused-imports
+    count: 10
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-a4d63f32
+    name: Fix magic-numbers issues
+    description: Resolve 4 magic-numbers issues in services/orchestrator/app/rag/store.py
+    task_type: prefactor
+    priority: medium
+    estimate: 2d
+    files:
+    - services/orchestrator/app/rag/store.py
+    rule_id: magic-numbers
+    count: 4
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-72a01fc6
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in services/projector/app/db.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/projector/app/db.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-72c90bb2
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in services/projector/app/projections/agent_fleet.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/projector/app/projections/agent_fleet.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-296fcb13
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in services/projector/app/main.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/projector/app/main.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-b9720c0c
+    name: Fix magic-numbers issues
+    description: Resolve 1 magic-numbers issues in services/projector/app/main.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/projector/app/main.py
+    rule_id: magic-numbers
+    count: 1
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-2f640d69
+    name: Fix ai-boilerplate issues
+    description: Resolve 1 ai-boilerplate issues in services/projector/app/main.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/projector/app/main.py
+    rule_id: ai-boilerplate
+    count: 1
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-d23e6b55
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in services/projector/app/projections/approval_requests.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/projector/app/projections/approval_requests.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-6a717126
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in services/projector/app/projections/dispatcher.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/projector/app/projections/dispatcher.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-dd099d10
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in services/projector/app/projections/incidents.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/projector/app/projections/incidents.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-0d6ca77d
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in services/projector/app/projections/operational_feed.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/projector/app/projections/operational_feed.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-ed5c3d4e
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in services/projector/app/projections/plugin_catalog.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/projector/app/projections/plugin_catalog.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-7c2b32a6
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in services/projector/app/projections/resource_registry.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/projector/app/projections/resource_registry.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-6962165a
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in services/projector/app/projections/task_board.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/projector/app/projections/task_board.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-dbb81f8e
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in services/projector/app/projections/workflow_versions.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/projector/app/projections/workflow_versions.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-07c41c05
+    name: Fix string-concat issues
+    description: Resolve 3 string-concat issues in services/web/app/conductor.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/web/app/conductor.py
+    rule_id: string-concat
+    count: 3
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-6669189a
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in services/web/app/conductor.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/web/app/conductor.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-00569741
+    name: Fix magic-numbers issues
+    description: Resolve 2 magic-numbers issues in services/web/app/conductor.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/web/app/conductor.py
+    rule_id: magic-numbers
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-d0b3dab7
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in services/web/app/nlp2dsl_bridge.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/web/app/nlp2dsl_bridge.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-f75b2aab
+    name: Fix magic-numbers issues
+    description: Resolve 2 magic-numbers issues in services/web/app/nlp2dsl_bridge.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/web/app/nlp2dsl_bridge.py
+    rule_id: magic-numbers
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-a296c376
+    name: Fix string-concat issues
+    description: Resolve 4 string-concat issues in services/web/app/chat.py
+    task_type: prefactor
+    priority: medium
+    estimate: 2d
+    files:
+    - services/web/app/chat.py
+    rule_id: string-concat
+    count: 4
+    model_hints:
+      planning: balanced
+      implementation: balanced

@@ -54,7 +54,7 @@ class RagRetriever:
         context = "\n\n---\n\n".join(
             f"[{h['uri']}] {h['content_preview']}" for h in hits
         )
-        answer = await self.openrouter.chat(
+        answer, llm_error = await self.openrouter.chat(
             [
                 {
                     "role": "system",
@@ -69,9 +69,19 @@ class RagRetriever:
                 },
             ]
         )
+        if not answer and llm_error:
+            previews = "\n".join(
+                f"- {h.get('name') or h.get('uri')}: {h.get('content_preview', '')[:180]}"
+                for h in hits[:4]
+            )
+            answer = (
+                f"(LLM niedostępny: {llm_error})\n\n"
+                f"Fragmenty z indeksu:\n{previews}"
+            )
         return {
             "query": query,
             "answer": answer,
             "sources": hits,
             "llm_model": self.openrouter.llm_model,
+            "llm_error": llm_error,
         }

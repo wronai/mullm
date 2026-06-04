@@ -1,6 +1,5 @@
-# Mullm — profile: core | access | rag | evolution | legacy | full
-# Ports and hostnames: .env (see .env.example)
-# Usage: docker compose --profile core up -d
+# Mullm — profile: core | access | rag | evolution | nlp2dsl | full
+# Ustaw w .env: COMPOSE_PROFILES=core,web  (albo: docker compose --profile core up -d)
 
 services:
   postgres:
@@ -59,7 +58,6 @@ services:
       - .env
     volumes:
       - ./catalog:/app/catalog:ro
-      - ./db/init:/app/db/init:ro
       - access_data:/data
       - rag_data:/data/rag
     environment:
@@ -71,7 +69,6 @@ services:
       - EVENT_STORE_BACKEND=${EVENT_STORE_BACKEND:-postgres}
       - EVENTSTORE_URL=${MULLM_EVENTSTORE_URL}
       - CATALOG_PATH=/app/catalog
-      - MULLM_DB_INIT_DIR=/app/db/init
       - ENVIRONMENT=${ENVIRONMENT:-dev}
       - RAG_AUTO_INGEST=${RAG_AUTO_INGEST:-true}
     depends_on:
@@ -92,14 +89,47 @@ services:
     environment:
       - DATABASE_URL=${MULLM_DATABASE_URL}
       - NATS_URL=${MULLM_NATS_URL}
-      - MULLM_DB_INIT_DIR=/app/db/init
-    volumes:
-      - ./db/init:/app/db/init:ro
     depends_on:
       - postgres
       - nats
     ports:
       - "${MULLM_PROJECTOR_HOST_PORT}:${MULLM_PROJECTOR_PORT}"
+    networks:
+      - mullm_network
+
+  nlp2dsl-nlp:
+    profiles: [nlp2dsl, full]
+    build:
+      context: ../nlp2dsl/nlp-service
+    env_file:
+      - .env
+    environment:
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - LLM_MODEL=${LLM_MODEL:-openrouter/openai/gpt-5-mini}
+    ports:
+      - "${MULLM_NLP2DSL_NLP_HOST_PORT:-8012}:8002"
+    networks:
+      - mullm_network
+
+  nlp2dsl-backend:
+    profiles: [nlp2dsl, full]
+    build:
+      context: ../nlp2dsl/backend
+    environment:
+      - NLP_SERVICE_URL=http://nlp2dsl-nlp:8002
+      - WORKER_URL=http://nlp2dsl-worker:8000
+    ports:
+      - "${MULLM_NLP2DSL_BACKEND_HOST_PORT:-8010}:8000"
+    depends_on:
+      - nlp2dsl-nlp
+      - nlp2dsl-worker
+    networks:
+      - mullm_network
+
+  nlp2dsl-worker:
+    profiles: [nlp2dsl, full]
+    build:
+      context: ../nlp2dsl/worker
     networks:
       - mullm_network
 
@@ -113,6 +143,9 @@ services:
     environment:
       - ORCHESTRATOR_URL=${MULLM_ORCHESTRATOR_URL}
       - PROJECTOR_URL=${MULLM_PROJECTOR_URL}
+      - NLP2DSL_BACKEND_URL=${MULLM_NLP2DSL_BACKEND_URL:-http://nlp2dsl-backend:8000}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     ports:
       - "${MULLM_WEB_HOST_PORT}:${MULLM_WEB_PORT}"
     depends_on:

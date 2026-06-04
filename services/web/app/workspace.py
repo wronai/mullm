@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import json
 import re
 import uuid
+from datetime import datetime, timezone
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -33,6 +35,8 @@ class WorkspaceContext:
     resource_ids: list[str] = field(default_factory=list)
     uris: list[str] = field(default_factory=list)
     file_names: list[str] = field(default_factory=list)
+    archived_task_ids: list[str] = field(default_factory=list)
+    linked_ticket_id: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -44,6 +48,8 @@ class WorkspaceContext:
             "resource_ids": self.resource_ids,
             "uris": self.uris,
             "file_names": self.file_names,
+            "archived_task_ids": self.archived_task_ids,
+            "linked_ticket_id": self.linked_ticket_id,
         }
 
 
@@ -53,6 +59,7 @@ class WorkspaceSession:
     context: WorkspaceContext = field(default_factory=WorkspaceContext)
     draft: dict[str, Any] | None = None
     events: list[dict[str, Any]] = field(default_factory=list)
+    nlp2dsl_conversation_id: str | None = None
 
     def add_event(self, event_type: str, summary: str, **extra: Any) -> None:
         self.events.append(
@@ -84,8 +91,19 @@ def get_session(session_id: str) -> WorkspaceSession | None:
 
 
 def get_or_create(session_id: str | None) -> WorkspaceSession:
-    if session_id and session_id in _sessions:
-        return _sessions[session_id]
+    if session_id:
+        existing = _sessions.get(session_id)
+        if existing:
+            return existing
+        # Przywróć sesję po odświeżeniu strony / restarcie web (in-memory dict pusty).
+        session = WorkspaceSession(session_id=session_id)
+        _sessions[session_id] = session
+        chat_service._sessions.setdefault(session_id, [])
+        session.add_event(
+            "ChatSessionResumed",
+            "Sesja wznowiona (historia chatu mogła wygasnąć po restarcie serwisu)",
+        )
+        return session
     return new_session()
 
 
@@ -149,18 +167,17 @@ def _extract_shell_command(text: str) -> str | None:
     return None
 
 
-def propose_task_draft(session_id: str, message: str) -> dict[str, Any]:
+def build_task_payload(session_id: str, message: str) -> dict[str, Any]:
+    """Szkic pól zadania (tylko API /tasks/draft) — nie zapisuje sesji."""
     session = get_or_create(session_id)
     message = (message or "").strip()
     ticket = _extract_ticket(message) or session.context.ticket_id
     shell = _extract_shell_command(message)
-    draft = {
+    return {
         "title": message[:80] or "Nowe zadanie",
         "description": message,
-        "executor_kind": "shell" if shell else "semi_auto",
         "shell_command": shell,
         "priority": "medium",
-        "auto_assign": bool(shell),
         "ticket_id": ticket,
         "scope": {
             "uris": list(session.context.uris),
@@ -168,9 +185,42 @@ def propose_task_draft(session_id: str, message: str) -> dict[str, Any]:
             "files": list(session.context.file_names),
         },
     }
-    session.draft = draft
-    session.add_event("TaskDraftProposed", draft["title"], draft=draft)
-    return draft
+
+
+def propose_task_draft(session_id: str, message: str) -> dict[str, Any]:
+    """Kompatybilność API — zwraca payload bez trzymania szkicu w sesji."""
+    return build_task_payload(session_id, message)
+
+
+async def create_task_immediate(
+    session_id: str,
+    *,
+    title: str,
+    description: str = "",
+    shell_command: str | None = None,
+    wait_for_confirmation: bool = False,
+    priority: str = "medium",
+) -> dict[str, Any]:
+    """Tworzy ticket od razu; domyślnie przypisuje agenta (uruchomienie)."""
+    session = get_or_create(session_id)
+    session.draft = None
+    result = await chat_service.create_task(
+        title=title,
+        description=description,
+        shell_command=shell_command,
+        wait_for_confirmation=wait_for_confirmation,
+        auto_assign=not wait_for_confirmation,
+        priority=priority,
+    )
+    if result.get("ok") and result.get("task_id"):
+        link_ticket(session_id, result["task_id"])
+        session.add_event(
+            "TaskCreatedFromChat",
+            title,
+            task_id=result.get("task_id"),
+            wait_for_confirmation=wait_for_confirmation,
+        )
+    return result
 
 
 async def handle_chat_message(
@@ -179,57 +229,106 @@ async def handle_chat_message(
     message: str,
     mode: str = "discuss",
     use_rag: bool = True,
+    wait_for_confirmation: bool = False,
 ) -> dict[str, Any]:
     session = get_or_create(session_id)
     message = (message or "").strip()
-    if not message:
+    if not message and mode != "discuss":
         return {"error": "empty message"}
 
     ticket = _extract_ticket(message)
     if ticket:
         attach_context(session.session_id, ticket_id=ticket)
 
-    draft = None
+    ctx = session.context
     task_result = None
 
-    if mode == "search_context":
-        use_rag = True
-    elif mode in {"create_task", "run_task"}:
-        draft = propose_task_draft(session.session_id, message)
-    elif mode == "discuss":
-        draft = propose_task_draft(session.session_id, message)
+    if mode in ("run_task", "create_task"):
+        shell = _extract_shell_command(message)
+        payload = build_task_payload(session.session_id, message)
+        task_result = await create_task_immediate(
+            session.session_id,
+            title=payload["title"],
+            description=payload.get("description", ""),
+            shell_command=shell,
+            wait_for_confirmation=wait_for_confirmation,
+            priority=payload.get("priority", "medium"),
+        )
+        tid = task_result.get("task_id", "?")
+        if task_result.get("ok"):
+            reply = (
+                f"Ticket `{tid}` w kolejce — potwierdź na liście ticketów (◎)."
+                if wait_for_confirmation
+                else (
+                    f"Uruchomiono ticket `{tid}`"
+                    + (f" · `{shell}`" if shell else "")
+                )
+            )
+        else:
+            reply = f"Nie udało się utworzyć ticketu: {task_result.get('error')}"
+        outcome = {
+            "reply": reply,
+            "task": task_result,
+            "history": chat_service.get_history(session.session_id),
+            "correlation_id": session.session_id,
+        }
+    elif mode == "search_context":
+        outcome = await chat_service.handle_message(
+            session_id=session.session_id,
+            message=message,
+            use_rag=True,
+            scope_files=list(ctx.file_names),
+            scope_uris=list(ctx.uris),
+        )
+    else:
+        from app.conductor import handle_turn
 
-    outcome = await chat_service.handle_message(
-        session_id=session.session_id,
-        message=message,
-        use_rag=use_rag and mode != "create_task",
-    )
+        outcome = await handle_turn(
+            session_id=session.session_id,
+            message=message,
+            nlp_conversation_id=session.nlp2dsl_conversation_id,
+            scope_files=list(ctx.file_names),
+            scope_uris=list(ctx.uris),
+            form_values=None,
+            wait_for_confirmation=wait_for_confirmation,
+        )
+        if outcome.get("nlp2dsl_conversation_id"):
+            session.nlp2dsl_conversation_id = outcome["nlp2dsl_conversation_id"]
+
     if outcome.get("error"):
         return outcome
 
-    session.add_event("ChatMessageAdded", message[:120])
-
-    if mode == "create_task" and draft:
-        task_result = await chat_service.create_task(
-            title=draft["title"],
-            description=draft["description"],
-            shell_command=draft.get("shell_command"),
-            auto_assign=draft.get("auto_assign", False),
-            priority=draft.get("priority", "medium"),
+    session.add_event("ChatMessageAdded", message[:120] or "(formularz)", mode=mode)
+    if outcome.get("intent") == "file_list":
+        session.add_event("FileListReturned", "Lista plików z rejestru + RAG")
+    if outcome.get("retrieval_trace_id"):
+        session.add_event(
+            "RagTrace",
+            outcome["retrieval_trace_id"],
+            trace=outcome["retrieval_trace_id"],
         )
-        if task_result.get("ok"):
-            session.add_event(
-                "TaskCreatedFromChat",
-                f"Utworzono zadanie {task_result.get('task_id')}",
-                task_id=task_result.get("task_id"),
-            )
-    elif mode == "run_task" and draft:
-        task_result = await create_and_run(session.session_id, draft=draft)
+    if outcome.get("incident"):
+        inc = outcome["incident"]
+        session.add_event(
+            "RagIncident",
+            f"{inc.get('incident_code', '?')}: {(inc.get('message') or '')[:80]}",
+            retrieval_trace_id=outcome.get("retrieval_trace_id"),
+            correlation_id=outcome.get("correlation_id"),
+        )
+
+    if task_result and task_result.get("ok"):
+        session.add_event(
+            "TaskCreatedFromChat",
+            f"Ticket {task_result.get('task_id', '')[:8]}",
+            task_id=task_result.get("task_id"),
+        )
+        if task_result.get("task_id"):
+            link_ticket(session.session_id, task_result["task_id"])
 
     return {
         **outcome,
-        "draft": draft or session.draft,
-        "task": task_result,
+        "draft": session.draft,
+        "task": task_result or outcome.get("task"),
         "context": session.context.to_dict(),
         "events": session.events,
     }
@@ -240,62 +339,249 @@ async def create_task_from_draft(
     *,
     draft: dict[str, Any] | None = None,
     run: bool = False,
+    wait_for_confirmation: bool = False,
 ) -> dict[str, Any]:
-    session = get_or_create(session_id)
-    data = draft or session.draft
+    data = draft or get_or_create(session_id).draft
     if not data:
-        return {"ok": False, "error": "brak draftu zadania"}
-
+        return {"ok": False, "error": "brak danych zadania"}
     if run:
-        return await create_and_run(session_id, draft=data)
-
-    result = await chat_service.create_task(
+        wait_for_confirmation = False
+    return await create_task_immediate(
+        session_id,
         title=data["title"],
         description=data.get("description", ""),
         shell_command=data.get("shell_command"),
-        auto_assign=data.get("auto_assign", True),
+        wait_for_confirmation=wait_for_confirmation,
         priority=data.get("priority", "medium"),
     )
-    if result.get("ok"):
-        session.add_event(
-            "TaskCreatedFromChat",
-            data["title"],
-            task_id=result.get("task_id"),
-        )
-    return result
 
 
 async def create_and_run(
     session_id: str,
     *,
     draft: dict[str, Any] | None = None,
+    wait_for_confirmation: bool = False,
 ) -> dict[str, Any]:
-    session = get_or_create(session_id)
-    data = draft or session.draft
+    data = draft or get_or_create(session_id).draft
     if not data:
-        return {"ok": False, "error": "brak draftu"}
-
+        return {"ok": False, "error": "brak danych zadania"}
     shell = data.get("shell_command")
     if not shell:
-        return {
-            "ok": False,
-            "error": "Uruchomienie wymaga polecenia shell w draftzie",
-        }
-
-    result = await chat_service.create_task(
+        return {"ok": False, "error": "Uruchomienie wymaga polecenia shell"}
+    result = await create_task_immediate(
+        session_id,
         title=data["title"],
         description=data.get("description", ""),
         shell_command=shell,
-        auto_assign=True,
+        wait_for_confirmation=wait_for_confirmation,
         priority=data.get("priority", "medium"),
     )
     if result.get("ok"):
-        session.add_event(
+        get_or_create(session_id).add_event(
             "TaskRunRequested",
             f"Wysłano do agenta: {shell[:60]}",
             task_id=result.get("task_id"),
         )
-    return {**result, "queued": True}
+    return {**result, "queued": not wait_for_confirmation}
+
+
+async def export_debug_logs(session_id: str, *, limit: int = 30) -> dict[str, Any]:
+    """Zbiera logi sesji + orchestrator + feed do kopiowania do schowka."""
+    session = get_or_create(session_id)
+    correlation_id = session.session_id
+    headers = {"X-Correlation-ID": correlation_id}
+
+    bundle: dict[str, Any] = {
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "correlation_id": correlation_id,
+        "service": "web-bff",
+        "session": {
+            "session_id": session.session_id,
+            "context": session.context.to_dict(),
+            "events": session.events,
+            "chat_history": chat_service.get_history(session.session_id),
+            "draft": session.draft,
+        },
+    }
+
+    try:
+        bundle["inventory"] = await chat_service.fetch_file_inventory()
+    except Exception as exc:
+        bundle["inventory"] = {"errors": [str(exc)]}
+
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        try:
+            r = await client.get(
+                f"{_orch()}/api/observability/logs/export",
+                params={"correlation_id": correlation_id, "limit": limit},
+                headers=headers,
+            )
+            if r.status_code == 200:
+                orch = r.json()
+                bundle["rag_health"] = orch.get("rag_health")
+                bundle["incidents"] = orch.get("incidents")
+                bundle["incident_feed"] = orch.get("incident_feed")
+                all_snaps = orch.get("rag_snapshots") or []
+                bundle["rag_snapshots"] = [
+                    s for s in all_snaps if s.get("correlation_id") == correlation_id
+                ][:10]
+                bundle["rag_health"] = bundle.get("rag_health") or orch.get("rag_health")
+        except httpx.HTTPError as exc:
+            bundle["orchestrator_error"] = str(exc)
+
+        try:
+            feed_r = await client.get(
+                f"{_projector()}/projections/feed",
+                params={"limit": 25},
+            )
+            if feed_r.status_code == 200:
+                items = feed_r.json().get("items") or []
+                bundle["operational_feed"] = [
+                    i
+                    for i in items
+                    if (i.get("correlation_id") == correlation_id)
+                    or "Incident" in (i.get("event_type") or "")
+                ][:limit]
+        except httpx.HTTPError:
+            bundle["operational_feed"] = []
+
+    bundle["text"] = _format_export_text(bundle)
+    return bundle
+
+
+def _format_export_text(bundle: dict[str, Any]) -> str:
+    lines = [
+        "# Mullm workspace — export logów",
+        f"generated_at: {bundle.get('generated_at') or datetime.now(timezone.utc).isoformat()}",
+        f"correlation_id: {bundle.get('correlation_id', '')}",
+        "",
+    ]
+    sess = bundle.get("session") or {}
+    ctx = sess.get("context") or {}
+    if ctx:
+        lines.append("## Kontekst")
+        for key in ("ticket_id", "project", "branch", "agent_id"):
+            if ctx.get(key):
+                lines.append(f"- {key}: {ctx[key]}")
+        if ctx.get("uris"):
+            lines.append(f"- uris: {', '.join(ctx['uris'][:8])}")
+        if ctx.get("file_names"):
+            lines.append(f"- pliki w sesji: {', '.join(ctx['file_names'][:8])}")
+        lines.append("")
+
+    inv = bundle.get("inventory") or {}
+    resources = inv.get("resources") or []
+    rag_docs = inv.get("rag_documents") or []
+    if resources or rag_docs:
+        lines.append("## Pliki i zasoby (stan systemu)")
+        for row in resources:
+            lines.append(
+                f"- {row.get('name') or '?'} | {row.get('uri')} | {row.get('status')}"
+            )
+        for doc in rag_docs:
+            lines.append(
+                f"- [RAG] {doc.get('name') or '?'} | {doc.get('uri')} | "
+                f"{doc.get('status')} chunks={doc.get('chunk_count')}"
+            )
+        lines.append("")
+
+    history = sess.get("chat_history") or []
+    lines.append("## Historia chatu")
+    if not history:
+        lines.append("(brak — wyślij wiadomość w workspace lub sesja wygasła po restarcie web)")
+    else:
+        for msg in history:
+            role = msg.get("role", "?")
+            content = (msg.get("content") or "").strip()
+            if not content:
+                continue
+            lines.append(f"\n### {role}")
+            lines.append(content[:4000])
+            if msg.get("sources"):
+                lines.append(f"(źródeł RAG: {len(msg['sources'])})")
+    lines.append("")
+
+    if sess.get("draft"):
+        d = sess["draft"]
+        lines.append("## Szkic (nieużywany — tickety tworzone od razu z chatu)")
+        lines.append(f"- tytuł: {d.get('title')}")
+        lines.append(f"- shell: {d.get('shell_command') or '—'}")
+        lines.append("")
+
+    if sess.get("events"):
+        lines.append("## Zdarzenia sesji")
+        for ev in sess["events"][-30:]:
+            extra = ""
+            if ev.get("task_id"):
+                extra = f" task_id={ev['task_id']}"
+            if ev.get("retrieval_trace_id"):
+                extra += f" trace={ev['retrieval_trace_id']}"
+            lines.append(f"- {ev.get('type')}: {ev.get('summary', '')}{extra}")
+        lines.append("")
+
+    rag = bundle.get("rag_health") or {}
+    if rag:
+        lines.append("## RAG health (skrót)")
+        lines.append(f"status: {rag.get('status')} · code: {rag.get('primary_incident_code')}")
+        for check in rag.get("checks") or []:
+            lines.append(f"  - {check.get('name')}: {check.get('status')} {check.get('detail', '')}")
+        lines.append("")
+
+    incidents = bundle.get("incidents") or []
+    if incidents:
+        lines.append("## Incydenty (ta sesja)")
+        for inc in incidents:
+            lines.append(
+                f"- {inc.get('incident_code')} {inc.get('message', '')[:120]} "
+                f"trace={inc.get('retrieval_trace_id', '')}"
+            )
+        lines.append("")
+
+    snapshots = [
+        s
+        for s in (bundle.get("rag_snapshots") or [])
+        if s.get("correlation_id") == bundle.get("correlation_id")
+    ][:5]
+    if snapshots:
+        lines.append("## RAG snapshots (ta sesja)")
+        for s in snapshots:
+            lines.append(f"- {s.get('created_at')} {s.get('status')}")
+        lines.append("")
+
+    feed = bundle.get("operational_feed") or []
+    if feed:
+        lines.append("## Operational feed")
+        for row in feed[:15]:
+            lines.append(
+                f"- {str(row.get('occurred_at', ''))[:19]} "
+                f"{row.get('event_type')} — {row.get('summary') or row.get('title', '')}"
+            )
+        lines.append("")
+
+    if bundle.get("orchestrator_error"):
+        lines.append(f"(orchestrator: {bundle['orchestrator_error']})")
+
+    lines.append("---")
+    lines.append("Wklej do ticketa / Cursor / support.")
+    return "\n".join(lines)
+
+
+def archive_task(session_id: str, task_id: str) -> dict[str, Any]:
+    session = get_or_create(session_id)
+    if task_id not in session.context.archived_task_ids:
+        session.context.archived_task_ids.append(task_id)
+    session.add_event("TaskArchived", f"Ticket {task_id[:8]}… w archiwum")
+    return {"ok": True, "task_id": task_id}
+
+
+def link_ticket(session_id: str, task_id: str | None) -> dict[str, Any]:
+    session = get_or_create(session_id)
+    session.context.linked_ticket_id = task_id
+    if task_id:
+        uri = f"mullm://ticket/{task_id}"
+        if uri not in session.context.uris:
+            session.context.uris.append(uri)
+    return session.context.to_dict()
 
 
 async def fetch_live_board() -> dict[str, Any]:

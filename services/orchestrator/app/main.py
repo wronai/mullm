@@ -10,6 +10,9 @@ from app.infrastructure.nats_bus import NATSBus
 from app.infrastructure.postgres import PostgresConnection
 from app.api.access import router as access_router
 from app.api.rag import router as rag_router
+from app.api.observability import router as observability_router
+from app.observability import IncidentRecorder, RagDiagnostics, RagPipeline
+from app.observability.middleware import CorrelationMiddleware
 from app.api.catalog import router as catalog_router
 from app.api.evolution import router as evolution_router
 from app.application.command_bus import CommandBus
@@ -53,6 +56,20 @@ async def lifespan(app: FastAPI):
         app.state.openrouter,
     )
     app.state.rag_retriever = RagRetriever(app.state.rag_store, app.state.openrouter)
+    app.state.incident_recorder = IncidentRecorder(
+        app.state.postgres,
+        message_bus=app.state.nats_bus,
+    )
+    app.state.rag_diagnostics = RagDiagnostics(
+        app.state.postgres,
+        app.state.rag_store,
+        app.state.openrouter,
+    )
+    app.state.rag_pipeline = RagPipeline(
+        app.state.rag_retriever,
+        app.state.rag_diagnostics,
+        app.state.incident_recorder,
+    )
     app.state.command_bus = CommandBus(
         event_store=app.state.event_store,
         message_bus=app.state.nats_bus,
@@ -88,6 +105,7 @@ app = FastAPI(
     lifespan=lifespan
 )
 
+app.add_middleware(CorrelationMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -102,6 +120,9 @@ app.include_router(catalog_router, prefix="/api/catalog", tags=["catalog"])
 app.include_router(evolution_router, prefix="/api/evolution", tags=["evolution"])
 app.include_router(access_router, prefix="/api/access", tags=["access"])
 app.include_router(rag_router, prefix="/api/rag", tags=["rag"])
+app.include_router(
+    observability_router, prefix="/api/observability", tags=["observability"]
+)
 
 
 @app.get("/health")

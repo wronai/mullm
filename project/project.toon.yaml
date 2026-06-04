@@ -1,0 +1,52 @@
+# mullm | 599 func | 77f | 18600L | python | 2026-06-04
+# generated in 0.00s
+
+HEALTH:
+  CC̄=3.6  critical=48 (limit:10)  dup=0  cycles=0
+
+ALERTS[20]:
+  !!! cc_exceeded      _format_export_text = 47 (limit:15)
+  !!! cc_exceeded      handle_message = 33 (limit:15)
+  !!! cc_exceeded      CommandBus.handle = 29 (limit:15)
+  !!! cc_exceeded      format_logs_text = 29 (limit:15)
+  !!! high_fan_out     CommandBus.handle = 29 (limit:10)
+  !!! high_fan_out     lifespan = 25 (limit:10)
+  !!! high_fan_out     ORCHESTRATOR_URL = 24 (limit:10)
+  !!! high_fan_out     PROJECTOR_URL = 24 (limit:10)
+  !!! high_fan_out     App = 24 (limit:10)
+  !!! high_fan_out     EsdbEventStore.append = 22 (limit:10)
+
+MODULES[137] (top by size):
+  M[planfile.yaml] 1319L C:0 F:0 CC↑0 D:0 (yaml)
+  M[services/orchestrator/app/application/command_bus.py] 982L C:1 F:41 CC↑29 D:0 (python)
+  M[docs/README.md] 832L C:0 F:0 CC↑0 D:0 (md)
+  M[services/orchestrator/app/domain/events/__init__.py] 811L C:32 F:3 CC↑7 D:0 (python)
+  M[services/web/app/static/workspace.js] 669L C:0 F:71 CC↑24 D:3 (javascript)
+  M[services/web/app/workspace.py] 604L C:2 F:22 CC↑47 D:0 (python)
+  M[goal.yaml] 509L C:0 F:0 CC↑0 D:0 (yaml)
+  M[services/web/app/api_routes.py] 443L C:10 F:24 CC↑19 D:0 (python)
+  M[TODO/4.md] 394L C:0 F:0 CC↑0 D:0 (md)
+  M[services/orchestrator/app/api/commands.py] 379L C:14 F:23 CC↑4 D:0 (python)
+  M[services/web/app/chat.py] 354L C:0 F:13 CC↑33 D:0 (python)
+  M[services/web/app/agent_workroom.py] 354L C:2 F:10 CC↑22 D:0 (python)
+  M[services/projector/app/main.py] 340L C:0 F:15 CC↑4 D:0 (python)
+  M[services/orchestrator/app/observability/incidents.py] 337L C:2 F:12 CC↑19 D:2 (python)
+  M[services/orchestrator/app/incidents/pipeline.py] 321L C:1 F:8 CC↑14 D:0 (python)
+  LANGS: python:84/md:17/json:11/txt:6/other:5/yaml:5/javascript:4/shell:3/yml:1/ini:1
+
+HOTSPOTS[10]:
+  ★ CommandBus.handle fan=29  // Orchestrates 29 calls
+  ★ lifespan fan=25  // Orchestrates 25 calls
+  ★ ORCHESTRATOR_URL fan=24  // Orchestrates 24 calls
+  ★ PROJECTOR_URL fan=24  // Orchestrates 24 calls
+  ★ App fan=24  // Orchestrates 24 calls
+
+REFACTOR[15]:
+  [1] H/L Split _format_export_text (CC=47)
+  [2] H/L Split handle_message (CC=33)
+  [3] H/L Split CommandBus.handle (CC=29)
+  [4] H/L Split format_logs_text (CC=29)
+  [5] H/H Split god module services/web/app/workspace.py (604L, 2 classes)
+
+EVOLUTION:
+  2026-06-04 CC̄=3.6 crit=48 18600L // Automated analysis

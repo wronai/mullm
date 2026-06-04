@@ -7,8 +7,11 @@ import httpx
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile
 from pydantic import BaseModel, Field
 
+from app import agent_workroom
 from app import chat as chat_service
+from app import resource_areas
 from app import workspace as workspace_service
+from app.tickets import enrich_task, status_meta, ticket_uri, ticket_web_path
 
 router = APIRouter()
 
@@ -31,9 +34,11 @@ class ChatSessionStart(BaseModel):
 
 class ChatMessage(BaseModel):
     session_id: str | None = None
-    message: str
+    message: str = ""
     mode: str = "discuss"  # discuss | create_task | run_task | search_context
     use_rag: bool = True
+    form_values: dict[str, Any] | None = None
+    wait_for_confirmation: bool = False
 
 
 class TaskDraftRequest(BaseModel):
@@ -47,6 +52,7 @@ class CreateTaskBody(BaseModel):
     description: str = ""
     shell_command: str | None = None
     auto_assign: bool = True
+    wait_for_confirmation: bool = False
     priority: str = "medium"
     ticket_id: str | None = None
 
@@ -55,6 +61,11 @@ class CreateFromDraftBody(BaseModel):
     session_id: str
     draft: dict[str, Any] | None = None
     run: bool = False
+    wait_for_confirmation: bool = False
+
+
+class ConfirmTicketBody(BaseModel):
+    session_id: str = ""
 
 
 class ContextAttachBody(BaseModel):
@@ -97,11 +108,27 @@ async def workspace_state(session_id: str):
 @router.post("/chat/message")
 async def chat_message(body: ChatMessage):
     session = workspace_service.get_or_create(body.session_id)
+    if body.form_values and not (body.message or "").strip():
+        from app.conductor import handle_turn
+
+        outcome = await handle_turn(
+            session_id=session.session_id,
+            message="",
+            nlp_conversation_id=session.nlp2dsl_conversation_id,
+            scope_files=list(session.context.file_names),
+            scope_uris=list(session.context.uris),
+            form_values=body.form_values,
+            wait_for_confirmation=body.wait_for_confirmation,
+        )
+        if outcome.get("nlp2dsl_conversation_id"):
+            session.nlp2dsl_conversation_id = outcome["nlp2dsl_conversation_id"]
+        return outcome
     outcome = await workspace_service.handle_chat_message(
         session_id=session.session_id,
         message=body.message,
         mode=body.mode,
         use_rag=body.use_rag,
+        wait_for_confirmation=body.wait_for_confirmation,
     )
     if outcome.get("error"):
         raise HTTPException(status_code=400, detail=outcome["error"])
@@ -122,7 +149,8 @@ async def create_task(body: CreateTaskBody):
         title=body.title,
         description=body.description,
         shell_command=body.shell_command,
-        auto_assign=body.auto_assign,
+        auto_assign=body.auto_assign and not body.wait_for_confirmation,
+        wait_for_confirmation=body.wait_for_confirmation,
         priority=body.priority,
     )
     if not result.get("ok"):
@@ -139,6 +167,7 @@ async def create_task_from_draft(body: CreateFromDraftBody):
         body.session_id,
         draft=body.draft,
         run=False,
+        wait_for_confirmation=body.wait_for_confirmation,
     )
     if not result.get("ok"):
         raise HTTPException(status_code=400, detail=result.get("error", "create failed"))
@@ -150,6 +179,7 @@ async def create_and_run_task(body: CreateFromDraftBody):
     result = await workspace_service.create_and_run(
         body.session_id,
         draft=body.draft,
+        wait_for_confirmation=body.wait_for_confirmation,
     )
     if not result.get("ok"):
         raise HTTPException(status_code=400, detail=result.get("error", "run failed"))
@@ -221,3 +251,193 @@ async def upload_files(
 @router.get("/board")
 async def board_snapshot():
     return await workspace_service.fetch_live_board()
+
+
+@router.get("/tickets")
+async def list_tickets(session_id: str | None = None, view: str = "active"):
+    board = await workspace_service.fetch_live_board()
+    archived: set[str] = set()
+    if session_id:
+        session = workspace_service.get_or_create(session_id)
+        archived = set(session.context.archived_task_ids)
+    items = [enrich_task(t, archived_ids=archived) for t in board.get("tasks") or []]
+    if view == "archived":
+        items = [t for t in items if t["status_key"] == "archived"]
+    elif view == "active":
+        items = [t for t in items if t["status_key"] != "archived"]
+    return {"items": items}
+
+
+@router.get("/tickets/{task_id}")
+async def get_ticket(task_id: str, session_id: str | None = None):
+    board = await workspace_service.fetch_live_board()
+    archived: set[str] = set()
+    if session_id:
+        session = workspace_service.get_or_create(session_id)
+        archived = set(session.context.archived_task_ids)
+    for row in board.get("tasks") or []:
+        if row.get("task_id") == task_id:
+            return enrich_task(row, archived_ids=archived)
+    raise HTTPException(status_code=404, detail="ticket not found")
+
+
+class SessionRef(BaseModel):
+    session_id: str
+
+
+@router.post("/tickets/{task_id}/confirm")
+async def confirm_ticket(task_id: str, body: ConfirmTicketBody | None = None):
+    session_id = (body or ConfirmTicketBody()).session_id
+    """Przypisz wolnego agenta i uruchom ticket z kolejki (po zaznaczeniu „czekaj”)."""
+    board = await workspace_service.fetch_live_board()
+    task = next(
+        (t for t in (board.get("tasks") or []) if t.get("task_id") == task_id),
+        None,
+    )
+    if not task:
+        raise HTTPException(status_code=404, detail="ticket not found")
+    status = (task.get("status") or "pending").lower()
+    if status not in ("pending",):
+        raise HTTPException(status_code=400, detail="ticket nie jest w kolejce")
+
+    agents = [
+        a
+        for a in (board.get("agents") or [])
+        if (a.get("status") or "").lower() == "idle"
+    ]
+    if not agents:
+        raise HTTPException(status_code=409, detail="brak wolnego agenta")
+
+    agent_id = agents[0].get("agent_id")
+    if not agent_id:
+        raise HTTPException(status_code=409, detail="brak agenta")
+
+    desc = task.get("description") or task.get("title") or ""
+    shell = workspace_service._extract_shell_command(desc)
+
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        payload: dict[str, Any] = {"task_id": task_id, "agent_id": agent_id}
+        if shell:
+            payload["command"] = shell
+        resp = await client.post(
+            f"{ORCHESTRATOR_URL}/api/commands/tasks/assign",
+            json=payload,
+        )
+        if resp.status_code >= 400:
+            raise HTTPException(status_code=resp.status_code, detail=resp.text)
+
+    if session_id:
+        session = workspace_service.get_or_create(session_id)
+        session.add_event("TaskConfirmed", f"Uruchomiono {task_id[:8]}", task_id=task_id)
+
+    return {"ok": True, "task_id": task_id, "agent_id": agent_id, "shell_command": shell}
+
+
+@router.post("/tickets/{task_id}/archive")
+async def archive_ticket(task_id: str, body: SessionRef):
+    return workspace_service.archive_task(body.session_id, task_id)
+
+
+@router.post("/tickets/{task_id}/link")
+async def link_ticket(task_id: str, body: SessionRef):
+    return {"context": workspace_service.link_ticket(body.session_id, task_id)}
+
+
+@router.get("/tickets/meta/statuses")
+async def ticket_statuses():
+    from app.tickets import STATUS_UI
+
+    return {"items": STATUS_UI}
+
+
+@router.get("/workspace/chat/export")
+async def workspace_chat_export(session_id: str):
+    """Transkrypt chatu do schowka (tylko rozmowa, bez RAG health)."""
+    session = workspace_service.get_or_create(session_id)
+    history = chat_service.get_history(session.session_id)
+    lines = [
+        "# Mullm — transkrypt chatu",
+        f"session_id: {session.session_id}",
+        "",
+    ]
+    for msg in history:
+        role = msg.get("role", "?")
+        content = (msg.get("content") or "").strip()
+        if not content:
+            continue
+        lines.append(f"## {role}")
+        lines.append(content)
+        if msg.get("sources"):
+            lines.append(f"(źródeł RAG: {len(msg['sources'])})")
+        lines.append("")
+    if session.draft:
+        lines.append("## draft (nieutworzony ticket)")
+        lines.append(f"tytuł: {session.draft.get('title')}")
+        lines.append(f"shell: {session.draft.get('shell_command') or '—'}")
+        lines.append(f"hint: {session.draft.get('execution_hint', '')}")
+    text = "\n".join(lines).strip() + "\n"
+    return {"session_id": session.session_id, "text": text, "message_count": len(history)}
+
+
+@router.get("/workspace/logs/export")
+async def workspace_logs_export(session_id: str, limit: int = 30):
+    """
+    Paczka logów do schowka: RAG health, incydenty, historia sesji, feed.
+    W UI: przycisk „Kopiuj logi” → navigator.clipboard.writeText(data.text).
+    """
+    limit = min(max(limit, 1), 100)
+    workspace_service.get_or_create(session_id)
+    return await workspace_service.export_debug_logs(session_id, limit=limit)
+
+
+# ── Agent Workroom (multi-agent) ───────────────────────────────
+
+
+class WorkroomStart(BaseModel):
+    user_session_id: str | None = None
+
+
+class WorkroomMessage(BaseModel):
+    message: str
+    wait_for_confirmation: bool = False
+
+
+@router.post("/agent-workroom/session")
+async def workroom_start(body: WorkroomStart | None = None):
+    payload = body or WorkroomStart()
+    session = agent_workroom.create_workroom(user_session_id=payload.user_session_id)
+    return {"ok": True, **session.to_dict(), "catalog": agent_workroom.workroom_catalog()}
+
+
+@router.get("/agent-workroom/{workroom_id}")
+async def workroom_get(workroom_id: str):
+    session = agent_workroom.get_workroom(workroom_id)
+    if not session:
+        raise HTTPException(status_code=404, detail="workroom not found")
+    return session.to_dict()
+
+
+@router.post("/agent-workroom/{workroom_id}/run")
+async def workroom_run(workroom_id: str, body: WorkroomMessage):
+    result = await agent_workroom.run_workroom(
+        workroom_id,
+        body.message,
+        wait_for_confirmation=body.wait_for_confirmation,
+    )
+    if not result.get("ok"):
+        raise HTTPException(status_code=400, detail=result.get("error", "run failed"))
+    return result
+
+
+@router.get("/resource-areas")
+async def api_resource_areas():
+    return {
+        "areas": resource_areas.list_areas(),
+        "groups": resource_areas.list_groups(),
+        "labels": resource_areas.LABEL_VOCABULARY,
+    }
+
+
+@router.get("/resource-areas/roles")
+async def api_role_scopes():
+    return {"roles": resource_areas.DEFAULT_ROLE_SCOPES}

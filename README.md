@@ -25,15 +25,19 @@ Mullm is built using Domain-Driven Design (DDD) principles with:
 ## Quick Start
 
 ```bash
-# Start the core control-plane profile
-docker compose --profile core up -d
+# Start Mullm core/rag and nlp2dsl when ../nlp2dsl is present
+make up
 
 # View logs
-docker compose logs -f
+make logs
 
 # Stop services
-docker compose down
+make down
 ```
+
+`make up` uses `PROFILES="core rag"` by default and also manages `../nlp2dsl`
+for the AI dialogue loop. Use `NLP2DSL=0 make up` to run only Mullm, or
+override profiles with `PROFILES="core rag nlp2dsl" make up`.
 
 ## Development
 
@@ -98,6 +102,16 @@ Host ports are configured in `.env` (see `.env.example`). Defaults:
 - `TaskCreated`, `TaskAssigned`, `TaskCompleted`
 - `AgentRegistered`, `AgentStatusChanged`
 - `WorkflowStarted`, `WorkflowStepCompleted`
+
+## Workspace UI (panel operacyjny)
+
+**http://localhost:3003/** — cockpit: Chat + Tasks + Context + Files (nie tylko dashboard).
+
+- Natural language → **draft zadania** → Utwórz / Uruchom / Kolejka
+- Drag-and-drop plików → RAG + kontekst sesji
+- Live feed + zdarzenia sesji
+
+Szczegóły: [docs/workspace-ui.md](docs/workspace-ui.md). Stary widok tabel: `/dashboard`.
 
 ## Monitoring
 

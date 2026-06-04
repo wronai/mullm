@@ -1,0 +1,304 @@
+// LESS format — define @variables here as needed
+
+app {
+  name: mullm;
+  version: 0.1.0;
+}
+
+entity[name="ApprovalRequests"] {
+  approval_id: string;
+  action_type: string;
+  target_id: string;
+  risk_level: string;
+  requested_by: string;
+  status: string;
+  approved_by: string;
+  rejected_by: string;
+  reject_reason: string;
+  updated_at: datetime;
+  created_at: datetime;
+}
+
+entity[name="PluginCatalog"] {
+  plugin_id: string;
+  version: string;
+  status: string;
+  capabilities: json;
+  manifest: json;
+  updated_at: datetime;
+}
+
+entity[name="ResourceRegistry"] {
+  resource_id: string;
+  uri: string;
+  name: string;
+  adapter: string;
+  classification: string;
+  status: string;
+  metadata: json;
+  last_transfer_id: string;
+  updated_at: datetime;
+  created_at: datetime;
+}
+
+entity[name="TransferLog"] {
+  transfer_id: string;
+  resource_id: string;
+  source_uri: string;
+  destination_uri: string;
+  status: string;
+  requested_by: string;
+  outcome: json;
+  error: string;
+  started_at: datetime;
+  completed_at: datetime;
+}
+
+entity[name="CapabilityRegistry"] {
+  capability_id: string;
+  kind: string;
+  description: string;
+  provided_by: json;
+  risk_level: string;
+  status: string;
+  manifest: json;
+  source: string;
+  updated_at: datetime;
+}
+
+entity[name="EvolutionMetrics"] {
+  id: bigserial;
+  subject_type: string;
+  subject_id: string;
+  window_start: datetime;
+  window_end: datetime;
+  sample_count: int;
+  success_count: int;
+  failure_count: int;
+  retry_count: int;
+  human_takeover_count: int;
+  rollback_count: int;
+  total_duration_ms: int;
+  success_rate: float;
+  precision: not;
+  human_takeover_rate: float;
+  precision: not;
+  median_duration_ms: float;
+  precision: not;
+  updated_at: datetime;
+}
+
+entity[name="Experiments"] {
+  experiment_id: string;
+  subject_type: string;
+  subject_id: string;
+  version: string;
+  mode: string;
+  traffic_percent: int;
+  status: string;
+  outcome: string;
+  metrics: json;
+  metadata: json;
+  started_at: datetime;
+  completed_at: datetime;
+}
+
+entity[name="ChangeProposals"] {
+  change_id: string;
+  change_type: string;
+  target_id: string;
+  status: string;
+  hypothesis: string;
+  proposed_by: string;
+  payload: json;
+  evaluation: json;
+  created_at: datetime;
+  updated_at: datetime;
+}
+
+entity[name="RagDocuments"] {
+  resource_id: string;
+  uri: string;
+  name: string;
+  classification: string;
+  status: string;
+  chunk_count: int;
+  embedding_model: string;
+  error: string;
+  indexed_at: datetime;
+  updated_at: datetime;
+}
+
+entity[name="RagChunks"] {
+  chunk_id: string;
+  resource_id: string;
+}
+
+entity[name="Events"] {
+  id: bigserial;
+  event_id: string;
+  stream_id: string;
+  aggregate_type: string;
+  aggregate_id: string;
+  event_type: string;
+  revision: int;
+  occurred_at: datetime;
+  causation_id: string;
+  correlation_id: string;
+  payload: json;
+  metadata: json;
+}
+
+entity[name="OperationalFeed"] {
+  id: bigserial;
+  event_id: string;
+  stream_id: string;
+  aggregate_type: string;
+  aggregate_id: string;
+  event_type: string;
+  occurred_at: datetime;
+  correlation_id: string;
+  causation_id: string;
+  actor_type: string;
+  actor_id: string;
+  title: string;
+  summary: string;
+  payload: json;
+}
+
+entity[name="TaskBoard"] {
+  task_id: string;
+  flow_id: string;
+  title: string;
+  status: string;
+  priority: string;
+  execution_mode: string;
+  assigned_agent_id: string;
+  assigned_human_id: string;
+  required_capabilities: json;
+  last_event_type: string;
+  result: json;
+  error: string;
+  updated_at: datetime;
+  created_at: datetime;
+}
+
+entity[name="AgentFleet"] {
+  agent_id: string;
+  machine_id: string;
+  agent_type: string;
+  status: string;
+  capabilities: json;
+  current_task_id: string;
+  heartbeat_at: datetime;
+  load_score: int;
+  updated_at: datetime;
+}
+
+entity[name="WorkflowVersions"] {
+  workflow_id: string;
+  version: int;
+  status: string;
+  definition: json;
+  proposed_at: datetime;
+  activated_at: datetime;
+}
+
+entity[name="IncidentFeed"] {
+  incident_id: string;
+  incident_type: string;
+  incident_class: string;
+  severity: string;
+  source: string;
+  error_code: string;
+  message: string;
+  status: string;
+  playbook_id: string;
+  root_cause: string;
+  correlation_id: string;
+  context: json;
+  diagnostics: json;
+  created_at: datetime;
+}
+
+entity[name="ServiceHealth"] {
+  service_id: string;
+  component: string;
+  status: string;
+  error_code: string;
+  details: json;
+  last_check_at: datetime;
+}
+
+entity[name="RemediationHistory"] {
+  id: bigserial;
+  incident_id: string;
+  playbook_id: string;
+  status: string;
+  result: json;
+  error: string;
+  started_at: datetime;
+  finished_at: datetime;
+  updated_at: datetime;
+}
+
+entity[name="RagQualityBoard"] {
+  error_code: string;
+  failure_count: int;
+  last_query: string;
+  last_message: string;
+  last_failure_at: datetime;
+  updated_at: datetime;
+}
+
+entity[name="Incidents"] {
+  incident_id: string;
+  correlation_id: string;
+  retrieval_trace_id: string;
+  chat_session_id: string;
+  incident_code: string;
+  severity: string;
+  component: string;
+  service: string;
+  message: string;
+  diagnostics: json;
+  remediation: json;
+  status: string;
+  fallback_taken: string;
+  created_at: datetime;
+}
+
+entity[name="RagHealthSnapshots"] {
+  snapshot_id: string;
+  retrieval_trace_id: string;
+  correlation_id: string;
+  status: string;
+  checks: json;
+  created_at: datetime;
+}
+
+database[name="postgres"] {
+  type: postgresql;
+  url: env.DATABASE_URL;
+}
+
+database[name="redis"] {
+  type: redis;
+  url: env.REDIS_URL;
+}
+
+interface[type="api"] {
+  type: rest;
+  framework: fastapi;
+  auth-type: jwt;
+}
+
+deploy {
+  target: docker-compose;
+  compose_file: docker-compose.yml;
+}
+
+environment[name="local"] {
+  runtime: docker-compose;
+  env_file: .env;
+}

@@ -48,6 +48,12 @@ def _title_for(event_type: str, payload: dict[str, Any]) -> str:
         return payload.get("name") or payload.get("uri")
     if event_type == "TransferCompleted":
         return f"Transfer {payload.get('transfer_id')} completed"
+    if event_type == "IncidentDetected":
+        return f"Incident {payload.get('incident_code')}"
+    if event_type == "DiagnosticsCompleted":
+        return "RAG diagnostics completed"
+    if event_type == "RemediationSucceeded":
+        return f"Remediation OK ({payload.get('incident_code')})"
     return event_type
 
 
@@ -58,4 +64,6 @@ def _summary_for(event_type: str, payload: dict[str, Any]) -> str:
         return f"Task {payload.get('task_id')} completed"
     if event_type == "TaskFailed":
         return f"Task {payload.get('task_id')} failed"
+    if event_type == "IncidentDetected":
+        return payload.get("message") or payload.get("incident_code", "")
     return ""

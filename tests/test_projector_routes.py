@@ -30,3 +30,7 @@ def test_projector_get_routes_are_unique():
     assert len(routes) == len(set(routes))
     assert ("/projections/resources", ("GET",)) in routes
     assert ("/projections/rag/documents", ("GET",)) in routes
+    assert ("/projections/incidents", ("GET",)) in routes
+    assert ("/projections/service-health", ("GET",)) in routes
+    assert ("/projections/remediations", ("GET",)) in routes
+    assert ("/projections/rag/quality", ("GET",)) in routes

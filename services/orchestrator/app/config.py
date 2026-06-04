@@ -1,6 +1,8 @@
 from pydantic_settings import BaseSettings
 from typing import Optional
 
+from app.rag.openrouter import normalize_openrouter_model
+
 
 class Settings(BaseSettings):
     # Database (projections + postgres event store)
@@ -42,6 +44,11 @@ class Settings(BaseSettings):
     
     class Config:
         env_file = ".env"
+        extra = "ignore"
+
+    def model_post_init(self, __context) -> None:
+        self.llm_model = normalize_openrouter_model(self.llm_model)
+        self.embedding_model = normalize_openrouter_model(self.embedding_model)
 
 
 settings = Settings()

@@ -795,3 +795,17 @@ class ApprovalExpired(DomainEvent):
             "approval_id": str(self.approval_id),
             "status": "expired",
         }
+
+
+from app.domain.events.incidents import (  # noqa: E402
+    DiagnosticsCompleted,
+    DiagnosticsStarted,
+    IncidentClassified,
+    IncidentDetected,
+    PostRemediationVerificationFailed,
+    PostRemediationVerificationPassed,
+    RagRequestFailed,
+    RemediationFailed,
+    RemediationStarted,
+    RemediationSucceeded,
+)

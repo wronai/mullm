@@ -222,6 +222,80 @@ async def rag_documents(limit: int = 100, offset: int = 0):
     return {"items": [_row_to_dict(row) for row in rows]}
 
 
+@app.get("/projections/incidents")
+async def incident_feed(status: str | None = None, limit: int = 100, offset: int = 0):
+    if status:
+        rows = await app.state.db.fetch(
+            """
+            select *
+            from incident_feed
+            where status = $1
+            order by updated_at desc
+            limit $2 offset $3
+            """,
+            status,
+            limit,
+            offset,
+        )
+    else:
+        rows = await app.state.db.fetch(
+            """
+            select *
+            from incident_feed
+            order by updated_at desc
+            limit $1 offset $2
+            """,
+            limit,
+            offset,
+        )
+    return {"items": [_row_to_dict(row) for row in rows]}
+
+
+@app.get("/projections/service-health")
+async def service_health(limit: int = 100, offset: int = 0):
+    rows = await app.state.db.fetch(
+        """
+        select *
+        from service_health
+        order by updated_at desc
+        limit $1 offset $2
+        """,
+        limit,
+        offset,
+    )
+    return {"items": [_row_to_dict(row) for row in rows]}
+
+
+@app.get("/projections/remediations")
+async def remediation_history(limit: int = 100, offset: int = 0):
+    rows = await app.state.db.fetch(
+        """
+        select *
+        from remediation_history
+        order by updated_at desc
+        limit $1 offset $2
+        """,
+        limit,
+        offset,
+    )
+    return {"items": [_row_to_dict(row) for row in rows]}
+
+
+@app.get("/projections/rag/quality")
+async def rag_quality_board(limit: int = 100, offset: int = 0):
+    rows = await app.state.db.fetch(
+        """
+        select *
+        from rag_quality_board
+        order by updated_at desc
+        limit $1 offset $2
+        """,
+        limit,
+        offset,
+    )
+    return {"items": [_row_to_dict(row) for row in rows]}
+
+
 @app.get("/projections/resources")
 async def resource_registry(limit: int = 100, offset: int = 0):
     rows = await app.state.db.fetch(

@@ -1,0 +1,34 @@
+# SCENARIO: Auto-generated from Python Tests
+# TYPE: integration
+# GENERATED: true
+
+CONFIG[2]{key, value}:
+  base_url, ${api_url:-http://localhost:8101}
+  timeout_ms, 10000
+
+# Converted 24 assertions from pytest
+ASSERT[24]{field, operator, expected}:
+  _status, ==, 200
+  _status, ==, 200
+  _status, ==, 200
+  _status, ==, 200
+  _status, ==, 200
+  _status, ==, 403
+  detail.error, ==, "approval_required"
+  _status, ==, 200
+  _status, ==, 200
+  _status, ==, 200
+  _status, ==, 200
+  code, ==, IncidentCode.RAG_BACKEND_UNAVAILABLE
+  _status, ==, 200
+  _status, ==, 200
+  _status, ==, 200
+  _status, ==, 200
+  _status, ==, 200
+  _status, ==, 403
+  detail.error, ==, "approval_required"
+  _status, ==, 200
+  _status, ==, 200
+  _status, ==, 200
+  _status, ==, 200
+  code, ==, IncidentCode.RAG_BACKEND_UNAVAILABLE

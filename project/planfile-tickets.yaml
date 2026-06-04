@@ -1,0 +1,2869 @@
+source: code2llm
+# generated in 0.12s
+schema: code2llm.planfile_tickets.v1
+project_root: /home/tom/github/wronai/mullm
+tickets:
+- signal: code2llm_cc
+  title: 'Reduce cyclomatic complexity: services.orchestrator.app.application.command_bus.CommandBus.handle
+    (CC=29)'
+  description: 'code2llm reports `services.orchestrator.app.application.command_bus.CommandBus.handle`
+    at `services/orchestrator/app/application/command_bus.py:59` with cyclomatic complexity
+    29 (limit 15).
+
+
+    Extract smaller functions, flatten conditionals, or split strategy branches. Re-run
+    code2llm after the change and keep tests green.'
+  priority: high
+  labels:
+  - llm-ready
+  - code2llm
+  - complexity
+  - refactor
+  files:
+  - services/orchestrator/app/application/command_bus.py
+  dedupe_key: code2llm:cc:services/orchestrator/app/application/command_bus.py:services.orchestrator.app.application.command_bus.CommandBus.handle
+- signal: code2llm_cc
+  title: 'Reduce cyclomatic complexity: services.orchestrator.app.observability.export.format_logs_text
+    (CC=29)'
+  description: 'code2llm reports `services.orchestrator.app.observability.export.format_logs_text`
+    at `services/orchestrator/app/observability/export.py:8` with cyclomatic complexity
+    29 (limit 15).
+
+
+    Extract smaller functions, flatten conditionals, or split strategy branches. Re-run
+    code2llm after the change and keep tests green.'
+  priority: high
+  labels:
+  - llm-ready
+  - code2llm
+  - complexity
+  - refactor
+  files:
+  - services/orchestrator/app/observability/export.py
+  dedupe_key: code2llm:cc:services/orchestrator/app/observability/export.py:services.orchestrator.app.observability.export.format_logs_text
+- signal: code2llm_cc
+  title: 'Reduce cyclomatic complexity: services.web.app.chat.handle_message (CC=33)'
+  description: 'code2llm reports `services.web.app.chat.handle_message` at `services/web/app/chat.py:190`
+    with cyclomatic complexity 33 (limit 15).
+
+
+    Extract smaller functions, flatten conditionals, or split strategy branches. Re-run
+    code2llm after the change and keep tests green.'
+  priority: high
+  labels:
+  - llm-ready
+  - code2llm
+  - complexity
+  - refactor
+  files:
+  - services/web/app/chat.py
+  dedupe_key: code2llm:cc:services/web/app/chat.py:services.web.app.chat.handle_message
+- signal: code2llm_cc
+  title: 'Reduce cyclomatic complexity: services.web.app.workspace._format_export_text
+    (CC=47)'
+  description: 'code2llm reports `services.web.app.workspace._format_export_text`
+    at `services/web/app/workspace.py:452` with cyclomatic complexity 47 (limit 15).
+
+
+    Extract smaller functions, flatten conditionals, or split strategy branches. Re-run
+    code2llm after the change and keep tests green.'
+  priority: high
+  labels:
+  - llm-ready
+  - code2llm
+  - complexity
+  - refactor
+  files:
+  - services/web/app/workspace.py
+  dedupe_key: code2llm:cc:services/web/app/workspace.py:services.web.app.workspace._format_export_text
+- signal: code2llm_god
+  title: 'Split god module: services/orchestrator/app/domain/events/__init__.py'
+  description: 'code2llm reports `services/orchestrator/app/domain/events/__init__.py`
+    as a large module (811 lines, 32 classes).
+
+
+    Split it by responsibility, keep public imports stable, and add focused tests
+    around the moved behavior.'
+  priority: high
+  labels:
+  - llm-ready
+  - code2llm
+  - god-module
+  - refactor
+  files:
+  - services/orchestrator/app/domain/events/__init__.py
+  dedupe_key: code2llm:god:services/orchestrator/app/domain/events/__init__.py
+- signal: code2llm_smell_shotgun_surgery
+  title: 'Address code smell: Shotgun Surgery: content'
+  description: 'code2llm reports `Shotgun Surgery: content` in `services/orchestrator/app/observability/export.py:8`.
+
+
+    Mutation of variable ''content'' spans 6 functions. Changing this logic requires
+    work in many places.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: high
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - shotgun-surgery
+  files:
+  - services/orchestrator/app/observability/export.py
+  dedupe_key: 'code2llm:smell:shotgun_surgery:services/orchestrator/app/observability/export.py:8:Shotgun
+    Surgery: content'
+- signal: code2llm_smell_shotgun_surgery
+  title: 'Address code smell: Shotgun Surgery: ctx'
+  description: 'code2llm reports `Shotgun Surgery: ctx` in `services/orchestrator/app/observability/export.py:8`.
+
+
+    Mutation of variable ''ctx'' spans 6 functions. Changing this logic requires work
+    in many places.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: high
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - shotgun-surgery
+  files:
+  - services/orchestrator/app/observability/export.py
+  dedupe_key: 'code2llm:smell:shotgun_surgery:services/orchestrator/app/observability/export.py:8:Shotgun
+    Surgery: ctx'
+- signal: code2llm_smell_shotgun_surgery
+  title: 'Address code smell: Shotgun Surgery: lines'
+  description: 'code2llm reports `Shotgun Surgery: lines` in `services/orchestrator/app/observability/export.py:8`.
+
+
+    Mutation of variable ''lines'' spans 5 functions. Changing this logic requires
+    work in many places.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: high
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - shotgun-surgery
+  files:
+  - services/orchestrator/app/observability/export.py
+  dedupe_key: 'code2llm:smell:shotgun_surgery:services/orchestrator/app/observability/export.py:8:Shotgun
+    Surgery: lines'
+- signal: code2llm_smell_shotgun_surgery
+  title: 'Address code smell: Shotgun Surgery: lowered'
+  description: 'code2llm reports `Shotgun Surgery: lowered` in `services/web/app/agent_workroom.py:105`.
+
+
+    Mutation of variable ''lowered'' spans 5 functions. Changing this logic requires
+    work in many places.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: high
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - shotgun-surgery
+  files:
+  - services/web/app/agent_workroom.py
+  dedupe_key: 'code2llm:smell:shotgun_surgery:services/web/app/agent_workroom.py:105:Shotgun
+    Surgery: lowered'
+- signal: code2llm_smell_shotgun_surgery
+  title: 'Address code smell: Shotgun Surgery: session'
+  description: 'code2llm reports `Shotgun Surgery: session` in `services/orchestrator/app/observability/export.py:8`.
+
+
+    Mutation of variable ''session'' spans 12 functions. Changing this logic requires
+    work in many places.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: high
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - shotgun-surgery
+  files:
+  - services/orchestrator/app/observability/export.py
+  dedupe_key: 'code2llm:smell:shotgun_surgery:services/orchestrator/app/observability/export.py:8:Shotgun
+    Surgery: session'
+- signal: code2llm_smell_shotgun_surgery
+  title: 'Address code smell: Shotgun Surgery: steps'
+  description: 'code2llm reports `Shotgun Surgery: steps` in `services/web/app/agent_workroom.py:105`.
+
+
+    Mutation of variable ''steps'' spans 6 functions. Changing this logic requires
+    work in many places.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: high
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - shotgun-surgery
+  files:
+  - services/web/app/agent_workroom.py
+  dedupe_key: 'code2llm:smell:shotgun_surgery:services/web/app/agent_workroom.py:105:Shotgun
+    Surgery: steps'
+- signal: code2llm_cc
+  title: 'Reduce cyclomatic complexity: services.orchestrator.app.observability.incidents.IncidentRecorder.record
+    (CC=16)'
+  description: 'code2llm reports `services.orchestrator.app.observability.incidents.IncidentRecorder.record`
+    at `services/orchestrator/app/observability/incidents.py:57` with cyclomatic complexity
+    16 (limit 15).
+
+
+    Extract smaller functions, flatten conditionals, or split strategy branches. Re-run
+    code2llm after the change and keep tests green.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - complexity
+  - refactor
+  files:
+  - services/orchestrator/app/observability/incidents.py
+  dedupe_key: code2llm:cc:services/orchestrator/app/observability/incidents.py:services.orchestrator.app.observability.incidents.IncidentRecorder.record
+- signal: code2llm_cc
+  title: 'Reduce cyclomatic complexity: services.orchestrator.app.observability.incidents._event_payload
+    (CC=19)'
+  description: 'code2llm reports `services.orchestrator.app.observability.incidents._event_payload`
+    at `services/orchestrator/app/observability/incidents.py:187` with cyclomatic
+    complexity 19 (limit 15).
+
+
+    Extract smaller functions, flatten conditionals, or split strategy branches. Re-run
+    code2llm after the change and keep tests green.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - complexity
+  - refactor
+  files:
+  - services/orchestrator/app/observability/incidents.py
+  dedupe_key: code2llm:cc:services/orchestrator/app/observability/incidents.py:services.orchestrator.app.observability.incidents._event_payload
+- signal: code2llm_cc
+  title: 'Reduce cyclomatic complexity: services.orchestrator.app.observability.incidents.classify_rag_failure
+    (CC=15)'
+  description: 'code2llm reports `services.orchestrator.app.observability.incidents.classify_rag_failure`
+    at `services/orchestrator/app/observability/incidents.py:27` with cyclomatic complexity
+    15 (limit 15).
+
+
+    Extract smaller functions, flatten conditionals, or split strategy branches. Re-run
+    code2llm after the change and keep tests green.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - complexity
+  - refactor
+  files:
+  - services/orchestrator/app/observability/incidents.py
+  dedupe_key: code2llm:cc:services/orchestrator/app/observability/incidents.py:services.orchestrator.app.observability.incidents.classify_rag_failure
+- signal: code2llm_cc
+  title: 'Reduce cyclomatic complexity: services.web.app.agent_workroom.run_workroom
+    (CC=22)'
+  description: 'code2llm reports `services.web.app.agent_workroom.run_workroom` at
+    `services/web/app/agent_workroom.py:157` with cyclomatic complexity 22 (limit
+    15).
+
+
+    Extract smaller functions, flatten conditionals, or split strategy branches. Re-run
+    code2llm after the change and keep tests green.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - complexity
+  - refactor
+  files:
+  - services/web/app/agent_workroom.py
+  dedupe_key: code2llm:cc:services/web/app/agent_workroom.py:services.web.app.agent_workroom.run_workroom
+- signal: code2llm_cc
+  title: 'Reduce cyclomatic complexity: services.web.app.api_routes.confirm_ticket
+    (CC=19)'
+  description: 'code2llm reports `services.web.app.api_routes.confirm_ticket` at `services/web/app/api_routes.py:289`
+    with cyclomatic complexity 19 (limit 15).
+
+
+    Extract smaller functions, flatten conditionals, or split strategy branches. Re-run
+    code2llm after the change and keep tests green.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - complexity
+  - refactor
+  files:
+  - services/web/app/api_routes.py
+  dedupe_key: code2llm:cc:services/web/app/api_routes.py:services.web.app.api_routes.confirm_ticket
+- signal: code2llm_cc
+  title: 'Reduce cyclomatic complexity: services.web.app.chat._format_incident (CC=15)'
+  description: 'code2llm reports `services.web.app.chat._format_incident` at `services/web/app/chat.py:169`
+    with cyclomatic complexity 15 (limit 15).
+
+
+    Extract smaller functions, flatten conditionals, or split strategy branches. Re-run
+    code2llm after the change and keep tests green.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - complexity
+  - refactor
+  files:
+  - services/web/app/chat.py
+  dedupe_key: code2llm:cc:services/web/app/chat.py:services.web.app.chat._format_incident
+- signal: code2llm_cc
+  title: 'Reduce cyclomatic complexity: services.web.app.chat.format_file_list_reply
+    (CC=22)'
+  description: 'code2llm reports `services.web.app.chat.format_file_list_reply` at
+    `services/web/app/chat.py:89` with cyclomatic complexity 22 (limit 15).
+
+
+    Extract smaller functions, flatten conditionals, or split strategy branches. Re-run
+    code2llm after the change and keep tests green.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - complexity
+  - refactor
+  files:
+  - services/web/app/chat.py
+  dedupe_key: code2llm:cc:services/web/app/chat.py:services.web.app.chat.format_file_list_reply
+- signal: code2llm_cc
+  title: 'Reduce cyclomatic complexity: services.web.app.conductor._nlp2dsl_turn (CC=23)'
+  description: 'code2llm reports `services.web.app.conductor._nlp2dsl_turn` at `services/web/app/conductor.py:56`
+    with cyclomatic complexity 23 (limit 15).
+
+
+    Extract smaller functions, flatten conditionals, or split strategy branches. Re-run
+    code2llm after the change and keep tests green.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - complexity
+  - refactor
+  files:
+  - services/web/app/conductor.py
+  dedupe_key: code2llm:cc:services/web/app/conductor.py:services.web.app.conductor._nlp2dsl_turn
+- signal: code2llm_cc
+  title: 'Reduce cyclomatic complexity: services.web.app.static.app.text (CC=16)'
+  description: 'code2llm reports `services.web.app.static.app.text` at `services/web/app/static/app.js:73`
+    with cyclomatic complexity 16 (limit 15).
+
+
+    Extract smaller functions, flatten conditionals, or split strategy branches. Re-run
+    code2llm after the change and keep tests green.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - complexity
+  - refactor
+  files:
+  - services/web/app/static/app.js
+  dedupe_key: code2llm:cc:services/web/app/static/app.js:services.web.app.static.app.text
+- signal: code2llm_cc
+  title: 'Reduce cyclomatic complexity: services.web.app.static.workspace.createFromDraft
+    (CC=15)'
+  description: 'code2llm reports `services.web.app.static.workspace.createFromDraft`
+    at `services/web/app/static/workspace.js:457` with cyclomatic complexity 15 (limit
+    15).
+
+
+    Extract smaller functions, flatten conditionals, or split strategy branches. Re-run
+    code2llm after the change and keep tests green.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - complexity
+  - refactor
+  files:
+  - services/web/app/static/workspace.js
+  dedupe_key: code2llm:cc:services/web/app/static/workspace.js:services.web.app.static.workspace.createFromDraft
+- signal: code2llm_cc
+  title: 'Reduce cyclomatic complexity: services.web.app.static.workspace.formValues
+    (CC=18)'
+  description: 'code2llm reports `services.web.app.static.workspace.formValues` at
+    `services/web/app/static/workspace.js:412` with cyclomatic complexity 18 (limit
+    15).
+
+
+    Extract smaller functions, flatten conditionals, or split strategy branches. Re-run
+    code2llm after the change and keep tests green.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - complexity
+  - refactor
+  files:
+  - services/web/app/static/workspace.js
+  dedupe_key: code2llm:cc:services/web/app/static/workspace.js:services.web.app.static.workspace.formValues
+- signal: code2llm_cc
+  title: 'Reduce cyclomatic complexity: services.web.app.static.workspace.renderContext
+    (CC=16)'
+  description: 'code2llm reports `services.web.app.static.workspace.renderContext`
+    at `services/web/app/static/workspace.js:192` with cyclomatic complexity 16 (limit
+    15).
+
+
+    Extract smaller functions, flatten conditionals, or split strategy branches. Re-run
+    code2llm after the change and keep tests green.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - complexity
+  - refactor
+  files:
+  - services/web/app/static/workspace.js
+  dedupe_key: code2llm:cc:services/web/app/static/workspace.js:services.web.app.static.workspace.renderContext
+- signal: code2llm_cc
+  title: 'Reduce cyclomatic complexity: services.web.app.static.workspace.renderTicketDetail
+    (CC=24)'
+  description: 'code2llm reports `services.web.app.static.workspace.renderTicketDetail`
+    at `services/web/app/static/workspace.js:113` with cyclomatic complexity 24 (limit
+    15).
+
+
+    Extract smaller functions, flatten conditionals, or split strategy branches. Re-run
+    code2llm after the change and keep tests green.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - complexity
+  - refactor
+  files:
+  - services/web/app/static/workspace.js
+  dedupe_key: code2llm:cc:services/web/app/static/workspace.js:services.web.app.static.workspace.renderTicketDetail
+- signal: code2llm_cc
+  title: 'Reduce cyclomatic complexity: services.web.app.static.workspace.sendChat
+    (CC=23)'
+  description: 'code2llm reports `services.web.app.static.workspace.sendChat` at `services/web/app/static/workspace.js:411`
+    with cyclomatic complexity 23 (limit 15).
+
+
+    Extract smaller functions, flatten conditionals, or split strategy branches. Re-run
+    code2llm after the change and keep tests green.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - complexity
+  - refactor
+  files:
+  - services/web/app/static/workspace.js
+  dedupe_key: code2llm:cc:services/web/app/static/workspace.js:services.web.app.static.workspace.sendChat
+- signal: code2llm_cc
+  title: 'Reduce cyclomatic complexity: services.web.app.workspace.export_debug_logs
+    (CC=15)'
+  description: 'code2llm reports `services.web.app.workspace.export_debug_logs` at
+    `services/web/app/workspace.py:388` with cyclomatic complexity 15 (limit 15).
+
+
+    Extract smaller functions, flatten conditionals, or split strategy branches. Re-run
+    code2llm after the change and keep tests green.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - complexity
+  - refactor
+  files:
+  - services/web/app/workspace.py
+  dedupe_key: code2llm:cc:services/web/app/workspace.py:services.web.app.workspace.export_debug_logs
+- signal: code2llm_cc
+  title: 'Reduce cyclomatic complexity: services.web.app.workspace.handle_chat_message
+    (CC=21)'
+  description: 'code2llm reports `services.web.app.workspace.handle_chat_message`
+    at `services/web/app/workspace.py:226` with cyclomatic complexity 21 (limit 15).
+
+
+    Extract smaller functions, flatten conditionals, or split strategy branches. Re-run
+    code2llm after the change and keep tests green.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - complexity
+  - refactor
+  files:
+  - services/web/app/workspace.py
+  dedupe_key: code2llm:cc:services/web/app/workspace.py:services.web.app.workspace.handle_chat_message
+- signal: code2llm_cc
+  title: 'Reduce cyclomatic complexity: services.web.src.main.App (CC=15)'
+  description: 'code2llm reports `services.web.src.main.App` at `services/web/src/main.jsx:9`
+    with cyclomatic complexity 15 (limit 15).
+
+
+    Extract smaller functions, flatten conditionals, or split strategy branches. Re-run
+    code2llm after the change and keep tests green.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - complexity
+  - refactor
+  files:
+  - services/web/src/main.jsx
+  dedupe_key: code2llm:cc:services/web/src/main.jsx:services.web.src.main.App
+- signal: code2llm_cc
+  title: 'Reduce cyclomatic complexity: services.web.src.main.ORCHESTRATOR_URL (CC=15)'
+  description: 'code2llm reports `services.web.src.main.ORCHESTRATOR_URL` at `services/web/src/main.jsx:6`
+    with cyclomatic complexity 15 (limit 15).
+
+
+    Extract smaller functions, flatten conditionals, or split strategy branches. Re-run
+    code2llm after the change and keep tests green.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - complexity
+  - refactor
+  files:
+  - services/web/src/main.jsx
+  dedupe_key: code2llm:cc:services/web/src/main.jsx:services.web.src.main.ORCHESTRATOR_URL
+- signal: code2llm_cc
+  title: 'Reduce cyclomatic complexity: services.web.src.main.PROJECTOR_URL (CC=15)'
+  description: 'code2llm reports `services.web.src.main.PROJECTOR_URL` at `services/web/src/main.jsx:7`
+    with cyclomatic complexity 15 (limit 15).
+
+
+    Extract smaller functions, flatten conditionals, or split strategy branches. Re-run
+    code2llm after the change and keep tests green.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - complexity
+  - refactor
+  files:
+  - services/web/src/main.jsx
+  dedupe_key: code2llm:cc:services/web/src/main.jsx:services.web.src.main.PROJECTOR_URL
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: aggregate_id, self, aggregate_type'
+  description: 'code2llm reports `Data Clump: aggregate_id, self, aggregate_type`
+    in `services/orchestrator/app/infrastructure/eventstore_dual.py:46`.
+
+
+    Arguments (aggregate_id, self, aggregate_type) are used together in multiple functions:
+    services.orchestrator.app.infrastructure.eventstore_dual.DualEventStore.get_events_for_aggregate,
+    services.orchestrator.app.infrastructure.eventstore.EventStore.get_events_for_aggregate,
+    services.orchestrator.app.infrastructure.eventstore_esdb.EsdbEventStore.get_events_for_aggregate.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/infrastructure/eventstore_dual.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/infrastructure/eventstore_dual.py:46:Data
+    Clump: aggregate_id, self, aggregate_type'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: aggregate_id, self, aggregate_type'
+  description: 'code2llm reports `Data Clump: aggregate_id, self, aggregate_type`
+    in `services/orchestrator/app/infrastructure/eventstore.py:125`.
+
+
+    Arguments (aggregate_id, self, aggregate_type) are used together in multiple functions:
+    services.orchestrator.app.infrastructure.eventstore_dual.DualEventStore.get_events_for_aggregate,
+    services.orchestrator.app.infrastructure.eventstore.EventStore.get_events_for_aggregate,
+    services.orchestrator.app.infrastructure.eventstore_esdb.EsdbEventStore.get_events_for_aggregate.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/infrastructure/eventstore.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/infrastructure/eventstore.py:125:Data
+    Clump: aggregate_id, self, aggregate_type'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: aggregate_id, self, aggregate_type'
+  description: 'code2llm reports `Data Clump: aggregate_id, self, aggregate_type`
+    in `services/orchestrator/app/infrastructure/eventstore_esdb.py:126`.
+
+
+    Arguments (aggregate_id, self, aggregate_type) are used together in multiple functions:
+    services.orchestrator.app.infrastructure.eventstore_dual.DualEventStore.get_events_for_aggregate,
+    services.orchestrator.app.infrastructure.eventstore.EventStore.get_events_for_aggregate,
+    services.orchestrator.app.infrastructure.eventstore_esdb.EsdbEventStore.get_events_for_aggregate.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/infrastructure/eventstore_esdb.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/infrastructure/eventstore_esdb.py:126:Data
+    Clump: aggregate_id, self, aggregate_type'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: data, self, command_type'
+  description: 'code2llm reports `Data Clump: data, self, command_type` in `services/orchestrator/app/application/command_bus.py:826`.
+
+
+    Arguments (data, self, command_type) are used together in multiple functions:
+    services.orchestrator.app.application.command_bus.CommandBus._apply_policy, services.orchestrator.app.evolution.policy_engine.PolicyEngine.validate_command.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/application/command_bus.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:826:Data
+    Clump: data, self, command_type'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: data, self, command_type'
+  description: 'code2llm reports `Data Clump: data, self, command_type` in `services/orchestrator/app/evolution/policy_engine.py:24`.
+
+
+    Arguments (data, self, command_type) are used together in multiple functions:
+    services.orchestrator.app.application.command_bus.CommandBus._apply_policy, services.orchestrator.app.evolution.policy_engine.PolicyEngine.validate_command.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/evolution/policy_engine.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/evolution/policy_engine.py:24:Data
+    Clump: data, self, command_type'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: destination_path, self, uri'
+  description: 'code2llm reports `Data Clump: destination_path, self, uri` in `services/orchestrator/app/access/adapters/base.py:30`.
+
+
+    Arguments (destination_path, self, uri) are used together in multiple functions:
+    services.orchestrator.app.access.adapters.base.ResourceAdapter.copy_to_local,
+    services.orchestrator.app.access.adapters.localfs.LocalFsAdapter.copy_to_local,
+    services.orchestrator.app.access.adapters.http_adapter.HttpAdapter.copy_to_local.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/access/adapters/base.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/access/adapters/base.py:30:Data
+    Clump: destination_path, self, uri'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: destination_path, self, uri'
+  description: 'code2llm reports `Data Clump: destination_path, self, uri` in `services/orchestrator/app/access/adapters/localfs.py:60`.
+
+
+    Arguments (destination_path, self, uri) are used together in multiple functions:
+    services.orchestrator.app.access.adapters.base.ResourceAdapter.copy_to_local,
+    services.orchestrator.app.access.adapters.localfs.LocalFsAdapter.copy_to_local,
+    services.orchestrator.app.access.adapters.http_adapter.HttpAdapter.copy_to_local.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/access/adapters/localfs.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/access/adapters/localfs.py:60:Data
+    Clump: destination_path, self, uri'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: destination_path, self, uri'
+  description: 'code2llm reports `Data Clump: destination_path, self, uri` in `services/orchestrator/app/access/adapters/http_adapter.py:39`.
+
+
+    Arguments (destination_path, self, uri) are used together in multiple functions:
+    services.orchestrator.app.access.adapters.base.ResourceAdapter.copy_to_local,
+    services.orchestrator.app.access.adapters.localfs.LocalFsAdapter.copy_to_local,
+    services.orchestrator.app.access.adapters.http_adapter.HttpAdapter.copy_to_local.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/access/adapters/http_adapter.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/access/adapters/http_adapter.py:39:Data
+    Clump: destination_path, self, uri'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: events, aggregate_id, self, aggregate_type'
+  description: 'code2llm reports `Data Clump: events, aggregate_id, self, aggregate_type`
+    in `services/orchestrator/app/infrastructure/eventstore_dual.py:15`.
+
+
+    Arguments (events, aggregate_id, self, aggregate_type) are used together in multiple
+    functions: services.orchestrator.app.infrastructure.eventstore_dual.DualEventStore.append,
+    services.orchestrator.app.infrastructure.eventstore.EventStore.append, services.orchestrator.app.infrastructure.eventstore_esdb.EsdbEventStore.append,
+    services.orchestrator.app.application.command_bus.CommandBus._append_and_publish.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/infrastructure/eventstore_dual.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/infrastructure/eventstore_dual.py:15:Data
+    Clump: events, aggregate_id, self, aggregate_type'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: events, aggregate_id, self, aggregate_type'
+  description: 'code2llm reports `Data Clump: events, aggregate_id, self, aggregate_type`
+    in `services/orchestrator/app/infrastructure/eventstore.py:56`.
+
+
+    Arguments (events, aggregate_id, self, aggregate_type) are used together in multiple
+    functions: services.orchestrator.app.infrastructure.eventstore_dual.DualEventStore.append,
+    services.orchestrator.app.infrastructure.eventstore.EventStore.append, services.orchestrator.app.infrastructure.eventstore_esdb.EsdbEventStore.append,
+    services.orchestrator.app.application.command_bus.CommandBus._append_and_publish.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/infrastructure/eventstore.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/infrastructure/eventstore.py:56:Data
+    Clump: events, aggregate_id, self, aggregate_type'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: events, aggregate_id, self, aggregate_type'
+  description: 'code2llm reports `Data Clump: events, aggregate_id, self, aggregate_type`
+    in `services/orchestrator/app/infrastructure/eventstore_esdb.py:51`.
+
+
+    Arguments (events, aggregate_id, self, aggregate_type) are used together in multiple
+    functions: services.orchestrator.app.infrastructure.eventstore_dual.DualEventStore.append,
+    services.orchestrator.app.infrastructure.eventstore.EventStore.append, services.orchestrator.app.infrastructure.eventstore_esdb.EsdbEventStore.append,
+    services.orchestrator.app.application.command_bus.CommandBus._append_and_publish.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/infrastructure/eventstore_esdb.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/infrastructure/eventstore_esdb.py:51:Data
+    Clump: events, aggregate_id, self, aggregate_type'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: events, aggregate_id, self, aggregate_type'
+  description: 'code2llm reports `Data Clump: events, aggregate_id, self, aggregate_type`
+    in `services/orchestrator/app/application/command_bus.py:799`.
+
+
+    Arguments (events, aggregate_id, self, aggregate_type) are used together in multiple
+    functions: services.orchestrator.app.infrastructure.eventstore_dual.DualEventStore.append,
+    services.orchestrator.app.infrastructure.eventstore.EventStore.append, services.orchestrator.app.infrastructure.eventstore_esdb.EsdbEventStore.append,
+    services.orchestrator.app.application.command_bus.CommandBus._append_and_publish.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/application/command_bus.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:799:Data
+    Clump: events, aggregate_id, self, aggregate_type'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: offset, limit, status'
+  description: 'code2llm reports `Data Clump: offset, limit, status` in `services/projector/app/main.py:94`.
+
+
+    Arguments (offset, limit, status) are used together in multiple functions: services.projector.app.main.task_board,
+    services.projector.app.main.agent_fleet, services.projector.app.main.approval_requests,
+    services.projector.app.main.plugin_catalog, services.projector.app.main.incident_feed.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/projector/app/main.py
+  dedupe_key: 'code2llm:smell:data_clump:services/projector/app/main.py:94:Data Clump:
+    offset, limit, status'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: offset, limit, status'
+  description: 'code2llm reports `Data Clump: offset, limit, status` in `services/projector/app/main.py:123`.
+
+
+    Arguments (offset, limit, status) are used together in multiple functions: services.projector.app.main.task_board,
+    services.projector.app.main.agent_fleet, services.projector.app.main.approval_requests,
+    services.projector.app.main.plugin_catalog, services.projector.app.main.incident_feed.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/projector/app/main.py
+  dedupe_key: 'code2llm:smell:data_clump:services/projector/app/main.py:123:Data Clump:
+    offset, limit, status'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: offset, limit, status'
+  description: 'code2llm reports `Data Clump: offset, limit, status` in `services/projector/app/main.py:152`.
+
+
+    Arguments (offset, limit, status) are used together in multiple functions: services.projector.app.main.task_board,
+    services.projector.app.main.agent_fleet, services.projector.app.main.approval_requests,
+    services.projector.app.main.plugin_catalog, services.projector.app.main.incident_feed.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/projector/app/main.py
+  dedupe_key: 'code2llm:smell:data_clump:services/projector/app/main.py:152:Data Clump:
+    offset, limit, status'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: offset, limit, status'
+  description: 'code2llm reports `Data Clump: offset, limit, status` in `services/projector/app/main.py:181`.
+
+
+    Arguments (offset, limit, status) are used together in multiple functions: services.projector.app.main.task_board,
+    services.projector.app.main.agent_fleet, services.projector.app.main.approval_requests,
+    services.projector.app.main.plugin_catalog, services.projector.app.main.incident_feed.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/projector/app/main.py
+  dedupe_key: 'code2llm:smell:data_clump:services/projector/app/main.py:181:Data Clump:
+    offset, limit, status'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: offset, limit, status'
+  description: 'code2llm reports `Data Clump: offset, limit, status` in `services/projector/app/main.py:226`.
+
+
+    Arguments (offset, limit, status) are used together in multiple functions: services.projector.app.main.task_board,
+    services.projector.app.main.agent_fleet, services.projector.app.main.approval_requests,
+    services.projector.app.main.plugin_catalog, services.projector.app.main.incident_feed.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/projector/app/main.py
+  dedupe_key: 'code2llm:smell:data_clump:services/projector/app/main.py:226:Data Clump:
+    offset, limit, status'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: payload, subject, self'
+  description: 'code2llm reports `Data Clump: payload, subject, self` in `services/orchestrator/app/infrastructure/nats_bus.py:40`.
+
+
+    Arguments (payload, subject, self) are used together in multiple functions: services.orchestrator.app.infrastructure.nats_bus.NATSBus.publish,
+    services.orchestrator.app.application.command_bus.CommandBus._publish.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/infrastructure/nats_bus.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/infrastructure/nats_bus.py:40:Data
+    Clump: payload, subject, self'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: payload, subject, self'
+  description: 'code2llm reports `Data Clump: payload, subject, self` in `services/orchestrator/app/application/command_bus.py:822`.
+
+
+    Arguments (payload, subject, self) are used together in multiple functions: services.orchestrator.app.infrastructure.nats_bus.NATSBus.publish,
+    services.orchestrator.app.application.command_bus.CommandBus._publish.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/application/command_bus.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:822:Data
+    Clump: payload, subject, self'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: self, data, command_id, metadata, correlation_id'
+  description: 'code2llm reports `Data Clump: self, data, command_id, metadata, correlation_id`
+    in `services/orchestrator/app/application/command_bus.py:150`.
+
+
+    Arguments (self, data, command_id, metadata, correlation_id) are used together
+    in multiple functions: services.orchestrator.app.application.command_bus.CommandBus._create_task,
+    services.orchestrator.app.application.command_bus.CommandBus._assign_task, services.orchestrator.app.application.command_bus.CommandBus._start_task,
+    services.orchestrator.app.application.command_bus.CommandBus._complete_task, services.orchestrator.app.application.command_bus.CommandBus._fail_task,
+    services.orchestrator.app.application.command_bus.CommandBus._register_agent,
+    services.orchestrator.app.application.command_bus.CommandBus._agent_heartbeat,
+    services.orchestrator.app.application.command_bus.CommandBus._start_workflow,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._validate_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._approve_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._activate_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._rollback_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._shadow_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_change,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._validate_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._install_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._activate_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._rollback_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._create_approval,
+    services.orchestrator.app.application.command_bus.CommandBus._approve_request,
+    services.orchestrator.app.application.command_bus.CommandBus._reject_request,
+    services.orchestrator.app.application.command_bus.CommandBus._expire_approval,
+    services.orchestrator.app.application.command_bus.CommandBus._register_resource,
+    services.orchestrator.app.application.command_bus.CommandBus._request_transfer.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/application/command_bus.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:150:Data
+    Clump: self, data, command_id, metadata, correlation_id'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: self, data, command_id, metadata, correlation_id'
+  description: 'code2llm reports `Data Clump: self, data, command_id, metadata, correlation_id`
+    in `services/orchestrator/app/application/command_bus.py:192`.
+
+
+    Arguments (self, data, command_id, metadata, correlation_id) are used together
+    in multiple functions: services.orchestrator.app.application.command_bus.CommandBus._create_task,
+    services.orchestrator.app.application.command_bus.CommandBus._assign_task, services.orchestrator.app.application.command_bus.CommandBus._start_task,
+    services.orchestrator.app.application.command_bus.CommandBus._complete_task, services.orchestrator.app.application.command_bus.CommandBus._fail_task,
+    services.orchestrator.app.application.command_bus.CommandBus._register_agent,
+    services.orchestrator.app.application.command_bus.CommandBus._agent_heartbeat,
+    services.orchestrator.app.application.command_bus.CommandBus._start_workflow,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._validate_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._approve_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._activate_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._rollback_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._shadow_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_change,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._validate_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._install_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._activate_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._rollback_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._create_approval,
+    services.orchestrator.app.application.command_bus.CommandBus._approve_request,
+    services.orchestrator.app.application.command_bus.CommandBus._reject_request,
+    services.orchestrator.app.application.command_bus.CommandBus._expire_approval,
+    services.orchestrator.app.application.command_bus.CommandBus._register_resource,
+    services.orchestrator.app.application.command_bus.CommandBus._request_transfer.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/application/command_bus.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:192:Data
+    Clump: self, data, command_id, metadata, correlation_id'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: self, data, command_id, metadata, correlation_id'
+  description: 'code2llm reports `Data Clump: self, data, command_id, metadata, correlation_id`
+    in `services/orchestrator/app/application/command_bus.py:232`.
+
+
+    Arguments (self, data, command_id, metadata, correlation_id) are used together
+    in multiple functions: services.orchestrator.app.application.command_bus.CommandBus._create_task,
+    services.orchestrator.app.application.command_bus.CommandBus._assign_task, services.orchestrator.app.application.command_bus.CommandBus._start_task,
+    services.orchestrator.app.application.command_bus.CommandBus._complete_task, services.orchestrator.app.application.command_bus.CommandBus._fail_task,
+    services.orchestrator.app.application.command_bus.CommandBus._register_agent,
+    services.orchestrator.app.application.command_bus.CommandBus._agent_heartbeat,
+    services.orchestrator.app.application.command_bus.CommandBus._start_workflow,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._validate_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._approve_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._activate_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._rollback_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._shadow_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_change,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._validate_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._install_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._activate_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._rollback_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._create_approval,
+    services.orchestrator.app.application.command_bus.CommandBus._approve_request,
+    services.orchestrator.app.application.command_bus.CommandBus._reject_request,
+    services.orchestrator.app.application.command_bus.CommandBus._expire_approval,
+    services.orchestrator.app.application.command_bus.CommandBus._register_resource,
+    services.orchestrator.app.application.command_bus.CommandBus._request_transfer.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/application/command_bus.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:232:Data
+    Clump: self, data, command_id, metadata, correlation_id'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: self, data, command_id, metadata, correlation_id'
+  description: 'code2llm reports `Data Clump: self, data, command_id, metadata, correlation_id`
+    in `services/orchestrator/app/application/command_bus.py:253`.
+
+
+    Arguments (self, data, command_id, metadata, correlation_id) are used together
+    in multiple functions: services.orchestrator.app.application.command_bus.CommandBus._create_task,
+    services.orchestrator.app.application.command_bus.CommandBus._assign_task, services.orchestrator.app.application.command_bus.CommandBus._start_task,
+    services.orchestrator.app.application.command_bus.CommandBus._complete_task, services.orchestrator.app.application.command_bus.CommandBus._fail_task,
+    services.orchestrator.app.application.command_bus.CommandBus._register_agent,
+    services.orchestrator.app.application.command_bus.CommandBus._agent_heartbeat,
+    services.orchestrator.app.application.command_bus.CommandBus._start_workflow,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._validate_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._approve_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._activate_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._rollback_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._shadow_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_change,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._validate_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._install_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._activate_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._rollback_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._create_approval,
+    services.orchestrator.app.application.command_bus.CommandBus._approve_request,
+    services.orchestrator.app.application.command_bus.CommandBus._reject_request,
+    services.orchestrator.app.application.command_bus.CommandBus._expire_approval,
+    services.orchestrator.app.application.command_bus.CommandBus._register_resource,
+    services.orchestrator.app.application.command_bus.CommandBus._request_transfer.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/application/command_bus.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:253:Data
+    Clump: self, data, command_id, metadata, correlation_id'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: self, data, command_id, metadata, correlation_id'
+  description: 'code2llm reports `Data Clump: self, data, command_id, metadata, correlation_id`
+    in `services/orchestrator/app/application/command_bus.py:287`.
+
+
+    Arguments (self, data, command_id, metadata, correlation_id) are used together
+    in multiple functions: services.orchestrator.app.application.command_bus.CommandBus._create_task,
+    services.orchestrator.app.application.command_bus.CommandBus._assign_task, services.orchestrator.app.application.command_bus.CommandBus._start_task,
+    services.orchestrator.app.application.command_bus.CommandBus._complete_task, services.orchestrator.app.application.command_bus.CommandBus._fail_task,
+    services.orchestrator.app.application.command_bus.CommandBus._register_agent,
+    services.orchestrator.app.application.command_bus.CommandBus._agent_heartbeat,
+    services.orchestrator.app.application.command_bus.CommandBus._start_workflow,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._validate_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._approve_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._activate_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._rollback_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._shadow_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_change,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._validate_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._install_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._activate_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._rollback_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._create_approval,
+    services.orchestrator.app.application.command_bus.CommandBus._approve_request,
+    services.orchestrator.app.application.command_bus.CommandBus._reject_request,
+    services.orchestrator.app.application.command_bus.CommandBus._expire_approval,
+    services.orchestrator.app.application.command_bus.CommandBus._register_resource,
+    services.orchestrator.app.application.command_bus.CommandBus._request_transfer.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/application/command_bus.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:287:Data
+    Clump: self, data, command_id, metadata, correlation_id'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: self, data, command_id, metadata, correlation_id'
+  description: 'code2llm reports `Data Clump: self, data, command_id, metadata, correlation_id`
+    in `services/orchestrator/app/application/command_bus.py:326`.
+
+
+    Arguments (self, data, command_id, metadata, correlation_id) are used together
+    in multiple functions: services.orchestrator.app.application.command_bus.CommandBus._create_task,
+    services.orchestrator.app.application.command_bus.CommandBus._assign_task, services.orchestrator.app.application.command_bus.CommandBus._start_task,
+    services.orchestrator.app.application.command_bus.CommandBus._complete_task, services.orchestrator.app.application.command_bus.CommandBus._fail_task,
+    services.orchestrator.app.application.command_bus.CommandBus._register_agent,
+    services.orchestrator.app.application.command_bus.CommandBus._agent_heartbeat,
+    services.orchestrator.app.application.command_bus.CommandBus._start_workflow,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._validate_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._approve_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._activate_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._rollback_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._shadow_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_change,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._validate_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._install_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._activate_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._rollback_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._create_approval,
+    services.orchestrator.app.application.command_bus.CommandBus._approve_request,
+    services.orchestrator.app.application.command_bus.CommandBus._reject_request,
+    services.orchestrator.app.application.command_bus.CommandBus._expire_approval,
+    services.orchestrator.app.application.command_bus.CommandBus._register_resource,
+    services.orchestrator.app.application.command_bus.CommandBus._request_transfer.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/application/command_bus.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:326:Data
+    Clump: self, data, command_id, metadata, correlation_id'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: self, data, command_id, metadata, correlation_id'
+  description: 'code2llm reports `Data Clump: self, data, command_id, metadata, correlation_id`
+    in `services/orchestrator/app/application/command_bus.py:350`.
+
+
+    Arguments (self, data, command_id, metadata, correlation_id) are used together
+    in multiple functions: services.orchestrator.app.application.command_bus.CommandBus._create_task,
+    services.orchestrator.app.application.command_bus.CommandBus._assign_task, services.orchestrator.app.application.command_bus.CommandBus._start_task,
+    services.orchestrator.app.application.command_bus.CommandBus._complete_task, services.orchestrator.app.application.command_bus.CommandBus._fail_task,
+    services.orchestrator.app.application.command_bus.CommandBus._register_agent,
+    services.orchestrator.app.application.command_bus.CommandBus._agent_heartbeat,
+    services.orchestrator.app.application.command_bus.CommandBus._start_workflow,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._validate_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._approve_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._activate_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._rollback_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._shadow_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_change,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._validate_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._install_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._activate_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._rollback_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._create_approval,
+    services.orchestrator.app.application.command_bus.CommandBus._approve_request,
+    services.orchestrator.app.application.command_bus.CommandBus._reject_request,
+    services.orchestrator.app.application.command_bus.CommandBus._expire_approval,
+    services.orchestrator.app.application.command_bus.CommandBus._register_resource,
+    services.orchestrator.app.application.command_bus.CommandBus._request_transfer.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/application/command_bus.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:350:Data
+    Clump: self, data, command_id, metadata, correlation_id'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: self, data, command_id, metadata, correlation_id'
+  description: 'code2llm reports `Data Clump: self, data, command_id, metadata, correlation_id`
+    in `services/orchestrator/app/application/command_bus.py:374`.
+
+
+    Arguments (self, data, command_id, metadata, correlation_id) are used together
+    in multiple functions: services.orchestrator.app.application.command_bus.CommandBus._create_task,
+    services.orchestrator.app.application.command_bus.CommandBus._assign_task, services.orchestrator.app.application.command_bus.CommandBus._start_task,
+    services.orchestrator.app.application.command_bus.CommandBus._complete_task, services.orchestrator.app.application.command_bus.CommandBus._fail_task,
+    services.orchestrator.app.application.command_bus.CommandBus._register_agent,
+    services.orchestrator.app.application.command_bus.CommandBus._agent_heartbeat,
+    services.orchestrator.app.application.command_bus.CommandBus._start_workflow,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._validate_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._approve_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._activate_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._rollback_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._shadow_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_change,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._validate_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._install_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._activate_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._rollback_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._create_approval,
+    services.orchestrator.app.application.command_bus.CommandBus._approve_request,
+    services.orchestrator.app.application.command_bus.CommandBus._reject_request,
+    services.orchestrator.app.application.command_bus.CommandBus._expire_approval,
+    services.orchestrator.app.application.command_bus.CommandBus._register_resource,
+    services.orchestrator.app.application.command_bus.CommandBus._request_transfer.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/application/command_bus.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:374:Data
+    Clump: self, data, command_id, metadata, correlation_id'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: self, data, command_id, metadata, correlation_id'
+  description: 'code2llm reports `Data Clump: self, data, command_id, metadata, correlation_id`
+    in `services/orchestrator/app/application/command_bus.py:397`.
+
+
+    Arguments (self, data, command_id, metadata, correlation_id) are used together
+    in multiple functions: services.orchestrator.app.application.command_bus.CommandBus._create_task,
+    services.orchestrator.app.application.command_bus.CommandBus._assign_task, services.orchestrator.app.application.command_bus.CommandBus._start_task,
+    services.orchestrator.app.application.command_bus.CommandBus._complete_task, services.orchestrator.app.application.command_bus.CommandBus._fail_task,
+    services.orchestrator.app.application.command_bus.CommandBus._register_agent,
+    services.orchestrator.app.application.command_bus.CommandBus._agent_heartbeat,
+    services.orchestrator.app.application.command_bus.CommandBus._start_workflow,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._validate_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._approve_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._activate_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._rollback_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._shadow_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_change,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._validate_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._install_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._activate_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._rollback_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._create_approval,
+    services.orchestrator.app.application.command_bus.CommandBus._approve_request,
+    services.orchestrator.app.application.command_bus.CommandBus._reject_request,
+    services.orchestrator.app.application.command_bus.CommandBus._expire_approval,
+    services.orchestrator.app.application.command_bus.CommandBus._register_resource,
+    services.orchestrator.app.application.command_bus.CommandBus._request_transfer.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/application/command_bus.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:397:Data
+    Clump: self, data, command_id, metadata, correlation_id'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: self, data, command_id, metadata, correlation_id'
+  description: 'code2llm reports `Data Clump: self, data, command_id, metadata, correlation_id`
+    in `services/orchestrator/app/application/command_bus.py:413`.
+
+
+    Arguments (self, data, command_id, metadata, correlation_id) are used together
+    in multiple functions: services.orchestrator.app.application.command_bus.CommandBus._create_task,
+    services.orchestrator.app.application.command_bus.CommandBus._assign_task, services.orchestrator.app.application.command_bus.CommandBus._start_task,
+    services.orchestrator.app.application.command_bus.CommandBus._complete_task, services.orchestrator.app.application.command_bus.CommandBus._fail_task,
+    services.orchestrator.app.application.command_bus.CommandBus._register_agent,
+    services.orchestrator.app.application.command_bus.CommandBus._agent_heartbeat,
+    services.orchestrator.app.application.command_bus.CommandBus._start_workflow,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._validate_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._approve_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._activate_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._rollback_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._shadow_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_change,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._validate_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._install_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._activate_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._rollback_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._create_approval,
+    services.orchestrator.app.application.command_bus.CommandBus._approve_request,
+    services.orchestrator.app.application.command_bus.CommandBus._reject_request,
+    services.orchestrator.app.application.command_bus.CommandBus._expire_approval,
+    services.orchestrator.app.application.command_bus.CommandBus._register_resource,
+    services.orchestrator.app.application.command_bus.CommandBus._request_transfer.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/application/command_bus.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:413:Data
+    Clump: self, data, command_id, metadata, correlation_id'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: self, data, command_id, metadata, correlation_id'
+  description: 'code2llm reports `Data Clump: self, data, command_id, metadata, correlation_id`
+    in `services/orchestrator/app/application/command_bus.py:426`.
+
+
+    Arguments (self, data, command_id, metadata, correlation_id) are used together
+    in multiple functions: services.orchestrator.app.application.command_bus.CommandBus._create_task,
+    services.orchestrator.app.application.command_bus.CommandBus._assign_task, services.orchestrator.app.application.command_bus.CommandBus._start_task,
+    services.orchestrator.app.application.command_bus.CommandBus._complete_task, services.orchestrator.app.application.command_bus.CommandBus._fail_task,
+    services.orchestrator.app.application.command_bus.CommandBus._register_agent,
+    services.orchestrator.app.application.command_bus.CommandBus._agent_heartbeat,
+    services.orchestrator.app.application.command_bus.CommandBus._start_workflow,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._validate_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._approve_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._activate_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._rollback_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._shadow_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_change,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._validate_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._install_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._activate_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._rollback_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._create_approval,
+    services.orchestrator.app.application.command_bus.CommandBus._approve_request,
+    services.orchestrator.app.application.command_bus.CommandBus._reject_request,
+    services.orchestrator.app.application.command_bus.CommandBus._expire_approval,
+    services.orchestrator.app.application.command_bus.CommandBus._register_resource,
+    services.orchestrator.app.application.command_bus.CommandBus._request_transfer.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/application/command_bus.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:426:Data
+    Clump: self, data, command_id, metadata, correlation_id'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: self, data, command_id, metadata, correlation_id'
+  description: 'code2llm reports `Data Clump: self, data, command_id, metadata, correlation_id`
+    in `services/orchestrator/app/application/command_bus.py:439`.
+
+
+    Arguments (self, data, command_id, metadata, correlation_id) are used together
+    in multiple functions: services.orchestrator.app.application.command_bus.CommandBus._create_task,
+    services.orchestrator.app.application.command_bus.CommandBus._assign_task, services.orchestrator.app.application.command_bus.CommandBus._start_task,
+    services.orchestrator.app.application.command_bus.CommandBus._complete_task, services.orchestrator.app.application.command_bus.CommandBus._fail_task,
+    services.orchestrator.app.application.command_bus.CommandBus._register_agent,
+    services.orchestrator.app.application.command_bus.CommandBus._agent_heartbeat,
+    services.orchestrator.app.application.command_bus.CommandBus._start_workflow,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._validate_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._approve_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._activate_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._rollback_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._shadow_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_change,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._validate_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._install_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._activate_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._rollback_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._create_approval,
+    services.orchestrator.app.application.command_bus.CommandBus._approve_request,
+    services.orchestrator.app.application.command_bus.CommandBus._reject_request,
+    services.orchestrator.app.application.command_bus.CommandBus._expire_approval,
+    services.orchestrator.app.application.command_bus.CommandBus._register_resource,
+    services.orchestrator.app.application.command_bus.CommandBus._request_transfer.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/application/command_bus.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:439:Data
+    Clump: self, data, command_id, metadata, correlation_id'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: self, data, command_id, metadata, correlation_id'
+  description: 'code2llm reports `Data Clump: self, data, command_id, metadata, correlation_id`
+    in `services/orchestrator/app/application/command_bus.py:465`.
+
+
+    Arguments (self, data, command_id, metadata, correlation_id) are used together
+    in multiple functions: services.orchestrator.app.application.command_bus.CommandBus._create_task,
+    services.orchestrator.app.application.command_bus.CommandBus._assign_task, services.orchestrator.app.application.command_bus.CommandBus._start_task,
+    services.orchestrator.app.application.command_bus.CommandBus._complete_task, services.orchestrator.app.application.command_bus.CommandBus._fail_task,
+    services.orchestrator.app.application.command_bus.CommandBus._register_agent,
+    services.orchestrator.app.application.command_bus.CommandBus._agent_heartbeat,
+    services.orchestrator.app.application.command_bus.CommandBus._start_workflow,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._validate_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._approve_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._activate_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._rollback_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._shadow_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_change,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._validate_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._install_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._activate_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._rollback_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._create_approval,
+    services.orchestrator.app.application.command_bus.CommandBus._approve_request,
+    services.orchestrator.app.application.command_bus.CommandBus._reject_request,
+    services.orchestrator.app.application.command_bus.CommandBus._expire_approval,
+    services.orchestrator.app.application.command_bus.CommandBus._register_resource,
+    services.orchestrator.app.application.command_bus.CommandBus._request_transfer.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/application/command_bus.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:465:Data
+    Clump: self, data, command_id, metadata, correlation_id'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: self, data, command_id, metadata, correlation_id'
+  description: 'code2llm reports `Data Clump: self, data, command_id, metadata, correlation_id`
+    in `services/orchestrator/app/application/command_bus.py:484`.
+
+
+    Arguments (self, data, command_id, metadata, correlation_id) are used together
+    in multiple functions: services.orchestrator.app.application.command_bus.CommandBus._create_task,
+    services.orchestrator.app.application.command_bus.CommandBus._assign_task, services.orchestrator.app.application.command_bus.CommandBus._start_task,
+    services.orchestrator.app.application.command_bus.CommandBus._complete_task, services.orchestrator.app.application.command_bus.CommandBus._fail_task,
+    services.orchestrator.app.application.command_bus.CommandBus._register_agent,
+    services.orchestrator.app.application.command_bus.CommandBus._agent_heartbeat,
+    services.orchestrator.app.application.command_bus.CommandBus._start_workflow,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._validate_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._approve_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._activate_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._rollback_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._shadow_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_change,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._validate_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._install_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._activate_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._rollback_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._create_approval,
+    services.orchestrator.app.application.command_bus.CommandBus._approve_request,
+    services.orchestrator.app.application.command_bus.CommandBus._reject_request,
+    services.orchestrator.app.application.command_bus.CommandBus._expire_approval,
+    services.orchestrator.app.application.command_bus.CommandBus._register_resource,
+    services.orchestrator.app.application.command_bus.CommandBus._request_transfer.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/application/command_bus.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:484:Data
+    Clump: self, data, command_id, metadata, correlation_id'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: self, data, command_id, metadata, correlation_id'
+  description: 'code2llm reports `Data Clump: self, data, command_id, metadata, correlation_id`
+    in `services/orchestrator/app/application/command_bus.py:508`.
+
+
+    Arguments (self, data, command_id, metadata, correlation_id) are used together
+    in multiple functions: services.orchestrator.app.application.command_bus.CommandBus._create_task,
+    services.orchestrator.app.application.command_bus.CommandBus._assign_task, services.orchestrator.app.application.command_bus.CommandBus._start_task,
+    services.orchestrator.app.application.command_bus.CommandBus._complete_task, services.orchestrator.app.application.command_bus.CommandBus._fail_task,
+    services.orchestrator.app.application.command_bus.CommandBus._register_agent,
+    services.orchestrator.app.application.command_bus.CommandBus._agent_heartbeat,
+    services.orchestrator.app.application.command_bus.CommandBus._start_workflow,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._validate_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._approve_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._activate_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._rollback_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._shadow_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_change,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._validate_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._install_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._activate_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._rollback_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._create_approval,
+    services.orchestrator.app.application.command_bus.CommandBus._approve_request,
+    services.orchestrator.app.application.command_bus.CommandBus._reject_request,
+    services.orchestrator.app.application.command_bus.CommandBus._expire_approval,
+    services.orchestrator.app.application.command_bus.CommandBus._register_resource,
+    services.orchestrator.app.application.command_bus.CommandBus._request_transfer.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/application/command_bus.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:508:Data
+    Clump: self, data, command_id, metadata, correlation_id'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: self, data, command_id, metadata, correlation_id'
+  description: 'code2llm reports `Data Clump: self, data, command_id, metadata, correlation_id`
+    in `services/orchestrator/app/application/command_bus.py:554`.
+
+
+    Arguments (self, data, command_id, metadata, correlation_id) are used together
+    in multiple functions: services.orchestrator.app.application.command_bus.CommandBus._create_task,
+    services.orchestrator.app.application.command_bus.CommandBus._assign_task, services.orchestrator.app.application.command_bus.CommandBus._start_task,
+    services.orchestrator.app.application.command_bus.CommandBus._complete_task, services.orchestrator.app.application.command_bus.CommandBus._fail_task,
+    services.orchestrator.app.application.command_bus.CommandBus._register_agent,
+    services.orchestrator.app.application.command_bus.CommandBus._agent_heartbeat,
+    services.orchestrator.app.application.command_bus.CommandBus._start_workflow,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._validate_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._approve_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._activate_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._rollback_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._shadow_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_change,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._validate_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._install_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._activate_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._rollback_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._create_approval,
+    services.orchestrator.app.application.command_bus.CommandBus._approve_request,
+    services.orchestrator.app.application.command_bus.CommandBus._reject_request,
+    services.orchestrator.app.application.command_bus.CommandBus._expire_approval,
+    services.orchestrator.app.application.command_bus.CommandBus._register_resource,
+    services.orchestrator.app.application.command_bus.CommandBus._request_transfer.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/application/command_bus.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:554:Data
+    Clump: self, data, command_id, metadata, correlation_id'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: self, data, command_id, metadata, correlation_id'
+  description: 'code2llm reports `Data Clump: self, data, command_id, metadata, correlation_id`
+    in `services/orchestrator/app/application/command_bus.py:570`.
+
+
+    Arguments (self, data, command_id, metadata, correlation_id) are used together
+    in multiple functions: services.orchestrator.app.application.command_bus.CommandBus._create_task,
+    services.orchestrator.app.application.command_bus.CommandBus._assign_task, services.orchestrator.app.application.command_bus.CommandBus._start_task,
+    services.orchestrator.app.application.command_bus.CommandBus._complete_task, services.orchestrator.app.application.command_bus.CommandBus._fail_task,
+    services.orchestrator.app.application.command_bus.CommandBus._register_agent,
+    services.orchestrator.app.application.command_bus.CommandBus._agent_heartbeat,
+    services.orchestrator.app.application.command_bus.CommandBus._start_workflow,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._validate_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._approve_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._activate_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._rollback_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._shadow_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_change,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._validate_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._install_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._activate_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._rollback_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._create_approval,
+    services.orchestrator.app.application.command_bus.CommandBus._approve_request,
+    services.orchestrator.app.application.command_bus.CommandBus._reject_request,
+    services.orchestrator.app.application.command_bus.CommandBus._expire_approval,
+    services.orchestrator.app.application.command_bus.CommandBus._register_resource,
+    services.orchestrator.app.application.command_bus.CommandBus._request_transfer.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/application/command_bus.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:570:Data
+    Clump: self, data, command_id, metadata, correlation_id'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: self, data, command_id, metadata, correlation_id'
+  description: 'code2llm reports `Data Clump: self, data, command_id, metadata, correlation_id`
+    in `services/orchestrator/app/application/command_bus.py:581`.
+
+
+    Arguments (self, data, command_id, metadata, correlation_id) are used together
+    in multiple functions: services.orchestrator.app.application.command_bus.CommandBus._create_task,
+    services.orchestrator.app.application.command_bus.CommandBus._assign_task, services.orchestrator.app.application.command_bus.CommandBus._start_task,
+    services.orchestrator.app.application.command_bus.CommandBus._complete_task, services.orchestrator.app.application.command_bus.CommandBus._fail_task,
+    services.orchestrator.app.application.command_bus.CommandBus._register_agent,
+    services.orchestrator.app.application.command_bus.CommandBus._agent_heartbeat,
+    services.orchestrator.app.application.command_bus.CommandBus._start_workflow,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._validate_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._approve_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._activate_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._rollback_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._shadow_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_change,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._validate_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._install_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._activate_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._rollback_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._create_approval,
+    services.orchestrator.app.application.command_bus.CommandBus._approve_request,
+    services.orchestrator.app.application.command_bus.CommandBus._reject_request,
+    services.orchestrator.app.application.command_bus.CommandBus._expire_approval,
+    services.orchestrator.app.application.command_bus.CommandBus._register_resource,
+    services.orchestrator.app.application.command_bus.CommandBus._request_transfer.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/application/command_bus.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:581:Data
+    Clump: self, data, command_id, metadata, correlation_id'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: self, data, command_id, metadata, correlation_id'
+  description: 'code2llm reports `Data Clump: self, data, command_id, metadata, correlation_id`
+    in `services/orchestrator/app/application/command_bus.py:592`.
+
+
+    Arguments (self, data, command_id, metadata, correlation_id) are used together
+    in multiple functions: services.orchestrator.app.application.command_bus.CommandBus._create_task,
+    services.orchestrator.app.application.command_bus.CommandBus._assign_task, services.orchestrator.app.application.command_bus.CommandBus._start_task,
+    services.orchestrator.app.application.command_bus.CommandBus._complete_task, services.orchestrator.app.application.command_bus.CommandBus._fail_task,
+    services.orchestrator.app.application.command_bus.CommandBus._register_agent,
+    services.orchestrator.app.application.command_bus.CommandBus._agent_heartbeat,
+    services.orchestrator.app.application.command_bus.CommandBus._start_workflow,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._validate_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._approve_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._activate_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._rollback_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._shadow_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_change,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._validate_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._install_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._activate_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._rollback_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._create_approval,
+    services.orchestrator.app.application.command_bus.CommandBus._approve_request,
+    services.orchestrator.app.application.command_bus.CommandBus._reject_request,
+    services.orchestrator.app.application.command_bus.CommandBus._expire_approval,
+    services.orchestrator.app.application.command_bus.CommandBus._register_resource,
+    services.orchestrator.app.application.command_bus.CommandBus._request_transfer.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/application/command_bus.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:592:Data
+    Clump: self, data, command_id, metadata, correlation_id'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: self, data, command_id, metadata, correlation_id'
+  description: 'code2llm reports `Data Clump: self, data, command_id, metadata, correlation_id`
+    in `services/orchestrator/app/application/command_bus.py:606`.
+
+
+    Arguments (self, data, command_id, metadata, correlation_id) are used together
+    in multiple functions: services.orchestrator.app.application.command_bus.CommandBus._create_task,
+    services.orchestrator.app.application.command_bus.CommandBus._assign_task, services.orchestrator.app.application.command_bus.CommandBus._start_task,
+    services.orchestrator.app.application.command_bus.CommandBus._complete_task, services.orchestrator.app.application.command_bus.CommandBus._fail_task,
+    services.orchestrator.app.application.command_bus.CommandBus._register_agent,
+    services.orchestrator.app.application.command_bus.CommandBus._agent_heartbeat,
+    services.orchestrator.app.application.command_bus.CommandBus._start_workflow,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._validate_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._approve_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._activate_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._rollback_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._shadow_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_change,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._validate_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._install_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._activate_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._rollback_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._create_approval,
+    services.orchestrator.app.application.command_bus.CommandBus._approve_request,
+    services.orchestrator.app.application.command_bus.CommandBus._reject_request,
+    services.orchestrator.app.application.command_bus.CommandBus._expire_approval,
+    services.orchestrator.app.application.command_bus.CommandBus._register_resource,
+    services.orchestrator.app.application.command_bus.CommandBus._request_transfer.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/application/command_bus.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:606:Data
+    Clump: self, data, command_id, metadata, correlation_id'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: self, data, command_id, metadata, correlation_id'
+  description: 'code2llm reports `Data Clump: self, data, command_id, metadata, correlation_id`
+    in `services/orchestrator/app/application/command_bus.py:620`.
+
+
+    Arguments (self, data, command_id, metadata, correlation_id) are used together
+    in multiple functions: services.orchestrator.app.application.command_bus.CommandBus._create_task,
+    services.orchestrator.app.application.command_bus.CommandBus._assign_task, services.orchestrator.app.application.command_bus.CommandBus._start_task,
+    services.orchestrator.app.application.command_bus.CommandBus._complete_task, services.orchestrator.app.application.command_bus.CommandBus._fail_task,
+    services.orchestrator.app.application.command_bus.CommandBus._register_agent,
+    services.orchestrator.app.application.command_bus.CommandBus._agent_heartbeat,
+    services.orchestrator.app.application.command_bus.CommandBus._start_workflow,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._validate_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._approve_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._activate_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._rollback_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._shadow_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_change,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._validate_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._install_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._activate_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._rollback_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._create_approval,
+    services.orchestrator.app.application.command_bus.CommandBus._approve_request,
+    services.orchestrator.app.application.command_bus.CommandBus._reject_request,
+    services.orchestrator.app.application.command_bus.CommandBus._expire_approval,
+    services.orchestrator.app.application.command_bus.CommandBus._register_resource,
+    services.orchestrator.app.application.command_bus.CommandBus._request_transfer.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/application/command_bus.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:620:Data
+    Clump: self, data, command_id, metadata, correlation_id'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: self, data, command_id, metadata, correlation_id'
+  description: 'code2llm reports `Data Clump: self, data, command_id, metadata, correlation_id`
+    in `services/orchestrator/app/application/command_bus.py:638`.
+
+
+    Arguments (self, data, command_id, metadata, correlation_id) are used together
+    in multiple functions: services.orchestrator.app.application.command_bus.CommandBus._create_task,
+    services.orchestrator.app.application.command_bus.CommandBus._assign_task, services.orchestrator.app.application.command_bus.CommandBus._start_task,
+    services.orchestrator.app.application.command_bus.CommandBus._complete_task, services.orchestrator.app.application.command_bus.CommandBus._fail_task,
+    services.orchestrator.app.application.command_bus.CommandBus._register_agent,
+    services.orchestrator.app.application.command_bus.CommandBus._agent_heartbeat,
+    services.orchestrator.app.application.command_bus.CommandBus._start_workflow,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._validate_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._approve_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._activate_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._rollback_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._shadow_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_change,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._validate_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._install_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._activate_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._rollback_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._create_approval,
+    services.orchestrator.app.application.command_bus.CommandBus._approve_request,
+    services.orchestrator.app.application.command_bus.CommandBus._reject_request,
+    services.orchestrator.app.application.command_bus.CommandBus._expire_approval,
+    services.orchestrator.app.application.command_bus.CommandBus._register_resource,
+    services.orchestrator.app.application.command_bus.CommandBus._request_transfer.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/application/command_bus.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:638:Data
+    Clump: self, data, command_id, metadata, correlation_id'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: self, data, command_id, metadata, correlation_id'
+  description: 'code2llm reports `Data Clump: self, data, command_id, metadata, correlation_id`
+    in `services/orchestrator/app/application/command_bus.py:666`.
+
+
+    Arguments (self, data, command_id, metadata, correlation_id) are used together
+    in multiple functions: services.orchestrator.app.application.command_bus.CommandBus._create_task,
+    services.orchestrator.app.application.command_bus.CommandBus._assign_task, services.orchestrator.app.application.command_bus.CommandBus._start_task,
+    services.orchestrator.app.application.command_bus.CommandBus._complete_task, services.orchestrator.app.application.command_bus.CommandBus._fail_task,
+    services.orchestrator.app.application.command_bus.CommandBus._register_agent,
+    services.orchestrator.app.application.command_bus.CommandBus._agent_heartbeat,
+    services.orchestrator.app.application.command_bus.CommandBus._start_workflow,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._validate_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._approve_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._activate_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._rollback_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._shadow_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_change,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._validate_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._install_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._activate_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._rollback_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._create_approval,
+    services.orchestrator.app.application.command_bus.CommandBus._approve_request,
+    services.orchestrator.app.application.command_bus.CommandBus._reject_request,
+    services.orchestrator.app.application.command_bus.CommandBus._expire_approval,
+    services.orchestrator.app.application.command_bus.CommandBus._register_resource,
+    services.orchestrator.app.application.command_bus.CommandBus._request_transfer.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/application/command_bus.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:666:Data
+    Clump: self, data, command_id, metadata, correlation_id'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: self, data, command_id, metadata, correlation_id'
+  description: 'code2llm reports `Data Clump: self, data, command_id, metadata, correlation_id`
+    in `services/orchestrator/app/application/command_bus.py:679`.
+
+
+    Arguments (self, data, command_id, metadata, correlation_id) are used together
+    in multiple functions: services.orchestrator.app.application.command_bus.CommandBus._create_task,
+    services.orchestrator.app.application.command_bus.CommandBus._assign_task, services.orchestrator.app.application.command_bus.CommandBus._start_task,
+    services.orchestrator.app.application.command_bus.CommandBus._complete_task, services.orchestrator.app.application.command_bus.CommandBus._fail_task,
+    services.orchestrator.app.application.command_bus.CommandBus._register_agent,
+    services.orchestrator.app.application.command_bus.CommandBus._agent_heartbeat,
+    services.orchestrator.app.application.command_bus.CommandBus._start_workflow,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._validate_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._approve_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._activate_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._rollback_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._shadow_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_change,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._validate_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._install_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._activate_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._rollback_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._create_approval,
+    services.orchestrator.app.application.command_bus.CommandBus._approve_request,
+    services.orchestrator.app.application.command_bus.CommandBus._reject_request,
+    services.orchestrator.app.application.command_bus.CommandBus._expire_approval,
+    services.orchestrator.app.application.command_bus.CommandBus._register_resource,
+    services.orchestrator.app.application.command_bus.CommandBus._request_transfer.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/application/command_bus.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:679:Data
+    Clump: self, data, command_id, metadata, correlation_id'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: self, data, command_id, metadata, correlation_id'
+  description: 'code2llm reports `Data Clump: self, data, command_id, metadata, correlation_id`
+    in `services/orchestrator/app/application/command_bus.py:832`.
+
+
+    Arguments (self, data, command_id, metadata, correlation_id) are used together
+    in multiple functions: services.orchestrator.app.application.command_bus.CommandBus._create_task,
+    services.orchestrator.app.application.command_bus.CommandBus._assign_task, services.orchestrator.app.application.command_bus.CommandBus._start_task,
+    services.orchestrator.app.application.command_bus.CommandBus._complete_task, services.orchestrator.app.application.command_bus.CommandBus._fail_task,
+    services.orchestrator.app.application.command_bus.CommandBus._register_agent,
+    services.orchestrator.app.application.command_bus.CommandBus._agent_heartbeat,
+    services.orchestrator.app.application.command_bus.CommandBus._start_workflow,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._validate_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._approve_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._activate_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._rollback_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._shadow_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_change,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._validate_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._install_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._activate_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._rollback_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._create_approval,
+    services.orchestrator.app.application.command_bus.CommandBus._approve_request,
+    services.orchestrator.app.application.command_bus.CommandBus._reject_request,
+    services.orchestrator.app.application.command_bus.CommandBus._expire_approval,
+    services.orchestrator.app.application.command_bus.CommandBus._register_resource,
+    services.orchestrator.app.application.command_bus.CommandBus._request_transfer.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/application/command_bus.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:832:Data
+    Clump: self, data, command_id, metadata, correlation_id'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: self, data, command_id, metadata, correlation_id'
+  description: 'code2llm reports `Data Clump: self, data, command_id, metadata, correlation_id`
+    in `services/orchestrator/app/application/command_bus.py:875`.
+
+
+    Arguments (self, data, command_id, metadata, correlation_id) are used together
+    in multiple functions: services.orchestrator.app.application.command_bus.CommandBus._create_task,
+    services.orchestrator.app.application.command_bus.CommandBus._assign_task, services.orchestrator.app.application.command_bus.CommandBus._start_task,
+    services.orchestrator.app.application.command_bus.CommandBus._complete_task, services.orchestrator.app.application.command_bus.CommandBus._fail_task,
+    services.orchestrator.app.application.command_bus.CommandBus._register_agent,
+    services.orchestrator.app.application.command_bus.CommandBus._agent_heartbeat,
+    services.orchestrator.app.application.command_bus.CommandBus._start_workflow,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._validate_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._approve_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._activate_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._rollback_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._shadow_workflow_version,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_change,
+    services.orchestrator.app.application.command_bus.CommandBus._propose_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._validate_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._install_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._activate_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._rollback_plugin,
+    services.orchestrator.app.application.command_bus.CommandBus._create_approval,
+    services.orchestrator.app.application.command_bus.CommandBus._approve_request,
+    services.orchestrator.app.application.command_bus.CommandBus._reject_request,
+    services.orchestrator.app.application.command_bus.CommandBus._expire_approval,
+    services.orchestrator.app.application.command_bus.CommandBus._register_resource,
+    services.orchestrator.app.application.command_bus.CommandBus._request_transfer.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/application/command_bus.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:875:Data
+    Clump: self, data, command_id, metadata, correlation_id'
+- signal: code2llm_smell_feature_envy
+  title: 'Address code smell: Feature Envy: attach_context'
+  description: 'code2llm reports `Feature Envy: attach_context` in `services/web/app/workspace.py:121`.
+
+
+    Function ''attach_context'' mutates multiple variables in other modules: ctx.resource_ids,
+    ctx.notes, ctx.uris, ctx.file_names.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - feature-envy
+  files:
+  - services/web/app/workspace.py
+  dedupe_key: 'code2llm:smell:feature_envy:services/web/app/workspace.py:121:Feature
+    Envy: attach_context'
+- signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: _assign_task'
+  description: 'code2llm reports `God Function: _assign_task` in `services/orchestrator/app/application/command_bus.py:192`.
+
+
+    Function ''_assign_task'' is oversized: CC=3, fan-out=11, mutations=0.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - services/orchestrator/app/application/command_bus.py
+  dedupe_key: 'code2llm:smell:god_function:services/orchestrator/app/application/command_bus.py:192:God
+    Function: _assign_task'
+- signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: _complete_task'
+  description: 'code2llm reports `God Function: _complete_task` in `services/orchestrator/app/application/command_bus.py:253`.
+
+
+    Function ''_complete_task'' is oversized: CC=3, fan-out=11, mutations=0.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - services/orchestrator/app/application/command_bus.py
+  dedupe_key: 'code2llm:smell:god_function:services/orchestrator/app/application/command_bus.py:253:God
+    Function: _complete_task'
+- signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: _create_task'
+  description: 'code2llm reports `God Function: _create_task` in `services/orchestrator/app/application/command_bus.py:150`.
+
+
+    Function ''_create_task'' is oversized: CC=6, fan-out=12, mutations=0.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - services/orchestrator/app/application/command_bus.py
+  dedupe_key: 'code2llm:smell:god_function:services/orchestrator/app/application/command_bus.py:150:God
+    Function: _create_task'
+- signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: _fail_task'
+  description: 'code2llm reports `God Function: _fail_task` in `services/orchestrator/app/application/command_bus.py:287`.
+
+
+    Function ''_fail_task'' is oversized: CC=2, fan-out=12, mutations=0.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - services/orchestrator/app/application/command_bus.py
+  dedupe_key: 'code2llm:smell:god_function:services/orchestrator/app/application/command_bus.py:287:God
+    Function: _fail_task'
+- signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: _keyword_fallback'
+  description: 'code2llm reports `God Function: _keyword_fallback` in `services/orchestrator/app/rag/store.py:183`.
+
+
+    Function ''_keyword_fallback'' is oversized: CC=10, fan-out=12, mutations=0.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - services/orchestrator/app/rag/store.py
+  dedupe_key: 'code2llm:smell:god_function:services/orchestrator/app/rag/store.py:183:God
+    Function: _keyword_fallback'
+- signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: _register_resource'
+  description: 'code2llm reports `God Function: _register_resource` in `services/orchestrator/app/application/command_bus.py:832`.
+
+
+    Function ''_register_resource'' is oversized: CC=5, fan-out=11, mutations=0.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - services/orchestrator/app/application/command_bus.py
+  dedupe_key: 'code2llm:smell:god_function:services/orchestrator/app/application/command_bus.py:832:God
+    Function: _register_resource'
+- signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: _remediate_rag_incident'
+  description: 'code2llm reports `God Function: _remediate_rag_incident` in `services/orchestrator/app/incidents/pipeline.py:203`.
+
+
+    Function ''_remediate_rag_incident'' is oversized: CC=6, fan-out=12, mutations=0.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - services/orchestrator/app/incidents/pipeline.py
+  dedupe_key: 'code2llm:smell:god_function:services/orchestrator/app/incidents/pipeline.py:203:God
+    Function: _remediate_rag_incident'
+- signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: _request_transfer'
+  description: 'code2llm reports `God Function: _request_transfer` in `services/orchestrator/app/application/command_bus.py:875`.
+
+
+    Function ''_request_transfer'' is oversized: CC=5, fan-out=18, mutations=0.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - services/orchestrator/app/application/command_bus.py
+  dedupe_key: 'code2llm:smell:god_function:services/orchestrator/app/application/command_bus.py:875:God
+    Function: _request_transfer'
+- signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: _run_rag_diagnostics'
+  description: 'code2llm reports `God Function: _run_rag_diagnostics` in `services/orchestrator/app/incidents/pipeline.py:155`.
+
+
+    Function ''_run_rag_diagnostics'' is oversized: CC=14, fan-out=14, mutations=0.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - services/orchestrator/app/incidents/pipeline.py
+  dedupe_key: 'code2llm:smell:god_function:services/orchestrator/app/incidents/pipeline.py:155:God
+    Function: _run_rag_diagnostics'
+- signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: _run_schema_migrations'
+  description: 'code2llm reports `God Function: _run_schema_migrations` in `services/orchestrator/app/infrastructure/postgres.py:79`.
+
+
+    Function ''_run_schema_migrations'' is oversized: CC=5, fan-out=11, mutations=0.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - services/orchestrator/app/infrastructure/postgres.py
+  dedupe_key: 'code2llm:smell:god_function:services/orchestrator/app/infrastructure/postgres.py:79:God
+    Function: _run_schema_migrations'
+- signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: _upsert_metrics'
+  description: 'code2llm reports `God Function: _upsert_metrics` in `services/orchestrator/app/evolution/evaluation.py:41`.
+
+
+    Function ''_upsert_metrics'' is oversized: CC=13, fan-out=4, mutations=0.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - services/orchestrator/app/evolution/evaluation.py
+  dedupe_key: 'code2llm:smell:god_function:services/orchestrator/app/evolution/evaluation.py:41:God
+    Function: _upsert_metrics'
+- signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: append'
+  description: 'code2llm reports `God Function: append` in `services/orchestrator/app/infrastructure/eventstore.py:56`.
+
+
+    Function ''append'' is oversized: CC=6, fan-out=12, mutations=0.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - services/orchestrator/app/infrastructure/eventstore.py
+  dedupe_key: 'code2llm:smell:god_function:services/orchestrator/app/infrastructure/eventstore.py:56:God
+    Function: append'
+- signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: append'
+  description: 'code2llm reports `God Function: append` in `services/orchestrator/app/infrastructure/eventstore_esdb.py:51`.
+
+
+    Function ''append'' is oversized: CC=3, fan-out=22, mutations=0.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - services/orchestrator/app/infrastructure/eventstore_esdb.py
+  dedupe_key: 'code2llm:smell:god_function:services/orchestrator/app/infrastructure/eventstore_esdb.py:51:God
+    Function: append'
+- signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: ask'
+  description: 'code2llm reports `God Function: ask` in `services/orchestrator/app/observability/rag_pipeline.py:23`.
+
+
+    Function ''ask'' is oversized: CC=10, fan-out=17, mutations=0.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - services/orchestrator/app/observability/rag_pipeline.py
+  dedupe_key: 'code2llm:smell:god_function:services/orchestrator/app/observability/rag_pipeline.py:23:God
+    Function: ask'
+- signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: attach_context'
+  description: 'code2llm reports `God Function: attach_context` in `services/web/app/workspace.py:121`.
+
+
+    Function ''attach_context'' is oversized: CC=12, fan-out=7, mutations=11.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - services/web/app/workspace.py
+  dedupe_key: 'code2llm:smell:god_function:services/web/app/workspace.py:121:God Function:
+    attach_context'
+- signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: copyChatToClipboard'
+  description: 'code2llm reports `God Function: copyChatToClipboard` in `services/web/app/static/workspace.js:553`.
+
+
+    Function ''copyChatToClipboard'' is oversized: CC=10, fan-out=11, mutations=0.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - services/web/app/static/workspace.js
+  dedupe_key: 'code2llm:smell:god_function:services/web/app/static/workspace.js:553:God
+    Function: copyChatToClipboard'
+- signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: get_events_for_aggregate'
+  description: 'code2llm reports `God Function: get_events_for_aggregate` in `services/orchestrator/app/infrastructure/eventstore_esdb.py:126`.
+
+
+    Function ''get_events_for_aggregate'' is oversized: CC=2, fan-out=12, mutations=0.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - services/orchestrator/app/infrastructure/eventstore_esdb.py
+  dedupe_key: 'code2llm:smell:god_function:services/orchestrator/app/infrastructure/eventstore_esdb.py:126:God
+    Function: get_events_for_aggregate'
+- signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: handle_rag_failure'
+  description: 'code2llm reports `God Function: handle_rag_failure` in `services/orchestrator/app/incidents/pipeline.py:86`.
+
+
+    Function ''handle_rag_failure'' is oversized: CC=7, fan-out=14, mutations=0.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - services/orchestrator/app/incidents/pipeline.py
+  dedupe_key: 'code2llm:smell:god_function:services/orchestrator/app/incidents/pipeline.py:86:God
+    Function: handle_rag_failure'
+- signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: ingest_resource'
+  description: 'code2llm reports `God Function: ingest_resource` in `services/orchestrator/app/rag/indexer.py:26`.
+
+
+    Function ''ingest_resource'' is oversized: CC=13, fan-out=14, mutations=0.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - services/orchestrator/app/rag/indexer.py
+  dedupe_key: 'code2llm:smell:god_function:services/orchestrator/app/rag/indexer.py:26:God
+    Function: ingest_resource'
+- signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: lifespan'
+  description: 'code2llm reports `God Function: lifespan` in `services/projector/app/main.py:28`.
+
+
+    Function ''lifespan'' is oversized: CC=4, fan-out=11, mutations=0.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - services/projector/app/main.py
+  dedupe_key: 'code2llm:smell:god_function:services/projector/app/main.py:28:God Function:
+    lifespan'
+- signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: lifespan'
+  description: 'code2llm reports `God Function: lifespan` in `services/orchestrator/app/main.py:28`.
+
+
+    Function ''lifespan'' is oversized: CC=6, fan-out=25, mutations=0.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - services/orchestrator/app/main.py
+  dedupe_key: 'code2llm:smell:god_function:services/orchestrator/app/main.py:28:God
+    Function: lifespan'
+- signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: new_session'
+  description: 'code2llm reports `God Function: new_session` in `services/web/app/workspace.py:79`.
+
+
+    Function ''new_session'' is oversized: CC=1, fan-out=5, mutations=8.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - services/web/app/workspace.py
+  dedupe_key: 'code2llm:smell:god_function:services/web/app/workspace.py:79:God Function:
+    new_session'
+- signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: observability_context'
+  description: 'code2llm reports `God Function: observability_context` in `services/orchestrator/app/observability/context.py:40`.
+
+
+    Function ''observability_context'' is oversized: CC=5, fan-out=6, mutations=8.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - services/orchestrator/app/observability/context.py
+  dedupe_key: 'code2llm:smell:god_function:services/orchestrator/app/observability/context.py:40:God
+    Function: observability_context'
+- signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: openTicketDialogFromDraft'
+  description: 'code2llm reports `God Function: openTicketDialogFromDraft` in `services/web/app/static/workspace.js:498`.
+
+
+    Function ''openTicketDialogFromDraft'' is oversized: CC=13, fan-out=3, mutations=0.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - services/web/app/static/workspace.js
+  dedupe_key: 'code2llm:smell:god_function:services/web/app/static/workspace.js:498:God
+    Function: openTicketDialogFromDraft'
+- signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: parse_uri'
+  description: 'code2llm reports `God Function: parse_uri` in `services/orchestrator/app/access/uri.py:25`.
+
+
+    Function ''parse_uri'' is oversized: CC=6, fan-out=8, mutations=15.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - services/orchestrator/app/access/uri.py
+  dedupe_key: 'code2llm:smell:god_function:services/orchestrator/app/access/uri.py:25:God
+    Function: parse_uri'
+- signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: refreshWorkspace'
+  description: 'code2llm reports `God Function: refreshWorkspace` in `services/web/app/static/workspace.js:57`.
+
+
+    Function ''refreshWorkspace'' is oversized: CC=7, fan-out=13, mutations=0.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - services/web/app/static/workspace.js
+  dedupe_key: 'code2llm:smell:god_function:services/web/app/static/workspace.js:57:God
+    Function: refreshWorkspace'
+- signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: renderClarify'
+  description: 'code2llm reports `God Function: renderClarify` in `services/web/app/static/workspace.js:216`.
+
+
+    Function ''renderClarify'' is oversized: CC=13, fan-out=4, mutations=0.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - services/web/app/static/workspace.js
+  dedupe_key: 'code2llm:smell:god_function:services/web/app/static/workspace.js:216:God
+    Function: renderClarify'
+- signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: run'
+  description: 'code2llm reports `God Function: run` in `services/orchestrator/app/observability/rag_diagnostics.py:20`.
+
+
+    Function ''run'' is oversized: CC=12, fan-out=17, mutations=0.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - services/orchestrator/app/observability/rag_diagnostics.py
+  dedupe_key: 'code2llm:smell:god_function:services/orchestrator/app/observability/rag_diagnostics.py:20:God
+    Function: run'
+- signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: search'
+  description: 'code2llm reports `God Function: search` in `services/orchestrator/app/rag/store.py:126`.
+
+
+    Function ''search'' is oversized: CC=10, fan-out=11, mutations=0.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - services/orchestrator/app/rag/store.py
+  dedupe_key: 'code2llm:smell:god_function:services/orchestrator/app/rag/store.py:126:God
+    Function: search'
+- signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: search'
+  description: 'code2llm reports `God Function: search` in `services/orchestrator/app/api/rag.py:43`.
+
+
+    Function ''search'' is oversized: CC=3, fan-out=15, mutations=0.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - services/orchestrator/app/api/rag.py
+  dedupe_key: 'code2llm:smell:god_function:services/orchestrator/app/api/rag.py:43:God
+    Function: search'
+- signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: selectTicket'
+  description: 'code2llm reports `God Function: selectTicket` in `services/web/app/static/workspace.js:94`.
+
+
+    Function ''selectTicket'' is oversized: CC=5, fan-out=11, mutations=0.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - services/web/app/static/workspace.js
+  dedupe_key: 'code2llm:smell:god_function:services/web/app/static/workspace.js:94:God
+    Function: selectTicket'
+- signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: upload_resource'
+  description: 'code2llm reports `God Function: upload_resource` in `services/orchestrator/app/api/access.py:102`.
+
+
+    Function ''upload_resource'' is oversized: CC=4, fan-out=17, mutations=0.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - services/orchestrator/app/api/access.py
+  dedupe_key: 'code2llm:smell:god_function:services/orchestrator/app/api/access.py:102:God
+    Function: upload_resource'
+- signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: validate_command'
+  description: 'code2llm reports `God Function: validate_command` in `services/orchestrator/app/evolution/policy_engine.py:24`.
+
+
+    Function ''validate_command'' is oversized: CC=14, fan-out=7, mutations=0.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - services/orchestrator/app/evolution/policy_engine.py
+  dedupe_key: 'code2llm:smell:god_function:services/orchestrator/app/evolution/policy_engine.py:24:God
+    Function: validate_command'
+- signal: code2llm_smell_god_function
+  title: 'Address code smell: God Module: services.orchestrator.app.api.commands'
+  description: 'code2llm reports `God Module: services.orchestrator.app.api.commands`
+    in `services/orchestrator/app/api/commands.py:1`.
+
+
+    Module ''services.orchestrator.app.api.commands'' is too large (23 functions,
+    14 classes). Consider splitting into sub-modules.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - services/orchestrator/app/api/commands.py
+  dedupe_key: 'code2llm:smell:god_function:services/orchestrator/app/api/commands.py:1:God
+    Module: services.orchestrator.app.api.commands'
+- signal: code2llm_smell_god_function
+  title: 'Address code smell: God Module: services.orchestrator.app.application.command_bus'
+  description: 'code2llm reports `God Module: services.orchestrator.app.application.command_bus`
+    in `services/orchestrator/app/application/command_bus.py:1`.
+
+
+    Module ''services.orchestrator.app.application.command_bus'' is too large (41
+    functions, 1 classes). Consider splitting into sub-modules.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - services/orchestrator/app/application/command_bus.py
+  dedupe_key: 'code2llm:smell:god_function:services/orchestrator/app/application/command_bus.py:1:God
+    Module: services.orchestrator.app.application.command_bus'
+- signal: code2llm_smell_god_function
+  title: 'Address code smell: God Module: services.orchestrator.app.domain.events'
+  description: 'code2llm reports `God Module: services.orchestrator.app.domain.events`
+    in `services/orchestrator/app/domain/events/__init__.py:1`.
+
+
+    Module ''services.orchestrator.app.domain.events'' is too large (3 functions,
+    32 classes). Consider splitting into sub-modules.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - services/orchestrator/app/domain/events/__init__.py
+  dedupe_key: 'code2llm:smell:god_function:services/orchestrator/app/domain/events/__init__.py:1:God
+    Module: services.orchestrator.app.domain.events'
+- signal: code2llm_smell_god_function
+  title: 'Address code smell: God Module: services.orchestrator.app.domain.value_objects'
+  description: 'code2llm reports `God Module: services.orchestrator.app.domain.value_objects`
+    in `services/orchestrator/app/domain/value_objects/__init__.py:1`.
+
+
+    Module ''services.orchestrator.app.domain.value_objects'' is too large (2 functions,
+    11 classes). Consider splitting into sub-modules.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - services/orchestrator/app/domain/value_objects/__init__.py
+  dedupe_key: 'code2llm:smell:god_function:services/orchestrator/app/domain/value_objects/__init__.py:1:God
+    Module: services.orchestrator.app.domain.value_objects'
+- signal: code2llm_smell_god_function
+  title: 'Address code smell: God Module: services.web.app.static.workspace'
+  description: 'code2llm reports `God Module: services.web.app.static.workspace` in
+    `services/web/app/static/workspace.js:1`.
+
+
+    Module ''services.web.app.static.workspace'' is too large (90 functions, 0 classes).
+    Consider splitting into sub-modules.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - services/web/app/static/workspace.js
+  dedupe_key: 'code2llm:smell:god_function:services/web/app/static/workspace.js:1:God
+    Module: services.web.app.static.workspace'
+applied: []
+skipped: []

@@ -1,0 +1,300 @@
+# code2llm | 137f 18600L | python:84,md:17,json:11,txt:6,yaml:5,javascript:4,shell:3,yml:1,ini:1 | 2026-06-04
+# generated in 0.03s
+# CC̅=3.6 | critical:23/599 | dups:0 | cycles:0
+
+HEALTH[20]:
+  🔴 GOD   services/orchestrator/app/domain/events/__init__.py = 811L, 32 classes, 3m, max CC=7
+  🟡 CC    confirm_ticket CC=19 (limit:15)
+  🟡 CC    handle_chat_message CC=21 (limit:15)
+  🟡 CC    export_debug_logs CC=15 (limit:15)
+  🟡 CC    _format_export_text CC=47 (limit:15)
+  🟡 CC    run_workroom CC=22 (limit:15)
+  🟡 CC    format_file_list_reply CC=22 (limit:15)
+  🟡 CC    _format_incident CC=15 (limit:15)
+  🟡 CC    handle_message CC=33 (limit:15)
+  🟡 CC    _nlp2dsl_turn CC=23 (limit:15)
+  🟡 CC    renderTicketDetail CC=24 (limit:15)
+  🟡 CC    renderContext CC=16 (limit:15)
+  🟡 CC    sendChat CC=23 (limit:15)
+  🟡 CC    formValues CC=18 (limit:15)
+  🟡 CC    createFromDraft CC=15 (limit:15)
+  🟡 CC    text CC=16 (limit:15)
+  🟡 CC    ORCHESTRATOR_URL CC=15 (limit:15)
+  🟡 CC    PROJECTOR_URL CC=15 (limit:15)
+  🟡 CC    App CC=15 (limit:15)
+  🟡 CC    handle CC=29 (limit:15)
+
+REFACTOR[2]:
+  1. split services/orchestrator/app/domain/events/__init__.py  (god module)
+  2. split 19 high-CC methods  (CC>15)
+
+PIPELINES[378]:
+  [1] Src [lifespan]: lifespan → project_event → _normalize_event
+      PURITY: 100% pure
+  [2] Src [health_check]: health_check
+      PURITY: 100% pure
+  [3] Src [operational_feed]: operational_feed → _row_to_dict
+      PURITY: 100% pure
+  [4] Src [task_board]: task_board → _row_to_dict
+      PURITY: 100% pure
+  [5] Src [agent_fleet]: agent_fleet → _row_to_dict
+      PURITY: 100% pure
+  [6] Src [approval_requests]: approval_requests → _row_to_dict
+      PURITY: 100% pure
+  [7] Src [plugin_catalog]: plugin_catalog → _row_to_dict
+      PURITY: 100% pure
+  [8] Src [rag_documents]: rag_documents → _row_to_dict
+      PURITY: 100% pure
+  [9] Src [incident_feed]: incident_feed → _row_to_dict
+      PURITY: 100% pure
+  [10] Src [service_health]: service_health → _row_to_dict
+      PURITY: 100% pure
+  [11] Src [remediation_history]: remediation_history → _row_to_dict
+      PURITY: 100% pure
+  [12] Src [rag_quality_board]: rag_quality_board → _row_to_dict
+      PURITY: 100% pure
+  [13] Src [resource_registry]: resource_registry → _row_to_dict
+      PURITY: 100% pure
+  [14] Src [workflow_versions]: workflow_versions → _row_to_dict
+      PURITY: 100% pure
+  [15] Src [connect]: connect
+      PURITY: 100% pure
+  [16] Src [disconnect]: disconnect
+      PURITY: 100% pure
+  [17] Src [execute]: execute
+      PURITY: 100% pure
+  [18] Src [fetch]: fetch
+      PURITY: 100% pure
+  [19] Src [_run_schema_migrations]: _run_schema_migrations
+      PURITY: 100% pure
+  [20] Src [start_chat_session]: start_chat_session
+      PURITY: 100% pure
+  [21] Src [get_chat_session]: get_chat_session
+      PURITY: 100% pure
+  [22] Src [workspace_state]: workspace_state
+      PURITY: 100% pure
+  [23] Src [chat_message]: chat_message → handle_turn → _fallback_turn → _local_clarify → ...(1 more)
+      PURITY: 100% pure
+  [24] Src [task_draft]: task_draft
+      PURITY: 100% pure
+  [25] Src [create_task]: create_task
+      PURITY: 100% pure
+  [26] Src [create_task_from_draft]: create_task_from_draft
+      PURITY: 100% pure
+  [27] Src [create_and_run_task]: create_and_run_task
+      PURITY: 100% pure
+  [28] Src [context_attach]: context_attach
+      PURITY: 100% pure
+  [29] Src [upload_files]: upload_files
+      PURITY: 100% pure
+  [30] Src [board_snapshot]: board_snapshot
+      PURITY: 100% pure
+  [31] Src [list_tickets]: list_tickets → enrich_task → status_meta
+      PURITY: 100% pure
+  [32] Src [get_ticket]: get_ticket → enrich_task → status_meta
+      PURITY: 100% pure
+  [33] Src [confirm_ticket]: confirm_ticket
+      PURITY: 100% pure
+  [34] Src [archive_ticket]: archive_ticket
+      PURITY: 100% pure
+  [35] Src [link_ticket]: link_ticket
+      PURITY: 100% pure
+  [36] Src [ticket_statuses]: ticket_statuses
+      PURITY: 100% pure
+  [37] Src [workspace_chat_export]: workspace_chat_export
+      PURITY: 100% pure
+  [38] Src [workspace_logs_export]: workspace_logs_export
+      PURITY: 100% pure
+  [39] Src [workroom_start]: workroom_start
+      PURITY: 100% pure
+  [40] Src [workroom_get]: workroom_get
+      PURITY: 100% pure
+  [41] Src [workroom_run]: workroom_run
+      PURITY: 100% pure
+  [42] Src [api_resource_areas]: api_resource_areas
+      PURITY: 100% pure
+  [43] Src [api_role_scopes]: api_role_scopes
+      PURITY: 100% pure
+  [44] Src [add_event]: add_event
+      PURITY: 100% pure
+  [45] Src [get_session]: get_session
+      PURITY: 100% pure
+  [46] Src [workspace_state]: workspace_state → get_or_create → new_session
+      PURITY: 100% pure
+  [47] Src [propose_task_draft]: propose_task_draft → build_task_payload → get_or_create → new_session
+      PURITY: 100% pure
+  [48] Src [handle_chat_message]: handle_chat_message → get_or_create → new_session
+      PURITY: 100% pure
+  [49] Src [create_task_from_draft]: create_task_from_draft → create_task_immediate → get_or_create → new_session
+      PURITY: 100% pure
+  [50] Src [create_and_run]: create_and_run → create_task_immediate → get_or_create → new_session
+      PURITY: 100% pure
+
+LAYERS:
+  services/                       CC̄=3.7    ←in:0  →out:0
+  │ !! command_bus                982L  1C   41m  CC=29     ←0
+  │ !! __init__                   811L  32C    3m  CC=7      ←0
+  │ !! workspace.js               669L  0C   71m  CC=24     ←3
+  │ !! workspace                  604L  2C   22m  CC=47     ←0
+  │ !! api_routes                 443L  10C   24m  CC=19     ←0
+  │ commands                   379L  14C   23m  CC=4      ←0
+  │ !! agent_workroom             354L  2C   10m  CC=22     ←0
+  │ !! chat                       354L  0C   13m  CC=33     ←0
+  │ main                       340L  0C   15m  CC=4      ←0
+  │ !! incidents                  337L  2C   12m  CC=19     ←2
+  │ pipeline                   321L  1C    8m  CC=14     ←0
+  │ incidents                  320L  0C   16m  CC=10     ←1
+  │ !! conductor                  283L  0C    6m  CC=23     ←2
+  │ incidents                  254L  10C   20m  CC=1      ←0
+  │ store                      240L  1C   12m  CC=10     ←0
+  │ task                       231L  1C   15m  CC=11     ←0
+  │ rag_diagnostics            204L  1C    8m  CC=12     ←0
+  │ !! main.jsx                   203L  0C   14m  CC=15     ←0
+  │ main                       195L  0C    5m  CC=6      ←0
+  │ !! app.js                     193L  0C   19m  CC=16     ←0
+  │ !! export                     190L  0C    2m  CC=29     ←1
+  │ workroom.js                186L  0C   17m  CC=11     ←0
+  │ eventstore_esdb            186L  1C    8m  CC=4      ←0
+  │ eventstore                 182L  2C    9m  CC=6      ←3
+  │ queries                    180L  4C    6m  CC=10     ←0
+  │ evaluation                 146L  1C    4m  CC=13     ←0
+  │ resource_areas             144L  0C    3m  CC=7      ←1
+  │ workflow                   144L  1C    9m  CC=3      ←0
+  │ rag_pipeline               142L  1C    2m  CC=10     ←0
+  │ rag                        142L  2C    6m  CC=3      ←0
+  │ access                     136L  3C    8m  CC=4      ←0
+  │ approval_gate              129L  1C    4m  CC=8      ←1
+  │ resource_registry          118L  0C    1m  CC=8      ←1
+  │ task_board                 115L  0C    2m  CC=9      ←1
+  │ openrouter                 111L  1C    6m  CC=9      ←1
+  │ observability              108L  1C    5m  CC=3      ←0
+  │ evolution                  104L  2C    5m  CC=4      ←0
+  │ policy_engine              103L  2C    5m  CC=14     ←0
+  │ nlp2dsl_bridge             100L  0C    9m  CC=6      ←0
+  │ resource                   100L  1C    6m  CC=3      ←0
+  │ main                        99L  0C    4m  CC=1      ←0
+  │ plugin                      97L  2C    7m  CC=2      ←0
+  │ approval                    97L  2C    6m  CC=2      ←0
+  │ postgres                    92L  1C    7m  CC=5      ←0
+  │ catalog                     92L  1C    6m  CC=4      ←0
+  │ retriever                   87L  1C    3m  CC=8      ←0
+  │ indexer                     85L  1C    2m  CC=13     ←0
+  │ __init__                    85L  11C    2m  CC=4      ←0
+  │ agent                       83L  1C    7m  CC=2      ←0
+  │ agent_fleet                 81L  0C    1m  CC=8      ←1
+  │ approval_requests           79L  0C    1m  CC=6      ←1
+  │ transport                   77L  1C    7m  CC=4      ←0
+  │ experiments                 76L  1C    4m  CC=2      ←0
+  │ localfs                     71L  1C    5m  CC=4      ←0
+  │ operational_feed            69L  0C    3m  CC=11     ←1
+  │ task_routing                61L  0C    2m  CC=10     ←1
+  │ context                     59L  0C    6m  CC=5      ←7
+  │ eventstore_dual             57L  1C    5m  CC=2      ←0
+  │ db                          56L  1C    6m  CC=4      ←0
+  │ config                      54L  1C    1m  CC=1      ←0
+  │ eventstore_factory          50L  0C    1m  CC=8      ←1
+  │ nats_bus                    49L  1C    5m  CC=4      ←0
+  │ http_adapter                49L  1C    4m  CC=3      ←0
+  │ workflow_versions           47L  0C    1m  CC=5      ←1
+  │ tickets                     45L  0C    4m  CC=4      ←1
+  │ uri                         43L  1C    2m  CC=6      ←3
+  │ logging                     43L  0C    1m  CC=3      ←3
+  │ plugin_catalog              42L  0C    1m  CC=5      ←1
+  │ dispatcher                  41L  0C    2m  CC=7      ←1
+  │ catalog                     41L  0C    7m  CC=1      ←0
+  │ base                        33L  2C    3m  CC=1      ←0
+  │ chunking                    27L  0C    1m  CC=7      ←1
+  │ Dockerfile                  27L  0C    0m  CC=0.0    ←0
+  │ __init__                    22L  0C    0m  CC=0.0    ←0
+  │ Dockerfile                  21L  0C    0m  CC=0.0    ←0
+  │ middleware                  19L  1C    1m  CC=3      ←0
+  │ package.json                18L  0C    0m  CC=0.0    ←0
+  │ __init__                    17L  0C    1m  CC=2      ←1
+  │ requirements.txt            15L  0C    0m  CC=0.0    ←0
+  │ __init__                    14L  0C    0m  CC=0.0    ←0
+  │ __init__                    12L  0C    0m  CC=0.0    ←0
+  │ Dockerfile                   7L  0C    0m  CC=0.0    ←0
+  │ __init__                     6L  0C    0m  CC=0.0    ←0
+  │ requirements.txt             5L  0C    0m  CC=0.0    ←0
+  │ requirements.txt             5L  0C    0m  CC=0.0    ←0
+  │ __init__                     4L  0C    0m  CC=0.0    ←0
+  │ __init__                     3L  0C    0m  CC=0.0    ←0
+  │ __init__                     3L  0C    0m  CC=0.0    ←0
+  │ requirements-esdb.txt        2L  0C    0m  CC=0.0    ←0
+  │ __init__                     1L  0C    0m  CC=0.0    ←0
+  │ __init__                     0L  0C    0m  CC=0.0    ←0
+  │
+  agents/                         CC̄=2.3    ←in:0  →out:0
+  │ executor                    48L  1C    2m  CC=4      ←1
+  │ nats_consumer               47L  1C    3m  CC=4      ←0
+  │ main                        26L  0C    1m  CC=2      ←0
+  │ Dockerfile                  14L  0C    0m  CC=0.0    ←0
+  │ requirements.txt             1L  0C    0m  CC=0.0    ←0
+  │
+  ./                              CC̄=0.0    ←in:0  →out:0
+  │ !! planfile.yaml             1319L  0C    0m  CC=0.0    ←0
+  │ !! goal.yaml                  509L  0C    0m  CC=0.0    ←0
+  │ TODO.md                    231L  0C    0m  CC=0.0    ←0
+  │ CHANGELOG.md               225L  0C    0m  CC=0.0    ←0
+  │ README.md                  213L  0C    0m  CC=0.0    ←0
+  │ docker-compose.yml         204L  0C    0m  CC=0.0    ←0
+  │ prefact.yaml                94L  0C    0m  CC=0.0    ←0
+  │ Makefile                    89L  0C    0m  CC=0.0    ←0
+  │ project.sh                  52L  0C    0m  CC=0.0    ←0
+  │ pytest.ini                   6L  0C    0m  CC=0.0    ←0
+  │ requirements-dev.txt         5L  0C    0m  CC=0.0    ←0
+  │ tree.sh                      1L  0C    0m  CC=0.0    ←0
+  │
+  docs/                           CC̄=0.0    ←in:0  →out:0
+  │ !! README.md                  832L  0C    0m  CC=0.0    ←0
+  │ roadmap-90d.md              83L  0C    0m  CC=0.0    ←0
+  │ multi-agent-workroom.md     76L  0C    0m  CC=0.0    ←0
+  │ observability.md            50L  0C    0m  CC=0.0    ←0
+  │ architecture.md             46L  0C    0m  CC=0.0    ←0
+  │ workspace-conductor.md      43L  0C    0m  CC=0.0    ←0
+  │ workspace-simple.md         40L  0C    0m  CC=0.0    ←0
+  │ events.md                   38L  0C    0m  CC=0.0    ←0
+  │ workspace-ui.md             30L  0C    0m  CC=0.0    ←0
+  │ domain.md                   24L  0C    0m  CC=0.0    ←0
+  │
+  TODO/                           CC̄=0.0    ←in:0  →out:0
+  │ 4.md                       394L  0C    0m  CC=0.0    ←0
+  │ 3.md                       291L  0C    0m  CC=0.0    ←0
+  │ 2.md                       187L  0C    0m  CC=0.0    ←0
+  │ 1.md                       142L  0C    0m  CC=0.0    ←0
+  │
+  scripts/                        CC̄=0.0    ←in:0  →out:0
+  │ test.sh                     13L  0C    0m  CC=0.0    ←0
+  │
+  testql-scenarios/               CC̄=0.0    ←in:0  →out:0
+  │ generated-api-smoke.testql.toon.yaml    40L  0C    0m  CC=0.0    ←0
+  │ generated-from-pytests.testql.toon.yaml    34L  0C    0m  CC=0.0    ←0
+  │
+  catalog/                        CC̄=0.0    ←in:0  →out:0
+  │ policies.json               49L  0C    0m  CC=0.0    ←0
+  │ capabilities.json           48L  0C    0m  CC=0.0    ←0
+  │ task.json                   46L  0C    0m  CC=0.0    ←0
+  │ evolution.json              45L  0C    0m  CC=0.0    ←0
+  │ workflow.json               42L  0C    0m  CC=0.0    ←0
+  │ services.json               39L  0C    0m  CC=0.0    ←0
+  │ domains.json                30L  0C    0m  CC=0.0    ←0
+  │ access.json                 30L  0C    0m  CC=0.0    ←0
+  │ index.json                  19L  0C    0m  CC=0.0    ←0
+  │ rag.json                    15L  0C    0m  CC=0.0    ←0
+  │
+  integrations/                   CC̄=0.0    ←in:0  →out:0
+  │ mullm_registry              32L  0C    0m  CC=0.0    ←0
+  │ patch_startup                7L  0C    0m  CC=0.0    ←0
+  │
+  ── zero ──
+     services/web/app/__init__.py              0L
+
+COUPLING:
+                         services.orchestrator           services.web
+  services.orchestrator                     ──                      1
+           services.web                     ←1                     ──
+  CYCLES: none
+
+EXTERNAL:
+  validation: run `vallm batch .` → validation.toon
+  duplication: run `redup scan .` → duplication.toon

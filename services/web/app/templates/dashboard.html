@@ -140,6 +140,74 @@
         </tbody>
       </table>
 
+      <h2>Incident feed</h2>
+      <table>
+        <thead><tr><th>When</th><th>Code</th><th>Status</th><th>Message</th></tr></thead>
+        <tbody>
+          {% for i in incidents %}
+          <tr>
+            <td>{{ i.updated_at or i.created_at }}</td>
+            <td>{{ i.error_code }}</td>
+            <td class="status">{{ i.status }}</td>
+            <td title="{{ i.correlation_id or '' }}">{{ i.message }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="4">Brak incydentów</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <h2>Service health</h2>
+      <table>
+        <thead><tr><th>Service</th><th>Component</th><th>Status</th><th>Code</th></tr></thead>
+        <tbody>
+          {% for h in service_health %}
+          <tr>
+            <td>{{ h.service_id }}</td>
+            <td>{{ h.component }}</td>
+            <td class="status">{{ h.status }}</td>
+            <td>{{ h.error_code or "—" }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="4">Brak danych health</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <h2>Remediation history</h2>
+      <table>
+        <thead><tr><th>Incident</th><th>Playbook</th><th>Status</th><th>Updated</th></tr></thead>
+        <tbody>
+          {% for r in remediations %}
+          <tr>
+            <td>{{ r.incident_id[:8] }}…</td>
+            <td>{{ r.playbook_id }}</td>
+            <td class="status">{{ r.status }}</td>
+            <td>{{ r.updated_at }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="4">Brak remediacji</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <h2>RAG quality board</h2>
+      <table>
+        <thead><tr><th>Code</th><th>Failures</th><th>Last message</th><th>Updated</th></tr></thead>
+        <tbody>
+          {% for q in rag_quality %}
+          <tr>
+            <td>{{ q.error_code }}</td>
+            <td>{{ q.failure_count }}</td>
+            <td>{{ q.last_message or "—" }}</td>
+            <td>{{ q.updated_at }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="4">Brak awarii RAG</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
       <h2>Operational feed</h2>
       <table>
         <thead><tr><th>When</th><th>Event</th><th>Summary</th></tr></thead>

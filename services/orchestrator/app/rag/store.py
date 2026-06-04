@@ -197,7 +197,8 @@ class RagStore:
         )
         hits: list[tuple[int, dict[str, Any]]] = []
         for row in rows:
-            text = (row.get("content") or row["content"]).lower()
+            data = _row_dict(row)
+            text = (data.get("content") or "").lower()
             score = sum(1 for token in tokens if token in text)
             if score:
                 hits.append((score, _chunk_hit(row, float(score))))

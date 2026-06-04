@@ -1,0 +1,351 @@
+# code2llm call graph | /home/tom/github/wronai/mullm
+# generated in 0.14s
+# nodes: 264 | edges: 324 | modules: 52
+# CC̄=3.6
+
+HUBS[20]:
+  services.web.app.workspace._format_export_text
+    CC=47  in:1  out:97  total:98
+  services.orchestrator.app.observability.export.format_logs_text
+    CC=29  in:1  out:66  total:67
+  services.web.app.agent_workroom.run_workroom
+    CC=22  in:0  out:45  total:45
+  services.web.app.workspace.handle_chat_message
+    CC=21  in:0  out:40  total:40
+  services.web.app.conductor._nlp2dsl_turn
+    CC=23  in:1  out:35  total:36
+  services.web.app.chat.format_file_list_reply
+    CC=22  in:1  out:35  total:36
+  services.orchestrator.app.observability.rag_pipeline.RagPipeline.ask
+    CC=10  in:0  out:36  total:36
+  services.web.app.chat.handle_message
+    CC=33  in:0  out:35  total:35
+  services.orchestrator.app.observability.incidents._event_payload
+    CC=19  in:1  out:28  total:29
+  services.web.app.workspace.export_debug_logs
+    CC=15  in:0  out:26  total:26
+  services.web.app.static.workspace.api
+    CC=6  in:20  out:4  total:24
+  services.orchestrator.app.observability.incidents.IncidentRecorder.record
+    CC=16  in:0  out:23  total:23
+  services.orchestrator.app.observability.rag_diagnostics.RagDiagnostics.run
+    CC=12  in:0  out:23  total:23
+  services.orchestrator.app.api.commands._dispatch
+    CC=4  in:14  out:9  total:23
+  services.orchestrator.app.rag.indexer.RagIndexer.ingest_resource
+    CC=13  in:0  out:22  total:22
+  services.orchestrator.app.api.rag.search
+    CC=3  in:0  out:22  total:22
+  services.web.app.static.workspace.refreshWorkspace
+    CC=7  in:8  out:13  total:21
+  services.orchestrator.app.application.command_bus.CommandBus._create_task
+    CC=6  in:0  out:20  total:20
+  services.web.app.static.workspace.sendChat
+    CC=23  in:0  out:19  total:19
+  services.orchestrator.app.api.access.upload_resource
+    CC=4  in:0  out:19  total:19
+
+MODULES:
+  agents.shell-agent.app.executor  [1 funcs]
+    run_shell_command  CC=4  out:3
+  agents.shell-agent.app.nats_consumer  [1 funcs]
+    handle_message  CC=4  out:8
+  services.orchestrator.app.access.adapters  [1 funcs]
+    get_adapter  CC=2  out:5
+  services.orchestrator.app.access.transport  [3 funcs]
+    copy  CC=4  out:10
+    fetch  CC=1  out:4
+    probe  CC=1  out:4
+  services.orchestrator.app.access.uri  [2 funcs]
+    build_uri  CC=2  out:1
+    parse_uri  CC=6  out:9
+  services.orchestrator.app.api.access  [3 funcs]
+    build_resource_uri  CC=1  out:2
+    register_resource  CC=2  out:6
+    upload_resource  CC=4  out:19
+  services.orchestrator.app.api.commands  [15 funcs]
+    _dispatch  CC=4  out:9
+    activate_plugin  CC=1  out:3
+    activate_workflow_version  CC=1  out:3
+    approve_request  CC=2  out:2
+    approve_workflow_version  CC=1  out:3
+    create_approval  CC=1  out:3
+    expire_approval  CC=1  out:2
+    install_plugin  CC=1  out:3
+    propose_plugin  CC=1  out:3
+    propose_workflow_version  CC=1  out:3
+  services.orchestrator.app.api.observability  [4 funcs]
+    export_logs  CC=2  out:6
+    list_incidents  CC=3  out:7
+    rag_diagnose  CC=1  out:4
+    rag_health  CC=1  out:4
+  services.orchestrator.app.api.queries  [4 funcs]
+    _event_to_dict  CC=2  out:10
+    get_agent  CC=6  out:7
+    get_task  CC=6  out:7
+    get_workflow  CC=6  out:7
+  services.orchestrator.app.api.rag  [2 funcs]
+    ask  CC=1  out:6
+    search  CC=3  out:22
+  services.orchestrator.app.application.command_bus  [7 funcs]
+    _activate_plugin  CC=1  out:4
+    _activate_workflow_version  CC=3  out:6
+    _approve_request  CC=3  out:6
+    _create_task  CC=6  out:20
+    _register_resource  CC=5  out:16
+    _rollback_plugin  CC=1  out:5
+    _rollback_workflow_version  CC=1  out:5
+  services.orchestrator.app.application.sagas.approval_gate  [3 funcs]
+    _is_skipped  CC=3  out:3
+    ensure_approval  CC=8  out:13
+    follow_up_after_grant  CC=5  out:3
+  services.orchestrator.app.application.sagas.task_routing  [2 funcs]
+    maybe_auto_assign  CC=5  out:6
+    pick_idle_agent  CC=10  out:5
+  services.orchestrator.app.config  [1 funcs]
+    model_post_init  CC=1  out:2
+  services.orchestrator.app.domain.aggregates.agent  [1 funcs]
+    heartbeat  CC=1  out:3
+  services.orchestrator.app.domain.aggregates.task  [10 funcs]
+    __init__  CC=4  out:5
+    apply  CC=11  out:18
+    assign_to_agent  CC=2  out:4
+    complete  CC=2  out:4
+    fail  CC=2  out:4
+    start  CC=3  out:5
+    _event_data  CC=2  out:3
+    _event_timestamp  CC=3  out:5
+    _event_type  CC=1  out:1
+    _utc_now  CC=1  out:1
+  services.orchestrator.app.incidents.pipeline  [2 funcs]
+    handle_rag_failure  CC=7  out:16
+    classify_rag_error  CC=11  out:2
+  services.orchestrator.app.infrastructure.eventstore  [4 funcs]
+    _record_from_row  CC=1  out:3
+    append  CC=6  out:15
+    _loads_json  CC=3  out:3
+    _utc_now  CC=1  out:1
+  services.orchestrator.app.infrastructure.eventstore_esdb  [2 funcs]
+    __init__  CC=1  out:1
+    _parse_esdb_uri  CC=4  out:6
+  services.orchestrator.app.observability.context  [6 funcs]
+    get_chat_session_id  CC=1  out:1
+    get_correlation_id  CC=1  out:1
+    get_retrieval_trace_id  CC=1  out:1
+    new_correlation_id  CC=1  out:2
+    new_retrieval_trace_id  CC=1  out:1
+    observability_context  CC=5  out:8
+  services.orchestrator.app.observability.export  [2 funcs]
+    build_orchestrator_bundle  CC=11  out:17
+    format_logs_text  CC=29  out:66
+  services.orchestrator.app.observability.incidents  [6 funcs]
+    _persist  CC=2  out:4
+    _publish_event  CC=3  out:6
+    record  CC=16  out:23
+    _default_playbook  CC=1  out:1
+    _event_payload  CC=19  out:28
+    _incident_class  CC=4  out:0
+  services.orchestrator.app.observability.logging  [1 funcs]
+    log_event  CC=3  out:9
+  services.orchestrator.app.observability.middleware  [1 funcs]
+    dispatch  CC=3  out:5
+  services.orchestrator.app.observability.rag_diagnostics  [1 funcs]
+    run  CC=12  out:23
+  services.orchestrator.app.observability.rag_pipeline  [1 funcs]
+    ask  CC=10  out:36
+  services.orchestrator.app.rag.chunking  [1 funcs]
+    chunk_text  CC=7  out:9
+  services.orchestrator.app.rag.indexer  [1 funcs]
+    ingest_resource  CC=13  out:22
+  services.orchestrator.app.rag.openrouter  [2 funcs]
+    __init__  CC=2  out:3
+    normalize_openrouter_model  CC=3  out:3
+  services.orchestrator.app.rag.store  [7 funcs]
+    _keyword_fallback  CC=10  out:12
+    list_documents  CC=2  out:2
+    search  CC=10  out:13
+    _chunk_hit  CC=2  out:5
+    _cosine  CC=9  out:8
+    _parse_embedding  CC=5  out:6
+    _row_dict  CC=4  out:5
+  services.projector.app.main  [13 funcs]
+    _row_to_dict  CC=3  out:5
+    agent_fleet  CC=3  out:4
+    approval_requests  CC=3  out:4
+    incident_feed  CC=3  out:4
+    operational_feed  CC=2  out:3
+    plugin_catalog  CC=3  out:4
+    rag_documents  CC=2  out:3
+    rag_quality_board  CC=2  out:3
+    remediation_history  CC=2  out:3
+    resource_registry  CC=2  out:3
+  services.projector.app.projections.agent_fleet  [1 funcs]
+    project_agent_fleet  CC=8  out:11
+  services.projector.app.projections.approval_requests  [1 funcs]
+    project_approval_requests  CC=6  out:9
+  services.projector.app.projections.dispatcher  [2 funcs]
+    _normalize_event  CC=7  out:9
+    project_event  CC=1  out:9
+  services.projector.app.projections.incidents  [16 funcs]
+    _checks_payload  CC=10  out:11
+    _diagnostics_ok  CC=6  out:4
+    _error_code  CC=4  out:3
+    _handle_diagnostics_completed  CC=4  out:9
+    _handle_diagnostics_started  CC=1  out:2
+    _handle_incident_classified  CC=1  out:5
+    _handle_incident_detected  CC=6  out:12
+    _handle_post_remediation_verification  CC=4  out:4
+    _handle_rag_request_failed  CC=2  out:6
+    _handle_remediation_finished  CC=2  out:7
+  services.projector.app.projections.operational_feed  [3 funcs]
+    _summary_for  CC=6  out:6
+    _title_for  CC=11  out:8
+    project_operational_feed  CC=3  out:10
+  services.projector.app.projections.plugin_catalog  [1 funcs]
+    project_plugin_catalog  CC=5  out:6
+  services.projector.app.projections.resource_registry  [1 funcs]
+    project_resource_registry  CC=8  out:15
+  services.projector.app.projections.task_board  [2 funcs]
+    _update_status  CC=1  out:1
+    project_task_board  CC=9  out:15
+  services.projector.app.projections.workflow_versions  [1 funcs]
+    project_workflow_versions  CC=5  out:6
+  services.web.app.agent_workroom  [5 funcs]
+    _extract_shell  CC=4  out:8
+    _plan_steps  CC=4  out:7
+    get_workroom  CC=1  out:1
+    run_workroom  CC=22  out:45
+    workroom_catalog  CC=1  out:2
+  services.web.app.api_routes  [3 funcs]
+    chat_message  CC=6  out:10
+    get_ticket  CC=5  out:9
+    list_tickets  CC=10  out:7
+  services.web.app.chat  [10 funcs]
+    _append  CC=1  out:2
+    _dedupe_rows_by_uri  CC=8  out:10
+    _format_history  CC=3  out:3
+    _orch  CC=2  out:2
+    create_task  CC=7  out:8
+    fetch_file_inventory  CC=7  out:15
+    format_file_list_reply  CC=22  out:35
+    get_history  CC=1  out:2
+    handle_message  CC=33  out:35
+    is_file_list_intent  CC=7  out:5
+  services.web.app.conductor  [6 funcs]
+    _extract_shell  CC=3  out:5
+    _fallback_turn  CC=4  out:7
+    _local_clarify  CC=3  out:3
+    _mullm_file_list_turn  CC=1  out:5
+    _nlp2dsl_turn  CC=23  out:35
+    handle_turn  CC=7  out:8
+  services.web.app.nlp2dsl_bridge  [6 funcs]
+    _post_json  CC=4  out:6
+    backend_candidates  CC=4  out:6
+    backend_url  CC=1  out:1
+    chat_message  CC=1  out:1
+    chat_start  CC=1  out:1
+    health  CC=4  out:3
+  services.web.app.resource_areas  [2 funcs]
+    list_areas  CC=2  out:1
+    list_groups  CC=1  out:0
+  services.web.app.static.app  [7 funcs]
+    appendMessage  CC=2  out:2
+    ensureSession  CC=3  out:4
+    escapeHtml  CC=1  out:2
+    renderHistory  CC=7  out:2
+    rowTask  CC=6  out:2
+    text  CC=16  out:15
+    uploadFiles  CC=8  out:5
+  services.web.app.static.workroom  [14 funcs]
+    api  CC=5  out:3
+    data  CC=1  out:1
+    ensureWorkroom  CC=4  out:4
+    escapeHtml  CC=1  out:2
+    loadAreas  CC=2  out:2
+    refresh  CC=6  out:5
+    renderCatalog  CC=11  out:4
+    renderLedger  CC=7  out:3
+    renderState  CC=3  out:2
+    renderThread  CC=7  out:3
+  services.web.app.static.workspace  [50 funcs]
+    api  CC=6  out:4
+    appendMsg  CC=1  out:1
+    appendMsgTo  CC=6  out:2
+    archiveTicket  CC=2  out:5
+    collectClarifyValues  CC=4  out:4
+    color  CC=1  out:1
+    confirmTicket  CC=1  out:6
+    copyChatToClipboard  CC=10  out:11
+    copyLogsToClipboard  CC=2  out:5
+    copyText  CC=2  out:7
+  services.web.app.tickets  [4 funcs]
+    enrich_task  CC=4  out:6
+    status_meta  CC=3  out:2
+    ticket_uri  CC=1  out:0
+    ticket_web_path  CC=1  out:0
+  services.web.app.workspace  [17 funcs]
+    _extract_shell_command  CC=4  out:8
+    _extract_ticket  CC=2  out:2
+    _format_export_text  CC=47  out:97
+    archive_task  CC=2  out:3
+    attach_context  CC=12  out:7
+    build_task_payload  CC=4  out:7
+    create_and_run  CC=5  out:9
+    create_task_from_draft  CC=4  out:5
+    create_task_immediate  CC=3  out:7
+    export_debug_logs  CC=15  out:26
+  services.web.src.main  [2 funcs]
+    createTask  CC=4  out:9
+    refresh  CC=7  out:8
+
+EDGES:
+  services.projector.app.main.operational_feed → services.projector.app.main._row_to_dict
+  services.projector.app.main.task_board → services.projector.app.main._row_to_dict
+  services.projector.app.main.agent_fleet → services.projector.app.main._row_to_dict
+  services.projector.app.main.approval_requests → services.projector.app.main._row_to_dict
+  services.projector.app.main.plugin_catalog → services.projector.app.main._row_to_dict
+  services.projector.app.main.rag_documents → services.projector.app.main._row_to_dict
+  services.projector.app.main.incident_feed → services.projector.app.main._row_to_dict
+  services.projector.app.main.service_health → services.projector.app.main._row_to_dict
+  services.projector.app.main.remediation_history → services.projector.app.main._row_to_dict
+  services.projector.app.main.rag_quality_board → services.projector.app.main._row_to_dict
+  services.projector.app.main.resource_registry → services.projector.app.main._row_to_dict
+  services.projector.app.main.workflow_versions → services.projector.app.main._row_to_dict
+  services.projector.app.projections.task_board.project_task_board → services.projector.app.projections.task_board._update_status
+  services.projector.app.projections.operational_feed.project_operational_feed → services.projector.app.projections.operational_feed._title_for
+  services.projector.app.projections.operational_feed.project_operational_feed → services.projector.app.projections.operational_feed._summary_for
+  services.projector.app.projections.dispatcher.project_event → services.projector.app.projections.dispatcher._normalize_event
+  services.projector.app.projections.dispatcher.project_event → services.projector.app.projections.operational_feed.project_operational_feed
+  services.projector.app.projections.dispatcher.project_event → services.projector.app.projections.task_board.project_task_board
+  services.projector.app.projections.dispatcher.project_event → services.projector.app.projections.agent_fleet.project_agent_fleet
+  services.projector.app.projections.dispatcher.project_event → services.projector.app.projections.workflow_versions.project_workflow_versions
+  services.projector.app.projections.dispatcher.project_event → services.projector.app.projections.approval_requests.project_approval_requests
+  services.projector.app.projections.dispatcher.project_event → services.projector.app.projections.plugin_catalog.project_plugin_catalog
+  services.projector.app.projections.dispatcher.project_event → services.projector.app.projections.resource_registry.project_resource_registry
+  services.projector.app.projections.dispatcher.project_event → services.projector.app.projections.incidents.project_incidents
+  services.web.app.api_routes.chat_message → services.web.app.conductor.handle_turn
+  services.web.app.api_routes.list_tickets → services.web.app.tickets.enrich_task
+  services.web.app.api_routes.get_ticket → services.web.app.tickets.enrich_task
+  services.web.app.workspace.get_or_create → services.web.app.workspace.new_session
+  services.web.app.workspace.workspace_state → services.web.app.workspace.get_or_create
+  services.web.app.workspace.attach_context → services.web.app.workspace.get_or_create
+  services.web.app.workspace.build_task_payload → services.web.app.workspace.get_or_create
+  services.web.app.workspace.build_task_payload → services.web.app.workspace._extract_shell_command
+  services.web.app.workspace.build_task_payload → services.web.app.workspace._extract_ticket
+  services.web.app.workspace.propose_task_draft → services.web.app.workspace.build_task_payload
+  services.web.app.workspace.create_task_immediate → services.web.app.workspace.get_or_create
+  services.web.app.workspace.create_task_immediate → services.web.app.workspace.link_ticket
+  services.web.app.workspace.handle_chat_message → services.web.app.workspace.get_or_create
+  services.web.app.workspace.handle_chat_message → services.web.app.workspace._extract_ticket
+  services.web.app.workspace.handle_chat_message → services.web.app.workspace.attach_context
+  services.web.app.workspace.handle_chat_message → services.web.app.workspace._extract_shell_command
+  services.web.app.workspace.handle_chat_message → services.web.app.workspace.build_task_payload
+  services.web.app.workspace.create_task_from_draft → services.web.app.workspace.create_task_immediate
+  services.web.app.workspace.create_task_from_draft → services.web.app.workspace.get_or_create
+  services.web.app.workspace.create_and_run → services.web.app.workspace.create_task_immediate
+  services.web.app.workspace.create_and_run → services.web.app.workspace.get_or_create
+  services.web.app.workspace.export_debug_logs → services.web.app.workspace.get_or_create
+  services.web.app.workspace.export_debug_logs → services.web.app.workspace._format_export_text
+  services.web.app.workspace.archive_task → services.web.app.workspace.get_or_create
+  services.web.app.workspace.link_ticket → services.web.app.workspace.get_or_create
+  services.web.app.workspace.fetch_live_board → services.web.app.static.workspace.items

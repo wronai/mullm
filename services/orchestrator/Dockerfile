@@ -17,8 +17,7 @@ COPY app/ ./app/
 
 # Create non-root user
 RUN useradd --create-home --shell /bin/bash app
-RUN mkdir -p /data/transport /data/rag \
-    && chown -R app:app /app /data
+RUN chown -R app:app /app
 USER app
 
 # Expose port

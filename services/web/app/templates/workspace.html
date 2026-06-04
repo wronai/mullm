@@ -3,128 +3,84 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Mullm Workspace</title>
+  <title>Mullm</title>
   <link rel="stylesheet" href="/static/workspace.css" />
 </head>
-<body>
-  <header class="topbar">
-    <h1>Mullm</h1>
-    <span class="tag">Workspace — Chat · Tasks · Context · Files</span>
+<body class="ws-simple ws-chat-first">
+  <header class="topbar topbar-min">
+    <h1><a href="/" class="brand-link">Mullm</a></h1>
+    <span class="tag">Chat prowadzi rozmowę · nlp2dsl</span>
     <span class="spacer"></span>
-    <button type="button" class="btn ghost" id="btn-new-task">+ Nowe zadanie</button>
-    <button type="button" class="btn ghost" id="btn-attach-file">Załącz plik</button>
-    <button type="button" class="btn" id="btn-refresh">Odśwież</button>
+    <a href="/workroom" class="btn ghost btn-sm" title="Multi-agent workroom">◇ Agenci</a>
+    <button type="button" class="btn ghost btn-sm" id="btn-toggle-tickets" title="Tickety">◎</button>
+    <button type="button" class="btn ghost btn-sm" id="btn-copy-chat">Chat</button>
+    <button type="button" class="btn btn-sm" id="btn-refresh">↻</button>
   </header>
 
-  <div class="cockpit">
-    <!-- Lewa: kolejka zadań -->
-    <aside class="col-tasks">
-      <div class="panel-head">Kolejka / Zadania</div>
-      <div class="task-list" id="task-list"></div>
-      <div style="padding:0.5rem;border-top:1px solid var(--border)">
-        <button type="button" class="btn" style="width:100%" id="btn-open-composer">Utwórz zadanie</button>
-      </div>
-    </aside>
-
-    <!-- Środek: chat -->
-    <main class="col-chat">
-      <div class="panel-head">Rozmowa operacyjna</div>
-      <div id="draft-panel" class="draft-card" style="display:none">
-        <h4>Propozycja zadania (draft)</h4>
-        <div id="draft-body"></div>
-        <div class="draft-actions">
-          <button type="button" class="btn" id="draft-create">Utwórz ticket</button>
-          <button type="button" class="btn success" id="draft-run">Utwórz i uruchom</button>
-          <button type="button" class="btn ghost" id="draft-queue">Dodaj do kolejki</button>
+  <div class="layout-chat-first">
+    <aside class="rail-tickets" id="rail-tickets">
+      <div class="rail-head">
+        <input type="search" id="ticket-search" class="ticket-search" placeholder="Ticket…" />
+        <div class="view-tabs mini">
+          <button type="button" class="tab active" data-view="active">●</button>
+          <button type="button" class="tab" data-view="archived">▣</button>
         </div>
       </div>
+      <div class="task-list" id="task-list"></div>
+    </aside>
+
+    <main class="chat-main">
       <div id="chat-messages" class="chat-messages"></div>
-      <div class="chat-compose">
-        <textarea id="chat-input" placeholder="Opisz cel, ticket (np. PLF-074), polecenie shell…"></textarea>
+
+      <div id="clarify-panel" class="clarify-panel" hidden>
+        <p class="clarify-title">AI potrzebuje doprecyzowania</p>
+        <p id="clarify-hint" class="clarify-hint"></p>
+        <form id="clarify-form" class="clarify-form"></form>
+        <button type="submit" form="clarify-form" class="btn success">Wyślij odpowiedź</button>
+      </div>
+
+      <div class="chat-compose chat-compose-min">
+        <textarea id="chat-input" rows="2" placeholder="Napisz co chcesz zrobić — AI dopyta jeśli trzeba…"></textarea>
         <div class="chat-toolbar">
-          <select id="chat-mode" title="Tryb">
-            <option value="discuss">Dyskusja + draft</option>
-            <option value="search_context">Szukaj w kontekście</option>
-            <option value="create_task">Utwórz zadanie</option>
-            <option value="run_task">Utwórz i uruchom</option>
-          </select>
-          <label style="font-size:0.78rem;color:var(--muted)">
-            <input type="checkbox" id="use-rag" checked /> RAG
-          </label>
-          <input type="file" id="chat-files" multiple hidden />
           <button type="button" class="btn" id="chat-send">Wyślij</button>
+          <button type="button" class="btn ghost btn-sm" id="btn-attach-file">📎</button>
+          <input type="file" id="chat-files" multiple hidden />
+          <select id="chat-mode" class="mode-select" title="Tryb">
+            <option value="discuss" selected>Auto</option>
+            <option value="search_context">RAG</option>
+            <option value="run_task">Shell</option>
+          </select>
+          <label class="wait-confirm" title="Ticket trafi na listę bez auto-uruchomienia">
+            <input type="checkbox" id="wait-for-confirmation" />
+            Czekaj na potwierdzenie
+          </label>
         </div>
       </div>
     </main>
 
-    <!-- Prawa: kontekst -->
-    <aside class="col-context">
-      <div class="panel-head">Kontekst wykonawczy</div>
-      <div class="context-body">
-        <div class="ctx-field">
-          <label>Ticket</label>
-          <input id="ctx-ticket" placeholder="PLF-074" />
-        </div>
-        <div class="ctx-field">
-          <label>Projekt</label>
-          <input id="ctx-project" placeholder="mullm / koru" />
-        </div>
-        <div class="ctx-field">
-          <label>Branch</label>
-          <input id="ctx-branch" placeholder="main" />
-        </div>
-        <div class="ctx-field">
-          <label>Agent</label>
-          <input id="ctx-agent" placeholder="shell-agent-a" />
-        </div>
-        <div class="ctx-field">
-          <label>Notatka kontekstu</label>
-          <textarea id="ctx-note" rows="2" placeholder="Zapisz jako context note"></textarea>
-          <button type="button" class="btn ghost" id="btn-save-note" style="margin-top:0.35rem">Zapisz notatkę</button>
-        </div>
-        <div class="ctx-field">
-          <label>URI / zasoby</label>
-          <ul class="ctx-list" id="ctx-uris"></ul>
-        </div>
-        <div class="ctx-field">
-          <label>Pliki w scope</label>
-          <ul class="ctx-list" id="ctx-files"></ul>
-        </div>
+    <aside class="rail-ticket" id="ticket-panel">
+      <div id="ticket-detail" class="ticket-detail empty">
+        <p class="muted">Ticket pojawi się po utworzeniu.</p>
       </div>
-      <div class="panel-head">Live events (sesja)</div>
-      <div class="events-log" id="session-events"></div>
     </aside>
-
-    <!-- Dół: pliki + feed -->
-    <section class="col-files">
-      <div class="panel-head">Pliki i wyniki</div>
-      <div id="dropzone" class="dropzone">Przeciągnij pliki tutaj lub kliknij „Załącz plik”</div>
-      <div class="files-body" id="file-chips"></div>
-      <div class="panel-head">Operational feed</div>
-      <div class="events-log" id="global-feed"></div>
-    </section>
   </div>
 
-  <!-- Modal composer -->
-  <dialog id="task-dialog" style="background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:1rem;max-width:420px">
-    <h3 style="margin-top:0">Nowe zadanie</h3>
+  <dialog id="task-dialog" class="task-dialog">
+    <h3>Ticket (ręcznie)</h3>
     <form id="task-form">
-      <div class="ctx-field"><label>Tytuł</label><input name="title" required /></div>
-      <div class="ctx-field"><label>Opis</label><textarea name="description" rows="3"></textarea></div>
-      <div class="ctx-field"><label>Shell</label><input name="shell_command" placeholder="opcjonalnie" /></div>
-      <div class="ctx-field"><label>Priorytet</label>
-        <select name="priority"><option>low</option><option selected>medium</option><option>high</option></select>
-      </div>
-      <label><input type="checkbox" name="auto_assign" checked /> Auto-przypisz agenta</label>
-      <div style="display:flex;gap:0.5rem;margin-top:0.75rem">
-        <button type="submit" class="btn">Utwórz</button>
-        <button type="button" class="btn success" id="form-run">Utwórz i uruchom</button>
-        <button type="button" class="btn ghost" id="form-close">Zamknij</button>
-      </div>
+      <label>Tytuł<input name="title" required /></label>
+      <label>Shell<input name="shell_command" placeholder="ls -la" /></label>
+      <label class="wait-confirm">
+        <input type="checkbox" name="wait_for_confirmation" id="form-wait-confirm" />
+        Czekaj na potwierdzenie na liście ticketów
+      </label>
+      <button type="submit" class="btn">Utwórz i uruchom</button>
+      <button type="button" class="btn ghost" id="form-close">×</button>
     </form>
   </dialog>
 
   <div id="toast" class="toast-bar"></div>
+  <script>window.__DEEP_LINK_TICKET__ = {{ deep_link_ticket|default(none)|tojson }};</script>
   <script src="/static/workspace.js"></script>
 </body>
 </html>

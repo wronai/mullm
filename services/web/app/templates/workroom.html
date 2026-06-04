@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mullm — Agent Workroom</title>
+  <link rel="stylesheet" href="/static/workspace.css" />
+  <link rel="stylesheet" href="/static/workroom.css" />
+</head>
+<body class="workroom-page">
+  <header class="topbar topbar-min">
+    <h1><a href="/" class="brand-link">Mullm</a></h1>
+    <span class="tag">Agent Workroom · multi-agent</span>
+    <span class="spacer"></span>
+    <a href="/" class="btn ghost btn-sm">← Chat użytkownika</a>
+    <button type="button" class="btn btn-sm" id="btn-refresh">↻</button>
+  </header>
+
+  <div class="workroom-layout">
+    <aside class="wr-sidebar">
+      <h3>Agenci</h3>
+      <ul id="agent-list" class="agent-list"></ul>
+      <h3>Obszary dostępu</h3>
+      <ul id="area-list" class="area-list"></ul>
+      <h3>Grupy (etykiety)</h3>
+      <ul id="group-list" class="group-list muted small"></ul>
+    </aside>
+
+    <main class="wr-main">
+      <section class="wr-goal">
+        <label for="wr-input">Twoje pytanie / zadanie dla zespołu agentów</label>
+        <textarea id="wr-input" rows="2" placeholder="np. lista plików · run ls -la · przeanalizuj logi…"></textarea>
+        <div class="wr-toolbar">
+          <button type="button" class="btn" id="wr-run">Uruchom zespół agentów</button>
+          <label class="wait-confirm">
+            <input type="checkbox" id="wr-wait-confirm" />
+            Czekaj na potwierdzenie ticketów
+          </label>
+        </div>
+        <p class="muted small">Sesja workspace: <code id="wr-user-session">—</code></p>
+      </section>
+
+      <section class="wr-thread">
+        <h3>Rozmowa agentów</h3>
+        <div id="agent-thread" class="agent-thread"></div>
+      </section>
+
+      <section class="wr-ledger">
+        <h3>Ledger wykonania (jawny)</h3>
+        <div id="ledger" class="ledger"></div>
+      </section>
+
+      <section class="wr-answer">
+        <h3>Odpowiedź dla Ciebie</h3>
+        <pre id="result-summary" class="result-summary">—</pre>
+      </section>
+    </main>
+  </div>
+
+  <div id="toast" class="toast-bar"></div>
+  <script src="/static/workroom.js"></script>
+</body>
+</html>

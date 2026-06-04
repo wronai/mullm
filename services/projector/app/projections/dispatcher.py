@@ -5,6 +5,7 @@ from typing import Any
 
 from app.projections.agent_fleet import project_agent_fleet
 from app.projections.approval_requests import project_approval_requests
+from app.projections.incidents import project_incidents
 from app.projections.operational_feed import project_operational_feed
 from app.projections.plugin_catalog import project_plugin_catalog
 from app.projections.task_board import project_task_board
@@ -21,6 +22,7 @@ async def project_event(db, event: dict[str, Any]) -> None:
     await project_approval_requests(db, normalized)
     await project_plugin_catalog(db, normalized)
     await project_resource_registry(db, normalized)
+    await project_incidents(db, normalized)
 
 
 def _normalize_event(event: dict[str, Any]) -> dict[str, Any]:

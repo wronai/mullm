@@ -19,12 +19,20 @@ class FakeRow:
     def __getitem__(self, key: str) -> Any:
         return self._data[key]
 
+    def get(self, key: str, default: Any = None) -> Any:
+        return self._data.get(key, default)
+
+    def keys(self):
+        return self._data.keys()
+
 
 class InMemoryPostgres:
     def __init__(self) -> None:
         self.events: list[dict[str, Any]] = []
         self.rag_documents: dict[str, dict[str, Any]] = {}
         self.rag_chunks: list[dict[str, Any]] = []
+        self.incidents: list[dict[str, Any]] = []
+        self.rag_health_snapshots: list[dict[str, Any]] = []
 
     async def connect(self) -> None:
         return None
@@ -102,6 +110,36 @@ class InMemoryPostgres:
                 }
             )
             return "OK"
+        if "insert into incidents" in query:
+            self.incidents.append(
+                {
+                    "incident_id": args[0],
+                    "correlation_id": args[1],
+                    "retrieval_trace_id": args[2],
+                    "chat_session_id": args[3],
+                    "incident_code": args[4],
+                    "severity": args[5],
+                    "component": args[6],
+                    "message": args[7],
+                    "diagnostics": args[8],
+                    "remediation": args[9],
+                    "status": args[10],
+                    "fallback_taken": args[11],
+                    "created_at": args[12],
+                }
+            )
+            return "OK"
+        if "insert into rag_health_snapshots" in query:
+            self.rag_health_snapshots.append(
+                {
+                    "snapshot_id": args[0],
+                    "retrieval_trace_id": args[1],
+                    "correlation_id": args[2],
+                    "status": args[3],
+                    "checks": args[4],
+                }
+            )
+            return "OK"
         if "insert into events" in query:
             self.events.append(
                 {
@@ -121,6 +159,13 @@ class InMemoryPostgres:
         return "OK"
 
     async def fetchrow(self, query: str, *args: Any) -> FakeRow | None:
+        if "select 1 as ok" in query:
+            return FakeRow({"ok": 1})
+        if "count(*)::int as n from rag_documents" in query:
+            return FakeRow({"n": len(self.rag_documents)})
+        if "count(*)::int as n from rag_chunks" in query:
+            return FakeRow({"n": len(self.rag_chunks)})
+
         stream_id = args[0]
         revision = max(
             (
@@ -133,6 +178,15 @@ class InMemoryPostgres:
         return FakeRow({"revision": revision})
 
     async def fetch(self, query: str, *args: Any) -> list[FakeRow]:
+        if "from incidents" in query and "order by created_at desc" in query:
+            rows = sorted(
+                self.incidents,
+                key=lambda item: item["created_at"],
+                reverse=True,
+            )
+            limit = args[-1] if args else 100
+            return [FakeRow(row) for row in rows[:limit]]
+
         if "from rag_documents" in query and "order by updated_at" in query:
             docs = list(self.rag_documents.values())
             return [FakeRow(doc) for doc in docs[: args[0] if args else 100]]
