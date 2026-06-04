@@ -22,7 +22,7 @@ docker compose --profile core up -d
 |--------|-----|----------|
 | S4 | Resource + URI | `mullm://` registry |
 | S5 | Access Fabric MVP | transport + adaptery |
-| S6 | RAG ingest | indexer + retrieval |
+| S6 | RAG ingest | **MVP** — OpenRouter embed + FTS, auto-ingest po `RegisterResource` |
 
 **Stan w repo (S4–S5 MVP):**
 - URI `mullm://{adapter}/{path}` — localfs, http/https
@@ -60,7 +60,7 @@ docker compose --profile full up -d
 - **E1** Core Orchestration — task, agent, workflow
 - **E2** Event Contracts & Catalog — `catalog/events/*.json`
 - **E3** Access Fabric — resource-registry (planned)
-- **E4** RAG Fabric — indexer (planned)
+- **E4** RAG Fabric — `/api/rag`, `rag_documents` / `rag_chunks`, `OPENROUTER_API_KEY` + `LLM_MODEL` w `.env`
 - **E5** Workflow Registry — wersjonowanie + shadow
 - **E6** Capability/Plugin System — manifesty + registry
 - **E7** Evaluation & Observability — `evolution_metrics`

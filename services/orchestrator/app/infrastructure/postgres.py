@@ -1,11 +1,17 @@
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any
+import logging
+import os
 
 try:
     import asyncpg
 except ModuleNotFoundError:  # pragma: no cover - exercised only without deps installed
     asyncpg = None
+
+
+logger = logging.getLogger(__name__)
 
 
 EVENTS_SCHEMA = """
@@ -45,7 +51,7 @@ class PostgresConnection:
         if asyncpg is None:
             raise RuntimeError("asyncpg is required to use PostgresConnection")
         self.pool = await asyncpg.create_pool(self.database_url)
-        await self.execute(EVENTS_SCHEMA)
+        await self._run_schema_migrations()
 
     async def disconnect(self) -> None:
         if self.pool:
@@ -69,3 +75,18 @@ class PostgresConnection:
             raise RuntimeError("PostgresConnection is not connected")
         async with self.pool.acquire() as connection:
             return await connection.fetchrow(query, *args)
+
+    async def _run_schema_migrations(self) -> None:
+        schema_dir = Path(os.getenv("MULLM_DB_INIT_DIR", "/app/db/init"))
+        paths = sorted(schema_dir.glob("*.sql")) if schema_dir.exists() else []
+        if not paths:
+            await self.execute(EVENTS_SCHEMA)
+            return
+
+        async with self.pool.acquire() as connection:
+            for path in paths:
+                sql = path.read_text(encoding="utf-8").strip()
+                if not sql:
+                    continue
+                logger.info("Applying schema file %s", path)
+                await connection.execute(sql)

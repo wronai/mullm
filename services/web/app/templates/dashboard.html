@@ -2,115 +2,162 @@
 <html lang="pl">
 <head>
   <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Mullm Control Plane</title>
-  <style>
-    body { font-family: system-ui, sans-serif; margin: 2rem; background: #0f1419; color: #e7ecf3; }
-    h1 { margin-bottom: 0.25rem; }
-    .muted { color: #8b9bb4; }
-    section { margin-top: 2rem; }
-    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-    th, td { text-align: left; padding: 0.5rem; border-bottom: 1px solid #2a3548; }
-    th { color: #8b9bb4; font-weight: 600; }
-    .status { text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.04em; }
-  </style>
+  <link rel="stylesheet" href="/static/app.css" />
 </head>
 <body>
-  <h1>Mullm</h1>
-  <p class="muted">Event-sourced multi-agent control plane</p>
+  <header class="header">
+    <h1>Mullm</h1>
+    <span class="muted">Panel sterowania — chat, kontekst, zadania</span>
+    <button type="button" class="btn secondary" id="refresh-board" style="margin-left:auto">Odśwież tablicę</button>
+  </header>
 
-  <section>
-    <h2>Task board</h2>
-    <table>
-      <thead><tr><th>ID</th><th>Title</th><th>Status</th><th>Agent</th><th>Priority</th></tr></thead>
-      <tbody>
-        {% for t in tasks %}
-        <tr>
-          <td>{{ t.task_id }}</td>
-          <td>{{ t.title }}</td>
-          <td class="status">{{ t.status }}</td>
-          <td>{{ t.assigned_agent_id or "—" }}</td>
-          <td>{{ t.priority }}</td>
-        </tr>
-        {% else %}
-        <tr><td colspan="5">Brak zadań (uruchom orchestrator + projector)</td></tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </section>
+  <div class="layout">
+    <section class="chat-panel" aria-label="Chat">
+      <div class="chat-header">Chat — dyskusja, pliki, kontekst RAG</div>
+      <div id="chat-messages" class="chat-messages"></div>
+      <div class="chat-compose">
+        <textarea id="chat-input" placeholder="Napisz wiadomość… (Enter = wyślij, Shift+Enter = nowa linia)"></textarea>
+        <div class="chat-actions">
+          <input type="file" id="chat-files" multiple />
+          <label class="checkbox-row">
+            <input type="checkbox" id="use-rag" checked />
+            Użyj RAG / LLM
+          </label>
+          <label class="checkbox-row">
+            <input type="checkbox" id="create-task-on-send" />
+            Utwórz zadanie z tej wiadomości
+          </label>
+          <button type="button" class="btn" id="chat-send">Wyślij</button>
+        </div>
+        <div id="file-list" class="file-list"></div>
+        <input type="text" id="shell-from-chat" placeholder="Opcjonalnie: polecenie shell dla zadania (np. echo hello)" style="width:100%;margin-top:0.5rem;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:0.45rem;" />
+      </div>
+    </section>
 
-  <section>
-    <h2>Agent fleet</h2>
-    <table>
-      <thead><tr><th>ID</th><th>Type</th><th>Status</th><th>Task</th></tr></thead>
-      <tbody>
-        {% for a in agents %}
-        <tr>
-          <td>{{ a.agent_id }}</td>
-          <td>{{ a.agent_type }}</td>
-          <td class="status">{{ a.status }}</td>
-          <td>{{ a.current_task_id or "—" }}</td>
-        </tr>
-        {% else %}
-        <tr><td colspan="4">Brak agentów</td></tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </section>
+    <aside class="sidebar">
+      <section>
+        <h2>Nowe zadanie</h2>
+        <form id="task-form" class="form-grid">
+          <label>Tytuł</label>
+          <input name="title" required placeholder="np. Sprawdź logi" />
+          <label>Opis</label>
+          <textarea name="description" placeholder="Kontekst dla agenta"></textarea>
+          <label>Polecenie shell (opcjonalne)</label>
+          <input name="shell_command" placeholder="np. ls -la /data" />
+          <label>Priorytet</label>
+          <select name="priority">
+            <option value="low">low</option>
+            <option value="medium" selected>medium</option>
+            <option value="high">high</option>
+          </select>
+          <label class="checkbox-row">
+            <input type="checkbox" name="auto_assign" checked />
+            Auto-przypisz do agenta shell
+          </label>
+          <button type="submit" class="btn">Utwórz zadanie</button>
+        </form>
+        <div id="task-toast" class="toast"></div>
+      </section>
 
-  <section>
-    <h2>Pending approvals</h2>
-    <table>
-      <thead><tr><th>ID</th><th>Action</th><th>Target</th><th>Risk</th><th>Status</th></tr></thead>
-      <tbody>
-        {% for a in approvals %}
-        <tr>
-          <td>{{ a.approval_id }}</td>
-          <td>{{ a.action_type }}</td>
-          <td>{{ a.target_id }}</td>
-          <td>{{ a.risk_level }}</td>
-          <td class="status">{{ a.status }}</td>
-        </tr>
-        {% else %}
-        <tr><td colspan="5">Brak próśb o zatwierdzenie</td></tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </section>
+      <section>
+        <h2>Skróty</h2>
+        <p class="muted" style="font-size:0.82rem;line-height:1.4;margin:0">
+          Pliki z chatu trafiają do indeksu RAG. Zadania z poleceniem shell są wysyłane do
+          <code>shell-agent</code> przez NATS.
+        </p>
+      </section>
+    </aside>
 
-  <section>
-    <h2>Plugin catalog</h2>
-    <table>
-      <thead><tr><th>ID</th><th>Version</th><th>Status</th></tr></thead>
-      <tbody>
-        {% for p in plugins %}
-        <tr>
-          <td>{{ p.plugin_id }}</td>
-          <td>{{ p.version }}</td>
-          <td class="status">{{ p.status }}</td>
-        </tr>
-        {% else %}
-        <tr><td colspan="3">Brak pluginów</td></tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </section>
+    <div class="main-tables">
+      <h2>Task board</h2>
+      <table>
+        <thead><tr><th>ID</th><th>Title</th><th>Status</th><th>Agent</th><th>Priority</th></tr></thead>
+        <tbody id="tasks-body">
+          {% for t in tasks %}
+          <tr>
+            <td title="{{ t.task_id }}">{{ t.task_id[:8] }}…</td>
+            <td>{{ t.title }}</td>
+            <td class="status">{{ t.status }}</td>
+            <td>{{ t.assigned_agent_id or "—" }}</td>
+            <td>{{ t.priority }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="5">Brak zadań</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
 
-  <section>
-    <h2>Operational feed</h2>
-    <table>
-      <thead><tr><th>When</th><th>Event</th><th>Summary</th></tr></thead>
-      <tbody>
-        {% for e in feed %}
-        <tr>
-          <td>{{ e.occurred_at }}</td>
-          <td>{{ e.event_type }}</td>
-          <td>{{ e.summary or e.title or e.aggregate_id }}</td>
-        </tr>
-        {% else %}
-        <tr><td colspan="3">Brak zdarzeń</td></tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </section>
+      <h2>Agent fleet</h2>
+      <table>
+        <thead><tr><th>ID</th><th>Type</th><th>Status</th><th>Task</th></tr></thead>
+        <tbody>
+          {% for a in agents %}
+          <tr>
+            <td>{{ a.agent_id }}</td>
+            <td>{{ a.agent_type }}</td>
+            <td class="status">{{ a.status }}</td>
+            <td>{{ a.current_task_id or "—" }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="4">Brak agentów</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <h2>Resource registry</h2>
+      <table>
+        <thead><tr><th>ID</th><th>Name</th><th>URI</th><th>Status</th></tr></thead>
+        <tbody>
+          {% for r in resources %}
+          <tr>
+            <td>{{ r.resource_id[:8] }}…</td>
+            <td>{{ r.name }}</td>
+            <td>{{ r.uri }}</td>
+            <td class="status">{{ r.status }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="4">Brak zasobów — wyślij plik w chacie</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <h2>RAG documents</h2>
+      <table>
+        <thead><tr><th>Resource</th><th>Name</th><th>Status</th><th>Chunks</th></tr></thead>
+        <tbody>
+          {% for d in rag_documents %}
+          <tr>
+            <td>{{ d.resource_id[:8] }}…</td>
+            <td>{{ d.name }}</td>
+            <td class="status">{{ d.status }}</td>
+            <td>{{ d.chunk_count }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="4">Brak dokumentów RAG</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <h2>Operational feed</h2>
+      <table>
+        <thead><tr><th>When</th><th>Event</th><th>Summary</th></tr></thead>
+        <tbody>
+          {% for e in feed %}
+          <tr>
+            <td>{{ e.occurred_at }}</td>
+            <td>{{ e.event_type }}</td>
+            <td>{{ e.summary or e.title or e.aggregate_id }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="3">Brak zdarzeń</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
 </body>
 </html>

@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.4] - 2026-06-04
+
+### Docs
+- Update README.md
+- Update docs/architecture.md
+- Update docs/roadmap-90d.md
+
+### Test
+- Update tests/conftest.py
+- Update tests/test_projector_routes.py
+- Update tests/test_rag.py
+- Update tests/test_shell_executor.py
+
+### Other
+- Update .env.example
+- Update agents/shell-agent/app/nats_consumer.py
+- Update catalog/capabilities.json
+- Update catalog/events/rag.json
+- Update db/init/005_rag.sql
+- Update services/orchestrator/Dockerfile
+- Update services/orchestrator/app/access/transport.py
+- Update services/orchestrator/app/api/access.py
+- Update services/orchestrator/app/api/rag.py
+- Update services/orchestrator/app/application/command_bus.py
+- ... and 22 more files
+
 ## [0.0.3] - 2026-06-04
 
 ### Docs

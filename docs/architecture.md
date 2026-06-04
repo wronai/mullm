@@ -11,7 +11,7 @@ Mullm to event-sourced control plane dla multi-agent runtime (CQRS + ES + NATS).
 | **Query** | Projector → read modele w Postgres |
 | **Evolution** | Katalog, policy, evaluation, eksperymenty, controlled change |
 | **Access** (plan) | Resource registry, transport, URI `mullm://` |
-| **RAG** (plan) | Indexer, retriever, chunking |
+| **RAG** | OpenRouter embed + FTS, auto-ingest on `RegisterResource`, `/api/rag` |
 
 ## Evolution control plane
 

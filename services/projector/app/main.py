@@ -206,6 +206,22 @@ async def plugin_catalog(status: str | None = None, limit: int = 100, offset: in
     return {"items": [_row_to_dict(row) for row in rows]}
 
 
+@app.get("/projections/rag/documents")
+async def rag_documents(limit: int = 100, offset: int = 0):
+    rows = await app.state.db.fetch(
+        """
+        select resource_id, uri, name, classification, status,
+               chunk_count, embedding_model, error, indexed_at, updated_at
+        from rag_documents
+        order by updated_at desc
+        limit $1 offset $2
+        """,
+        limit,
+        offset,
+    )
+    return {"items": [_row_to_dict(row) for row in rows]}
+
+
 @app.get("/projections/resources")
 async def resource_registry(limit: int = 100, offset: int = 0):
     rows = await app.state.db.fetch(
@@ -233,64 +249,6 @@ async def workflow_versions(limit: int = 100, offset: int = 0):
         limit,
         offset,
     )
-    return {"items": [_row_to_dict(row) for row in rows]}
-
-
-@app.get("/projections/approvals")
-async def approval_requests(status: str | None = None, limit: int = 100, offset: int = 0):
-    if status:
-        rows = await app.state.db.fetch(
-            """
-            select *
-            from approval_requests
-            where status = $1
-            order by updated_at desc
-            limit $2 offset $3
-            """,
-            status,
-            limit,
-            offset,
-        )
-    else:
-        rows = await app.state.db.fetch(
-            """
-            select *
-            from approval_requests
-            order by updated_at desc
-            limit $1 offset $2
-            """,
-            limit,
-            offset,
-        )
-    return {"items": [_row_to_dict(row) for row in rows]}
-
-
-@app.get("/projections/plugins")
-async def plugin_catalog(status: str | None = None, limit: int = 100, offset: int = 0):
-    if status:
-        rows = await app.state.db.fetch(
-            """
-            select *
-            from plugin_catalog
-            where status = $1
-            order by updated_at desc
-            limit $2 offset $3
-            """,
-            status,
-            limit,
-            offset,
-        )
-    else:
-        rows = await app.state.db.fetch(
-            """
-            select *
-            from plugin_catalog
-            order by updated_at desc
-            limit $1 offset $2
-            """,
-            limit,
-            offset,
-        )
     return {"items": [_row_to_dict(row) for row in rows]}
 
 

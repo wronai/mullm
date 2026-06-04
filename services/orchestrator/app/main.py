@@ -9,11 +9,13 @@ from app.config import settings
 from app.infrastructure.nats_bus import NATSBus
 from app.infrastructure.postgres import PostgresConnection
 from app.api.access import router as access_router
+from app.api.rag import router as rag_router
 from app.api.catalog import router as catalog_router
 from app.api.evolution import router as evolution_router
 from app.application.command_bus import CommandBus
 from app.access.transport import TransportService
 from app.evolution import ArchitectureCatalog, EvaluationEngine, ExperimentManager, PolicyEngine
+from app.rag import OpenRouterClient, RagIndexer, RagRetriever, RagStore
 from app.infrastructure.eventstore_factory import build_event_store
 from app.api.commands import router as commands_router
 from app.api.queries import router as queries_router
@@ -39,6 +41,18 @@ async def lifespan(app: FastAPI):
     app.state.evaluation = EvaluationEngine(app.state.postgres)
     app.state.experiments = ExperimentManager(app.state.postgres)
     app.state.transport = TransportService()
+    app.state.openrouter = OpenRouterClient(
+        settings.openrouter_api_key,
+        llm_model=settings.llm_model,
+        embedding_model=settings.embedding_model,
+    )
+    app.state.rag_store = RagStore(app.state.postgres)
+    app.state.rag_indexer = RagIndexer(
+        app.state.rag_store,
+        app.state.transport,
+        app.state.openrouter,
+    )
+    app.state.rag_retriever = RagRetriever(app.state.rag_store, app.state.openrouter)
     app.state.command_bus = CommandBus(
         event_store=app.state.event_store,
         message_bus=app.state.nats_bus,
@@ -47,6 +61,7 @@ async def lifespan(app: FastAPI):
         evaluation=app.state.evaluation,
         experiments=app.state.experiments,
         transport=app.state.transport,
+        rag_indexer=app.state.rag_indexer if settings.rag_auto_ingest else None,
         environment=settings.environment,
     )
 
@@ -86,6 +101,7 @@ app.include_router(queries_router, prefix="/api/queries", tags=["queries"])
 app.include_router(catalog_router, prefix="/api/catalog", tags=["catalog"])
 app.include_router(evolution_router, prefix="/api/evolution", tags=["evolution"])
 app.include_router(access_router, prefix="/api/access", tags=["access"])
+app.include_router(rag_router, prefix="/api/rag", tags=["rag"])
 
 
 @app.get("/health")

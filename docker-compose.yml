@@ -1,4 +1,5 @@
 # Mullm — profile: core | access | rag | evolution | legacy | full
+# Ports and hostnames: .env (see .env.example)
 # Usage: docker compose --profile core up -d
 
 services:
@@ -6,11 +7,11 @@ services:
     profiles: [core, access, rag, evolution, full]
     image: postgres:15
     environment:
-      POSTGRES_DB: mullm
-      POSTGRES_USER: mullm
-      POSTGRES_PASSWORD: mullm_password
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
-      - "5432:5432"
+      - "${MULLM_POSTGRES_HOST_PORT}:${MULLM_POSTGRES_PORT}"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./db/init:/docker-entrypoint-initdb.d
@@ -21,9 +22,9 @@ services:
     profiles: [core, access, rag, evolution, full]
     image: nats:2.9
     ports:
-      - "4222:4222"
-      - "8222:8222"
-    command: ["--http_port", "8222"]
+      - "${MULLM_NATS_CLIENT_HOST_PORT}:${MULLM_NATS_CLIENT_PORT}"
+      - "${MULLM_NATS_MONITOR_HOST_PORT}:${MULLM_NATS_MONITOR_PORT}"
+    command: ["--http_port", "${MULLM_NATS_MONITOR_PORT}"]
     networks:
       - mullm_network
 
@@ -31,7 +32,7 @@ services:
     profiles: [core, full]
     image: redis:7-alpine
     ports:
-      - "6379:6379"
+      - "${MULLM_REDIS_HOST_PORT}:${MULLM_REDIS_PORT}"
     networks:
       - mullm_network
 
@@ -43,7 +44,7 @@ services:
       --run-projections=All
       --enable-atom-pub-over-http
     ports:
-      - "2113:2113"
+      - "${MULLM_EVENTSTORE_HOST_PORT}:${MULLM_EVENTSTORE_PORT}"
     volumes:
       - eventstore_data:/var/lib/eventstore
     networks:
@@ -54,24 +55,30 @@ services:
     build:
       context: ./services/orchestrator
       dockerfile: Dockerfile
+    env_file:
+      - .env
     volumes:
       - ./catalog:/app/catalog:ro
+      - ./db/init:/app/db/init:ro
       - access_data:/data
+      - rag_data:/data/rag
     environment:
       - MULLM_LOCALFS_ROOT=/data
       - MULLM_TRANSPORT_SANDBOX=/data/transport
-      - DATABASE_URL=postgresql://mullm:mullm_password@postgres:5432/mullm
-      - NATS_URL=nats://nats:4222
-      - REDIS_URL=redis://redis:6379
+      - DATABASE_URL=${MULLM_DATABASE_URL}
+      - NATS_URL=${MULLM_NATS_URL}
+      - REDIS_URL=${MULLM_REDIS_URL}
       - EVENT_STORE_BACKEND=${EVENT_STORE_BACKEND:-postgres}
-      - EVENTSTORE_URL=esdb://eventstoredb:2113?tls=false
+      - EVENTSTORE_URL=${MULLM_EVENTSTORE_URL}
       - CATALOG_PATH=/app/catalog
-      - ENVIRONMENT=dev
+      - MULLM_DB_INIT_DIR=/app/db/init
+      - ENVIRONMENT=${ENVIRONMENT:-dev}
+      - RAG_AUTO_INGEST=${RAG_AUTO_INGEST:-true}
     depends_on:
       - postgres
       - nats
     ports:
-      - "8001:8000"
+      - "${MULLM_ORCHESTRATOR_HOST_PORT}:${MULLM_ORCHESTRATOR_PORT}"
     networks:
       - mullm_network
 
@@ -80,14 +87,19 @@ services:
     build:
       context: ./services/projector
       dockerfile: Dockerfile
+    env_file:
+      - .env
     environment:
-      - DATABASE_URL=postgresql://mullm:mullm_password@postgres:5432/mullm
-      - NATS_URL=nats://nats:4222
+      - DATABASE_URL=${MULLM_DATABASE_URL}
+      - NATS_URL=${MULLM_NATS_URL}
+      - MULLM_DB_INIT_DIR=/app/db/init
+    volumes:
+      - ./db/init:/app/db/init:ro
     depends_on:
       - postgres
       - nats
     ports:
-      - "8002:8000"
+      - "${MULLM_PROJECTOR_HOST_PORT}:${MULLM_PROJECTOR_PORT}"
     networks:
       - mullm_network
 
@@ -96,11 +108,13 @@ services:
     build:
       context: ./services/web
       dockerfile: Dockerfile
+    env_file:
+      - .env
     environment:
-      - ORCHESTRATOR_URL=http://orchestrator:8000
-      - PROJECTOR_URL=http://projector:8000
+      - ORCHESTRATOR_URL=${MULLM_ORCHESTRATOR_URL}
+      - PROJECTOR_URL=${MULLM_PROJECTOR_URL}
     ports:
-      - "3000:3000"
+      - "${MULLM_WEB_HOST_PORT}:${MULLM_WEB_PORT}"
     depends_on:
       - orchestrator
       - projector
@@ -112,8 +126,10 @@ services:
     build:
       context: ./agents/shell-agent
       dockerfile: Dockerfile
+    env_file:
+      - .env
     environment:
-      - NATS_URL=nats://nats:4222
+      - NATS_URL=${MULLM_NATS_URL}
       - AGENT_ID=shell-agent-a
     depends_on:
       - nats
@@ -125,15 +141,16 @@ services:
     build:
       context: ./agents/shell-agent
       dockerfile: Dockerfile
+    env_file:
+      - .env
     environment:
-      - NATS_URL=nats://nats:4222
+      - NATS_URL=${MULLM_NATS_URL}
       - AGENT_ID=shell-agent-b
     depends_on:
       - nats
     networks:
       - mullm_network
 
-  # Access Fabric — embedded in orchestrator; extra volume for localfs sandbox
   access-data:
     profiles: [access, full]
     image: busybox:latest
@@ -143,18 +160,11 @@ services:
     networks:
       - mullm_network
 
-  # --- planned: rag profile (Sprint 6) ---
-  indexer:
-    profiles: [rag, full]
-    image: busybox:latest
-    command: ["sh", "-c", "echo indexer planned && sleep infinity"]
-    networks:
-      - mullm_network
-
 volumes:
   postgres_data:
   eventstore_data:
   access_data:
+  rag_data:
 
 networks:
   mullm_network:

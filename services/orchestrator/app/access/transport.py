@@ -13,10 +13,14 @@ class TransportService:
     """Access Fabric — probe, fetch, copy między adapterami."""
 
     def __init__(self, *, sandbox_dir: str | None = None) -> None:
-        self.sandbox_dir = sandbox_dir or os.getenv(
+        self._sandbox_override = sandbox_dir
+
+    def _sandbox_dir(self) -> str:
+        path = self._sandbox_override or os.getenv(
             "MULLM_TRANSPORT_SANDBOX", "/tmp/mullm-transport"
         )
-        os.makedirs(self.sandbox_dir, exist_ok=True)
+        os.makedirs(path, exist_ok=True)
+        return path
 
     async def probe(self, uri: str) -> dict[str, Any]:
         parsed = parse_uri(uri)
@@ -40,7 +44,7 @@ class TransportService:
         src_adapter = get_adapter(source.adapter)
         dest_path = dest.path
         if not os.path.isabs(dest_path):
-            dest_path = os.path.join(self.sandbox_dir, dest_path)
+            dest_path = os.path.join(self._sandbox_dir(), dest_path)
         result = await src_adapter.copy_to_local(source, dest_path)
         return {
             "transfer_id": str(uuid4()),
@@ -54,7 +58,7 @@ class TransportService:
     async def package_to_sandbox(self, source_uri: str) -> dict[str, Any]:
         """Pobiera zasób do izolowanego katalogu sandbox."""
         transfer_id = str(uuid4())
-        dest_path = os.path.join(self.sandbox_dir, transfer_id)
+        dest_path = os.path.join(self._sandbox_dir(), transfer_id)
         dest_uri = f"mullm://localfs/{dest_path}"
         outcome = await self.copy(source_uri, dest_uri)
         outcome["transfer_id"] = transfer_id

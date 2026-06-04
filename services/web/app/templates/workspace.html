@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mullm Workspace</title>
+  <link rel="stylesheet" href="/static/workspace.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>Mullm</h1>
+    <span class="tag">Workspace — Chat · Tasks · Context · Files</span>
+    <span class="spacer"></span>
+    <button type="button" class="btn ghost" id="btn-new-task">+ Nowe zadanie</button>
+    <button type="button" class="btn ghost" id="btn-attach-file">Załącz plik</button>
+    <button type="button" class="btn" id="btn-refresh">Odśwież</button>
+  </header>
+
+  <div class="cockpit">
+    <!-- Lewa: kolejka zadań -->
+    <aside class="col-tasks">
+      <div class="panel-head">Kolejka / Zadania</div>
+      <div class="task-list" id="task-list"></div>
+      <div style="padding:0.5rem;border-top:1px solid var(--border)">
+        <button type="button" class="btn" style="width:100%" id="btn-open-composer">Utwórz zadanie</button>
+      </div>
+    </aside>
+
+    <!-- Środek: chat -->
+    <main class="col-chat">
+      <div class="panel-head">Rozmowa operacyjna</div>
+      <div id="draft-panel" class="draft-card" style="display:none">
+        <h4>Propozycja zadania (draft)</h4>
+        <div id="draft-body"></div>
+        <div class="draft-actions">
+          <button type="button" class="btn" id="draft-create">Utwórz ticket</button>
+          <button type="button" class="btn success" id="draft-run">Utwórz i uruchom</button>
+          <button type="button" class="btn ghost" id="draft-queue">Dodaj do kolejki</button>
+        </div>
+      </div>
+      <div id="chat-messages" class="chat-messages"></div>
+      <div class="chat-compose">
+        <textarea id="chat-input" placeholder="Opisz cel, ticket (np. PLF-074), polecenie shell…"></textarea>
+        <div class="chat-toolbar">
+          <select id="chat-mode" title="Tryb">
+            <option value="discuss">Dyskusja + draft</option>
+            <option value="search_context">Szukaj w kontekście</option>
+            <option value="create_task">Utwórz zadanie</option>
+            <option value="run_task">Utwórz i uruchom</option>
+          </select>
+          <label style="font-size:0.78rem;color:var(--muted)">
+            <input type="checkbox" id="use-rag" checked /> RAG
+          </label>
+          <input type="file" id="chat-files" multiple hidden />
+          <button type="button" class="btn" id="chat-send">Wyślij</button>
+        </div>
+      </div>
+    </main>
+
+    <!-- Prawa: kontekst -->
+    <aside class="col-context">
+      <div class="panel-head">Kontekst wykonawczy</div>
+      <div class="context-body">
+        <div class="ctx-field">
+          <label>Ticket</label>
+          <input id="ctx-ticket" placeholder="PLF-074" />
+        </div>
+        <div class="ctx-field">
+          <label>Projekt</label>
+          <input id="ctx-project" placeholder="mullm / koru" />
+        </div>
+        <div class="ctx-field">
+          <label>Branch</label>
+          <input id="ctx-branch" placeholder="main" />
+        </div>
+        <div class="ctx-field">
+          <label>Agent</label>
+          <input id="ctx-agent" placeholder="shell-agent-a" />
+        </div>
+        <div class="ctx-field">
+          <label>Notatka kontekstu</label>
+          <textarea id="ctx-note" rows="2" placeholder="Zapisz jako context note"></textarea>
+          <button type="button" class="btn ghost" id="btn-save-note" style="margin-top:0.35rem">Zapisz notatkę</button>
+        </div>
+        <div class="ctx-field">
+          <label>URI / zasoby</label>
+          <ul class="ctx-list" id="ctx-uris"></ul>
+        </div>
+        <div class="ctx-field">
+          <label>Pliki w scope</label>
+          <ul class="ctx-list" id="ctx-files"></ul>
+        </div>
+      </div>
+      <div class="panel-head">Live events (sesja)</div>
+      <div class="events-log" id="session-events"></div>
+    </aside>
+
+    <!-- Dół: pliki + feed -->
+    <section class="col-files">
+      <div class="panel-head">Pliki i wyniki</div>
+      <div id="dropzone" class="dropzone">Przeciągnij pliki tutaj lub kliknij „Załącz plik”</div>
+      <div class="files-body" id="file-chips"></div>
+      <div class="panel-head">Operational feed</div>
+      <div class="events-log" id="global-feed"></div>
+    </section>
+  </div>
+
+  <!-- Modal composer -->
+  <dialog id="task-dialog" style="background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:1rem;max-width:420px">
+    <h3 style="margin-top:0">Nowe zadanie</h3>
+    <form id="task-form">
+      <div class="ctx-field"><label>Tytuł</label><input name="title" required /></div>
+      <div class="ctx-field"><label>Opis</label><textarea name="description" rows="3"></textarea></div>
+      <div class="ctx-field"><label>Shell</label><input name="shell_command" placeholder="opcjonalnie" /></div>
+      <div class="ctx-field"><label>Priorytet</label>
+        <select name="priority"><option>low</option><option selected>medium</option><option>high</option></select>
+      </div>
+      <label><input type="checkbox" name="auto_assign" checked /> Auto-przypisz agenta</label>
+      <div style="display:flex;gap:0.5rem;margin-top:0.75rem">
+        <button type="submit" class="btn">Utwórz</button>
+        <button type="button" class="btn success" id="form-run">Utwórz i uruchom</button>
+        <button type="button" class="btn ghost" id="form-close">Zamknij</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast-bar"></div>
+  <script src="/static/workspace.js"></script>
+</body>
+</html>

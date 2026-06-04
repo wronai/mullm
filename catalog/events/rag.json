@@ -1,0 +1,15 @@
+{
+  "domain": "rag",
+  "events": [
+    {
+      "type": "ResourceIndexed",
+      "aggregate": "resource",
+      "description": "Resource content chunked and stored for retrieval"
+    },
+    {
+      "type": "ResourceIndexingFailed",
+      "aggregate": "resource",
+      "description": "RAG ingest failed for a registered resource"
+    }
+  ]
+}

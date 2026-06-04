@@ -39,8 +39,9 @@
     {
       "id": "knowledge.retrieve",
       "kind": "rag",
-      "description": "Semantic retrieval over indexed resources",
-      "status": "planned",
+      "description": "Semantic retrieval over indexed resources (OpenRouter embeddings + FTS fallback)",
+      "provided_by": ["orchestrator"],
+      "status": "active",
       "risk_level": "low"
     }
   ]

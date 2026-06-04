@@ -27,6 +27,12 @@ class Settings(BaseSettings):
     # Architecture catalog (repo root / catalog)
     catalog_path: str = ""  # env: CATALOG_PATH
 
+    # OpenRouter (RAG + optional LLM answers)
+    openrouter_api_key: str = ""
+    llm_model: str = "openrouter/deepseek/deepseek-v4-pro"
+    embedding_model: str = "openai/text-embedding-3-small"
+    rag_auto_ingest: bool = True
+
     # Environment
     environment: str = "development"
     log_level: str = "INFO"

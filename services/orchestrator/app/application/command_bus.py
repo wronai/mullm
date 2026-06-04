@@ -43,6 +43,7 @@ class CommandBus:
         evaluation=None,
         experiments=None,
         transport=None,
+        rag_indexer=None,
         environment: str = "dev",
     ):
         self.event_store = event_store
@@ -52,6 +53,7 @@ class CommandBus:
         self.evaluation = evaluation
         self.experiments = experiments
         self.transport = transport
+        self.rag_indexer = rag_indexer
         self.environment = environment
 
     async def handle(
@@ -858,6 +860,16 @@ class CommandBus:
             metadata=metadata,
         )
         resource.mark_events_committed()
+        if self.rag_indexer:
+            try:
+                await self.rag_indexer.ingest_resource(
+                    resource_id=str(resource.resource_id),
+                    uri=resource.uri,
+                    name=resource.name,
+                    classification=resource.classification,
+                )
+            except Exception:
+                pass
         return self._result(str(resource.resource_id), records)
 
     async def _request_transfer(

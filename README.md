@@ -16,7 +16,7 @@ Mullm is built using Domain-Driven Design (DDD) principles with:
 ### Core Services
 - **Orchestrator**: Command handling, domain logic, and event publishing
 - **Projector**: Read model projections and query handling
-- **Web**: React-based frontend for monitoring and control
+- **Web**: FastAPI/Jinja dashboard for monitoring and control
 
 ### Agents
 - **Shell Agent**: Command execution and system operations
@@ -25,14 +25,14 @@ Mullm is built using Domain-Driven Design (DDD) principles with:
 ## Quick Start
 
 ```bash
-# Start all services
-docker-compose up -d
+# Start the core control-plane profile
+docker compose --profile core up -d
 
 # View logs
-docker-compose logs -f
+docker compose logs -f
 
 # Stop services
-docker-compose down
+docker compose down
 ```
 
 ## Development
@@ -40,7 +40,6 @@ docker-compose down
 ### Prerequisites
 - Docker & Docker Compose
 - Python 3.11+
-- Node.js 18+
 - PostgreSQL 15+
 - NATS Server
 
@@ -51,27 +50,39 @@ docker-compose down
 cp .env.example .env
 
 # Start infrastructure
-docker-compose up postgres nats redis -d
+docker compose --profile core up postgres nats -d
 
 # Install dependencies
 pip install -r services/orchestrator/requirements.txt
 pip install -r services/projector/requirements.txt
-npm install --prefix services/web
+pip install -r services/web/requirements.txt
 
 # Run services locally
-python services/orchestrator/app/main.py
-python services/projector/app/main.py
-npm start --prefix services/web
+# Ports from .env: MULLM_ORCHESTRATOR_HOST_PORT, MULLM_PROJECTOR_HOST_PORT, MULLM_WEB_HOST_PORT
+uvicorn app.main:app --app-dir services/orchestrator --host 0.0.0.0 --port ${MULLM_ORCHESTRATOR_HOST_PORT:-8001}
+uvicorn app.main:app --app-dir services/projector --host 0.0.0.0 --port ${MULLM_PROJECTOR_HOST_PORT:-8002}
+ORCHESTRATOR_URL=${ORCHESTRATOR_URL} PROJECTOR_URL=${PROJECTOR_URL} \
+  uvicorn app.main:app --app-dir services/web --host 0.0.0.0 --port ${MULLM_WEB_PORT:-3000}
 ```
 
 ## API Documentation
 
-### Orchestrator API (Port 8001)
+Host ports are configured in `.env` (see `.env.example`). Defaults:
+
+| Service | URL |
+|---------|-----|
+| Web UI | `${WEB_URL}` → http://localhost:3003 |
+| Orchestrator | `${ORCHESTRATOR_URL}` → http://localhost:8001 |
+| Projector | `${PROJECTOR_URL}` → http://localhost:8002 |
+| Postgres | localhost:`${MULLM_POSTGRES_HOST_PORT}` (5433) |
+| NATS monitor | http://localhost:`${MULLM_NATS_MONITOR_HOST_PORT}` |
+
+### Orchestrator API
 - `POST /api/commands` - Submit commands
 - `GET /api/queries` - Execute queries
 - `GET /health` - Health check
 
-### Projector API (Port 8002)
+### Projector API
 - `GET /projections/tasks` - Task board view
 - `GET /projections/agents` - Agent fleet status
 - `GET /projections/workflows` - Workflow versions
@@ -90,9 +101,26 @@ npm start --prefix services/web
 
 ## Monitoring
 
-- **NATS Monitoring**: http://localhost:8222
-- **PostgreSQL**: localhost:5432
-- **Redis**: localhost:6379
+Ports from `.env`: `MULLM_NATS_MONITOR_HOST_PORT`, `MULLM_POSTGRES_HOST_PORT`, `MULLM_REDIS_HOST_PORT`.
+
+## RAG Fabric (Sprint 6 MVP)
+
+Wymaga w `.env` (patrz `.env.example`):
+
+- `OPENROUTER_API_KEY` — embeddings + opcjonalne odpowiedzi `/ask`
+- `LLM_MODEL` — model chat (np. `openrouter/deepseek/deepseek-v4-pro`)
+- `EMBEDDING_MODEL` — opcjonalnie (domyślnie `openai/text-embedding-3-small`)
+
+Po `RegisterResource` orchestrator automatycznie indeksuje treść (`RAG_AUTO_INGEST=true`).
+
+- `POST /api/rag/search` — wyszukiwanie (embedding + FTS fallback)
+- `POST /api/rag/ask` — odpowiedź LLM na podstawie chunków
+- `POST /api/rag/ingest/{resource_id}` — ręczny re-ingest
+- `GET /projections/rag/documents` — stan indeksu
+
+```bash
+docker compose --profile rag up -d
+```
 
 ## Access Fabric (Sprint 4–5 MVP)
 
@@ -146,7 +174,7 @@ PYTHONPATH=services/orchestrator pytest tests/ -q
 Testy integracyjne z Postgres (wymaga `docker compose up postgres -d`):
 
 ```bash
-MULLM_INTEGRATION=1 DATABASE_URL=postgresql://mullm:mullm_password@localhost:5432/mullm pytest tests/test_integration_postgres.py -v
+MULLM_INTEGRATION=1 pytest tests/test_integration_postgres.py -v
 ```
 
 ## API (orchestrator)
