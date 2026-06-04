@@ -54,7 +54,11 @@ async def test_approval_flow(command_bus):
     approval_id = created["aggregate_id"]
     result = await command_bus.handle(
         command_type="ApproveRequest",
-        data={"approval_id": approval_id, "approved_by": "user-ops"},
+        data={
+            "approval_id": approval_id,
+            "approved_by": "user-ops",
+            "auto_execute": False,
+        },
     )
     assert result["events"][-1]["event_type"] == "ApprovalGranted"
 
@@ -67,6 +71,13 @@ async def test_plugin_and_workflow_version_flow(command_bus):
             "plugin_id": "deploy-tools",
             "version": "1.0.0",
             "capabilities": ["shell"],
+            "manifest": {
+                "risk_level": "low",
+                "inputs": {},
+                "outputs": {},
+                "health_check": "/health",
+                "rollback_strategy": "disable",
+            },
         },
     )
     plugin_id = plugin_result["aggregate_id"]
@@ -77,6 +88,18 @@ async def test_plugin_and_workflow_version_flow(command_bus):
     await command_bus.handle(
         command_type="InstallPlugin",
         data={"plugin_id": plugin_id},
+    )
+    approval = await command_bus.handle(
+        command_type="CreateApprovalRequest",
+        data={
+            "action_type": "ActivatePlugin",
+            "target_id": plugin_id,
+            "requested_by": "test",
+        },
+    )
+    await command_bus.handle(
+        command_type="ApproveRequest",
+        data={"approval_id": approval["aggregate_id"], "approved_by": "test"},
     )
 
     wf_result = await command_bus.handle(
@@ -92,7 +115,19 @@ async def test_plugin_and_workflow_version_flow(command_bus):
         command_type="ValidateWorkflowVersion",
         data={"workflow_id": workflow_id},
     )
+    wf_approval = await command_bus.handle(
+        command_type="CreateApprovalRequest",
+        data={
+            "action_type": "ActivateWorkflowVersion",
+            "target_id": workflow_id,
+            "requested_by": "test",
+        },
+    )
     await command_bus.handle(
-        command_type="ActivateWorkflowVersion",
-        data={"workflow_id": workflow_id},
+        command_type="ApproveRequest",
+        data={
+            "approval_id": wf_approval["aggregate_id"],
+            "approved_by": "test",
+            "auto_execute": False,
+        },
     )

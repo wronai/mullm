@@ -23,11 +23,7 @@ class ApprovalId(str):
     pass
 
 
-class PluginId(str):
-    pass
-
-
-class ApprovalId(str):
+class ResourceId(str):
     pass
 
 

@@ -1,0 +1,30 @@
+{
+  "aggregate": "resource",
+  "schema_version": 1,
+  "events": [
+    {
+      "type": "ResourceRegistered",
+      "version": 1,
+      "payload": {
+        "resource_id": "string",
+        "uri": "string",
+        "name": "string",
+        "adapter": "string",
+        "classification": "string",
+        "status": "string"
+      }
+    },
+    {
+      "type": "TransferRequested",
+      "version": 1
+    },
+    {
+      "type": "TransferCompleted",
+      "version": 1
+    },
+    {
+      "type": "TransferFailed",
+      "version": 1
+    }
+  ]
+}

@@ -24,23 +24,31 @@ async def dashboard(request: Request):
     tasks: list = []
     feed: list = []
     agents: list = []
+    approvals: list = []
+    plugins: list = []
     async with httpx.AsyncClient(timeout=5.0) as client:
-        try:
-            tasks = (await client.get(f"{PROJECTOR_URL}/projections/tasks")).json().get("items", [])
-        except httpx.HTTPError:
-            pass
-        try:
-            feed = (await client.get(f"{PROJECTOR_URL}/projections/feed", params={"limit": 20})).json().get(
-                "items", []
-            )
-        except httpx.HTTPError:
-            pass
-        try:
-            agents = (await client.get(f"{PROJECTOR_URL}/projections/agents")).json().get("items", [])
-        except httpx.HTTPError:
-            pass
+        async def _fetch(path: str, *, limit: int | None = None) -> list:
+            try:
+                params = {"limit": limit} if limit else None
+                return (await client.get(f"{PROJECTOR_URL}{path}", params=params)).json().get(
+                    "items", []
+                )
+            except httpx.HTTPError:
+                return []
+
+        tasks = await _fetch("/projections/tasks")
+        feed = await _fetch("/projections/feed", limit=20)
+        agents = await _fetch("/projections/agents")
+        approvals = await _fetch("/projections/approvals")
+        plugins = await _fetch("/projections/plugins")
     return templates.TemplateResponse(
         request,
         "dashboard.html",
-        {"tasks": tasks, "feed": feed, "agents": agents},
+        {
+            "tasks": tasks,
+            "feed": feed,
+            "agents": agents,
+            "approvals": approvals,
+            "plugins": plugins,
+        },
     )

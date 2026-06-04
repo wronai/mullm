@@ -15,6 +15,7 @@ async def project_workflow_versions(db, event: dict[str, Any]) -> None:
         "WorkflowVersionProposed",
         "WorkflowVersionValidated",
         "WorkflowVersionApproved",
+        "WorkflowVersionShadowed",
         "WorkflowVersionActivated",
         "WorkflowVersionRolledBack",
     }:
@@ -24,6 +25,7 @@ async def project_workflow_versions(db, event: dict[str, Any]) -> None:
         "WorkflowStarted",
         "WorkflowVersionActivated",
     } else None
+    status = payload.get("status", "active")
 
     await db.execute(
         """
@@ -38,7 +40,7 @@ async def project_workflow_versions(db, event: dict[str, Any]) -> None:
         """,
         payload["workflow_id"],
         int(payload.get("version", 1)),
-        payload.get("status", "active"),
+        status,
         json.dumps(payload.get("definition") or {}),
         event["occurred_at"],
         activated_at,

@@ -9,6 +9,7 @@ from app.domain.events import (
     WorkflowVersionApproved,
     WorkflowVersionProposed,
     WorkflowVersionRolledBack,
+    WorkflowVersionShadowed,
     WorkflowVersionValidated,
 )
 from app.domain.value_objects import WorkflowId, WorkflowStatus
@@ -95,8 +96,28 @@ class Workflow:
             )
         )
 
+    def shadow_version(self, traffic_percent: int = 10) -> None:
+        if self.status not in {
+            WorkflowStatus.VALIDATED,
+            WorkflowStatus.APPROVED,
+            WorkflowStatus.PROPOSED,
+        }:
+            raise ValueError(f"Cannot shadow workflow in {self.status} status")
+        self.status = WorkflowStatus.PROPOSED
+        self._events.append(
+            WorkflowVersionShadowed(
+                workflow_id=self.workflow_id,
+                version=self.version,
+                traffic_percent=traffic_percent,
+            )
+        )
+
     def activate_version(self) -> None:
-        if self.status not in {WorkflowStatus.APPROVED, WorkflowStatus.VALIDATED}:
+        if self.status not in {
+            WorkflowStatus.APPROVED,
+            WorkflowStatus.VALIDATED,
+            WorkflowStatus.PROPOSED,
+        }:
             raise ValueError(f"Cannot activate workflow in {self.status} status")
         self.status = WorkflowStatus.ACTIVE
         self._events.append(

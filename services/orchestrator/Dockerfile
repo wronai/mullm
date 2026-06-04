@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
+# Copy application code (mount catalog/ via compose volume in dev)
 COPY app/ ./app/
 
 # Create non-root user

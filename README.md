@@ -94,6 +94,71 @@ npm start --prefix services/web
 - **PostgreSQL**: localhost:5432
 - **Redis**: localhost:6379
 
+## Access Fabric (Sprint 4–5 MVP)
+
+- URI: `mullm://localfs/...`, `mullm://http/...`
+- Rejestr zasobów: `POST /api/access/resources/register`
+- Transport: `POST /api/access/resources/transfer`
+- Probe/fetch: `POST /api/access/probe`, `/fetch`
+
+```bash
+docker compose --profile access up -d
+```
+
+## Evolution control plane (Sprint 7–9 MVP)
+
+System opisuje sam siebie i kontroluje zmiany:
+
+- **`catalog/`** — domeny, event schemas, capabilities, services, policies
+- **Policy engine** — reguły przed `ProposePlugin`, aktywacją workflow (manifest, approval, metryki)
+- **Evaluation engine** — `evolution_metrics` po `CompleteTask` / `FailTask`
+- **Experiment manager** — shadow workflow (`ShadowWorkflowVersion`)
+- **API:** `GET /api/catalog/graph`, `GET /api/evolution/metrics`
+
+Szczegóły: [docs/roadmap-90d.md](docs/roadmap-90d.md)
+
+```bash
+docker compose --profile core up -d      # orchestrator + projector + agents
+docker compose --profile evolution up -d # + eventstoredb (dual write)
+docker compose --profile full up -d        # cały stack (+ placeholdery access/rag)
+```
+
+## Event store
+
+| `EVENT_STORE_BACKEND` | Opis |
+|-----------------------|------|
+| `postgres` (default) | Tabela `events` w Postgres |
+| `eventstoredb` | Tylko EventStoreDB (`EVENTSTORE_URL`) |
+| `dual` | Zapis do Postgres + mirror do EventStoreDB |
+
+```bash
+pip install -r services/orchestrator/requirements-esdb.txt
+```
+
+## Tests
+
+```bash
+./scripts/test.sh
+# lub
+PYTHONPATH=services/orchestrator pytest tests/ -q
+```
+
+Testy integracyjne z Postgres (wymaga `docker compose up postgres -d`):
+
+```bash
+MULLM_INTEGRATION=1 DATABASE_URL=postgresql://mullm:mullm_password@localhost:5432/mullm pytest tests/test_integration_postgres.py -v
+```
+
+## API (orchestrator)
+
+| Endpoint | Opis |
+|----------|------|
+| `POST /api/commands` | Ogólny envelope CQRS |
+| `POST /api/commands/tasks` | `CreateTask` (`auto_assign`, `shell_command`) |
+| `POST /api/commands/approvals/*` | Approval gate |
+| `POST /api/commands/plugins/*` | Plugin lifecycle |
+| `POST /api/commands/workflows/versions/*` | Wersjonowanie workflow |
+
 ## Contributing
 
 1. Fork the repository

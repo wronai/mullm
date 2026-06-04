@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections import defaultdict
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 from uuid import uuid4
 
@@ -38,7 +38,7 @@ class FakeEventStore:
                 aggregate_id=aggregate_id,
                 event_type=getattr(event, "event_type"),
                 revision=revision,
-                timestamp=getattr(event, "timestamp", datetime.utcnow()),
+                timestamp=getattr(event, "timestamp", datetime.now(timezone.utc)),
                 causation_id=causation_id,
                 correlation_id=correlation_id,
                 data=payload,

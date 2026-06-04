@@ -1,0 +1,2 @@
+# Optional — EventStoreDB backend (EVENT_STORE_BACKEND=eventstoredb|dual)
+esdbclient>=1.1.7

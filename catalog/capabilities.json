@@ -1,0 +1,47 @@
+{
+  "capabilities": [
+    {
+      "id": "shell.execute",
+      "kind": "runtime",
+      "description": "Execute shell commands via NATS-assigned agents",
+      "provided_by": ["shell-agent"],
+      "risk_level": "medium"
+    },
+    {
+      "id": "browser.automate",
+      "kind": "runtime",
+      "description": "Browser automation on host agent",
+      "provided_by": ["browser-host-agent"],
+      "risk_level": "high",
+      "status": "planned"
+    },
+    {
+      "id": "workflow.version",
+      "kind": "evolution",
+      "description": "Propose, validate, shadow, activate workflow versions",
+      "provided_by": ["orchestrator"],
+      "risk_level": "medium"
+    },
+    {
+      "id": "plugin.lifecycle",
+      "kind": "evolution",
+      "description": "Plugin manifest-driven install and activation",
+      "provided_by": ["orchestrator"],
+      "risk_level": "high"
+    },
+    {
+      "id": "resource.transport",
+      "kind": "access",
+      "description": "Move/copy resources across adapters",
+      "status": "planned",
+      "risk_level": "medium"
+    },
+    {
+      "id": "knowledge.retrieve",
+      "kind": "rag",
+      "description": "Semantic retrieval over indexed resources",
+      "status": "planned",
+      "risk_level": "low"
+    }
+  ]
+}

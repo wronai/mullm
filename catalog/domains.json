@@ -1,0 +1,30 @@
+{
+  "domains": [
+    {
+      "id": "orchestration",
+      "name": "Core Orchestration",
+      "aggregates": ["task", "agent", "workflow", "approval"],
+      "owner": "platform"
+    },
+    {
+      "id": "evolution",
+      "name": "Evolution Control Plane",
+      "aggregates": ["change", "experiment", "capability"],
+      "owner": "platform"
+    },
+    {
+      "id": "access",
+      "name": "Access Fabric",
+      "aggregates": ["resource", "package"],
+      "owner": "integrations",
+      "status": "planned"
+    },
+    {
+      "id": "rag",
+      "name": "RAG Fabric",
+      "aggregates": ["index", "chunk"],
+      "owner": "knowledge",
+      "status": "planned"
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "services": [
+    {
+      "id": "orchestrator",
+      "type": "write_side",
+      "publishes": ["mullm.events"],
+      "subscribes": ["task.shell.completed", "task.shell.failed"],
+      "commands": "/api/commands",
+      "queries": "/api/queries"
+    },
+    {
+      "id": "projector",
+      "type": "read_side",
+      "subscribes": ["mullm.events"],
+      "projections": "/projections"
+    },
+    {
+      "id": "shell-agent",
+      "type": "runtime_worker",
+      "subscribes": ["task.assigned.shell"],
+      "publishes": ["task.shell.completed", "task.shell.failed"]
+    },
+    {
+      "id": "web",
+      "type": "ui",
+      "reads": ["projector"]
+    },
+    {
+      "id": "resource-registry",
+      "type": "access",
+      "status": "planned"
+    },
+    {
+      "id": "evaluation-engine",
+      "type": "evolution",
+      "status": "embedded_in_orchestrator"
+    }
+  ]
+}

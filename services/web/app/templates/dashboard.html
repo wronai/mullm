@@ -58,6 +58,44 @@
   </section>
 
   <section>
+    <h2>Pending approvals</h2>
+    <table>
+      <thead><tr><th>ID</th><th>Action</th><th>Target</th><th>Risk</th><th>Status</th></tr></thead>
+      <tbody>
+        {% for a in approvals %}
+        <tr>
+          <td>{{ a.approval_id }}</td>
+          <td>{{ a.action_type }}</td>
+          <td>{{ a.target_id }}</td>
+          <td>{{ a.risk_level }}</td>
+          <td class="status">{{ a.status }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5">Brak próśb o zatwierdzenie</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Plugin catalog</h2>
+    <table>
+      <thead><tr><th>ID</th><th>Version</th><th>Status</th></tr></thead>
+      <tbody>
+        {% for p in plugins %}
+        <tr>
+          <td>{{ p.plugin_id }}</td>
+          <td>{{ p.version }}</td>
+          <td class="status">{{ p.status }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="3">Brak pluginów</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+
+  <section>
     <h2>Operational feed</h2>
     <table>
       <thead><tr><th>When</th><th>Event</th><th>Summary</th></tr></thead>

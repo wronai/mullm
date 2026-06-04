@@ -1,7 +1,9 @@
-version: '3.8'
+# Mullm — profile: core | access | rag | evolution | legacy | full
+# Usage: docker compose --profile core up -d
 
 services:
   postgres:
+    profiles: [core, access, rag, evolution, full]
     image: postgres:15
     environment:
       POSTGRES_DB: mullm
@@ -16,6 +18,7 @@ services:
       - mullm_network
 
   nats:
+    profiles: [core, access, rag, evolution, full]
     image: nats:2.9
     ports:
       - "4222:4222"
@@ -25,30 +28,55 @@ services:
       - mullm_network
 
   redis:
+    profiles: [core, full]
     image: redis:7-alpine
     ports:
       - "6379:6379"
     networks:
       - mullm_network
 
+  eventstoredb:
+    profiles: [core, evolution, full]
+    image: eventstore/eventstore:24.10.0-bookworm-slim
+    command: >
+      --insecure
+      --run-projections=All
+      --enable-atom-pub-over-http
+    ports:
+      - "2113:2113"
+    volumes:
+      - eventstore_data:/var/lib/eventstore
+    networks:
+      - mullm_network
+
   orchestrator:
+    profiles: [core, access, rag, evolution, full]
     build:
       context: ./services/orchestrator
       dockerfile: Dockerfile
+    volumes:
+      - ./catalog:/app/catalog:ro
+      - access_data:/data
     environment:
+      - MULLM_LOCALFS_ROOT=/data
+      - MULLM_TRANSPORT_SANDBOX=/data/transport
       - DATABASE_URL=postgresql://mullm:mullm_password@postgres:5432/mullm
       - NATS_URL=nats://nats:4222
       - REDIS_URL=redis://redis:6379
+      - EVENT_STORE_BACKEND=${EVENT_STORE_BACKEND:-postgres}
+      - EVENTSTORE_URL=esdb://eventstoredb:2113?tls=false
+      - CATALOG_PATH=/app/catalog
+      - ENVIRONMENT=dev
     depends_on:
       - postgres
       - nats
-      - redis
     ports:
       - "8001:8000"
     networks:
       - mullm_network
 
   projector:
+    profiles: [core, access, rag, evolution, full]
     build:
       context: ./services/projector
       dockerfile: Dockerfile
@@ -64,6 +92,7 @@ services:
       - mullm_network
 
   web:
+    profiles: [core, full]
     build:
       context: ./services/web
       dockerfile: Dockerfile
@@ -79,6 +108,7 @@ services:
       - mullm_network
 
   shell-agent-a:
+    profiles: [core, full]
     build:
       context: ./agents/shell-agent
       dockerfile: Dockerfile
@@ -91,6 +121,7 @@ services:
       - mullm_network
 
   shell-agent-b:
+    profiles: [core, full]
     build:
       context: ./agents/shell-agent
       dockerfile: Dockerfile
@@ -102,8 +133,28 @@ services:
     networks:
       - mullm_network
 
+  # Access Fabric — embedded in orchestrator; extra volume for localfs sandbox
+  access-data:
+    profiles: [access, full]
+    image: busybox:latest
+    command: ["sh", "-c", "mkdir -p /data/inbox && sleep infinity"]
+    volumes:
+      - access_data:/data
+    networks:
+      - mullm_network
+
+  # --- planned: rag profile (Sprint 6) ---
+  indexer:
+    profiles: [rag, full]
+    image: busybox:latest
+    command: ["sh", "-c", "echo indexer planned && sleep infinity"]
+    networks:
+      - mullm_network
+
 volumes:
   postgres_data:
+  eventstore_data:
+  access_data:
 
 networks:
   mullm_network:

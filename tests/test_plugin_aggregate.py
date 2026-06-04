@@ -8,7 +8,13 @@ def test_plugin_lifecycle():
         plugin_id="shell-tools",
         version="1.0.0",
         capabilities=["shell"],
-        manifest={"risk_level": "low"},
+        manifest={
+            "risk_level": "low",
+            "inputs": {},
+            "outputs": {},
+            "health_check": "/health",
+            "rollback_strategy": "disable",
+        },
     )
     plugin.validate()
     plugin.install()

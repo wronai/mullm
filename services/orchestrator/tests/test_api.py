@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 import pytest
@@ -32,7 +34,7 @@ class StubEventStore:
                 aggregate_id=aggregate_id,
                 event_type="TaskCreated",
                 revision=1,
-                timestamp=__import__("datetime").datetime.utcnow(),
+                timestamp=datetime.now(timezone.utc),
                 data={"task_id": aggregate_id, "title": "Task", "status": "pending"},
                 metadata={},
             )

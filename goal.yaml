@@ -1,5 +1,5 @@
 # goal.yaml - Goal configuration file
-# Generated: 2026-06-04 15:52:33
+# Generated: 2026-06-04 16:06:22
 # Documentation: https://github.com/wronai/goal#configuration
 #
 # This file configures Goal's behavior for:
@@ -20,7 +20,7 @@ versioning:
   strategy: semver
   files:
   - VERSION
-  - .venv-test/lib/python3.13/site-packages/pytest_asyncio/__init__.py:__version__
+  - .venv-test/lib/python3.13/site-packages/httpcore/__init__.py:__version__
   bump_rules:
     patch: 10
     minor: 50

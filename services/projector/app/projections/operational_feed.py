@@ -44,6 +44,10 @@ def _title_for(event_type: str, payload: dict[str, Any]) -> str:
         return f"Agent {payload.get('agent_id')} registered"
     if event_type == "WorkflowStarted":
         return f"Workflow {payload.get('workflow_id')} started"
+    if event_type == "ResourceRegistered":
+        return payload.get("name") or payload.get("uri")
+    if event_type == "TransferCompleted":
+        return f"Transfer {payload.get('transfer_id')} completed"
     return event_type
 
 

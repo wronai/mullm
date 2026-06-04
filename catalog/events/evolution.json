@@ -1,0 +1,45 @@
+{
+  "aggregate": "change",
+  "schema_version": 1,
+  "events": [
+    {
+      "type": "ChangeProposed",
+      "version": 1,
+      "payload": {
+        "change_id": "string",
+        "change_type": "string",
+        "target_id": "string",
+        "hypothesis": "string",
+        "proposed_by": "string"
+      }
+    },
+    {
+      "type": "ExperimentStarted",
+      "version": 1,
+      "payload": {
+        "experiment_id": "string",
+        "subject_type": "string",
+        "subject_id": "string",
+        "mode": "string"
+      }
+    },
+    {
+      "type": "ExperimentEvaluated",
+      "version": 1,
+      "payload": {
+        "experiment_id": "string",
+        "metrics": "object",
+        "outcome": "string"
+      }
+    },
+    {
+      "type": "CapabilityRegistered",
+      "version": 1,
+      "payload": {
+        "capability_id": "string",
+        "source": "string",
+        "manifest": "object"
+      }
+    }
+  ]
+}

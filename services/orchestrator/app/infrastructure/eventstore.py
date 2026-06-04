@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 from uuid import uuid4
 import json
@@ -45,6 +45,10 @@ def _loads_json(value: Any) -> dict[str, Any]:
     return dict(value)
 
 
+def _utc_now() -> datetime:
+    return datetime.now(timezone.utc)
+
+
 class EventStore:
     def __init__(self, postgres):
         self.postgres = postgres
@@ -74,7 +78,7 @@ class EventStore:
             revision += 1
             event_id = str(uuid4())
             event_type = getattr(event, "event_type")
-            timestamp = getattr(event, "timestamp", datetime.utcnow())
+            timestamp = getattr(event, "timestamp", _utc_now())
             payload = getattr(event, "data")
             if callable(payload):
                 payload = payload()

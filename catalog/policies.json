@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "decision_levels": ["rules_first", "policy_bounded_ai", "experimental_ai"],
+  "rules": {
+    "ActivatePlugin": {
+      "requires_approval": true,
+      "approval_action_type": "ActivatePlugin",
+      "max_auto_risk": "low",
+      "allowed_environments": ["dev", "staging", "prod"]
+    },
+    "RollbackPlugin": {
+      "requires_approval": true,
+      "approval_action_type": "RollbackPlugin"
+    },
+    "ActivateWorkflowVersion": {
+      "requires_approval": true,
+      "approval_action_type": "ActivateWorkflowVersion",
+      "requires_evaluation": true,
+      "min_success_rate": 0.85
+    },
+    "RollbackWorkflowVersion": {
+      "requires_approval": true
+    },
+    "ShadowWorkflowVersion": {
+      "requires_approval": false,
+      "mode": "experimental_ai"
+    },
+    "ProposeWorkflowVersion": {
+      "requires_approval": false,
+      "mode": "policy_bounded_ai"
+    },
+    "ProposePlugin": {
+      "requires_manifest": true,
+      "required_manifest_fields": [
+        "risk_level",
+        "inputs",
+        "outputs",
+        "health_check",
+        "rollback_strategy"
+      ]
+    }
+  },
+  "experiment_thresholds": {
+    "min_samples": 10,
+    "max_failure_rate": 0.15,
+    "max_human_takeover_rate": 0.25,
+    "auto_rollback_on_breach": true
+  }
+}

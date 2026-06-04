@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 
 from app.domain.events import (
@@ -11,6 +11,10 @@ from app.domain.events import (
     TaskAssignedToAgent,
 )
 from app.domain.value_objects import AgentId, AgentStatus, TaskId
+
+
+def _utc_now() -> datetime:
+    return datetime.now(timezone.utc)
 
 
 @dataclass
@@ -51,7 +55,7 @@ class Agent:
 
     def heartbeat(self, load_score: int = 0) -> None:
         self.load_score = load_score
-        self.heartbeat_at = datetime.utcnow()
+        self.heartbeat_at = _utc_now()
         self._events.append(
             AgentHeartbeatReceived(
                 agent_id=self.agent_id,

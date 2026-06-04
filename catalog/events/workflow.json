@@ -1,0 +1,42 @@
+{
+  "aggregate": "workflow",
+  "schema_version": 1,
+  "events": [
+    {
+      "type": "WorkflowVersionProposed",
+      "version": 1,
+      "payload": {
+        "workflow_id": "string",
+        "version": "integer",
+        "definition": "object",
+        "status": "string"
+      }
+    },
+    {
+      "type": "WorkflowVersionValidated",
+      "version": 1
+    },
+    {
+      "type": "WorkflowVersionApproved",
+      "version": 1
+    },
+    {
+      "type": "WorkflowVersionShadowed",
+      "version": 1,
+      "payload": {
+        "workflow_id": "string",
+        "version": "integer",
+        "traffic_percent": "integer",
+        "status": "string"
+      }
+    },
+    {
+      "type": "WorkflowVersionActivated",
+      "version": 1
+    },
+    {
+      "type": "WorkflowVersionRolledBack",
+      "version": 1
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict, Any, Optional, List
 from uuid import uuid4
 
@@ -8,6 +8,10 @@ from ..value_objects import AgentId, ExecutionMode, Priority, TaskId, TaskStatus
 
 def _event_type(event: Any) -> str:
     return getattr(event, "event_type", "")
+
+
+def _utc_now() -> datetime:
+    return datetime.now(timezone.utc)
 
 
 def _event_data(event: Any) -> Dict[str, Any]:
@@ -22,7 +26,7 @@ def _event_timestamp(event: Any) -> datetime:
     occurred_at = getattr(event, "occurred_at", None)
     if isinstance(occurred_at, datetime):
         return occurred_at
-    return datetime.utcnow()
+    return _utc_now()
 
 
 class Task:
@@ -46,8 +50,8 @@ class Task:
         self.required_capabilities = required_capabilities or []
         self.status = TaskStatus.PENDING
         self.metadata = metadata or {}
-        self.created_at = datetime.utcnow()
-        self.updated_at = datetime.utcnow()
+        self.created_at = _utc_now()
+        self.updated_at = _utc_now()
         self.completed_at = None
         self.result = None
         self.error = None
@@ -102,7 +106,7 @@ class Task:
 
         self.agent_id = agent_id
         self.status = TaskStatus.ASSIGNED
-        self.updated_at = datetime.utcnow()
+        self.updated_at = _utc_now()
 
         self._events.append(TaskAssigned(
             task_id=self.task_id,
@@ -118,7 +122,7 @@ class Task:
             raise ValueError("Task must be assigned to an agent before starting")
 
         self.status = TaskStatus.RUNNING
-        self.updated_at = datetime.utcnow()
+        self.updated_at = _utc_now()
 
         self._events.append(TaskStarted(
             task_id=self.task_id,
@@ -132,7 +136,7 @@ class Task:
 
         self.status = TaskStatus.COMPLETED
         self.result = result
-        self.completed_at = datetime.utcnow()
+        self.completed_at = _utc_now()
         self.updated_at = self.completed_at
 
         self._events.append(TaskCompleted(
@@ -148,7 +152,7 @@ class Task:
 
         self.status = TaskStatus.FAILED
         self.error = error
-        self.updated_at = datetime.utcnow()
+        self.updated_at = _utc_now()
 
         self._events.append(TaskFailed(
             task_id=self.task_id,

@@ -30,6 +30,24 @@ class InMemoryPostgres:
         return None
 
     async def execute(self, query: str, *args: Any) -> str:
+        if "insert into experiments" in query:
+            return "OK"
+        if "insert into change_proposals" in query:
+            return "OK"
+        if "insert into capability_registry" in query:
+            return "OK"
+        if "insert into resource_registry" in query:
+            return "OK"
+        if "insert into transfer_log" in query:
+            return "OK"
+        if "update resource_registry" in query:
+            return "OK"
+        if "update transfer_log" in query:
+            return "OK"
+        if "insert into evolution_metrics" in query:
+            return "OK"
+        if "update evolution_metrics" in query:
+            return "OK"
         if "insert into events" in query:
             self.events.append(
                 {
@@ -128,10 +146,62 @@ def event_store(fake_postgres: InMemoryPostgres) -> EventStore:
 
 
 @pytest.fixture
-def command_bus(event_store: EventStore, fake_bus: FakeMessageBus) -> CommandBus:
-    return CommandBus(event_store=event_store, message_bus=fake_bus)
+def catalog():
+    from pathlib import Path
+
+    from app.evolution.catalog import ArchitectureCatalog
+
+    root = Path(__file__).resolve().parents[1] / "catalog"
+    return ArchitectureCatalog(root)
+
+
+@pytest.fixture
+def command_bus(
+    event_store: EventStore,
+    fake_bus: FakeMessageBus,
+    fake_postgres: InMemoryPostgres,
+    catalog,
+) -> CommandBus:
+    from app.evolution.experiments import ExperimentManager
+    from app.evolution.policy_engine import PolicyEngine
+
+    from app.access.transport import TransportService
+
+    return CommandBus(
+        event_store=event_store,
+        message_bus=fake_bus,
+        postgres=fake_postgres,
+        policy_engine=PolicyEngine(catalog),
+        experiments=ExperimentManager(fake_postgres),
+        transport=TransportService(),
+        environment="dev",
+    )
 
 
 @pytest.fixture
 def sample_command_id() -> str:
     return str(uuid4())
+
+
+@pytest.fixture
+def orchestrator_app(command_bus, event_store, fake_postgres, catalog):
+    from fastapi import FastAPI
+
+    from app.api.commands import router as commands_router
+    from app.api.queries import router as queries_router
+
+    app = FastAPI()
+    app.state.command_bus = command_bus
+    app.state.event_store = event_store
+    app.state.postgres = fake_postgres
+    app.state.catalog = catalog
+    app.include_router(commands_router, prefix="/api/commands")
+    app.include_router(queries_router, prefix="/api/queries")
+    return app
+
+
+@pytest.fixture
+def api_client(orchestrator_app):
+    from starlette.testclient import TestClient
+
+    return TestClient(orchestrator_app)

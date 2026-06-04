@@ -1,0 +1,19 @@
+{
+  "name": "mullm",
+  "version": "0.2.0",
+  "description": "Event-sourced multi-agent control plane with evolution layer",
+  "domains": ["orchestration", "evolution", "access", "rag"],
+  "bounded_contexts": {
+    "orchestration": ["task", "agent", "workflow"],
+    "evolution": ["change", "experiment", "capability"],
+    "access": ["resource", "transport"],
+    "rag": ["index", "retrieval"]
+  },
+  "catalog_files": {
+    "domains": "domains.json",
+    "events": "events/",
+    "capabilities": "capabilities.json",
+    "services": "services.json",
+    "policies": "policies.json"
+  }
+}

@@ -7,6 +7,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.3] - 2026-06-04
+
+### Docs
+- Update README.md
+- Update docs/architecture.md
+- Update docs/roadmap-90d.md
+
+### Test
+- Update tests/conftest.py
+- Update tests/test_access_fabric.py
+- Update tests/test_api_orchestrator.py
+- Update tests/test_approval_gate.py
+- Update tests/test_command_bus.py
+- Update tests/test_e2e_flow.py
+- Update tests/test_eventstore_factory.py
+- Update tests/test_evolution_layer.py
+- Update tests/test_integration_postgres.py
+- Update tests/test_plugin_aggregate.py
+- ... and 1 more files
+
+### Other
+- Update catalog/capabilities.json
+- Update catalog/domains.json
+- Update catalog/events/access.json
+- Update catalog/events/evolution.json
+- Update catalog/events/task.json
+- Update catalog/events/workflow.json
+- Update catalog/index.json
+- Update catalog/policies.json
+- Update catalog/services.json
+- Update db/init/001_projections.sql
+- ... and 48 more files
+
 ## [0.0.2] - 2026-06-04
 
 ### Docs

@@ -7,8 +7,17 @@ from app.domain.aggregates.agent import Agent
 from app.domain.aggregates.approval import Approval
 from app.domain.aggregates.plugin import Plugin
 from app.domain.aggregates.task import Task
+from app.domain.aggregates.resource import Resource
 from app.domain.aggregates.workflow import Workflow
-from app.domain.events import AgentMarkedIdle, TaskAssignedToAgent
+from app.access.uri import parse_uri
+from app.domain.events import (
+    AgentMarkedIdle,
+    ChangeProposed,
+    TaskAssignedToAgent,
+)
+from app.evolution.policy_engine import PolicyViolation
+from app.application.sagas.approval_gate import ensure_approval, follow_up_after_grant
+from app.application.sagas.task_routing import maybe_auto_assign
 from app.domain.aggregates.plugin import PluginStatus
 from app.domain.value_objects import (
     AgentId,
@@ -16,6 +25,7 @@ from app.domain.value_objects import (
     ExecutionMode,
     PluginId,
     Priority,
+    ResourceId,
     TaskId,
     WorkflowId,
     WorkflowStatus,
@@ -23,9 +33,26 @@ from app.domain.value_objects import (
 
 
 class CommandBus:
-    def __init__(self, event_store, message_bus=None):
+    def __init__(
+        self,
+        event_store,
+        message_bus=None,
+        *,
+        postgres=None,
+        policy_engine=None,
+        evaluation=None,
+        experiments=None,
+        transport=None,
+        environment: str = "dev",
+    ):
         self.event_store = event_store
         self.message_bus = message_bus
+        self.postgres = postgres
+        self.policy_engine = policy_engine
+        self.evaluation = evaluation
+        self.experiments = experiments
+        self.transport = transport
+        self.environment = environment
 
     async def handle(
         self,
@@ -93,6 +120,16 @@ class CommandBus:
             return await self._reject_request(command_id, data, correlation_id, metadata)
         if command_type == "ExpireApproval":
             return await self._expire_approval(command_id, data, correlation_id, metadata)
+        if command_type == "ShadowWorkflowVersion":
+            return await self._shadow_workflow_version(
+                command_id, data, correlation_id, metadata
+            )
+        if command_type == "ProposeChange":
+            return await self._propose_change(command_id, data, correlation_id, metadata)
+        if command_type == "RegisterResource":
+            return await self._register_resource(command_id, data, correlation_id, metadata)
+        if command_type == "RequestTransfer":
+            return await self._request_transfer(command_id, data, correlation_id, metadata)
 
         raise ValueError(f"Unsupported command type: {command_type}")
 
@@ -137,7 +174,18 @@ class CommandBus:
             metadata=metadata,
         )
         task.mark_events_committed()
-        return self._result(str(task.task_id), records)
+        result = self._result(str(task.task_id), records)
+        assign_result = await maybe_auto_assign(
+            self,
+            task_id=str(task.task_id),
+            data=data,
+            command_id=command_id,
+            correlation_id=correlation_id,
+            metadata=metadata,
+        )
+        if assign_result:
+            result["auto_assign"] = assign_result
+        return result
 
     async def _assign_task(
         self,
@@ -210,6 +258,7 @@ class CommandBus:
         task_id = data["task_id"]
         task = await self._load_task(task_id)
         task.complete(result=data.get("result") or {})
+        await self._record_task_outcome(task, success=True, metadata=metadata)
         records = await self._append_and_publish(
             "task",
             task_id,
@@ -243,6 +292,12 @@ class CommandBus:
         task_id = data["task_id"]
         task = await self._load_task(task_id)
         task.fail(error=data["error"])
+        await self._record_task_outcome(
+            task,
+            success=False,
+            metadata=metadata,
+            human_takeover=bool(data.get("human_takeover")),
+        )
         records = await self._append_and_publish(
             "task",
             task_id,
@@ -386,6 +441,19 @@ class CommandBus:
         correlation_id: str | None,
         metadata: dict[str, Any] | None,
     ) -> dict[str, Any]:
+        await self._apply_policy("ActivateWorkflowVersion", data)
+        await ensure_approval(
+            self.event_store,
+            "ActivateWorkflowVersion",
+            data,
+            metadata=metadata,
+        )
+        if self.policy_engine and self.postgres:
+            await self.policy_engine.validate_activation_metrics(
+                self.postgres,
+                "ActivateWorkflowVersion",
+                data["workflow_id"],
+            )
         workflow = await self._load_workflow(data["workflow_id"])
         workflow.activate_version()
         return await self._persist_workflow(
@@ -399,11 +467,87 @@ class CommandBus:
         correlation_id: str | None,
         metadata: dict[str, Any] | None,
     ) -> dict[str, Any]:
+        await ensure_approval(
+            self.event_store,
+            "RollbackWorkflowVersion",
+            data,
+            metadata=metadata,
+        )
         workflow = await self._load_workflow(data["workflow_id"])
         workflow.rollback_version(data.get("reason", ""))
         return await self._persist_workflow(
             workflow, command_id, correlation_id, metadata
         )
+
+    async def _shadow_workflow_version(
+        self,
+        command_id: str,
+        data: dict[str, Any],
+        correlation_id: str | None,
+        metadata: dict[str, Any] | None,
+    ) -> dict[str, Any]:
+        await self._apply_policy("ShadowWorkflowVersion", data)
+        workflow = await self._load_workflow(data["workflow_id"])
+        workflow.shadow_version(int(data.get("traffic_percent", 10)))
+        result = await self._persist_workflow(
+            workflow, command_id, correlation_id, metadata
+        )
+        if self.experiments:
+            exp_id = await self.experiments.start_experiment(
+                subject_type="workflow",
+                subject_id=data["workflow_id"],
+                version=workflow.version,
+                mode="shadow",
+                traffic_percent=int(data.get("traffic_percent", 10)),
+            )
+            result["experiment_id"] = exp_id
+        return result
+
+    async def _propose_change(
+        self,
+        command_id: str,
+        data: dict[str, Any],
+        correlation_id: str | None,
+        metadata: dict[str, Any] | None,
+    ) -> dict[str, Any]:
+        change_id = data.get("change_id") or str(uuid4())
+        event = ChangeProposed(
+            change_id=change_id,
+            change_type=data["change_type"],
+            target_id=data["target_id"],
+            hypothesis=data.get("hypothesis", ""),
+            proposed_by=data["proposed_by"],
+            payload=data.get("payload") or {},
+        )
+        records = await self._append_and_publish(
+            "change",
+            change_id,
+            [event],
+            command_id=command_id,
+            correlation_id=correlation_id,
+            metadata=metadata,
+        )
+        if self.postgres:
+            try:
+                await self.postgres.execute(
+                    """
+                    insert into change_proposals (
+                      change_id, change_type, target_id, status, hypothesis,
+                      proposed_by, payload, created_at, updated_at
+                    )
+                    values ($1, $2, $3, 'proposed', $4, $5, $6::jsonb, now(), now())
+                    on conflict (change_id) do nothing
+                    """,
+                    change_id,
+                    data["change_type"],
+                    data["target_id"],
+                    data.get("hypothesis", ""),
+                    data["proposed_by"],
+                    __import__("json").dumps(data.get("payload") or {}, default=str),
+                )
+            except Exception:
+                pass
+        return self._result(change_id, records)
 
     async def _propose_plugin(
         self,
@@ -412,6 +556,7 @@ class CommandBus:
         correlation_id: str | None,
         metadata: dict[str, Any] | None,
     ) -> dict[str, Any]:
+        await self._apply_policy("ProposePlugin", data)
         plugin = Plugin.propose(
             plugin_id=data["plugin_id"],
             version=data["version"],
@@ -449,6 +594,9 @@ class CommandBus:
         correlation_id: str | None,
         metadata: dict[str, Any] | None,
     ) -> dict[str, Any]:
+        await ensure_approval(
+            self.event_store, "ActivatePlugin", data, metadata=metadata
+        )
         plugin = await self._load_plugin(data["plugin_id"])
         plugin.activate()
         return await self._persist_plugin(plugin, command_id, correlation_id, metadata)
@@ -460,6 +608,9 @@ class CommandBus:
         correlation_id: str | None,
         metadata: dict[str, Any] | None,
     ) -> dict[str, Any]:
+        await ensure_approval(
+            self.event_store, "RollbackPlugin", data, metadata=metadata
+        )
         plugin = await self._load_plugin(data["plugin_id"])
         plugin.rollback(data.get("reason", ""))
         return await self._persist_plugin(plugin, command_id, correlation_id, metadata)
@@ -490,10 +641,25 @@ class CommandBus:
         metadata: dict[str, Any] | None,
     ) -> dict[str, Any]:
         approval = await self._load_approval(data["approval_id"])
+        action_type = approval.action_type
+        target_id = approval.target_id
         approval.approve(data["approved_by"])
-        return await self._persist_approval(
+        result = await self._persist_approval(
             approval, command_id, correlation_id, metadata
         )
+        if data.get("auto_execute", True):
+            follow_up = await follow_up_after_grant(
+                self,
+                action_type=action_type,
+                target_id=target_id,
+                approval_id=str(approval.approval_id),
+                approved_by=data["approved_by"],
+                correlation_id=correlation_id,
+                metadata=metadata,
+            )
+            if follow_up:
+                result["follow_up"] = follow_up
+        return result
 
     async def _reject_request(
         self,
@@ -654,6 +820,145 @@ class CommandBus:
     async def _publish(self, subject: str, payload: dict[str, Any]) -> None:
         if self.message_bus:
             await self.message_bus.publish(subject, payload)
+
+    async def _apply_policy(self, command_type: str, data: dict[str, Any]) -> None:
+        if self.policy_engine:
+            self.policy_engine.validate_command(
+                command_type, data, environment=self.environment
+            )
+
+    async def _register_resource(
+        self,
+        command_id: str,
+        data: dict[str, Any],
+        correlation_id: str | None,
+        metadata: dict[str, Any] | None,
+    ) -> dict[str, Any]:
+        parsed = parse_uri(data["uri"])
+        resource = Resource.register(
+            uri=parsed.canonical,
+            name=data["name"],
+            adapter=parsed.adapter,
+            classification=data.get("classification", "document"),
+            metadata=data.get("metadata") or {},
+            resource_id=data.get("resource_id"),
+        )
+        if self.transport:
+            probe = await self.transport.probe(parsed.canonical)
+            resource.metadata["probe"] = {
+                "ok": probe.get("ok"),
+                "size_bytes": probe.get("size_bytes"),
+            }
+        records = await self._append_and_publish(
+            "resource",
+            str(resource.resource_id),
+            resource.get_uncommitted_events(),
+            command_id=command_id,
+            correlation_id=correlation_id,
+            metadata=metadata,
+        )
+        resource.mark_events_committed()
+        return self._result(str(resource.resource_id), records)
+
+    async def _request_transfer(
+        self,
+        command_id: str,
+        data: dict[str, Any],
+        correlation_id: str | None,
+        metadata: dict[str, Any] | None,
+    ) -> dict[str, Any]:
+        if not self.transport:
+            raise ValueError("Transport service is not configured")
+
+        resource_id = data["resource_id"]
+        events = await self.event_store.get_events_for_aggregate("resource", resource_id)
+        if not events:
+            raise ValueError(f"Resource not found: {resource_id}")
+
+        first = events[0].data
+        source_uri = first["uri"]
+        transfer_id = str(uuid4())
+        resource = Resource(
+            resource_id=ResourceId(resource_id),
+            uri=source_uri,
+            name=first.get("name", ""),
+            adapter=first.get("adapter", "localfs"),
+        )
+        resource.request_transfer(
+            transfer_id=transfer_id,
+            destination_uri=data["destination_uri"],
+            requested_by=data.get("requested_by", "system"),
+        )
+        pending = resource.get_uncommitted_events()
+        records = await self._append_and_publish(
+            "resource",
+            resource_id,
+            pending,
+            command_id=command_id,
+            correlation_id=correlation_id,
+            metadata=metadata,
+        )
+        resource.mark_events_committed()
+
+        outcome = await self.transport.copy(source_uri, data["destination_uri"])
+        resource2 = Resource(
+            resource_id=ResourceId(resource_id),
+            uri=source_uri,
+            name=first.get("name", ""),
+            adapter=first.get("adapter", "localfs"),
+        )
+        if outcome.get("ok"):
+            resource2.complete_transfer(transfer_id, outcome)
+        else:
+            resource2.fail_transfer(transfer_id, outcome.get("error") or "transfer failed")
+        records2 = await self._append_and_publish(
+            "resource",
+            resource_id,
+            resource2.get_uncommitted_events(),
+            command_id=command_id,
+            correlation_id=correlation_id,
+            metadata=metadata,
+        )
+        return self._result(resource_id, [*records, *records2])
+
+    async def _record_task_outcome(
+        self,
+        task: Task,
+        *,
+        success: bool,
+        metadata: dict[str, Any] | None,
+        human_takeover: bool = False,
+    ) -> None:
+        if not self.evaluation:
+            return
+        workflow_id = (task.metadata or {}).get("workflow_id")
+        try:
+            await self.evaluation.record_task_outcome(
+                task_id=str(task.task_id),
+                workflow_id=workflow_id,
+                agent_id=str(task.agent_id) if task.agent_id else None,
+                success=success,
+                duration_ms=(task.metadata or {}).get("duration_ms"),
+                human_takeover=human_takeover
+                or (metadata or {}).get("actor", {}).get("type") == "human",
+            )
+            if (
+                not success
+                and workflow_id
+                and self.evaluation
+                and await self.evaluation.should_auto_rollback("workflow", workflow_id)
+            ):
+                await self.handle(
+                    command_type="RollbackWorkflowVersion",
+                    data={
+                        "workflow_id": workflow_id,
+                        "reason": "auto-rollback: metrics threshold breached",
+                        "skip_approval": True,
+                    },
+                    metadata={"actor": {"type": "system", "id": "evaluation-engine"}},
+                )
+        except Exception:
+            pass
 
     def _result(self, aggregate_id: str, records: list[Any]) -> dict[str, Any]:
         return {

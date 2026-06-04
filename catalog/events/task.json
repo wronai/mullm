@@ -1,0 +1,46 @@
+{
+  "aggregate": "task",
+  "schema_version": 1,
+  "events": [
+    {
+      "type": "TaskCreated",
+      "version": 1,
+      "payload": {
+        "task_id": "string",
+        "title": "string",
+        "priority": "string",
+        "execution_mode": "string",
+        "required_capabilities": "string[]",
+        "status": "string"
+      }
+    },
+    {
+      "type": "TaskAssigned",
+      "version": 1,
+      "payload": {
+        "task_id": "string",
+        "agent_id": "string",
+        "status": "string"
+      }
+    },
+    {
+      "type": "TaskCompleted",
+      "version": 1,
+      "payload": {
+        "task_id": "string",
+        "agent_id": "string?",
+        "result": "object",
+        "status": "string"
+      }
+    },
+    {
+      "type": "TaskFailed",
+      "version": 1,
+      "payload": {
+        "task_id": "string",
+        "error": "string",
+        "status": "string"
+      }
+    }
+  ]
+}
