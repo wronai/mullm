@@ -90,23 +90,36 @@ def load_state() -> dict[str, Any]:
     path = _matrix_path()
     if not path.is_file():
         return default_state()
-    try:
-        raw = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
-    except (OSError, yaml.YAMLError):
+    raw = _load_raw_state(path)
+    if raw is None:
         return default_state()
     base = default_state()
+    _apply_state_lists(base, raw)
+    _apply_state_matrices(base, raw)
+    base["default_all"] = bool(raw.get("default_all", True))
+    return _reindex_state(base)
+
+
+def _load_raw_state(path: Path) -> dict[str, Any] | None:
+    try:
+        return yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    except (OSError, yaml.YAMLError):
+        return None
+
+
+def _apply_state_lists(base: dict[str, Any], raw: dict[str, Any]) -> None:
     for key in ("resources", "agents", "humans"):
         if raw.get(key):
             base[key] = raw[key]
+
+
+def _apply_state_matrices(base: dict[str, Any], raw: dict[str, Any]) -> None:
     if raw.get("agent_resource"):
         base["agent_resource"] = _merge_bool_matrix(
             base["agent_resource"], raw["agent_resource"]
         )
     if raw.get("human_agent"):
         base["human_agent"] = _merge_bool_matrix(base["human_agent"], raw["human_agent"])
-    base["default_all"] = bool(raw.get("default_all", True))
-    base = _reindex_state(base)
-    return base
 
 
 def _merge_bool_matrix(
@@ -114,11 +127,18 @@ def _merge_bool_matrix(
 ) -> dict[str, dict[str, bool]]:
     out = {rid: dict(cols) for rid, cols in base.items()}
     for row_id, cols in (patch or {}).items():
-        if row_id not in out:
-            out[row_id] = {}
-        for col_id, val in (cols or {}).items():
-            out[row_id][col_id] = bool(val)
+        out[row_id] = _merged_bool_row(out.get(row_id) or {}, cols)
     return out
+
+
+def _merged_bool_row(
+    base_row: dict[str, bool],
+    patch_row: dict[str, Any] | None,
+) -> dict[str, bool]:
+    row = dict(base_row)
+    for col_id, val in (patch_row or {}).items():
+        row[col_id] = bool(val)
+    return row
 
 
 def _reindex_state(state: dict[str, Any]) -> dict[str, Any]:
@@ -126,31 +146,54 @@ def _reindex_state(state: dict[str, Any]) -> dict[str, Any]:
     resources = state.get("resources") or _default_resources()
     agents = state.get("agents") or _default_agents()
     humans = state.get("humans") or list(_DEFAULT_HUMANS)
-    ar = state.get("agent_resource") or {}
-    ha = state.get("human_agent") or {}
     default = bool(state.get("default_all", True))
-    new_ar: dict[str, dict[str, bool]] = {}
-    for r in resources:
-        rid = r["id"]
-        row = dict(ar.get(rid) or {})
-        for a in agents:
-            row.setdefault(a["id"], default)
-        new_ar[rid] = row
-    new_ha: dict[str, dict[str, bool]] = {}
-    for a in agents:
-        aid = a["id"]
-        row = dict(ha.get(aid) or {})
-        for h in humans:
-            row.setdefault(h["id"], default)
-        new_ha[aid] = row
     return {
         **state,
         "resources": resources,
         "agents": agents,
         "humans": humans,
-        "agent_resource": new_ar,
-        "human_agent": new_ha,
+        "agent_resource": _reindex_matrix(
+            state.get("agent_resource") or {},
+            row_items=resources,
+            col_items=agents,
+            default=default,
+        ),
+        "human_agent": _reindex_matrix(
+            state.get("human_agent") or {},
+            row_items=agents,
+            col_items=humans,
+            default=default,
+        ),
     }
+
+
+def _reindex_matrix(
+    matrix: dict[str, dict[str, bool]],
+    *,
+    row_items: list[dict[str, str]],
+    col_items: list[dict[str, str]],
+    default: bool,
+) -> dict[str, dict[str, bool]]:
+    return {
+        row_item["id"]: _reindex_matrix_row(
+            matrix.get(row_item["id"]) or {},
+            col_items=col_items,
+            default=default,
+        )
+        for row_item in row_items
+    }
+
+
+def _reindex_matrix_row(
+    row: dict[str, bool],
+    *,
+    col_items: list[dict[str, str]],
+    default: bool,
+) -> dict[str, bool]:
+    out = dict(row)
+    for col_item in col_items:
+        out.setdefault(col_item["id"], default)
+    return out
 
 
 def save_state(state: dict[str, Any]) -> dict[str, Any]:

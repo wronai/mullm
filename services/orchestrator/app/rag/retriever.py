@@ -34,50 +34,17 @@ class RagRetriever:
     ) -> dict[str, Any]:
         hits = await self.search(query, limit=limit)
         if not hits:
-            return {
-                "query": query,
-                "answer": None,
-                "sources": [],
-                "llm_model": self.openrouter.llm_model,
-                "reason": "no matching chunks",
-            }
+            return _no_hits_answer(query, self.openrouter.llm_model)
 
         if not self.openrouter.configured:
-            return {
-                "query": query,
-                "answer": None,
-                "sources": hits,
-                "llm_model": None,
-                "reason": "OPENROUTER_API_KEY not set",
-            }
+            return _unconfigured_answer(query, hits)
 
-        context = "\n\n---\n\n".join(
-            f"[{h['uri']}] {h['content_preview']}" for h in hits
-        )
+        context = _context_from_hits(hits)
         answer, llm_error = await self.openrouter.chat(
-            [
-                {
-                    "role": "system",
-                    "content": (
-                        "Answer using only the provided context. "
-                        "If context is insufficient, say so briefly."
-                    ),
-                },
-                {
-                    "role": "user",
-                    "content": f"Context:\n{context}\n\nQuestion: {query}",
-                },
-            ]
+            _rag_messages(context, query)
         )
         if not answer and llm_error:
-            previews = "\n".join(
-                f"- {h.get('name') or h.get('uri')}: {h.get('content_preview', '')[:180]}"
-                for h in hits[:4]
-            )
-            answer = (
-                f"(LLM niedostępny: {llm_error})\n\n"
-                f"Fragmenty z indeksu:\n{previews}"
-            )
+            answer = _fragment_fallback_answer(hits, llm_error)
         return {
             "query": query,
             "answer": answer,
@@ -85,3 +52,52 @@ class RagRetriever:
             "llm_model": self.openrouter.llm_model,
             "llm_error": llm_error,
         }
+
+
+def _no_hits_answer(query: str, llm_model: str) -> dict[str, Any]:
+    return {
+        "query": query,
+        "answer": None,
+        "sources": [],
+        "llm_model": llm_model,
+        "reason": "no matching chunks",
+    }
+
+
+def _unconfigured_answer(query: str, hits: list[dict[str, Any]]) -> dict[str, Any]:
+    return {
+        "query": query,
+        "answer": None,
+        "sources": hits,
+        "llm_model": None,
+        "reason": "OPENROUTER_API_KEY not set",
+    }
+
+
+def _context_from_hits(hits: list[dict[str, Any]]) -> str:
+    return "\n\n---\n\n".join(f"[{hit['uri']}] {hit['content_preview']}" for hit in hits)
+
+
+def _rag_messages(context: str, query: str) -> list[dict[str, str]]:
+    return [
+        {
+            "role": "system",
+            "content": (
+                "Answer using only the provided context. "
+                "If context is insufficient, say so briefly."
+            ),
+        },
+        {
+            "role": "user",
+            "content": f"Context:\n{context}\n\nQuestion: {query}",
+        },
+    ]
+
+
+def _fragment_fallback_answer(hits: list[dict[str, Any]], llm_error: str) -> str:
+    previews = "\n".join(
+        f"- {hit.get('name') or hit.get('uri')}: "
+        f"{hit.get('content_preview', '')[:180]}"
+        for hit in hits[:4]
+    )
+    return f"(LLM niedostępny: {llm_error})\n\nFragmenty z indeksu:\n{previews}"

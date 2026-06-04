@@ -55,32 +55,49 @@ def is_file_list_intent(message: str) -> bool:
     text = (message or "").strip()
     if _FILE_LIST_INTENT.search(text):
         return True
-    # literówki: „liat plikoq”
     lowered = text.lower()
-    if re.search(r"l[i1][sa]t?\s+plik", lowered):
+    return any(
+        predicate(lowered)
+        for predicate in (
+            _looks_like_misspelled_file_list,
+            _has_polish_file_list_words,
+            _has_english_file_list_words,
+            _has_user_files_phrase,
+        )
+    )
+
+
+def _has_list_word(text: str, *, english: bool = False) -> bool:
+    words = ("lista", "list", "show", "wykaz", "poka") if english else (
+        "lista",
+        "list",
+        "wykaz",
+        "poka",
+    )
+    return any(word in text for word in words)
+
+
+def _looks_like_misspelled_file_list(text: str) -> bool:
+    if re.search(r"l[i1][sa]t?\s+plik", text):
         return True
-    if "plik" in lowered and any(w in lowered for w in ("lista", "list", "wykaz", "poka")):
+    if re.search(r"\baplik", text) and _has_list_word(text):
         return True
-    # literówki: „list aplikow usera” (aplikow ⊃ plik)
-    if re.search(r"\baplik", lowered) and any(
-        w in lowered for w in ("lista", "list", "wykaz", "poka")
-    ):
-        return True
-    # literówki: „lista pikow usera” (brak „l” w plikow)
-    if re.search(r"\bpik[o0]?w", lowered) and any(
-        w in lowered for w in ("lista", "list", "wykaz", "poka")
-    ):
-        return True
-    # EN: „lista user files”, „list my files”, „show user files”
-    if re.search(r"\b(files?|file)\b", lowered) and any(
-        w in lowered for w in ("lista", "list", "show", "wykaz", "poka")
-    ):
-        return True
-    if re.search(r"\buser\s+files?\b", lowered) or re.search(
-        r"\bfiles?\s+user\b", lowered
-    ):
-        return True
-    return False
+    return bool(re.search(r"\bpik[o0]?w", text) and _has_list_word(text))
+
+
+def _has_polish_file_list_words(text: str) -> bool:
+    return "plik" in text and _has_list_word(text)
+
+
+def _has_english_file_list_words(text: str) -> bool:
+    return bool(re.search(r"\b(files?|file)\b", text) and _has_list_word(text, english=True))
+
+
+def _has_user_files_phrase(text: str) -> bool:
+    return bool(
+        re.search(r"\buser\s+files?\b", text)
+        or re.search(r"\bfiles?\s+user\b", text)
+    )
 
 
 def file_list_scope(message: str) -> str:
@@ -89,19 +106,37 @@ def file_list_scope(message: str) -> str:
     Np. „lista plikow usera” → user.
     """
     lowered = (message or "").lower()
-    if re.search(r"\b(systemu|systemow[eay]?|systemowe|system\b)", lowered):
+    if _system_scope_requested(lowered):
         return "system"
-    if re.search(
-        r"\b(usera|użytkownika|uzytkownika|użytkownik|user\b|user\s+files?|files?\s+user|"
-        r"moje\s+plik|wgrane|upload)",
-        lowered,
-    ):
+    if _user_scope_requested(lowered):
         return "user"
-    if re.search(r"\b(rag|indeks|indeksie)\b", lowered) and "plik" in lowered:
+    if _rag_scope_requested(lowered):
         return "rag"
-    if re.search(r"\b(scope|sesji|tej\s+sesji)\b", lowered):
+    if _session_scope_requested(lowered):
         return "session"
     return "all"
+
+
+def _system_scope_requested(text: str) -> bool:
+    return bool(re.search(r"\b(systemu|systemow[eay]?|systemowe|system\b)", text))
+
+
+def _user_scope_requested(text: str) -> bool:
+    return bool(
+        re.search(
+            r"\b(usera|użytkownika|uzytkownika|użytkownik|user\b|"
+            r"user\s+files?|files?\s+user|moje\s+plik|wgrane|upload)",
+            text,
+        )
+    )
+
+
+def _rag_scope_requested(text: str) -> bool:
+    return bool(re.search(r"\b(rag|indeks|indeksie)\b", text) and "plik" in text)
+
+
+def _session_scope_requested(text: str) -> bool:
+    return bool(re.search(r"\b(scope|sesji|tej\s+sesji)\b", text))
 
 
 def _uri_is_user_resource(uri: str) -> bool:
@@ -190,13 +225,17 @@ def _dedupe_rows_by_uri(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     seen: set[str] = set()
     out: list[dict[str, Any]] = []
     for row in rows:
-        uri = (row.get("uri") or row.get("resource_id") or "").strip()
-        key = uri or str(row.get("name") or row.get("document_id") or id(row))
+        key = _row_dedupe_key(row)
         if key in seen:
             continue
         seen.add(key)
         out.append(row)
     return out
+
+
+def _row_dedupe_key(row: dict[str, Any]) -> str:
+    uri = (row.get("uri") or row.get("resource_id") or "").strip()
+    return uri or str(row.get("name") or row.get("document_id") or id(row))
 
 
 async def fetch_file_inventory() -> dict[str, Any]:
@@ -206,23 +245,36 @@ async def fetch_file_inventory() -> dict[str, Any]:
         "errors": [],
     }
     async with httpx.AsyncClient(timeout=15.0) as client:
-        try:
-            r = await client.get(f"{_projector()}/projections/resources", params={"limit": 50})
-            if r.status_code == 200:
-                inventory["resources"] = _dedupe_rows_by_uri(r.json().get("items") or [])
-            else:
-                inventory["errors"].append(f"resources HTTP {r.status_code}")
-        except httpx.HTTPError as exc:
-            inventory["errors"].append(f"resources: {exc}")
-        try:
-            r = await client.get(f"{_orch()}/api/rag/documents", params={"limit": 50})
-            if r.status_code == 200:
-                inventory["rag_documents"] = _dedupe_rows_by_uri(r.json().get("items") or [])
-            else:
-                inventory["errors"].append(f"rag HTTP {r.status_code}")
-        except httpx.HTTPError as exc:
-            inventory["errors"].append(f"rag: {exc}")
+        inventory["resources"] = await _fetch_inventory_rows(
+            client,
+            f"{_projector()}/projections/resources",
+            "resources",
+            inventory["errors"],
+        )
+        inventory["rag_documents"] = await _fetch_inventory_rows(
+            client,
+            f"{_orch()}/api/rag/documents",
+            "rag",
+            inventory["errors"],
+        )
     return inventory
+
+
+async def _fetch_inventory_rows(
+    client: httpx.AsyncClient,
+    url: str,
+    label: str,
+    errors: list[str],
+) -> list[dict[str, Any]]:
+    try:
+        response = await client.get(url, params={"limit": 50})
+    except httpx.HTTPError as exc:
+        errors.append(f"{label}: {exc}")
+        return []
+    if response.status_code != 200:
+        errors.append(f"{label} HTTP {response.status_code}")
+        return []
+    return _dedupe_rows_by_uri(response.json().get("items") or [])
 
 
 def format_file_list_reply(
@@ -232,19 +284,27 @@ def format_file_list_reply(
     scope_uris: list[str] | None = None,
     list_scope: str | None = None,
 ) -> str:
-    scope_files = scope_files or []
-    scope_uris = scope_uris or []
-    list_scope = list_scope or inventory.get("list_scope") or "all"
+    scope_files = _safe_list(scope_files)
+    scope_uris = _safe_list(scope_uris)
+    list_scope = _list_scope_value(inventory, list_scope)
 
     lines = [_FILE_LIST_TITLES.get(list_scope, _FILE_LIST_TITLES["all"]), ""]
     _append_session_files(lines, list_scope, scope_files, scope_uris)
-    resources = inventory.get("resources") or []
+    resources = _safe_list(inventory.get("resources"))
     _append_resource_rows(lines, list_scope, resources)
-    rag_docs = inventory.get("rag_documents") or []
+    rag_docs = _safe_list(inventory.get("rag_documents"))
     _append_rag_rows(lines, list_scope, rag_docs)
-    _append_file_list_errors(lines, inventory.get("errors") or [])
+    _append_file_list_errors(lines, _safe_list(inventory.get("errors")))
     _append_file_list_tip(lines, list_scope, resources, scope_files)
     return "\n".join(lines)
+
+
+def _safe_list(value: Any) -> list[Any]:
+    return value if isinstance(value, list) else []
+
+
+def _list_scope_value(inventory: dict[str, Any], list_scope: str | None) -> str:
+    return list_scope or inventory.get("list_scope") or "all"
 
 
 def _append_session_files(
@@ -255,10 +315,24 @@ def _append_session_files(
 ) -> None:
     if list_scope not in ("all", "session", "user"):
         return
+    _append_uploaded_session_files(lines, scope_files)
+    _append_user_context_only(lines, list_scope, scope_uris)
+    _append_scope_uris(lines, list_scope, scope_uris)
+    lines.append("")
+
+
+def _append_uploaded_session_files(lines: list[str], scope_files: list[str]) -> None:
     lines.append("Wgrane w tej sesji (chat):")
     lines.extend(f"  • {name}" for name in scope_files)
     if not scope_files:
         lines.append("  • (brak — użyj 📎 Załącz plik)")
+
+
+def _append_user_context_only(
+    lines: list[str],
+    list_scope: str,
+    scope_uris: list[str],
+) -> None:
     if list_scope == "user":
         ctx_only = [u for u in scope_uris if not _uri_is_user_resource(u)]
         if ctx_only:
@@ -266,13 +340,19 @@ def _append_session_files(
             lines.append("Powiązany kontekst (nie plik użytkownika):")
             for uri in ctx_only:
                 lines.append(f"  • {uri}")
+
+
+def _append_scope_uris(
+    lines: list[str],
+    list_scope: str,
+    scope_uris: list[str],
+) -> None:
     if list_scope == "all":
         lines.append("")
         lines.append("URI powiązane z sesją (kontekst, nie zawsze plik):")
         lines.extend(_format_scope_uri(uri) for uri in scope_uris)
         if not scope_uris:
             lines.append("  • —")
-    lines.append("")
 
 
 def _format_scope_uri(uri: str) -> str:
@@ -291,11 +371,15 @@ def _append_resource_rows(
         lines.append(_empty_resource_hint(list_scope))
         return
     for i, row in enumerate(resources, 1):
-        name = row.get("name") or row.get("resource_id", "?")[:8]
-        uri = row.get("uri") or "—"
-        status = row.get("status") or "?"
-        cls = row.get("classification") or ""
-        lines.append(f"  {i}. {name} | {uri} | status={status} | {cls}")
+        lines.append(_format_resource_row(i, row))
+
+
+def _format_resource_row(index: int, row: dict[str, Any]) -> str:
+    name = row.get("name") or row.get("resource_id", "?")[:8]
+    uri = row.get("uri") or "—"
+    status = row.get("status") or "?"
+    cls = row.get("classification") or ""
+    return f"  {index}. {name} | {uri} | status={status} | {cls}"
 
 
 def _empty_resource_hint(list_scope: str) -> str:
@@ -315,17 +399,24 @@ def _append_rag_rows(
     if list_scope == "user" and not rag_docs:
         return
     lines.append("")
-    rag_label = "Indeks RAG" if list_scope != "rag" else "Indeks RAG (tylko)"
-    lines.append(f"{rag_label}: {len(rag_docs)} dokument(ów)")
+    lines.append(f"{_rag_rows_label(list_scope)}: {len(rag_docs)} dokument(ów)")
     if not rag_docs:
         lines.append("  (pusto)")
         return
     for i, doc in enumerate(rag_docs, 1):
-        name = doc.get("name") or doc.get("resource_id", "?")[:8]
-        uri = doc.get("uri") or "—"
-        status = doc.get("status") or "?"
-        chunks = doc.get("chunk_count", "?")
-        lines.append(f"  {i}. {name} | {uri} | RAG={status} | chunków={chunks}")
+        lines.append(_format_rag_doc_row(i, doc))
+
+
+def _rag_rows_label(list_scope: str) -> str:
+    return "Indeks RAG" if list_scope != "rag" else "Indeks RAG (tylko)"
+
+
+def _format_rag_doc_row(index: int, doc: dict[str, Any]) -> str:
+    name = doc.get("name") or doc.get("resource_id", "?")[:8]
+    uri = doc.get("uri") or "—"
+    status = doc.get("status") or "?"
+    chunks = doc.get("chunk_count", "?")
+    return f"  {index}. {name} | {uri} | RAG={status} | chunków={chunks}"
 
 
 def _append_file_list_errors(lines: list[str], errors: list[str]) -> None:
@@ -420,20 +511,57 @@ def _format_incident(payload: dict[str, Any]) -> str | None:
     code = incident.get("incident_code") or payload.get("incident_code")
     if not code and not payload.get("llm_error"):
         return None
-    trace = payload.get("retrieval_trace_id") or incident.get("retrieval_trace_id")
-    cid = payload.get("correlation_id") or incident.get("correlation_id")
-    msg = incident.get("message") or payload.get("llm_error") or ""
     parts = [f"{code}"] if code else []
-    if msg:
-        parts.append(msg[:200])
-    if trace:
-        parts.append(f"trace={trace}")
-    if cid:
-        parts.append(f"correlation={cid[:8]}…")
-    fallback = incident.get("fallback_taken") or payload.get("fallback_taken")
-    if fallback:
-        parts.append(f"fallback={fallback}")
+    parts.extend(_incident_detail_parts(payload, incident))
     return " — ".join(parts)
+
+
+def _incident_detail_parts(
+    payload: dict[str, Any],
+    incident: dict[str, Any],
+) -> list[str]:
+    return [
+        part
+        for part in (
+            _incident_message_part(payload, incident),
+            _incident_trace_part(payload, incident),
+            _incident_correlation_part(payload, incident),
+            _incident_fallback_part(payload, incident),
+        )
+        if part
+    ]
+
+
+def _incident_message_part(
+    payload: dict[str, Any],
+    incident: dict[str, Any],
+) -> str | None:
+    msg = incident.get("message") or payload.get("llm_error") or ""
+    return msg[:200] if msg else None
+
+
+def _incident_trace_part(
+    payload: dict[str, Any],
+    incident: dict[str, Any],
+) -> str | None:
+    trace = payload.get("retrieval_trace_id") or incident.get("retrieval_trace_id")
+    return f"trace={trace}" if trace else None
+
+
+def _incident_correlation_part(
+    payload: dict[str, Any],
+    incident: dict[str, Any],
+) -> str | None:
+    cid = payload.get("correlation_id") or incident.get("correlation_id")
+    return f"correlation={cid[:8]}…" if cid else None
+
+
+def _incident_fallback_part(
+    payload: dict[str, Any],
+    incident: dict[str, Any],
+) -> str | None:
+    fallback = incident.get("fallback_taken") or payload.get("fallback_taken")
+    return f"fallback={fallback}" if fallback else None
 
 
 async def handle_message(
@@ -500,6 +628,34 @@ async def _file_list_answer(
         list_scope=scope_kind,
     )
     return inventory, answer, False
+
+
+async def probe_rag(
+    *,
+    session_id: str,
+    message: str,
+    limit: int = 4,
+) -> dict[str, Any]:
+    """Lekkie wyszukiwanie RAG (bez LLM) — krok rag_probe w polityce ingress."""
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        try:
+            resp = await client.post(
+                f"{_orch()}/api/rag/search",
+                json={"query": message, "limit": limit},
+                headers=_rag_headers(session_id),
+            )
+            if resp.status_code != 200:
+                return {"hits": 0, "sources": [], "payload": None}
+            payload = resp.json()
+            items = payload.get("items") or []
+            return {
+                "hits": len(items),
+                "sources": items,
+                "payload": payload,
+                "retrieval_trace_id": payload.get("retrieval_trace_id"),
+            }
+        except httpx.HTTPError:
+            return {"hits": 0, "sources": [], "payload": None}
 
 
 async def _ask_rag(*, session_id: str, message: str) -> dict[str, Any]:
@@ -675,21 +831,45 @@ def _message_response(
         "sources": sources,
         "history": get_history(session_id),
         "correlation_id": session_id,
-        "intent": "file_list" if inventory else "rag" if use_rag else "general",
+        "intent": _response_intent(inventory, use_rag),
     }
-    if inventory:
-        out["inventory"] = inventory
-        out["artifact"] = build_file_list_artifact(
-            answer or "",
-            inventory,
-            session_id=session_id,
-            list_scope=inventory.get("list_scope") or "all",
-        )
-    if last_payload:
-        out["incident"] = last_payload.get("incident")
-        out["retrieval_trace_id"] = last_payload.get("retrieval_trace_id")
-        out["trace_steps"] = last_payload.get("trace_steps")
+    _attach_inventory_response(out, answer, inventory, session_id)
+    _attach_trace_response(out, last_payload)
     return out
+
+
+def _response_intent(inventory: dict[str, Any] | None, use_rag: bool) -> str:
+    if inventory:
+        return "file_list"
+    return "rag" if use_rag else "general"
+
+
+def _attach_inventory_response(
+    out: dict[str, Any],
+    answer: str,
+    inventory: dict[str, Any] | None,
+    session_id: str,
+) -> None:
+    if not inventory:
+        return
+    out["inventory"] = inventory
+    out["artifact"] = build_file_list_artifact(
+        answer or "",
+        inventory,
+        session_id=session_id,
+        list_scope=inventory.get("list_scope") or "all",
+    )
+
+
+def _attach_trace_response(
+    out: dict[str, Any],
+    last_payload: dict[str, Any] | None,
+) -> None:
+    if not last_payload:
+        return
+    out["incident"] = last_payload.get("incident")
+    out["retrieval_trace_id"] = last_payload.get("retrieval_trace_id")
+    out["trace_steps"] = last_payload.get("trace_steps")
 
 
 async def create_task(
@@ -700,21 +880,17 @@ async def create_task(
     auto_assign: bool = True,
     wait_for_confirmation: bool = False,
     priority: str = "medium",
+    agent_id: str | None = None,
 ) -> dict[str, Any]:
-    if wait_for_confirmation:
-        auto_assign = False
-    payload: dict[str, Any] = {
-        "title": title,
-        "description": description or "",
-        "priority": priority,
-        "auto_assign": auto_assign,
-        "required_capabilities": ["shell"],
-    }
-    if shell_command:
-        payload["shell_command"] = shell_command
-        if not wait_for_confirmation:
-            payload["auto_assign"] = True
-
+    payload = _task_create_payload(
+        title=title,
+        description=description,
+        shell_command=shell_command,
+        auto_assign=auto_assign,
+        wait_for_confirmation=wait_for_confirmation,
+        priority=priority,
+        agent_id=agent_id,
+    )
     async with httpx.AsyncClient(timeout=30.0) as client:
         resp = await client.post(f"{_orch()}/api/commands/tasks", json=payload)
         if resp.status_code >= 400:
@@ -727,3 +903,45 @@ async def create_task(
             "task_id": result.get("aggregate_id"),
             "events": result.get("events"),
         }
+
+
+def _task_create_payload(
+    *,
+    title: str,
+    description: str | None,
+    shell_command: str | None,
+    auto_assign: bool,
+    wait_for_confirmation: bool,
+    priority: str,
+    agent_id: str | None,
+) -> dict[str, Any]:
+    payload: dict[str, Any] = {
+        "title": title,
+        "description": description or "",
+        "priority": priority,
+        "auto_assign": auto_assign and not wait_for_confirmation,
+        "required_capabilities": ["shell"],
+    }
+    _apply_task_agent(payload, agent_id)
+    _apply_task_shell(payload, shell_command, wait_for_confirmation, agent_id)
+    return payload
+
+
+def _apply_task_agent(payload: dict[str, Any], agent_id: str | None) -> None:
+    if not agent_id:
+        return
+    payload["agent_id"] = agent_id
+    payload["auto_assign"] = False
+
+
+def _apply_task_shell(
+    payload: dict[str, Any],
+    shell_command: str | None,
+    wait_for_confirmation: bool,
+    agent_id: str | None,
+) -> None:
+    if not shell_command:
+        return
+    payload["shell_command"] = shell_command
+    if not wait_for_confirmation and not agent_id:
+        payload["auto_assign"] = True

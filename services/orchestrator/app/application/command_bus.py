@@ -31,6 +31,37 @@ from app.domain.value_objects import (
     WorkflowStatus,
 )
 
+_COMMAND_HANDLERS = {
+    "CreateTask": "_create_task",
+    "AssignTask": "_assign_task",
+    "AssignTaskToAgent": "_assign_task",
+    "StartTask": "_start_task",
+    "StartTaskExecution": "_start_task",
+    "CompleteTask": "_complete_task",
+    "FailTask": "_fail_task",
+    "RegisterAgent": "_register_agent",
+    "AgentHeartbeat": "_agent_heartbeat",
+    "StartWorkflow": "_start_workflow",
+    "ProposeWorkflowVersion": "_propose_workflow_version",
+    "ValidateWorkflowVersion": "_validate_workflow_version",
+    "ApproveWorkflowVersion": "_approve_workflow_version",
+    "ActivateWorkflowVersion": "_activate_workflow_version",
+    "RollbackWorkflowVersion": "_rollback_workflow_version",
+    "ShadowWorkflowVersion": "_shadow_workflow_version",
+    "ProposeChange": "_propose_change",
+    "ProposePlugin": "_propose_plugin",
+    "ValidatePlugin": "_validate_plugin",
+    "InstallPlugin": "_install_plugin",
+    "ActivatePlugin": "_activate_plugin",
+    "RollbackPlugin": "_rollback_plugin",
+    "CreateApprovalRequest": "_create_approval",
+    "ApproveRequest": "_approve_request",
+    "RejectRequest": "_reject_request",
+    "ExpireApproval": "_expire_approval",
+    "RegisterResource": "_register_resource",
+    "RequestTransfer": "_request_transfer",
+}
+
 
 class CommandBus:
     def __init__(
@@ -67,73 +98,11 @@ class CommandBus:
     ) -> dict[str, Any]:
         command_id = command_id or str(uuid4())
         data = data or {}
-
-        if command_type == "CreateTask":
-            return await self._create_task(command_id, data, correlation_id, metadata)
-        if command_type in {"AssignTask", "AssignTaskToAgent"}:
-            return await self._assign_task(command_id, data, correlation_id, metadata)
-        if command_type in {"StartTask", "StartTaskExecution"}:
-            return await self._start_task(command_id, data, correlation_id, metadata)
-        if command_type == "CompleteTask":
-            return await self._complete_task(command_id, data, correlation_id, metadata)
-        if command_type == "FailTask":
-            return await self._fail_task(command_id, data, correlation_id, metadata)
-        if command_type == "RegisterAgent":
-            return await self._register_agent(command_id, data, correlation_id, metadata)
-        if command_type == "AgentHeartbeat":
-            return await self._agent_heartbeat(command_id, data, correlation_id, metadata)
-        if command_type == "StartWorkflow":
-            return await self._start_workflow(command_id, data, correlation_id, metadata)
-        if command_type == "ProposeWorkflowVersion":
-            return await self._propose_workflow_version(
-                command_id, data, correlation_id, metadata
-            )
-        if command_type == "ValidateWorkflowVersion":
-            return await self._validate_workflow_version(
-                command_id, data, correlation_id, metadata
-            )
-        if command_type == "ApproveWorkflowVersion":
-            return await self._approve_workflow_version(
-                command_id, data, correlation_id, metadata
-            )
-        if command_type == "ActivateWorkflowVersion":
-            return await self._activate_workflow_version(
-                command_id, data, correlation_id, metadata
-            )
-        if command_type == "RollbackWorkflowVersion":
-            return await self._rollback_workflow_version(
-                command_id, data, correlation_id, metadata
-            )
-        if command_type == "ProposePlugin":
-            return await self._propose_plugin(command_id, data, correlation_id, metadata)
-        if command_type == "ValidatePlugin":
-            return await self._validate_plugin(command_id, data, correlation_id, metadata)
-        if command_type == "InstallPlugin":
-            return await self._install_plugin(command_id, data, correlation_id, metadata)
-        if command_type == "ActivatePlugin":
-            return await self._activate_plugin(command_id, data, correlation_id, metadata)
-        if command_type == "RollbackPlugin":
-            return await self._rollback_plugin(command_id, data, correlation_id, metadata)
-        if command_type == "CreateApprovalRequest":
-            return await self._create_approval(command_id, data, correlation_id, metadata)
-        if command_type == "ApproveRequest":
-            return await self._approve_request(command_id, data, correlation_id, metadata)
-        if command_type == "RejectRequest":
-            return await self._reject_request(command_id, data, correlation_id, metadata)
-        if command_type == "ExpireApproval":
-            return await self._expire_approval(command_id, data, correlation_id, metadata)
-        if command_type == "ShadowWorkflowVersion":
-            return await self._shadow_workflow_version(
-                command_id, data, correlation_id, metadata
-            )
-        if command_type == "ProposeChange":
-            return await self._propose_change(command_id, data, correlation_id, metadata)
-        if command_type == "RegisterResource":
-            return await self._register_resource(command_id, data, correlation_id, metadata)
-        if command_type == "RequestTransfer":
-            return await self._request_transfer(command_id, data, correlation_id, metadata)
-
-        raise ValueError(f"Unsupported command type: {command_type}")
+        handler_name = _COMMAND_HANDLERS.get(command_type)
+        if not handler_name:
+            raise ValueError(f"Unsupported command type: {command_type}")
+        handler = getattr(self, handler_name)
+        return await handler(command_id, data, correlation_id, metadata)
 
     async def handle_envelope(self, envelope: dict[str, Any]) -> dict[str, Any]:
         return await self.handle(
@@ -946,31 +915,41 @@ class CommandBus:
         workflow_id = (task.metadata or {}).get("workflow_id")
         try:
             await self.evaluation.record_task_outcome(
-                task_id=str(task.task_id),
-                workflow_id=workflow_id,
-                agent_id=str(task.agent_id) if task.agent_id else None,
-                success=success,
-                duration_ms=(task.metadata or {}).get("duration_ms"),
-                human_takeover=human_takeover
-                or (metadata or {}).get("actor", {}).get("type") == "human",
-            )
-            if (
-                not success
-                and workflow_id
-                and self.evaluation
-                and await self.evaluation.should_auto_rollback("workflow", workflow_id)
-            ):
-                await self.handle(
-                    command_type="RollbackWorkflowVersion",
-                    data={
-                        "workflow_id": workflow_id,
-                        "reason": "auto-rollback: metrics threshold breached",
-                        "skip_approval": True,
-                    },
-                    metadata={"actor": {"type": "system", "id": "evaluation-engine"}},
+                **_task_outcome_payload(
+                    task,
+                    success=success,
+                    metadata=metadata,
+                    human_takeover=human_takeover,
+                    workflow_id=workflow_id,
                 )
+            )
+            if await self._should_auto_rollback(success, workflow_id):
+                await self._rollback_workflow(workflow_id)
         except Exception:
             pass
+
+    async def _should_auto_rollback(
+        self,
+        success: bool,
+        workflow_id: str | None,
+    ) -> bool:
+        return bool(
+            not success
+            and workflow_id
+            and self.evaluation
+            and await self.evaluation.should_auto_rollback("workflow", workflow_id)
+        )
+
+    async def _rollback_workflow(self, workflow_id: str) -> None:
+        await self.handle(
+            command_type="RollbackWorkflowVersion",
+            data={
+                "workflow_id": workflow_id,
+                "reason": "auto-rollback: metrics threshold breached",
+                "skip_approval": True,
+            },
+            metadata={"actor": {"type": "system", "id": "evaluation-engine"}},
+        )
 
     def _result(self, aggregate_id: str, records: list[Any]) -> dict[str, Any]:
         return {
@@ -980,3 +959,22 @@ class CommandBus:
                 for record in records
             ],
         }
+
+
+def _task_outcome_payload(
+    task: Task,
+    *,
+    success: bool,
+    metadata: dict[str, Any] | None,
+    human_takeover: bool,
+    workflow_id: str | None,
+) -> dict[str, Any]:
+    return {
+        "task_id": str(task.task_id),
+        "workflow_id": workflow_id,
+        "agent_id": str(task.agent_id) if task.agent_id else None,
+        "success": success,
+        "duration_ms": (task.metadata or {}).get("duration_ms"),
+        "human_takeover": human_takeover
+        or (metadata or {}).get("actor", {}).get("type") == "human",
+    }

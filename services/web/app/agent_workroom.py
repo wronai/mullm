@@ -183,7 +183,15 @@ async def _build_file_list_for_goal(
 
 def format_workroom_export(session: WorkroomSession) -> str:
     """Pełna treść workroom do schowka (wątek + ledger + odpowiedź)."""
-    lines = [
+    lines = _workroom_export_header(session)
+    _append_workroom_thread(lines, session.agent_thread)
+    _append_workroom_ledger(lines, session.ledger)
+    _append_workroom_result(lines, session.result_summary)
+    return "\n".join(lines).strip() + "\n"
+
+
+def _workroom_export_header(session: WorkroomSession) -> list[str]:
+    return [
         "# Mullm — Agent Workroom export",
         f"generated_at: {datetime.now(timezone.utc).isoformat()}",
         f"workroom_id: {session.workroom_id}",
@@ -195,28 +203,44 @@ def format_workroom_export(session: WorkroomSession) -> str:
         "",
         "## Rozmowa agentów",
     ]
-    if not session.agent_thread:
+
+
+def _append_workroom_thread(
+    lines: list[str],
+    agent_thread: list[dict[str, Any]],
+) -> None:
+    if not agent_thread:
         lines.append("(brak)")
-    else:
-        for m in session.agent_thread:
-            who = m.get("role") or m.get("agent_id") or "?"
-            lines.append(f"\n### {who}")
-            lines.append((m.get("text") or "").strip())
+        lines.append("")
+        return
+    for message in agent_thread:
+        who = message.get("role") or message.get("agent_id") or "?"
+        lines.append(f"\n### {who}")
+        lines.append((message.get("text") or "").strip())
     lines.append("")
+
+
+def _append_workroom_ledger(
+    lines: list[str],
+    ledger: list[LedgerEntry],
+) -> None:
     lines.append("## Ledger wykonania")
-    if not session.ledger:
+    if not ledger:
         lines.append("(brak)")
-    else:
-        for e in session.ledger:
-            lines.append(
-                f"- [{e.kind}] {e.agent_id} ({e.status}): {e.summary}"
-            )
-            if e.detail and e.detail != e.summary:
-                lines.append(f"  detail: {e.detail[:500]}")
+        lines.append("")
+        return
+    for entry in ledger:
+        lines.append(
+            f"- [{entry.kind}] {entry.agent_id} ({entry.status}): {entry.summary}"
+        )
+        if entry.detail and entry.detail != entry.summary:
+            lines.append(f"  detail: {entry.detail[:500]}")
     lines.append("")
+
+
+def _append_workroom_result(lines: list[str], result_summary: str) -> None:
     lines.append("## Odpowiedź dla użytkownika")
-    lines.append(session.result_summary or "—")
-    return "\n".join(lines).strip() + "\n"
+    lines.append(result_summary or "—")
 
 
 def _extract_shell(text: str) -> str | None:
@@ -313,26 +337,86 @@ async def _run_workroom_step(
         step_id=step["id"],
         action=action,
     )
-    if agent == "coordinator" and action == "analyze":
-        _run_analyze_step(session)
+    handler = _WORKROOM_STEP_HANDLERS.get((agent, action))
+    if not handler:
         return None
-    if agent == "files_agent":
-        return await _run_files_step(
-            session,
-            step,
-            user_message,
-            scope_files=scope_files,
-            scope_uris=scope_uris,
-        )
-    if agent == "shell_agent" and action == "run_shell":
-        return await _run_shell_step(
-            session,
-            user_message,
-            wait_for_confirmation=wait_for_confirmation,
-        )
-    if agent == "coordinator" and action == "summarize":
-        _run_summarize_step(session)
+    return await handler(
+        session,
+        step,
+        user_message,
+        scope_files=scope_files,
+        scope_uris=scope_uris,
+        wait_for_confirmation=wait_for_confirmation,
+    )
+
+
+async def _run_analyze_workroom_step(
+    session: WorkroomSession,
+    step: dict[str, Any],
+    user_message: str,
+    *,
+    scope_files: list[str],
+    scope_uris: list[str],
+    wait_for_confirmation: bool,
+) -> str | None:
+    _run_analyze_step(session)
     return None
+
+
+async def _run_files_workroom_step(
+    session: WorkroomSession,
+    step: dict[str, Any],
+    user_message: str,
+    *,
+    scope_files: list[str],
+    scope_uris: list[str],
+    wait_for_confirmation: bool,
+) -> str | None:
+    return await _run_files_step(
+        session,
+        step,
+        user_message,
+        scope_files=scope_files,
+        scope_uris=scope_uris,
+    )
+
+
+async def _run_shell_workroom_step(
+    session: WorkroomSession,
+    step: dict[str, Any],
+    user_message: str,
+    *,
+    scope_files: list[str],
+    scope_uris: list[str],
+    wait_for_confirmation: bool,
+) -> str | None:
+    return await _run_shell_step(
+        session,
+        user_message,
+        wait_for_confirmation=wait_for_confirmation,
+    )
+
+
+async def _run_summarize_workroom_step(
+    session: WorkroomSession,
+    step: dict[str, Any],
+    user_message: str,
+    *,
+    scope_files: list[str],
+    scope_uris: list[str],
+    wait_for_confirmation: bool,
+) -> str | None:
+    _run_summarize_step(session)
+    return None
+
+
+_WORKROOM_STEP_HANDLERS = {
+    ("coordinator", "analyze"): _run_analyze_workroom_step,
+    ("files_agent", "list_files"): _run_files_workroom_step,
+    ("files_agent", "context_scan"): _run_files_workroom_step,
+    ("shell_agent", "run_shell"): _run_shell_workroom_step,
+    ("coordinator", "summarize"): _run_summarize_workroom_step,
+}
 
 
 def _run_analyze_step(session: WorkroomSession) -> None:

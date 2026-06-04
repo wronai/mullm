@@ -63,7 +63,8 @@
     const state = await api(`/api/workspace/state?session_id=${encodeURIComponent(sessionId)}`);
     renderContext(state.context);
     currentDraft = state.draft || null;
-    renderSessionEvents(state.events);
+    renderRoutingTrace(state.events, state.history);
+    renderRoutingPolicy(state.routing_policy, state.context);
     renderChat(state.history);
     syncArtifacts(state.artifacts || [], null);
     await loadTickets();
@@ -119,18 +120,34 @@
     const el = $("ticket-detail");
     if (!el) return;
     if (!t) {
-      el.className = "ticket-detail empty";
-      el.innerHTML =
-        '<p class="muted">Wybierz ticket z listy.</p><p class="muted small">URL: <code>/t/&lt;id&gt;</code></p>';
+      renderEmptyTicketDetail(el);
       return;
     }
-    const sk = t.status_key || (t.status || "pending").toLowerCase();
-    const stClass = sk === "archived" ? "st-archived" : `st-${sk}`;
-    const color = t.status_color || "#8b9bb4";
     el.className = "ticket-detail";
-    el.innerHTML = `
-      <div class="draft-head"><span class="status-dot ${stClass}"></span>
-        <span class="status-pill" style="background:${escapeHtml(color)}">${escapeHtml(t.status_label || t.status)}</span>
+    el.innerHTML = ticketDetailHtml(t);
+    bindTicketDetailActions(t);
+  }
+
+  function renderEmptyTicketDetail(el) {
+    el.className = "ticket-detail empty";
+    el.innerHTML =
+      '<p class="muted">Wybierz ticket z listy.</p><p class="muted small">URL: <code>/t/&lt;id&gt;</code></p>';
+  }
+
+  function ticketStatus(t) {
+    const key = t.status_key || (t.status || "pending").toLowerCase();
+    return {
+      key,
+      css: key === "archived" ? "st-archived" : `st-${key}`,
+      color: t.status_color || "#8b9bb4",
+    };
+  }
+
+  function ticketDetailHtml(t) {
+    const status = ticketStatus(t);
+    return `
+      <div class="draft-head"><span class="status-dot ${status.css}"></span>
+        <span class="status-pill" style="background:${escapeHtml(status.color)}">${escapeHtml(t.status_label || t.status)}</span>
       </div>
       <div class="td-title">${escapeHtml(t.title || t.task_id)}</div>
       <div class="td-row"><strong>ID</strong> <code>${escapeHtml(t.task_id)}</code></div>
@@ -139,12 +156,15 @@
       <div class="td-row">Agent: ${escapeHtml(t.assigned_agent_id || "—")} · ${escapeHtml(t.priority || "")}</div>
       <div class="td-row">Tryb: ${escapeHtml(t.execution_mode || "—")}</div>
       <div class="td-actions">
-        ${sk === "pending" ? '<button type="button" class="btn success btn-sm" id="btn-confirm-ticket">Uruchom</button>' : ""}
+        ${status.key === "pending" ? '<button type="button" class="btn success btn-sm" id="btn-confirm-ticket">Uruchom</button>' : ""}
         <button type="button" class="btn ghost btn-sm" id="btn-copy-uri">Kopiuj URI</button>
         <button type="button" class="btn ghost btn-sm" id="btn-copy-url">Kopiuj URL</button>
-        ${sk !== "archived" ? '<button type="button" class="btn ghost btn-sm" id="btn-archive-ticket">Archiwizuj</button>' : ""}
+        ${status.key !== "archived" ? '<button type="button" class="btn ghost btn-sm" id="btn-archive-ticket">Archiwizuj</button>' : ""}
       </div>
     `;
+  }
+
+  function bindTicketDetailActions(t) {
     $("btn-copy-uri")?.addEventListener("click", () =>
       copyText(t.uri || ticketUri(t.task_id), "URI")
     );
@@ -196,22 +216,23 @@
 
   function renderContext(ctx) {
     if (!ctx) return;
-    if ($("ctx-ticket")) $("ctx-ticket").value = ctx.ticket_id || "";
-    if ($("ctx-project")) $("ctx-project").value = ctx.project || "";
-    if ($("ctx-branch")) $("ctx-branch").value = ctx.branch || "";
-    if ($("ctx-agent")) $("ctx-agent").value = ctx.agent_id || "";
-    const uris = $("ctx-uris");
-    if (uris) {
-      uris.innerHTML = (ctx.uris || [])
-        .map((u) => `<li>${escapeHtml(u)}</li>`)
-        .join("") || "<li>—</li>";
-    }
-    const files = $("ctx-files");
-    if (files) {
-      const names = ctx.file_names || [];
-      files.innerHTML =
-        names.map((n) => `<li>${escapeHtml(n)}</li>`).join("") || "<li>—</li>";
-    }
+    setInputValue("ctx-ticket", ctx.ticket_id);
+    setInputValue("ctx-project", ctx.project);
+    setInputValue("ctx-branch", ctx.branch);
+    setInputValue("ctx-agent", ctx.agent_id);
+    renderTextList("ctx-uris", ctx.uris || []);
+    renderTextList("ctx-files", ctx.file_names || []);
+  }
+
+  function setInputValue(id, value) {
+    const el = $(id);
+    if (el) el.value = value || "";
+  }
+
+  function renderTextList(id, items) {
+    const el = $(id);
+    if (!el) return;
+    el.innerHTML = items.map((item) => `<li>${escapeHtml(item)}</li>`).join("") || "<li>—</li>";
   }
 
   function renderDraft(draft) {
@@ -258,17 +279,89 @@
     return out;
   }
 
-  function renderSessionEvents(events) {
-    const el = $("session-events");
+  function routingTraceRows(events, history) {
+    const rows = [];
+    const seen = new Set();
+    (events || []).forEach((e, idx) => {
+      const t = e.type || "";
+      if (!t.startsWith("Route") || !e.routing) return;
+      if (e.outcome === "selected") return;
+      const key = `ev:${idx}:${t}:${e.outcome}`;
+      if (seen.has(key)) return;
+      seen.add(key);
+      rows.push({ ...e.routing, event_type: t, outcome: e.outcome, summary: e.summary });
+    });
+    let assistantIdx = 0;
+    (history || []).forEach((m) => {
+      if (m.role !== "assistant" || !m.routing) return;
+      const r = m.routing;
+      const key = `msg:${assistantIdx}:${r.route}:${(r.reason_codes || []).join(",")}`;
+      assistantIdx += 1;
+      if (seen.has(key)) return;
+      seen.add(key);
+      rows.push({ ...r, event_type: "chat" });
+    });
+    return rows;
+  }
+
+  function renderRoutingPolicy(policy, ctx) {
+    const hint = $("routing-policy-hint");
+    if (hint && policy?.ingress_order) {
+      hint.textContent = `pipeline: ${policy.ingress_order.join(" → ")}`;
+    }
+    if ($("ctx-agent") && ctx) {
+      $("ctx-agent").value = ctx.agent_id || "";
+    }
+  }
+
+  async function saveSessionAgent() {
+    await ensureSession();
+    const agentId = ($("ctx-agent")?.value || "").trim();
+    await api("/api/context/attach", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ session_id: sessionId, agent_id: agentId || null }),
+    });
+    await refreshWorkspace();
+    toast(agentId ? `Agent: ${agentId}` : "Agent: auto z polityki", true);
+  }
+
+  function renderRoutingTrace(events, history) {
+    const el = $("routing-trace");
     if (!el) return;
-    el.innerHTML = (events || [])
+    const rows = routingTraceRows(events, history);
+    if (!rows.length) {
+      el.innerHTML = '<div class="rt-empty">Brak decyzji — wyślij wiadomość w czacie.</div>';
+      el.classList.add("muted");
+      return;
+    }
+    el.classList.remove("muted");
+    el.innerHTML = rows
       .slice()
       .reverse()
-      .map(
-        (e) =>
-          `<div class="ev"><span class="ev-type">${escapeHtml(e.type)}</span> — ${escapeHtml(e.summary || "")}</div>`
-      )
-      .join("") || '<div class="ev">Brak zdarzeń sesji</div>';
+      .map((r) => {
+        const pct = Math.round((r.confidence || 0) * 100);
+        const codes = (r.reason_codes || []).slice(0, 4).join(", ");
+        const label = r.event_type === "chat" ? "applied" : r.outcome || r.event_type;
+        const n2 = r.nlp2dsl;
+        const n2html = n2
+          ? `<span class="rt-n2">${escapeHtml(formatNlp2dslBadge(n2))}</span>`
+          : "";
+        return `<div class="rt-row" title="${escapeHtml(JSON.stringify(r, null, 2))}">
+          <span class="rt-route">${escapeHtml(r.route || "?")}</span>
+          <span class="rt-pct">${pct}%</span>
+          <span class="rt-label">${escapeHtml(label)}</span>
+          ${codes ? `<span class="rt-codes">${escapeHtml(codes)}</span>` : ""}
+          ${n2html}
+        </div>`;
+      })
+      .join("");
+  }
+
+  function routingTraceText(events, history) {
+    return routingTraceRows(events, history)
+      .map((r) => formatRouteBadge(r) + (r.outcome ? ` (${r.outcome})` : ""))
+      .join("\n");
   }
 
 
@@ -418,37 +511,49 @@
     if (!art) return;
     const title = $("artifact-preview-title");
     const body = $("artifact-preview-body");
-    const tabText = $("artifact-tab-text");
-    const tabJson = $("artifact-tab-json");
     const dl = $("artifact-download");
     if (title) title.textContent = art.title || art.filename || art.kind || "Artefakt";
+    artifactPreviewTab = preferredArtifactTab(art);
+    updateArtifactPreviewTabs(art);
+    renderArtifactPreviewBody(body, art);
+    if (dl) dl.onclick = () => downloadArtifact(art);
+  }
+
+  function preferredArtifactTab(art) {
+    if (!art.text && art.json) return "json";
+    if (art.text && artifactPreviewTab !== "json") return "text";
+    return artifactPreviewTab;
+  }
+
+  function updateArtifactPreviewTabs(art) {
     const hasText = Boolean(art.text);
     const hasJson = Boolean(art.json);
-    if (tabText) {
-      tabText.disabled = !hasText;
-      tabText.classList.toggle("active", artifactPreviewTab === "text" && hasText);
-    }
-    if (tabJson) {
-      tabJson.disabled = !hasJson;
-      tabJson.classList.toggle("active", artifactPreviewTab === "json" && hasJson);
-    }
+    updateArtifactTab("artifact-tab-text", hasText, artifactPreviewTab === "text");
+    updateArtifactTab("artifact-tab-json", hasJson, artifactPreviewTab === "json");
+    const dl = $("artifact-download");
     if (dl) dl.disabled = !hasText && !hasJson;
-    if (!hasText && hasJson) artifactPreviewTab = "json";
-    if (hasText && artifactPreviewTab !== "json") artifactPreviewTab = "text";
-    if (body) {
-      body.classList.remove("muted");
-      if (artifactPreviewTab === "json" && hasJson) {
-        body.textContent = JSON.stringify(art.json, null, 2);
-      } else if (hasText) {
-        body.textContent = art.text;
-      } else {
-        body.textContent = "(brak treści podglądu)";
-        body.classList.add("muted");
-      }
+  }
+
+  function updateArtifactTab(id, enabled, active) {
+    const tab = $(id);
+    if (!tab) return;
+    tab.disabled = !enabled;
+    tab.classList.toggle("active", active && enabled);
+  }
+
+  function renderArtifactPreviewBody(body, art) {
+    if (!body) return;
+    body.classList.remove("muted");
+    if (artifactPreviewTab === "json" && art.json) {
+      body.textContent = JSON.stringify(art.json, null, 2);
+      return;
     }
-    if (dl) {
-      dl.onclick = () => downloadArtifact(art);
+    if (art.text) {
+      body.textContent = art.text;
+      return;
     }
+    body.textContent = "(brak treści podglądu)";
+    body.classList.add("muted");
   }
 
   function downloadArtifact(art) {
@@ -478,12 +583,28 @@
     return role;
   }
 
+  function formatNlp2dslBadge(n2) {
+    if (!n2) return "";
+    const action = n2.action || n2.intent || "?";
+    const src = n2.source || "";
+    const pct = Math.round((n2.confidence || 0) * 100);
+    const auth = n2.authorized === false ? "deny" : n2.authorized === true ? "ok" : "";
+    return ["nlp2dsl", action, src, `${pct}%`, auth].filter(Boolean).join(" · ");
+  }
+
   function formatRouteBadge(routing) {
     if (!routing?.route) return "";
     const pct = Math.round((routing.confidence || 0) * 100);
     const codes = (routing.reason_codes || []).slice(0, 3).join(", ");
     const ms = routing.timing_ms != null ? `${routing.timing_ms}ms` : "";
-    return [routing.route, `${pct}%`, codes, ms].filter(Boolean).join(" · ");
+    const parts = [routing.route, `${pct}%`, codes, ms].filter(Boolean);
+    const fb = routing.fallback_route;
+    if (fb && fb !== routing.route) parts.push(`if_not:${fb}`);
+    if (routing.nlp2dsl_skipped) parts.push("nlp2dsl⊘");
+    else if (routing.nlp2dsl_invoked) parts.push("nlp2dsl✓");
+    const n2 = formatNlp2dslBadge(routing.nlp2dsl);
+    if (n2) parts.push(`(${n2})`);
+    return parts.join(" · ");
   }
 
   function appendRouteBadge(div, routing) {
@@ -531,7 +652,14 @@
       m.textContent = meta;
       div.appendChild(m);
     }
-    if (role === "assistant" && routing) appendRouteBadge(div, routing);
+    if (role === "assistant" && routing) {
+      appendRouteBadge(div, routing);
+      try {
+        div.dataset.routing = JSON.stringify(routing);
+      } catch {
+        /* ignore */
+      }
+    }
     box.appendChild(div);
     if (scroll) box.scrollTop = box.scrollHeight;
   }
@@ -619,86 +747,158 @@
   }
 
   async function sendChat(fromClarifyOnly) {
-    const formValues = fromClarifyOnly ? collectClarifyValues() : null;
-    const text = ($("chat-input")?.value || "").trim();
-    if (!text && !formValues) return;
-    $("chat-send").disabled = true;
+    const input = chatInput(fromClarifyOnly);
+    if (!input.text && !input.formValues) return;
+    setChatSending(true);
     try {
       await ensureSession();
-      const files = $("chat-files")?.files;
-      if (files?.length) await uploadFiles(files);
-      if (text) appendMsg("user", text);
-      else appendMsg("user", Object.entries(formValues || {}).map(([k, v]) => `${k}: ${v}`).join(", "));
-      $("chat-input").value = "";
-      const payload = {
-        session_id: sessionId,
-        message: text,
-        mode: $("chat-mode")?.value || "discuss",
-        use_rag: true,
-        wait_for_confirmation: !!$("wait-for-confirmation")?.checked,
-      };
-      if (formValues && Object.keys(formValues).length) payload.form_values = formValues;
+      await uploadPendingChatFiles();
+      appendPendingChatInput(input);
+      clearChatInput();
       const data = await api("/api/chat/message", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(chatPayload(input)),
       });
-      lastHistoryLen = -1;
-      renderChat(data.history);
-      if (data.artifact) cacheArtifactFull(data.artifact);
-      syncArtifacts(data.artifacts || [], data.artifact || null);
-      if (data.intent === "file_list" && data.artifact?.list_scope) {
-        toast(`Lista plików · zakres: ${data.artifact.list_scope}`, true);
-      }
-      renderClarify(data.clarify);
-      if (!data.clarify) pendingClarify = null;
-      renderContext(data.context);
-      renderSessionEvents(data.events);
-      if (data.routing) {
-        toast(`Trasa: ${formatRouteBadge(data.routing)}`, true);
-      }
-      if (data.task?.ok) {
-        document.body.classList.add("tickets-open");
-        toast("Ticket: " + (data.task.task_id || "?"), true);
-        if (data.task.task_id) selectTicket(data.task.task_id);
-      }
+      handleChatResponse(data);
       await refreshWorkspace();
     } catch (e) {
       appendMsg("system", "Błąd: " + e.message);
       toast(e.message, false);
     } finally {
-      $("chat-send").disabled = false;
-      if ($("chat-files")) $("chat-files").value = "";
+      setChatSending(false);
+      resetChatFiles();
     }
+  }
+
+  function chatInput(fromClarifyOnly) {
+    return {
+      text: ($("chat-input")?.value || "").trim(),
+      formValues: fromClarifyOnly ? collectClarifyValues() : null,
+    };
+  }
+
+  async function uploadPendingChatFiles() {
+    const files = $("chat-files")?.files;
+    if (files?.length) await uploadFiles(files);
+  }
+
+  function appendPendingChatInput(input) {
+    if (input.text) {
+      appendMsg("user", input.text);
+      return;
+    }
+    appendMsg("user", formValuesText(input.formValues));
+  }
+
+  function formValuesText(values) {
+    return Object.entries(values || {})
+      .map(([key, value]) => `${key}: ${value}`)
+      .join(", ");
+  }
+
+  function clearChatInput() {
+    const el = $("chat-input");
+    if (el) el.value = "";
+  }
+
+  function chatPayload(input) {
+    const payload = {
+      session_id: sessionId,
+      message: input.text,
+      mode: $("chat-mode")?.value || "discuss",
+      use_rag: true,
+      wait_for_confirmation: !!$("wait-for-confirmation")?.checked,
+    };
+    if (input.formValues && Object.keys(input.formValues).length) {
+      payload.form_values = input.formValues;
+    }
+    return payload;
+  }
+
+  function handleChatResponse(data) {
+    lastHistoryLen = -1;
+    renderChat(data.history);
+    if (data.artifact) cacheArtifactFull(data.artifact);
+    syncArtifacts(data.artifacts || [], data.artifact || null);
+    showFileListToast(data);
+    renderClarify(data.clarify);
+    if (!data.clarify) pendingClarify = null;
+    renderContext(data.context);
+    renderRoutingTrace(data.events, data.history);
+    showRoutingToast(data.routing);
+    focusCreatedTicket(data.task);
+  }
+
+  function showFileListToast(data) {
+    if (data.intent === "file_list" && data.artifact?.list_scope) {
+      toast(`Lista plików · zakres: ${data.artifact.list_scope}`, true);
+    }
+  }
+
+  function showRoutingToast(routing) {
+    if (routing) toast(`Trasa: ${formatRouteBadge(routing)}`, true);
+  }
+
+  function focusCreatedTicket(task) {
+    if (!task?.ok) return;
+    document.body.classList.add("tickets-open");
+    toast("Ticket: " + (task.task_id || "?"), true);
+    if (task.task_id) selectTicket(task.task_id);
+  }
+
+  function setChatSending(isSending) {
+    const send = $("chat-send");
+    if (send) send.disabled = isSending;
+  }
+
+  function resetChatFiles() {
+    const files = $("chat-files");
+    if (files) files.value = "";
   }
 
   async function createFromDraft(run) {
     await ensureSession();
-    if (!currentDraft) {
-      const text = ($("chat-input")?.value || "").trim();
-      if (text) {
-        const drafted = await api("/api/tasks/draft", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ session_id: sessionId, message: text }),
-        });
-        currentDraft = drafted.draft || null;
-        renderDraft(currentDraft);
-      }
-    }
-    if (!currentDraft) {
+    const draft = await ensureDraftFromInput();
+    if (!draft) {
       toast("Brak draftu — wyślij wiadomość w trybie „Dyskusja + draft”", false);
       return;
     }
-    const data = await api(run ? "/api/tasks/create-and-run" : "/api/tasks/create", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ session_id: sessionId, draft: currentDraft }),
-    });
-    if (!data.ok && !data.task_id) {
+    const data = await submitDraft(run, draft);
+    if (!draftCreated(data)) {
       toast(data.error || "Nie udało się utworzyć ticketu", false);
       return;
     }
+    await finishDraftCreation(run, data);
+  }
+
+  async function ensureDraftFromInput() {
+    if (currentDraft) return currentDraft;
+    const text = ($("chat-input")?.value || "").trim();
+    if (!text) return null;
+    const drafted = await api("/api/tasks/draft", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ session_id: sessionId, message: text }),
+    });
+    currentDraft = drafted.draft || null;
+    renderDraft(currentDraft);
+    return currentDraft;
+  }
+
+  async function submitDraft(run, draft) {
+    return await api(run ? "/api/tasks/create-and-run" : "/api/tasks/create", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ session_id: sessionId, draft }),
+    });
+  }
+
+  function draftCreated(data) {
+    return Boolean(data.ok || data.task_id);
+  }
+
+  async function finishDraftCreation(run, data) {
     const tid = data.task_id || data.result?.aggregate_id;
     toast(
       run
@@ -768,10 +968,25 @@
     }
   }
 
+  function routingLineFromMsgEl(msg) {
+    if (!msg.classList.contains("assistant")) return "";
+    const raw = msg.dataset.routing;
+    if (raw) {
+      try {
+        return formatRouteBadge(JSON.parse(raw));
+      } catch {
+        /* fall through */
+      }
+    }
+    const badge = msg.querySelector(".msg-route-badge")?.textContent?.trim();
+    return badge ? `(route: ${badge})` : "";
+  }
+
   function buildChatTextFromDom() {
     const box = $("chat-messages");
-    const lines = ["# Mullm — okno czatu", ""];
+    const lines = ["# Mullm — transkrypt czatu (widok okna)", ""];
     if (sessionId) lines.push(`session_id: ${sessionId}`, "");
+    const blocks = [];
     box?.querySelectorAll(".msg").forEach((msg) => {
       let role = "assistant";
       if (msg.classList.contains("user")) role = "user";
@@ -779,21 +994,23 @@
       const body = msg.querySelector(".msg-body")?.textContent?.trim() || "";
       if (!body) return;
       const label = role === "user" ? "Ty" : role === "assistant" ? "AI" : role;
-      lines.push(`## ${label}`, body, "");
+      const routeLine = routingLineFromMsgEl(msg);
+      const key = `${label}\n${body}\n${routeLine}`;
+      if (blocks.includes(key)) return;
+      blocks.push(key);
+      lines.push(`## ${label}`, body);
+      if (routeLine) lines.push(routeLine.startsWith("(") ? routeLine : `(${routeLine})`);
+      lines.push("");
     });
     return lines.join("\n").trim() + "\n";
   }
 
   async function copyChatToClipboard() {
     await ensureSession();
-    try {
-      const data = await api(
-        `/api/workspace/chat/export?session_id=${encodeURIComponent(sessionId)}`
-      );
-      await copyText(data.text || "", "cały chat");
-    } catch {
-      await copyText(buildChatTextFromDom(), "cały chat (widok)");
-    }
+    const data = await api(
+      `/api/workspace/chat/export?session_id=${encodeURIComponent(sessionId)}`
+    );
+    await copyText(data.text || "", "cały chat");
   }
 
   async function copyChatViewToClipboard() {
@@ -822,6 +1039,19 @@
   $("btn-copy-logs")?.addEventListener("click", () =>
     copyLogsToClipboard().catch((e) => toast(e.message, false))
   );
+  $("btn-save-agent")?.addEventListener("click", () =>
+    saveSessionAgent().catch((e) => toast(e.message, false))
+  );
+  $("btn-routing-copy")?.addEventListener("click", async () => {
+    await ensureSession();
+    const state = await api(`/api/workspace/state?session_id=${encodeURIComponent(sessionId)}`);
+    const text = routingTraceText(state.events, state.history);
+    if (!text) {
+      toast("Brak trace routingu", false);
+      return;
+    }
+    await copyText(text, "Routing trace");
+  });
   $("btn-refresh")?.addEventListener("click", () => refreshWorkspace().catch((e) => toast(e.message, false)));
   $("btn-artifacts-refresh")?.addEventListener("click", () =>
     refreshWorkspace().catch((e) => toast(e.message, false))

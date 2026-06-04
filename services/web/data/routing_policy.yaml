@@ -1,0 +1,38 @@
+# Polityka ingress czatu Mullm (kolejność kroków + agenci).
+# Nadpisanie ścieżki: MULLM_ROUTING_POLICY_PATH lub env w docker-compose.
+
+version: 1
+
+# Domyślny pipeline (tryb Auto / discuss)
+ingress_order:
+  - rag_probe
+  - rules
+  - nlp2dsl
+  - rag_answer
+
+agents:
+  default: shell_agent
+  by_route:
+    mullm_file_list: files_agent
+    mullm_shell: shell_agent
+    nlp2dsl: coordinator
+    rag: user
+    workroom_hint: coordinator
+    unknown: coordinator
+  prefer_session_agent: true
+
+rag_probe:
+  enabled: true
+  min_hits: 1
+  search_limit: 4
+  # false = tylko oznacz trafienie; pełna odpowiedź w rag_answer / rules
+  answer_on_hit: false
+  skip_file_list_intent: true
+  skip_shell_prefix: true
+
+# Nadpisanie całego pipeline per tryb czatu (select w UI)
+mode_overrides:
+  search_context:
+    ingress_order: [rag_answer]
+  run_task:
+    ingress_order: [rules]

@@ -98,3 +98,36 @@ def step_config(dsl: dict[str, Any] | None) -> dict[str, Any]:
     if steps:
         return steps[0].get("config") or {}
     return {}
+
+
+def routing_from_response(resp: dict[str, Any]) -> dict[str, Any] | None:
+    """IntentDecision z nlp2dsl (pole routing w ConversationResponse)."""
+    routing = resp.get("routing")
+    return routing if isinstance(routing, dict) else None
+
+
+def intent_routing_policy_flags(routing: dict[str, Any] | None) -> dict[str, Any]:
+    """Mapuje routing nlp2dsl → policy_flags RouteDecision (PR-C / observability)."""
+    if not routing:
+        return {}
+    flags: dict[str, Any] = {
+        "nlp2dsl_action": routing.get("action"),
+        "nlp2dsl_intent": routing.get("intent"),
+        "nlp2dsl_source": routing.get("source"),
+        "nlp2dsl_confidence": routing.get("confidence"),
+        "nlp2dsl_authorized": routing.get("authorized"),
+    }
+    codes = routing.get("reason_codes")
+    if codes:
+        flags["nlp2dsl_reason_codes"] = codes
+    if routing.get("deny_reason"):
+        flags["nlp2dsl_deny_reason"] = routing["deny_reason"]
+    return {k: v for k, v in flags.items() if v is not None}
+
+
+def merge_intent_into_policy_flags(
+    policy_flags: dict[str, Any],
+    routing: dict[str, Any] | None,
+) -> None:
+    if routing:
+        policy_flags.update(intent_routing_policy_flags(routing))

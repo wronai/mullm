@@ -41,6 +41,41 @@ flowchart TD
 
 Rekomendacja: **nie dodawać drugiego frameworka** na start — rozszerzyć **nlp2dsl.yaml** (`native_routing`, `agents`) + **Mullm `prompt_router.py`**.
 
+## Granica Mullm ↔ nlp2dsl
+
+| Mullm (ingress) | nlp2dsl (action/workflow) |
+|-----------------|---------------------------|
+| `routing_policy.yaml` — kolejność: rag_probe, rules, nlp2dsl, rag_answer | `native_routing` + parser + DSL |
+| `prompt_router` — fast-path file_list, shell | `authorize_action`, delegate Mullm |
+| UI workspace, RAG, tickety | conversation state, worker DSL |
+
+Szczegółowy plan refaktoru modułów nlp2dsl: [`nlp2dsl/docs/architecture-routing-refactor.md`](../../nlp2dsl/docs/architecture-routing-refactor.md).
+
+## Polityka ingress (`routing_policy.yaml`)
+
+Plik: `services/web/data/routing_policy.yaml` (nadpisanie: `MULLM_ROUTING_POLICY_PATH`).
+
+Domyślny pipeline w trybie **Auto**:
+
+```
+rag_probe → rules → nlp2dsl → rag_answer
+```
+
+| Krok | Znaczenie |
+|------|-----------|
+| `rag_probe` | `POST /api/rag/search` — jeśli są trafienia, flaga `rag_probe_hits` w decyzji |
+| `rules` | `prompt_router` — file_list, shell, tryb czatu |
+| `nlp2dsl` | workflow / DSL |
+| `rag_answer` | pełne `POST /api/rag/ask` |
+
+**Agenci** (`agents.by_route` + pole **Agent** w UI sesji, gdy `prefer_session_agent: true`):
+
+- `mullm_file_list` → `files_agent`
+- `mullm_shell` → `shell_agent` (lub wybrany w sesji)
+- `nlp2dsl` → `coordinator`
+
+API: `GET /api/routing/policy`
+
 ## Konfiguracja
 
 ### Mullm web (`.env`)

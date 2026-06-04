@@ -49,6 +49,22 @@
         <button type="submit" form="clarify-form" class="btn success">Wyślij odpowiedź</button>
       </div>
 
+      <div class="session-policy-bar" id="session-policy-bar">
+        <label class="policy-field">
+          Agent
+          <select id="ctx-agent" class="mode-select" title="Domyślny agent dla ticketów shell (nadpisuje mapowanie z YAML)">
+            <option value="">— auto (z polityki) —</option>
+            <option value="shell_agent">shell_agent</option>
+            <option value="files_agent">files_agent</option>
+            <option value="coordinator">coordinator</option>
+            <option value="ops_agent">ops_agent</option>
+            <option value="mail_agent">mail_agent</option>
+            <option value="browser_agent">browser_agent</option>
+          </select>
+        </label>
+        <span id="routing-policy-hint" class="policy-hint muted" title="Kolejność kroków ingress">pipeline: …</span>
+        <button type="button" class="btn ghost btn-sm" id="btn-save-agent" title="Zapisz agenta w kontekście sesji">Zapisz</button>
+      </div>
       <div class="chat-compose chat-compose-min">
         <textarea id="chat-input" rows="2" placeholder="Napisz co chcesz zrobić — AI dopyta jeśli trzeba…"></textarea>
         <div class="chat-toolbar">
@@ -76,6 +92,13 @@
       <ul id="artifact-list" class="artifact-list">
         <li class="artifact-empty muted">Brak artefaktów — np. „lista plików usera”</li>
       </ul>
+      <section class="routing-trace-panel" id="routing-trace-panel">
+        <div class="panel-head routing-head">
+          <span>Routing trace</span>
+          <button type="button" class="btn ghost btn-sm" id="btn-routing-copy" title="Kopiuj trace routingu">⎘</button>
+        </div>
+        <div id="routing-trace" class="routing-trace muted">Brak decyzji — wyślij wiadomość w czacie.</div>
+      </section>
       <section class="artifact-preview" id="artifact-preview">
         <div class="artifact-preview-toolbar">
           <span id="artifact-preview-title" class="artifact-preview-title">Podgląd</span>

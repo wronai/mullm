@@ -1,52 +1,52 @@
-# mullm | 758 func | 85f | 20790L | python | 2026-06-04
+# mullm | 1045 func | 85f | 23855L | python | 2026-06-04
 # generated in 0.00s
 
 HEALTH:
-  CC̄=3.5  critical=55 (limit:10)  dup=0  cycles=0
+  CC̄=2.9  critical=15 (limit:10)  dup=0  cycles=0
 
 ALERTS[20]:
-  !!! cc_exceeded      CommandBus.handle = 29 (limit:15)
-  !!! cc_exceeded      format_logs_text = 29 (limit:15)
-  !!! cc_exceeded      filter_file_inventory = 29 (limit:15)
-  !!! cc_exceeded      sendChat = 29 (limit:15)
-  !!! high_fan_out     CommandBus.handle = 29 (limit:10)
   !!! high_fan_out     lifespan = 25 (limit:10)
-  !!! high_fan_out     ORCHESTRATOR_URL = 24 (limit:10)
-  !!! high_fan_out     PROJECTOR_URL = 24 (limit:10)
-  !!! high_fan_out     App = 24 (limit:10)
   !!! high_fan_out     EsdbEventStore.append = 22 (limit:10)
+  !!  high_fan_out     CommandBus._request_transfer = 18 (limit:10)
+  !!  high_fan_out     upload_resource = 17 (limit:10)
+  !!  high_fan_out     App = 16 (limit:10)
+  !!  high_fan_out     RagDiagnostics.run = 16 (limit:10)
+  !!  high_fan_out     text = 15 (limit:10)
+  !!  high_fan_out     search = 15 (limit:10)
+  !!  high_fan_out     refreshWorkspace = 15 (limit:10)
+  !   cc_exceeded      text = 16 (limit:15)
 
-MODULES[150] (top by size):
+MODULES[159] (top by size):
   M[planfile.yaml] 1319L C:0 F:0 CC↑0 D:0 (yaml)
-  M[services/orchestrator/app/application/command_bus.py] 982L C:1 F:41 CC↑29 D:0 (python)
-  M[services/web/app/static/workspace.js] 901L C:0 F:97 CC↑29 D:1 (javascript)
-  M[docs/README.md] 886L C:0 F:0 CC↑0 D:0 (md)
-  M[services/orchestrator/app/domain/events/__init__.py] 811L C:32 F:3 CC↑7 D:0 (python)
-  M[services/web/app/workspace.py] 731L C:2 F:37 CC↑22 D:0 (python)
-  M[services/web/app/chat.py] 692L C:0 F:38 CC↑29 D:0 (python)
-  M[services/web/app/agent_workroom.py] 558L C:2 F:25 CC↑13 D:0 (python)
+  M[services/web/app/workspace.py] 1166L C:2 F:79 CC↑7 D:2 (python)
+  M[services/web/app/static/workspace.js] 1129L C:0 F:139 CC↑14 D:1 (javascript)
+  M[services/orchestrator/app/application/command_bus.py] 980L C:1 F:44 CC↑6 D:0 (python)
+  M[docs/README.md] 975L C:0 F:0 CC↑0 D:0 (md)
+  M[services/web/app/conductor.py] 890L C:1 F:41 CC↑7 D:2 (python)
+  M[services/web/app/chat.py] 888L C:0 F:65 CC↑7 D:0 (python)
+  M[services/web/app/agent_workroom.py] 642L C:2 F:33 CC↑6 D:0 (python)
+  M[services/orchestrator/app/observability/incidents.py] 569L C:2 F:37 CC↑7 D:2 (python)
   M[goal.yaml] 509L C:0 F:0 CC↑0 D:0 (yaml)
-  M[services/web/app/conductor.py] 464L C:0 F:18 CC↑7 D:2 (python)
+  M[services/web/app/prompt_router.py] 469L C:1 F:23 CC↑7 D:0 (python)
   M[TODO/4.md] 394L C:0 F:0 CC↑0 D:0 (md)
   M[services/orchestrator/app/api/commands.py] 379L C:14 F:23 CC↑4 D:0 (python)
+  M[services/orchestrator/app/incidents/pipeline.py] 348L C:1 F:12 CC↑7 D:0 (python)
   M[services/projector/app/main.py] 340L C:0 F:15 CC↑4 D:0 (python)
-  M[services/orchestrator/app/observability/incidents.py] 337L C:2 F:12 CC↑19 D:2 (python)
-  M[services/orchestrator/app/incidents/pipeline.py] 321L C:1 F:8 CC↑14 D:0 (python)
-  LANGS: python:95/md:18/json:11/txt:6/javascript:5/other:5/yaml:5/shell:3/yml:1/ini:1
+  LANGS: python:103/md:18/json:11/txt:6/yaml:6/javascript:5/other:5/shell:3/yml:1/ini:1
 
 HOTSPOTS[10]:
-  ★ CommandBus.handle fan=29  // Orchestrates 29 calls
   ★ lifespan fan=25  // Orchestrates 25 calls
-  ★ ORCHESTRATOR_URL fan=24  // Orchestrates 24 calls
-  ★ PROJECTOR_URL fan=24  // Orchestrates 24 calls
-  ★ App fan=24  // Orchestrates 24 calls
+  ★ EsdbEventStore.append fan=22  // Orchestrates 22 calls
+  ★ CommandBus._request_transfer fan=18  // Orchestrates 18 calls
+  ★ upload_resource fan=17  // Zapisuje plik w localfs (chat/) i rejestruje zasób + RAG ingest.
+  ★ App fan=16  // Orchestrates 16 calls
 
-REFACTOR[15]:
-  [1] H/L Split CommandBus.handle (CC=29)
-  [2] H/L Split format_logs_text (CC=29)
-  [3] H/L Split filter_file_inventory (CC=29)
-  [4] H/L Split sendChat (CC=29)
-  [5] H/H Split god module services/orchestrator/app/application/command_bus.py (982L, 1 classes)
+REFACTOR[14]:
+  [1] H/H Split god module services/web/app/static/workspace.js (1129L, 0 classes)
+  [2] H/H Split god module services/orchestrator/app/observability/incidents.py (569L, 2 classes)
+  [3] H/H Split god module services/web/app/chat.py (888L, 0 classes)
+  [4] H/H Split god module services/web/app/conductor.py (890L, 1 classes)
+  [5] H/H Split god module services/web/app/workspace.py (1166L, 2 classes)
 
 EVOLUTION:
-  2026-06-04 CC̄=3.5 crit=55 20790L // Automated analysis
+  2026-06-04 CC̄=2.9 crit=15 23855L // Automated analysis

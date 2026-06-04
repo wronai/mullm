@@ -77,31 +77,32 @@ class OpenRouterClient:
         if not self.configured:
             return None, "OPENROUTER_API_KEY not set"
         try:
-            async with httpx.AsyncClient(timeout=self.timeout) as client:
-                response = await client.post(
-                    f"{OPENROUTER_BASE}/chat/completions",
-                    headers=self._headers(),
-                    json={
-                        "model": self.llm_model,
-                        "messages": messages,
-                        "temperature": temperature,
-                        "max_tokens": max_tokens,
-                    },
-                )
-                if response.status_code >= 400:
-                    detail = response.text[:500]
-                    logger.warning("OpenRouter chat %s: %s", response.status_code, detail)
-                    return None, f"OpenRouter {response.status_code}: {detail}"
-                payload = response.json()
-            choices = payload.get("choices") or []
-            if not choices:
-                return None, "empty response from OpenRouter"
-            message = choices[0].get("message") or {}
-            content = (message.get("content") or "").strip() or None
-            return content, None
+            response = await self._post_chat(messages, temperature, max_tokens)
+            error = _chat_response_error(response)
+            if error:
+                return None, error
+            return _chat_result(response.json())
         except Exception as exc:
             logger.warning("OpenRouter chat failed: %s", exc)
             return None, str(exc)
+
+    async def _post_chat(
+        self,
+        messages: list[dict[str, str]],
+        temperature: float,
+        max_tokens: int,
+    ) -> httpx.Response:
+        async with httpx.AsyncClient(timeout=self.timeout) as client:
+            return await client.post(
+                f"{OPENROUTER_BASE}/chat/completions",
+                headers=self._headers(),
+                json={
+                    "model": self.llm_model,
+                    "messages": messages,
+                    "temperature": temperature,
+                    "max_tokens": max_tokens,
+                },
+            )
 
     async def health(self) -> dict[str, Any]:
         return {
@@ -109,3 +110,19 @@ class OpenRouterClient:
             "llm_model": self.llm_model,
             "embedding_model": self.embedding_model,
         }
+
+
+def _chat_response_error(response: httpx.Response) -> str | None:
+    if response.status_code < 400:
+        return None
+    detail = response.text[:500]
+    logger.warning("OpenRouter chat %s: %s", response.status_code, detail)
+    return f"OpenRouter {response.status_code}: {detail}"
+
+
+def _chat_result(payload: dict[str, Any]) -> tuple[str | None, str | None]:
+    choices = payload.get("choices") or []
+    if not choices:
+        return None, "empty response from OpenRouter"
+    message = choices[0].get("message") or {}
+    return (message.get("content") or "").strip() or None, None

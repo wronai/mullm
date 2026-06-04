@@ -104,34 +104,58 @@ async def list_tasks(
 ):
     """List tasks with optional filtering"""
     try:
-        # Get all task aggregates
         event_store = request.app.state.event_store
         task_ids = await event_store.get_aggregate_ids("task")
         tasks = []
-        
-        for task_id in task_ids[offset:offset + limit]:
+
+        for task_id in task_ids[offset : offset + limit]:
             events = await event_store.get_events_for_aggregate("task", task_id)
-            if events:
-                # Reconstruct task state
-                task_state = {}
-                for event in events:
-                    task_state.update(event.data)
-                
-                # Apply filters
-                if status and task_state.get("status") != status:
-                    continue
-                if agent_id and task_state.get("agent_id") != agent_id:
-                    continue
-                
-                tasks.append({
-                    "task_id": task_id,
-                    "state": task_state,
-                    "last_updated": events[-1].timestamp if events else None
-                })
-        
+            item = _task_list_item(task_id, events, status=status, agent_id=agent_id)
+            if item:
+                tasks.append(item)
+
         return {"tasks": tasks, "total": len(task_ids)}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+def _task_list_item(
+    task_id: str,
+    events: list[Any],
+    *,
+    status: str | None,
+    agent_id: str | None,
+) -> dict[str, Any] | None:
+    if not events:
+        return None
+    task_state = _aggregate_state(events)
+    if not _matches_task_filters(task_state, status=status, agent_id=agent_id):
+        return None
+    return {
+        "task_id": task_id,
+        "state": task_state,
+        "last_updated": events[-1].timestamp,
+    }
+
+
+def _aggregate_state(events: list[Any]) -> dict[str, Any]:
+    state: dict[str, Any] = {}
+    for event in events:
+        state.update(event.data)
+    return state
+
+
+def _matches_task_filters(
+    task_state: dict[str, Any],
+    *,
+    status: str | None,
+    agent_id: str | None,
+) -> bool:
+    if status and task_state.get("status") != status:
+        return False
+    if agent_id and task_state.get("agent_id") != agent_id:
+        return False
+    return True
 
 
 @router.get("/agents")

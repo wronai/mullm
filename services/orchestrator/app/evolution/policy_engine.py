@@ -31,7 +31,16 @@ class PolicyEngine:
         rule = self.rule_for(command_type)
         if not rule:
             return
+        self._validate_environment(command_type, rule, environment)
+        self._validate_manifest(command_type, rule, data)
+        self._validate_auto_risk(command_type, rule, data)
 
+    def _validate_environment(
+        self,
+        command_type: str,
+        rule: dict[str, Any],
+        environment: str,
+    ) -> None:
         allowed = rule.get("allowed_environments")
         if allowed and environment not in allowed:
             raise PolicyViolation(
@@ -40,6 +49,12 @@ class PolicyEngine:
                 details={"allowed": allowed},
             )
 
+    def _validate_manifest(
+        self,
+        command_type: str,
+        rule: dict[str, Any],
+        data: dict[str, Any],
+    ) -> None:
         if rule.get("requires_manifest"):
             manifest = data.get("manifest") or {}
             missing = [
@@ -54,6 +69,12 @@ class PolicyEngine:
                     details={"missing": missing},
                 )
 
+    def _validate_auto_risk(
+        self,
+        command_type: str,
+        rule: dict[str, Any],
+        data: dict[str, Any],
+    ) -> None:
         max_risk = rule.get("max_auto_risk")
         if max_risk and not data.get("approval_id") and not data.get("skip_approval"):
             manifest = data.get("manifest") or {}
@@ -79,21 +100,8 @@ class PolicyEngine:
         if postgres is None:
             return
 
-        row = await postgres.fetchrow(
-            """
-            select success_rate, sample_count
-            from evolution_metrics
-            where subject_type = 'workflow' and subject_id = $1
-            order by window_end desc
-            limit 1
-            """,
-            target_id,
-        )
-        if not row or "sample_count" not in row:
-            return
-        if int(row["sample_count"]) < int(
-            self.catalog.policies.get("experiment_thresholds", {}).get("min_samples", 10)
-        ):
+        row = await _activation_metrics_row(postgres, target_id)
+        if not _has_enough_activation_samples(row, self.catalog.policies):
             return
         if float(row["success_rate"]) < float(min_rate):
             raise PolicyViolation(
@@ -101,3 +109,23 @@ class PolicyEngine:
                 f"Workflow {target_id} success_rate {row['success_rate']} below {min_rate}",
                 details={"metrics": dict(row)},
             )
+
+
+async def _activation_metrics_row(postgres: Any, target_id: str) -> Any:
+    return await postgres.fetchrow(
+        """
+        select success_rate, sample_count
+        from evolution_metrics
+        where subject_type = 'workflow' and subject_id = $1
+        order by window_end desc
+        limit 1
+        """,
+        target_id,
+    )
+
+
+def _has_enough_activation_samples(row: Any, policies: dict[str, Any]) -> bool:
+    if not row or "sample_count" not in row:
+        return False
+    min_samples = int(policies.get("experiment_thresholds", {}).get("min_samples", 10))
+    return int(row["sample_count"]) >= min_samples

@@ -24,27 +24,43 @@ async def build_event_store(
 
     if normalized == "postgres":
         return primary, info
-
     if normalized == "eventstoredb":
-        if not eventstore_url:
-            raise ValueError("EVENTSTORE_URL is required for eventstoredb backend")
-        esdb = EsdbEventStore(eventstore_url)
-        await esdb.connect()
-        info["eventstore_url"] = eventstore_url
-        return esdb, info
-
+        return await _eventstoredb_backend(eventstore_url, info)
     if normalized == "dual":
-        if not eventstore_url:
-            raise ValueError("EVENTSTORE_URL is required for dual backend")
-        esdb = EsdbEventStore(eventstore_url)
-        try:
-            await esdb.connect()
-            info["eventstore_url"] = eventstore_url
-            info["mirror"] = "connected"
-        except Exception as exc:
-            logger.warning("EventStoreDB mirror unavailable: %s", exc)
-            info["mirror"] = "unavailable"
-            return primary, info
-        return DualEventStore(primary, esdb), info
-
+        return await _dual_backend(primary, eventstore_url, info)
     raise ValueError(f"Unknown EVENT_STORE_BACKEND: {backend}")
+
+
+def _require_eventstore_url(eventstore_url: str | None, backend: str) -> str:
+    if not eventstore_url:
+        raise ValueError(f"EVENTSTORE_URL is required for {backend} backend")
+    return eventstore_url
+
+
+async def _eventstoredb_backend(
+    eventstore_url: str | None,
+    info: dict[str, str],
+) -> tuple[Any, dict[str, str]]:
+    url = _require_eventstore_url(eventstore_url, "eventstoredb")
+    esdb = EsdbEventStore(url)
+    await esdb.connect()
+    info["eventstore_url"] = url
+    return esdb, info
+
+
+async def _dual_backend(
+    primary: Any,
+    eventstore_url: str | None,
+    info: dict[str, str],
+) -> tuple[Any, dict[str, str]]:
+    url = _require_eventstore_url(eventstore_url, "dual")
+    esdb = EsdbEventStore(url)
+    try:
+        await esdb.connect()
+    except Exception as exc:
+        logger.warning("EventStoreDB mirror unavailable: %s", exc)
+        info["mirror"] = "unavailable"
+        return primary, info
+    info["eventstore_url"] = url
+    info["mirror"] = "connected"
+    return DualEventStore(primary, esdb), info

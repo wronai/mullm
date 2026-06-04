@@ -174,6 +174,8 @@ def get_artifact(session_id: str, artifact_id: str) -> dict[str, Any] | None:
 
 
 def workspace_state(session_id: str) -> dict[str, Any]:
+    from app.routing_policy import load_policy
+
     session = get_or_create(session_id)
     return {
         "session_id": session.session_id,
@@ -182,6 +184,7 @@ def workspace_state(session_id: str) -> dict[str, Any]:
         "events": session.events,
         "history": chat_service.get_history(session.session_id),
         "artifacts": artifact_summaries(session),
+        "routing_policy": load_policy().to_dict(),
     }
 
 
@@ -198,25 +201,43 @@ def attach_context(
     filename: str | None = None,
 ) -> dict[str, Any]:
     session = get_or_create(session_id)
-    ctx = session.context
+    _apply_context_scalars(
+        session.context,
+        ticket_id=ticket_id,
+        project=project,
+        branch=branch,
+        agent_id=agent_id,
+    )
+    _append_unique(session.context.resource_ids, resource_id)
+    _append_unique(session.context.uris, uri)
+    _append_unique(session.context.file_names, filename)
+    if note:
+        session.context.notes.append(note)
+    session.add_event("ContextUpdated", "Kontekst zaktualizowany")
+    return session.context.to_dict()
+
+
+def _apply_context_scalars(
+    ctx: WorkspaceContext,
+    *,
+    ticket_id: str | None,
+    project: str | None,
+    branch: str | None,
+    agent_id: str | None,
+) -> None:
     if ticket_id:
         ctx.ticket_id = ticket_id
     if project:
         ctx.project = project
     if branch:
         ctx.branch = branch
-    if agent_id:
-        ctx.agent_id = agent_id
-    if resource_id and resource_id not in ctx.resource_ids:
-        ctx.resource_ids.append(resource_id)
-    if uri and uri not in ctx.uris:
-        ctx.uris.append(uri)
-    if filename and filename not in ctx.file_names:
-        ctx.file_names.append(filename)
-    if note:
-        ctx.notes.append(note)
-    session.add_event("ContextUpdated", "Kontekst zaktualizowany")
-    return session.context.to_dict()
+    if agent_id is not None:
+        ctx.agent_id = agent_id.strip() if agent_id else ""
+
+
+def _append_unique(items: list[str], value: str | None) -> None:
+    if value and value not in items:
+        items.append(value)
 
 
 def _extract_ticket(text: str) -> str | None:
@@ -267,17 +288,20 @@ async def create_task_immediate(
     shell_command: str | None = None,
     wait_for_confirmation: bool = False,
     priority: str = "medium",
+    agent_id: str | None = None,
 ) -> dict[str, Any]:
     """Tworzy ticket od razu; domyślnie przypisuje agenta (uruchomienie)."""
     session = get_or_create(session_id)
     session.draft = None
+    resolved_agent = _resolved_task_agent(session, agent_id, shell_command)
     result = await chat_service.create_task(
         title=title,
         description=description,
         shell_command=shell_command,
         wait_for_confirmation=wait_for_confirmation,
-        auto_assign=not wait_for_confirmation,
+        auto_assign=not wait_for_confirmation and not resolved_agent,
         priority=priority,
+        agent_id=resolved_agent,
     )
     if result.get("ok") and result.get("task_id"):
         link_ticket(session_id, result["task_id"])
@@ -288,6 +312,19 @@ async def create_task_immediate(
             wait_for_confirmation=wait_for_confirmation,
         )
     return result
+
+
+def _resolved_task_agent(
+    session: WorkspaceSession,
+    agent_id: str | None,
+    shell_command: str | None,
+) -> str | None:
+    from app.routing_policy import load_policy
+
+    resolved_agent = agent_id or session.context.agent_id or None
+    if not resolved_agent and shell_command:
+        return load_policy().agent_for_route("mullm_shell")
+    return resolved_agent
 
 
 async def handle_chat_message(
@@ -310,74 +347,159 @@ async def handle_chat_message(
         attach_context(session.session_id, ticket_id=ticket)
 
     ctx = session.context
-    task_result = None
-
-    if mode in ("run_task", "create_task"):
-        shell = _extract_shell_command(message)
-        payload = build_task_payload(session.session_id, message)
-        task_result = await create_task_immediate(
-            session.session_id,
-            title=payload["title"],
-            description=payload.get("description", ""),
-            shell_command=shell,
-            wait_for_confirmation=wait_for_confirmation,
-            priority=payload.get("priority", "medium"),
-        )
-        tid = task_result.get("task_id", "?")
-        if task_result.get("ok"):
-            reply = (
-                f"Ticket `{tid}` w kolejce — potwierdź na liście ticketów (◎)."
-                if wait_for_confirmation
-                else (
-                    f"Uruchomiono ticket `{tid}`"
-                    + (f" · `{shell}`" if shell else "")
-                )
-            )
-        else:
-            reply = f"Nie udało się utworzyć ticketu: {task_result.get('error')}"
-        outcome = {
-            "reply": reply,
-            "task": task_result,
-            "history": chat_service.get_history(session.session_id),
-            "correlation_id": session.session_id,
-        }
-    elif mode == "search_context":
-        outcome = await chat_service.handle_message(
-            session_id=session.session_id,
-            message=message,
-            use_rag=True,
-            scope_files=list(ctx.file_names),
-            scope_uris=list(ctx.uris),
-        )
-    else:
-        from app.conductor import handle_turn
-
-        outcome = await handle_turn(
-            session_id=session.session_id,
-            message=message,
-            nlp_conversation_id=session.nlp2dsl_conversation_id,
-            scope_files=list(ctx.file_names),
-            scope_uris=list(ctx.uris),
-            form_values=None,
-            wait_for_confirmation=wait_for_confirmation,
-            chat_mode=mode,
-            use_rag=use_rag,
-        )
-        if outcome.get("nlp2dsl_conversation_id"):
-            session.nlp2dsl_conversation_id = outcome["nlp2dsl_conversation_id"]
+    outcome, task_result = await _dispatch_chat_mode(
+        session,
+        message=message,
+        mode=mode,
+        use_rag=use_rag,
+        wait_for_confirmation=wait_for_confirmation,
+        scope_files=list(ctx.file_names),
+        scope_uris=list(ctx.uris),
+    )
 
     if outcome.get("error"):
         return outcome
 
+    _record_chat_outcome(session, message, mode=mode, outcome=outcome)
+    _record_task_outcome(session, task_result)
+    return _chat_response(session, outcome, task_result)
+
+
+async def _dispatch_chat_mode(
+    session: WorkspaceSession,
+    *,
+    message: str,
+    mode: str,
+    use_rag: bool,
+    wait_for_confirmation: bool,
+    scope_files: list[str],
+    scope_uris: list[str],
+) -> tuple[dict[str, Any], dict[str, Any] | None]:
+    if mode in ("run_task", "create_task"):
+        task_result = await _create_task_from_message(
+            session,
+            message,
+            wait_for_confirmation=wait_for_confirmation,
+        )
+        return _task_chat_outcome(session, task_result, message, wait_for_confirmation), task_result
+
+    if mode == "search_context":
+        return await _search_context_outcome(session, message, scope_files, scope_uris), None
+
+    return await _conductor_outcome(
+        session,
+        message=message,
+        mode=mode,
+        use_rag=use_rag,
+        wait_for_confirmation=wait_for_confirmation,
+        scope_files=scope_files,
+        scope_uris=scope_uris,
+    ), None
+
+
+async def _create_task_from_message(
+    session: WorkspaceSession,
+    message: str,
+    *,
+    wait_for_confirmation: bool,
+) -> dict[str, Any]:
+    shell = _extract_shell_command(message)
+    payload = build_task_payload(session.session_id, message)
+    return await create_task_immediate(
+        session.session_id,
+        title=payload["title"],
+        description=payload.get("description", ""),
+        shell_command=shell,
+        wait_for_confirmation=wait_for_confirmation,
+        priority=payload.get("priority", "medium"),
+    )
+
+
+def _task_chat_outcome(
+    session: WorkspaceSession,
+    task_result: dict[str, Any],
+    message: str,
+    wait_for_confirmation: bool,
+) -> dict[str, Any]:
+    shell = _extract_shell_command(message)
+    return {
+        "reply": _task_result_reply(task_result, shell, wait_for_confirmation),
+        "task": task_result,
+        "history": chat_service.get_history(session.session_id),
+        "correlation_id": session.session_id,
+    }
+
+
+def _task_result_reply(
+    task_result: dict[str, Any],
+    shell: str | None,
+    wait_for_confirmation: bool,
+) -> str:
+    tid = task_result.get("task_id", "?")
+    if not task_result.get("ok"):
+        return f"Nie udało się utworzyć ticketu: {task_result.get('error')}"
+    if wait_for_confirmation:
+        return f"Ticket `{tid}` w kolejce — potwierdź na liście ticketów (◎)."
+    return f"Uruchomiono ticket `{tid}`" + (f" · `{shell}`" if shell else "")
+
+
+async def _search_context_outcome(
+    session: WorkspaceSession,
+    message: str,
+    scope_files: list[str],
+    scope_uris: list[str],
+) -> dict[str, Any]:
+    return await chat_service.handle_message(
+        session_id=session.session_id,
+        message=message,
+        use_rag=True,
+        scope_files=scope_files,
+        scope_uris=scope_uris,
+    )
+
+
+async def _conductor_outcome(
+    session: WorkspaceSession,
+    *,
+    message: str,
+    mode: str,
+    use_rag: bool,
+    wait_for_confirmation: bool,
+    scope_files: list[str],
+    scope_uris: list[str],
+) -> dict[str, Any]:
+    from app.conductor import handle_turn
+
+    outcome = await handle_turn(
+        session_id=session.session_id,
+        message=message,
+        nlp_conversation_id=session.nlp2dsl_conversation_id,
+        scope_files=scope_files,
+        scope_uris=scope_uris,
+        form_values=None,
+        wait_for_confirmation=wait_for_confirmation,
+        chat_mode=mode,
+        use_rag=use_rag,
+    )
+    if outcome.get("nlp2dsl_conversation_id"):
+        session.nlp2dsl_conversation_id = outcome["nlp2dsl_conversation_id"]
+    return outcome
+
+
+def _record_chat_outcome(
+    session: WorkspaceSession,
+    message: str,
+    *,
+    mode: str,
+    outcome: dict[str, Any],
+) -> None:
     session.add_event("ChatMessageAdded", message[:120] or "(formularz)", mode=mode)
     if outcome.get("artifact"):
-        registered = register_artifact(
+        outcome["artifact"] = register_artifact(
             session,
             outcome["artifact"],
             source_message=message,
         )
-        outcome["artifact"] = registered
-
     if outcome.get("intent") == "file_list":
         session.add_event("FileListReturned", "Lista plików z rejestru + RAG")
     if outcome.get("retrieval_trace_id"):
@@ -395,6 +517,11 @@ async def handle_chat_message(
             correlation_id=outcome.get("correlation_id"),
         )
 
+
+def _record_task_outcome(
+    session: WorkspaceSession,
+    task_result: dict[str, Any] | None,
+) -> None:
     if task_result and task_result.get("ok"):
         session.add_event(
             "TaskCreatedFromChat",
@@ -404,6 +531,12 @@ async def handle_chat_message(
         if task_result.get("task_id"):
             link_ticket(session.session_id, task_result["task_id"])
 
+
+def _chat_response(
+    session: WorkspaceSession,
+    outcome: dict[str, Any],
+    task_result: dict[str, Any] | None,
+) -> dict[str, Any]:
     return {
         **outcome,
         "draft": session.draft,
@@ -465,15 +598,87 @@ async def create_and_run(
     return {**result, "queued": not wait_for_confirmation}
 
 
+_CHAT_ROLE_LABELS = {"user": "Ty", "assistant": "AI", "system": "System"}
+
+
+def format_chat_export_text(session: WorkspaceSession) -> str:
+    """Transkrypt czatu do schowka (rozmowa + routing pod odpowiedziami AI)."""
+    history = chat_service.get_history(session.session_id)
+    lines = [
+        "# Mullm — transkrypt czatu",
+        f"session_id: {session.session_id}",
+        "",
+    ]
+    for msg in history:
+        _append_chat_export_message(lines, msg)
+
+    _append_chat_export_trace(lines, _collect_routing_trace(history, session.events))
+    _append_chat_export_draft(lines, session.draft)
+    return "\n".join(lines).strip() + "\n"
+
+
+def _append_chat_export_message(lines: list[str], msg: dict[str, Any]) -> None:
+    role = msg.get("role", "?")
+    content = (msg.get("content") or "").strip()
+    if not content:
+        return
+    label = _CHAT_ROLE_LABELS.get(role, role)
+    lines.append(f"## {label}")
+    lines.append(content)
+    if msg.get("sources"):
+        lines.append(f"(źródeł RAG: {len(msg['sources'])})")
+    if role == "assistant" and msg.get("routing"):
+        lines.append(_format_routing_line(msg["routing"]))
+    lines.append("")
+
+
+def _append_chat_export_trace(
+    lines: list[str],
+    trace: list[dict[str, Any]],
+) -> None:
+    if not trace:
+        return
+    lines.append("## Routing trace")
+    for row in trace:
+        lines.append(_format_routing_line(row))
+    lines.append("")
+
+
+def _append_chat_export_draft(
+    lines: list[str],
+    draft: dict[str, Any] | None,
+) -> None:
+    if not draft:
+        return
+    lines.append("## Szkic (nieutworzony ticket)")
+    lines.append(f"tytuł: {draft.get('title')}")
+    lines.append(f"shell: {draft.get('shell_command') or '—'}")
+    lines.append("")
+
+
 async def export_debug_logs(session_id: str, *, limit: int = 30) -> dict[str, Any]:
     """Zbiera logi sesji + orchestrator + feed do kopiowania do schowka."""
     session = get_or_create(session_id)
     correlation_id = session.session_id
-    headers = {"X-Correlation-ID": correlation_id}
+    bundle = _debug_export_base(session)
 
-    bundle: dict[str, Any] = {
+    try:
+        bundle["inventory"] = await chat_service.fetch_file_inventory()
+    except Exception as exc:
+        bundle["inventory"] = {"errors": [str(exc)]}
+
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        await _attach_orchestrator_debug_export(client, bundle, limit=limit)
+        await _attach_operational_feed(client, bundle, limit=limit)
+
+    bundle["text"] = _format_export_text(bundle)
+    return bundle
+
+
+def _debug_export_base(session: WorkspaceSession) -> dict[str, Any]:
+    return {
         "generated_at": datetime.now(timezone.utc).isoformat(),
-        "correlation_id": correlation_id,
+        "correlation_id": session.session_id,
         "service": "web-bff",
         "session": {
             "session_id": session.session_id,
@@ -484,74 +689,172 @@ async def export_debug_logs(session_id: str, *, limit: int = 30) -> dict[str, An
         },
     }
 
+
+async def _attach_orchestrator_debug_export(
+    client: httpx.AsyncClient,
+    bundle: dict[str, Any],
+    *,
+    limit: int,
+) -> None:
+    correlation_id = bundle.get("correlation_id")
+    headers = {"X-Correlation-ID": str(correlation_id)}
     try:
-        bundle["inventory"] = await chat_service.fetch_file_inventory()
-    except Exception as exc:
-        bundle["inventory"] = {"errors": [str(exc)]}
+        response = await client.get(
+            f"{_orch()}/api/observability/logs/export",
+            params={"correlation_id": correlation_id, "limit": limit},
+            headers=headers,
+        )
+        if response.status_code == 200:
+            _merge_orchestrator_debug_payload(bundle, response.json())
+    except httpx.HTTPError as exc:
+        bundle["orchestrator_error"] = str(exc)
 
-    async with httpx.AsyncClient(timeout=30.0) as client:
-        try:
-            r = await client.get(
-                f"{_orch()}/api/observability/logs/export",
-                params={"correlation_id": correlation_id, "limit": limit},
-                headers=headers,
+
+def _merge_orchestrator_debug_payload(
+    bundle: dict[str, Any],
+    orch: dict[str, Any],
+) -> None:
+    bundle["rag_health"] = orch.get("rag_health")
+    bundle["incidents"] = orch.get("incidents")
+    bundle["incident_feed"] = orch.get("incident_feed")
+    correlation_id = bundle.get("correlation_id")
+    bundle["rag_snapshots"] = [
+        snap
+        for snap in (orch.get("rag_snapshots") or [])
+        if snap.get("correlation_id") == correlation_id
+    ][:10]
+    bundle["rag_health"] = bundle.get("rag_health") or orch.get("rag_health")
+
+
+async def _attach_operational_feed(
+    client: httpx.AsyncClient,
+    bundle: dict[str, Any],
+    *,
+    limit: int,
+) -> None:
+    try:
+        response = await client.get(
+            f"{_projector()}/projections/feed",
+            params={"limit": 25},
+        )
+        if response.status_code == 200:
+            bundle["operational_feed"] = _filter_operational_feed(
+                response.json().get("items") or [],
+                correlation_id=str(bundle.get("correlation_id") or ""),
+                limit=limit,
             )
-            if r.status_code == 200:
-                orch = r.json()
-                bundle["rag_health"] = orch.get("rag_health")
-                bundle["incidents"] = orch.get("incidents")
-                bundle["incident_feed"] = orch.get("incident_feed")
-                all_snaps = orch.get("rag_snapshots") or []
-                bundle["rag_snapshots"] = [
-                    s for s in all_snaps if s.get("correlation_id") == correlation_id
-                ][:10]
-                bundle["rag_health"] = bundle.get("rag_health") or orch.get("rag_health")
-        except httpx.HTTPError as exc:
-            bundle["orchestrator_error"] = str(exc)
+    except httpx.HTTPError:
+        bundle["operational_feed"] = []
 
-        try:
-            feed_r = await client.get(
-                f"{_projector()}/projections/feed",
-                params={"limit": 25},
-            )
-            if feed_r.status_code == 200:
-                items = feed_r.json().get("items") or []
-                bundle["operational_feed"] = [
-                    i
-                    for i in items
-                    if (i.get("correlation_id") == correlation_id)
-                    or "Incident" in (i.get("event_type") or "")
-                ][:limit]
-        except httpx.HTTPError:
-            bundle["operational_feed"] = []
 
-    bundle["text"] = _format_export_text(bundle)
-    return bundle
+def _filter_operational_feed(
+    items: list[dict[str, Any]],
+    *,
+    correlation_id: str,
+    limit: int,
+) -> list[dict[str, Any]]:
+    return [
+        item
+        for item in items
+        if (item.get("correlation_id") == correlation_id)
+        or "Incident" in (item.get("event_type") or "")
+    ][:limit]
 
 
 def _format_export_text(bundle: dict[str, Any]) -> str:
-    lines = [
+    lines = _export_header(bundle)
+    sess = bundle.get("session") or {}
+    _append_export_sections(lines, bundle, sess)
+    _append_orchestrator_error(lines, bundle)
+    lines.extend(["---", "Wklej do ticketa / Cursor / support."])
+    return "\n".join(lines)
+
+
+def _export_header(bundle: dict[str, Any]) -> list[str]:
+    generated_at = bundle.get("generated_at") or datetime.now(timezone.utc).isoformat()
+    return [
         "# Mullm workspace — export logów",
-        f"generated_at: {bundle.get('generated_at') or datetime.now(timezone.utc).isoformat()}",
+        f"generated_at: {generated_at}",
         f"correlation_id: {bundle.get('correlation_id', '')}",
         "",
     ]
-    sess = bundle.get("session") or {}
-    _append_context_section(lines, sess.get("context") or {})
-    _append_inventory_section(lines, bundle.get("inventory") or {})
-    _append_history_section(lines, sess.get("chat_history") or [])
+
+
+def _append_export_sections(
+    lines: list[str],
+    bundle: dict[str, Any],
+    sess: dict[str, Any],
+) -> None:
+    history = _list_section(sess, "chat_history")
+    events = _list_section(sess, "events")
+    _append_context_section(lines, _dict_section(sess, "context"))
+    _append_inventory_section(lines, _dict_section(bundle, "inventory"))
+    _append_history_section(lines, history)
+    _append_routing_trace_section(lines, history, events)
     _append_draft_section(lines, sess)
-    _append_session_events_section(lines, sess.get("events") or [])
-    _append_rag_health_section(lines, bundle.get("rag_health") or {})
-    _append_incidents_section(lines, bundle.get("incidents") or [])
+    _append_session_events_section(lines, events)
+    _append_rag_health_section(lines, _dict_section(bundle, "rag_health"))
+    _append_incidents_section(lines, _list_section(bundle, "incidents"))
     _append_rag_snapshots_section(lines, bundle)
-    _append_operational_feed_section(lines, bundle.get("operational_feed") or [])
+    _append_operational_feed_section(lines, _list_section(bundle, "operational_feed"))
+
+
+def _list_section(payload: dict[str, Any], key: str) -> list[Any]:
+    value = payload.get(key)
+    return value if isinstance(value, list) else []
+
+
+def _dict_section(payload: dict[str, Any], key: str) -> dict[str, Any]:
+    value = payload.get(key)
+    return value if isinstance(value, dict) else {}
+
+
+def _append_orchestrator_error(
+    lines: list[str],
+    bundle: dict[str, Any],
+) -> None:
     if bundle.get("orchestrator_error"):
         lines.append(f"(orchestrator: {bundle['orchestrator_error']})")
 
-    lines.append("---")
-    lines.append("Wklej do ticketa / Cursor / support.")
-    return "\n".join(lines)
+
+def _trace_event_row(
+    ev: dict[str, Any],
+    index: int,
+) -> tuple[str, dict[str, Any]] | None:
+    event_type = ev.get("type") or ""
+    routing = ev.get("routing")
+    if not event_type.startswith("Route") or not routing:
+        return None
+    outcome = ev.get("outcome") or ""
+    if outcome == "selected":
+        return None
+    key = f"ev:{index}:{event_type}:{outcome}"
+    row = {
+        **routing,
+        "source": "event",
+        "event_type": event_type,
+        "outcome": outcome,
+    }
+    return key, row
+
+
+def _trace_message_row(
+    msg: dict[str, Any],
+    assistant_index: int,
+) -> tuple[str, dict[str, Any]] | None:
+    routing = msg.get("routing")
+    if not routing:
+        return None
+    fp = _routing_fingerprint(routing)
+    key = f"msg:{assistant_index}:{fp}"
+    return key, {**routing, "source": "chat", "event_type": "chat"}
+
+
+def _routing_fingerprint(routing: dict[str, Any]) -> str:
+    return (
+        f"{routing.get('route')}:{routing.get('handler')}:"
+        f"{','.join(routing.get('reason_codes') or [])}"
+    )
 
 
 def _append_context_section(lines: list[str], ctx: dict[str, Any]) -> None:
@@ -560,11 +863,26 @@ def _append_context_section(lines: list[str], ctx: dict[str, Any]) -> None:
         lines.append("- (brak danych kontekstu)")
         lines.append("")
         return
+    wrote = _append_context_scalars(lines, ctx)
+    wrote = _append_context_collections(lines, ctx) or wrote
+    if not wrote:
+        lines.append(
+            "- (pusty — brak ticketu, wgranych plików 📎; lista plików i tak działa z rejestru)"
+        )
+    lines.append("")
+
+
+def _append_context_scalars(lines: list[str], ctx: dict[str, Any]) -> bool:
     wrote = False
     for key in ("ticket_id", "linked_ticket_id", "project", "branch", "agent_id"):
         if ctx.get(key):
             lines.append(f"- {key}: {ctx[key]}")
             wrote = True
+    return wrote
+
+
+def _append_context_collections(lines: list[str], ctx: dict[str, Any]) -> bool:
+    wrote = False
     if ctx.get("uris"):
         lines.append(f"- uris: {', '.join(ctx['uris'][:8])}")
         wrote = True
@@ -574,11 +892,7 @@ def _append_context_section(lines: list[str], ctx: dict[str, Any]) -> None:
     if ctx.get("notes"):
         lines.append(f"- notatki: {len(ctx['notes'])}")
         wrote = True
-    if not wrote:
-        lines.append(
-            "- (pusty — brak ticketu, wgranych plików 📎; lista plików i tak działa z rejestru)"
-        )
-    lines.append("")
+    return wrote
 
 
 def _append_inventory_section(lines: list[str], inv: dict[str, Any]) -> None:
@@ -587,16 +901,30 @@ def _append_inventory_section(lines: list[str], inv: dict[str, Any]) -> None:
     if not resources and not rag_docs:
         return
     lines.append("## Pliki i zasoby (stan systemu)")
+    _append_resource_inventory(lines, resources)
+    _append_rag_inventory(lines, rag_docs)
+    lines.append("")
+
+
+def _append_resource_inventory(
+    lines: list[str],
+    resources: list[dict[str, Any]],
+) -> None:
     for row in resources:
         lines.append(
             f"- {row.get('name') or '?'} | {row.get('uri')} | {row.get('status')}"
         )
+
+
+def _append_rag_inventory(
+    lines: list[str],
+    rag_docs: list[dict[str, Any]],
+) -> None:
     for doc in rag_docs:
         lines.append(
             f"- [RAG] {doc.get('name') or '?'} | {doc.get('uri')} | "
             f"{doc.get('status')} chunks={doc.get('chunk_count')}"
         )
-    lines.append("")
 
 
 def _append_history_section(lines: list[str], history: list[dict[str, Any]]) -> None:
@@ -606,15 +934,124 @@ def _append_history_section(lines: list[str], history: list[dict[str, Any]]) -> 
         lines.append("")
         return
     for msg in history:
-        role = msg.get("role", "?")
-        content = (msg.get("content") or "").strip()
-        if not content:
-            continue
-        lines.append(f"\n### {role}")
-        lines.append(content[:4000])
-        if msg.get("sources"):
-            lines.append(f"(źródeł RAG: {len(msg['sources'])})")
+        _append_history_message(lines, msg)
     lines.append("")
+
+
+def _append_history_message(lines: list[str], msg: dict[str, Any]) -> None:
+    role = msg.get("role", "?")
+    content = (msg.get("content") or "").strip()
+    if not content:
+        return
+    lines.append(f"\n### {role}")
+    lines.append(content[:4000])
+    if msg.get("sources"):
+        lines.append(f"(źródeł RAG: {len(msg['sources'])})")
+    routing = msg.get("routing")
+    if role == "assistant" and routing:
+        lines.append(_format_routing_line(routing))
+
+
+def _format_routing_line(routing: dict[str, Any]) -> str:
+    route = routing.get("route", "?")
+    conf = int((routing.get("confidence") or 0) * 100)
+    codes = ", ".join(routing.get("reason_codes") or [])
+    handler = routing.get("handler", "")
+    fb = routing.get("fallback_route")
+    ms = routing.get("timing_ms")
+    inner = [f"route: {route}", f"{conf}%", f"handler: {handler}"]
+    if codes:
+        inner.append(f"codes: {codes}")
+    if fb and fb != route:
+        inner.append(f"if_not_chosen: {fb}")
+    if routing.get("nlp2dsl_skipped"):
+        inner.append("nlp2dsl: skipped")
+    elif routing.get("nlp2dsl_invoked"):
+        inner.append("nlp2dsl: invoked")
+    n2 = routing.get("nlp2dsl")
+    if n2:
+        action = n2.get("action") or n2.get("intent") or "?"
+        inner.append(f"nlp2dsl_action: {action}")
+    if ms is not None:
+        inner.append(f"{ms}ms")
+    inner.append(f"mode: {routing.get('router_mode', 'rules')}")
+    return "(" + " · ".join(inner) + ")"
+
+
+def _append_routing_trace_section(
+    lines: list[str],
+    history: list[dict[str, Any]],
+    events: list[dict[str, Any]],
+) -> None:
+    trace = _collect_routing_trace(history, events)
+    if not trace:
+        return
+    lines.append("## Routing trace")
+    for i, row in enumerate(trace, 1):
+        _append_routing_trace_decision(lines, i, row)
+    lines.append("")
+
+
+def _append_routing_trace_decision(
+    lines: list[str],
+    index: int,
+    row: dict[str, Any],
+) -> None:
+    label = row.get("event_type") or row.get("outcome") or row.get("source", "?")
+    lines.append(f"\n### decyzja {index} ({label})")
+    lines.append(_format_routing_line(row))
+    _append_candidate_routes(lines, row.get("candidate_routes") or [])
+
+
+def _append_candidate_routes(
+    lines: list[str],
+    candidates: list[dict[str, Any]],
+) -> None:
+    if not candidates:
+        return
+    lines.append("kandydaci:")
+    for candidate in candidates[:5]:
+        lines.append(_format_candidate_route(candidate))
+
+
+def _format_candidate_route(candidate: dict[str, Any]) -> str:
+    confidence = int((candidate.get("confidence") or 0) * 100)
+    codes = ",".join(candidate.get("reason_codes") or [])
+    return f"  - {candidate.get('route')} @ {confidence}% {codes}"
+
+
+def _collect_routing_trace(
+    history: list[dict[str, Any]],
+    events: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """Łączy eventy Route* z routingiem zapisanym na wiadomościach asystenta."""
+    trace: list[dict[str, Any]] = []
+    seen: set[str] = set()
+
+    for idx, ev in enumerate(events):
+        _append_unique_trace_row(trace, seen, _trace_event_row(ev, idx))
+
+    assistant_idx = 0
+    for msg in history:
+        if msg.get("role") != "assistant":
+            continue
+        _append_unique_trace_row(trace, seen, _trace_message_row(msg, assistant_idx))
+        assistant_idx += 1
+    return trace
+
+
+def _append_unique_trace_row(
+    trace: list[dict[str, Any]],
+    seen: set[str],
+    item: tuple[str, dict[str, Any]] | None,
+) -> None:
+    if not item:
+        return
+    key, row = item
+    if key in seen:
+        return
+    seen.add(key)
+    trace.append(row)
 
 
 def _append_draft_section(lines: list[str], sess: dict[str, Any]) -> None:
@@ -637,11 +1074,31 @@ def _append_session_events_section(lines: list[str], events: list[dict[str, Any]
 
 
 def _event_extra(ev: dict[str, Any]) -> str:
-    extra = ""
+    return "".join([*_event_extra_parts(ev), _routing_event_extra(ev)])
+
+
+def _event_extra_parts(ev: dict[str, Any]) -> list[str]:
+    parts: list[str] = []
     if ev.get("task_id"):
-        extra = f" task_id={ev['task_id']}"
+        parts.append(f" task_id={ev['task_id']}")
     if ev.get("retrieval_trace_id"):
-        extra += f" trace={ev['retrieval_trace_id']}"
+        parts.append(f" trace={ev['retrieval_trace_id']}")
+    if ev.get("outcome"):
+        parts.append(f" outcome={ev['outcome']}")
+    return parts
+
+
+def _routing_event_extra(ev: dict[str, Any]) -> str:
+    routing = ev.get("routing")
+    if not routing:
+        return ""
+    conf = int((routing.get("confidence") or 0) * 100)
+    extra = f" | {routing.get('route')} @{conf}%"
+    codes = ",".join((routing.get("reason_codes") or [])[:4])
+    if codes:
+        extra += f" [{codes}]"
+    if routing.get("timing_ms") is not None:
+        extra += f" {routing['timing_ms']}ms"
     return extra
 
 

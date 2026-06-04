@@ -11,6 +11,43 @@ from app.observability.incidents import IncidentCode
 from app.observability.logging import log_event
 
 
+def _checks_with_status(
+    checks: list[dict[str, Any]],
+    status: str,
+) -> list[dict[str, Any]]:
+    return [check for check in checks if check.get("status") == status]
+
+
+def _overall_status(checks: list[dict[str, Any]]) -> str:
+    if _checks_with_status(checks, "fail"):
+        return "unhealthy"
+    if _checks_with_status(checks, "warn"):
+        return "degraded"
+    return "healthy"
+
+
+def _primary_incident_code(checks: list[dict[str, Any]]) -> str | None:
+    for status in ("fail", "warn"):
+        matches = _checks_with_status(checks, status)
+        if matches:
+            return matches[0].get("incident_code")
+    return None
+
+
+def _log_diagnostics_result(
+    overall: str,
+    primary_code: str | None,
+    checks: list[dict[str, Any]],
+) -> None:
+    log_event(
+        severity="info" if overall == "healthy" else "warning",
+        component="rag_diagnostics",
+        message=f"RAG diagnostics {overall}",
+        error_code=primary_code,
+        check_count=len(checks),
+    )
+
+
 @dataclass
 class RagDiagnostics:
     postgres: Any
@@ -29,20 +66,8 @@ class RagDiagnostics:
         if query:
             checks.append(await self._check_search(query))
 
-        failed = [c for c in checks if c.get("status") == "fail"]
-        degraded = [c for c in checks if c.get("status") == "warn"]
-        overall = "healthy"
-        if failed:
-            overall = "unhealthy"
-        elif degraded:
-            overall = "degraded"
-
-        primary_code = None
-        if failed:
-            primary_code = failed[0].get("incident_code")
-        elif degraded:
-            primary_code = degraded[0].get("incident_code")
-
+        overall = _overall_status(checks)
+        primary_code = _primary_incident_code(checks)
         result = {
             "retrieval_trace_id": trace_id,
             "correlation_id": correlation_id,
@@ -53,14 +78,7 @@ class RagDiagnostics:
             "ran_at": datetime.now(timezone.utc).isoformat(),
         }
 
-        log_event(
-            severity="info" if overall == "healthy" else "warning",
-            component="rag_diagnostics",
-            message=f"RAG diagnostics {overall}",
-            error_code=primary_code,
-            check_count=len(checks),
-        )
-
+        _log_diagnostics_result(overall, primary_code, checks)
         await self._snapshot(result)
         return result
 

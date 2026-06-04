@@ -13,15 +13,18 @@ def chunk_text(
         return []
     if len(normalized) <= max_chars:
         return [normalized]
+    return _overlapping_chunks(normalized, max_chars=max_chars, overlap=overlap)
 
+
+def _overlapping_chunks(text: str, *, max_chars: int, overlap: int) -> list[str]:
     chunks: list[str] = []
     start = 0
-    while start < len(normalized):
-        end = min(start + max_chars, len(normalized))
-        piece = normalized[start:end].strip()
+    while start < len(text):
+        end = min(start + max_chars, len(text))
+        piece = text[start:end].strip()
         if piece:
             chunks.append(piece)
-        if end >= len(normalized):
+        if end >= len(text):
             break
         start = max(0, end - overlap)
     return chunks

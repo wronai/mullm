@@ -269,21 +269,32 @@ def _error_code(payload: dict[str, Any]) -> str:
 
 
 def _checks_payload(payload: dict[str, Any]) -> dict[str, Any]:
-    checks = payload.get("checks")
-    if checks is None:
-        diagnostics = payload.get("diagnostics") or {}
-        checks = diagnostics.get("checks") if isinstance(diagnostics, dict) else None
+    checks = _raw_checks(payload)
     if isinstance(checks, dict):
         return checks
     if isinstance(checks, list):
-        return {
-            str(item.get("name", idx)): {
-                key: value for key, value in item.items() if key != "name"
-            }
-            for idx, item in enumerate(checks)
-            if isinstance(item, dict)
-        }
+        return _checks_list_payload(checks)
     return {}
+
+
+def _raw_checks(payload: dict[str, Any]) -> Any:
+    checks = payload.get("checks")
+    if checks is not None:
+        return checks
+    diagnostics = payload.get("diagnostics") or {}
+    return diagnostics.get("checks") if isinstance(diagnostics, dict) else None
+
+
+def _checks_list_payload(checks: list[Any]) -> dict[str, Any]:
+    return {
+        str(item.get("name", idx)): _check_payload(item)
+        for idx, item in enumerate(checks)
+        if isinstance(item, dict)
+    }
+
+
+def _check_payload(item: dict[str, Any]) -> dict[str, Any]:
+    return {key: value for key, value in item.items() if key != "name"}
 
 
 def _root_cause(payload: dict[str, Any]) -> str:

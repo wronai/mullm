@@ -26,16 +26,22 @@ async def project_event(db, event: dict[str, Any]) -> None:
 
 
 def _normalize_event(event: dict[str, Any]) -> dict[str, Any]:
-    payload = event.get("payload") or event.get("data") or {}
-    occurred_at = event.get("occurred_at") or event.get("timestamp")
-    if isinstance(occurred_at, str):
-        occurred_at = datetime.fromisoformat(occurred_at.replace("Z", "+00:00"))
-    elif occurred_at is None:
-        occurred_at = datetime.now(timezone.utc)
-
     return {
         **event,
-        "payload": payload,
-        "occurred_at": occurred_at,
+        "payload": _event_payload(event),
+        "occurred_at": _event_occurred_at(event),
         "metadata": event.get("metadata") or {},
     }
+
+
+def _event_payload(event: dict[str, Any]) -> dict[str, Any]:
+    return event.get("payload") or event.get("data") or {}
+
+
+def _event_occurred_at(event: dict[str, Any]) -> datetime:
+    occurred_at = event.get("occurred_at") or event.get("timestamp")
+    if isinstance(occurred_at, str):
+        return datetime.fromisoformat(occurred_at.replace("Z", "+00:00"))
+    if occurred_at is None:
+        return datetime.now(timezone.utc)
+    return occurred_at

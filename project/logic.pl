@@ -6,7 +6,7 @@ project_file('agents/shell-agent/app/__init__.py', 2, 'python').
 project_file('agents/shell-agent/app/executor.py', 49, 'python').
 project_file('agents/shell-agent/app/main.py', 27, 'python').
 project_file('agents/shell-agent/app/nats_consumer.py', 48, 'python').
-project_file('app.doql.less', 395, 'less').
+project_file('app.doql.less', 422, 'less').
 project_file('integrations/nlp2dsl/mullm_registry.py', 33, 'python').
 project_file('integrations/nlp2dsl/patch_startup.py', 8, 'python').
 project_file('project.sh', 53, 'shell').
@@ -25,13 +25,13 @@ project_file('services/orchestrator/app/api/catalog.py', 42, 'python').
 project_file('services/orchestrator/app/api/commands.py', 380, 'python').
 project_file('services/orchestrator/app/api/evolution.py', 105, 'python').
 project_file('services/orchestrator/app/api/observability.py', 109, 'python').
-project_file('services/orchestrator/app/api/queries.py', 181, 'python').
+project_file('services/orchestrator/app/api/queries.py', 205, 'python').
 project_file('services/orchestrator/app/api/rag.py', 143, 'python').
 project_file('services/orchestrator/app/application/__init__.py', 2, 'python').
-project_file('services/orchestrator/app/application/command_bus.py', 983, 'python').
+project_file('services/orchestrator/app/application/command_bus.py', 981, 'python').
 project_file('services/orchestrator/app/application/sagas/__init__.py', 15, 'python').
-project_file('services/orchestrator/app/application/sagas/approval_gate.py', 130, 'python').
-project_file('services/orchestrator/app/application/sagas/task_routing.py', 62, 'python').
+project_file('services/orchestrator/app/application/sagas/approval_gate.py', 147, 'python').
+project_file('services/orchestrator/app/application/sagas/task_routing.py', 67, 'python').
 project_file('services/orchestrator/app/config.py', 55, 'python').
 project_file('services/orchestrator/app/domain/__init__.py', 2, 'python').
 project_file('services/orchestrator/app/domain/aggregates/__init__.py', 2, 'python').
@@ -39,84 +39,106 @@ project_file('services/orchestrator/app/domain/aggregates/agent.py', 84, 'python
 project_file('services/orchestrator/app/domain/aggregates/approval.py', 98, 'python').
 project_file('services/orchestrator/app/domain/aggregates/plugin.py', 98, 'python').
 project_file('services/orchestrator/app/domain/aggregates/resource.py', 101, 'python').
-project_file('services/orchestrator/app/domain/aggregates/task.py', 232, 'python').
+project_file('services/orchestrator/app/domain/aggregates/task.py', 245, 'python').
 project_file('services/orchestrator/app/domain/aggregates/workflow.py', 145, 'python').
-project_file('services/orchestrator/app/domain/events/__init__.py', 812, 'python').
+project_file('services/orchestrator/app/domain/events/__init__.py', 104, 'python').
+project_file('services/orchestrator/app/domain/events/agents.py', 96, 'python').
+project_file('services/orchestrator/app/domain/events/approvals.py', 127, 'python').
+project_file('services/orchestrator/app/domain/events/base.py', 82, 'python').
 project_file('services/orchestrator/app/domain/events/incidents.py', 255, 'python').
+project_file('services/orchestrator/app/domain/events/plugins.py', 119, 'python').
+project_file('services/orchestrator/app/domain/events/resources.py', 133, 'python').
+project_file('services/orchestrator/app/domain/events/tasks.py', 134, 'python').
+project_file('services/orchestrator/app/domain/events/workflows.py', 168, 'python').
 project_file('services/orchestrator/app/domain/value_objects/__init__.py', 86, 'python').
 project_file('services/orchestrator/app/evolution/__init__.py', 13, 'python').
 project_file('services/orchestrator/app/evolution/catalog.py', 93, 'python').
-project_file('services/orchestrator/app/evolution/evaluation.py', 147, 'python').
+project_file('services/orchestrator/app/evolution/evaluation.py', 203, 'python').
 project_file('services/orchestrator/app/evolution/experiments.py', 77, 'python').
-project_file('services/orchestrator/app/evolution/policy_engine.py', 104, 'python').
+project_file('services/orchestrator/app/evolution/policy_engine.py', 132, 'python').
 project_file('services/orchestrator/app/incidents/__init__.py', 4, 'python').
-project_file('services/orchestrator/app/incidents/pipeline.py', 322, 'python').
+project_file('services/orchestrator/app/incidents/pipeline.py', 368, 'python').
 project_file('services/orchestrator/app/infrastructure/__init__.py', 2, 'python').
 project_file('services/orchestrator/app/infrastructure/eventstore.py', 183, 'python').
 project_file('services/orchestrator/app/infrastructure/eventstore_dual.py', 58, 'python').
 project_file('services/orchestrator/app/infrastructure/eventstore_esdb.py', 187, 'python').
-project_file('services/orchestrator/app/infrastructure/eventstore_factory.py', 51, 'python').
+project_file('services/orchestrator/app/infrastructure/eventstore_factory.py', 67, 'python').
 project_file('services/orchestrator/app/infrastructure/nats_bus.py', 50, 'python').
 project_file('services/orchestrator/app/infrastructure/postgres.py', 93, 'python').
 project_file('services/orchestrator/app/main.py', 196, 'python').
 project_file('services/orchestrator/app/observability/__init__.py', 23, 'python').
 project_file('services/orchestrator/app/observability/context.py', 60, 'python').
-project_file('services/orchestrator/app/observability/export.py', 191, 'python').
-project_file('services/orchestrator/app/observability/incidents.py', 338, 'python').
+project_file('services/orchestrator/app/observability/export.py', 281, 'python').
+project_file('services/orchestrator/app/observability/incidents.py', 581, 'python').
 project_file('services/orchestrator/app/observability/logging.py', 44, 'python').
 project_file('services/orchestrator/app/observability/middleware.py', 20, 'python').
-project_file('services/orchestrator/app/observability/rag_diagnostics.py', 205, 'python').
-project_file('services/orchestrator/app/observability/rag_pipeline.py', 143, 'python').
+project_file('services/orchestrator/app/observability/rag_diagnostics.py', 223, 'python').
+project_file('services/orchestrator/app/observability/rag_pipeline.py', 271, 'python').
 project_file('services/orchestrator/app/rag/__init__.py', 7, 'python').
-project_file('services/orchestrator/app/rag/chunking.py', 28, 'python').
-project_file('services/orchestrator/app/rag/indexer.py', 86, 'python').
-project_file('services/orchestrator/app/rag/openrouter.py', 112, 'python').
-project_file('services/orchestrator/app/rag/retriever.py', 88, 'python').
-project_file('services/orchestrator/app/rag/store.py', 241, 'python').
+project_file('services/orchestrator/app/rag/chunking.py', 31, 'python').
+project_file('services/orchestrator/app/rag/indexer.py', 116, 'python').
+project_file('services/orchestrator/app/rag/openrouter.py', 129, 'python').
+project_file('services/orchestrator/app/rag/retriever.py', 104, 'python').
+project_file('services/orchestrator/app/rag/store.py', 284, 'python').
 project_file('services/orchestrator/tests/__init__.py', 2, 'python').
 project_file('services/orchestrator/tests/conftest.py', 10, 'python').
 project_file('services/orchestrator/tests/fakes.py', 64, 'python').
 project_file('services/orchestrator/tests/test_api.py', 90, 'python').
 project_file('services/orchestrator/tests/test_command_bus.py', 57, 'python').
-project_file('services/orchestrator/tests/test_observability.py', 22, 'python').
+project_file('services/orchestrator/tests/test_observability.py', 121, 'python').
 project_file('services/orchestrator/tests/test_task_aggregate.py', 28, 'python').
 project_file('services/projector/app/__init__.py', 2, 'python').
 project_file('services/projector/app/db.py', 57, 'python').
 project_file('services/projector/app/main.py', 341, 'python').
 project_file('services/projector/app/projections/__init__.py', 4, 'python').
-project_file('services/projector/app/projections/agent_fleet.py', 82, 'python').
+project_file('services/projector/app/projections/agent_fleet.py', 98, 'python').
 project_file('services/projector/app/projections/approval_requests.py', 80, 'python').
-project_file('services/projector/app/projections/dispatcher.py', 42, 'python').
-project_file('services/projector/app/projections/incidents.py', 321, 'python').
-project_file('services/projector/app/projections/operational_feed.py', 70, 'python').
+project_file('services/projector/app/projections/dispatcher.py', 48, 'python').
+project_file('services/projector/app/projections/incidents.py', 332, 'python').
+project_file('services/projector/app/projections/operational_feed.py', 71, 'python').
 project_file('services/projector/app/projections/plugin_catalog.py', 43, 'python').
-project_file('services/projector/app/projections/resource_registry.py', 119, 'python').
-project_file('services/projector/app/projections/task_board.py', 116, 'python').
+project_file('services/projector/app/projections/resource_registry.py', 131, 'python').
+project_file('services/projector/app/projections/task_board.py', 154, 'python').
 project_file('services/projector/app/projections/workflow_versions.py', 48, 'python').
 project_file('services/web/app/__init__.py', 1, 'python').
-project_file('services/web/app/access_matrix.py', 206, 'python').
-project_file('services/web/app/agent_workroom.py', 355, 'python').
-project_file('services/web/app/api_routes.py', 529, 'python').
-project_file('services/web/app/chat.py', 665, 'python').
-project_file('services/web/app/conductor.py', 463, 'python').
+project_file('services/web/app/access_matrix.py', 249, 'python').
+project_file('services/web/app/agent_workroom.py', 643, 'python').
+project_file('services/web/app/api/__init__.py', 2, 'python').
+project_file('services/web/app/api/access_routes.py', 47, 'python').
+project_file('services/web/app/api/chat_routes.py', 157, 'python').
+project_file('services/web/app/api/config.py', 17, 'python').
+project_file('services/web/app/api/models.py', 81, 'python').
+project_file('services/web/app/api/router_routes.py', 33, 'python').
+project_file('services/web/app/api/task_routes.py', 186, 'python').
+project_file('services/web/app/api/workroom_routes.py', 55, 'python').
+project_file('services/web/app/api/workspace_routes.py', 78, 'python').
+project_file('services/web/app/api_routes.py', 22, 'python').
+project_file('services/web/app/chat.py', 948, 'python').
+project_file('services/web/app/conductor.py', 904, 'python').
 project_file('services/web/app/main.py', 105, 'python').
 project_file('services/web/app/nlp2dsl_bridge.py', 101, 'python').
-project_file('services/web/app/resource_areas.py', 158, 'python').
+project_file('services/web/app/prompt_router.py', 470, 'python').
+project_file('services/web/app/resource_areas.py', 172, 'python').
+project_file('services/web/app/routing_policy.py', 156, 'python').
 project_file('services/web/app/static/access.css', 84, 'css').
 project_file('services/web/app/static/access.js', 158, 'javascript').
 project_file('services/web/app/static/app.css', 200, 'css').
 project_file('services/web/app/static/app.js', 194, 'javascript').
 project_file('services/web/app/static/workroom.css', 87, 'css').
-project_file('services/web/app/static/workroom.js', 187, 'javascript').
-project_file('services/web/app/static/workspace.css', 656, 'css').
-project_file('services/web/app/static/workspace.js', 843, 'javascript').
+project_file('services/web/app/static/workroom.js', 269, 'javascript').
+project_file('services/web/app/static/workspace.css', 779, 'css').
+project_file('services/web/app/static/workspace.js', 1154, 'javascript').
 project_file('services/web/app/tickets.py', 46, 'python').
-project_file('services/web/app/workspace.py', 681, 'python').
+project_file('services/web/app/workspace.py', 1193, 'python').
 project_file('services/web/src/styles.css', 287, 'css').
 project_file('services/web/tests/test_access_matrix.py', 38, 'python').
-project_file('services/web/tests/test_agent_workroom.py', 30, 'python').
-project_file('services/web/tests/test_artifacts.py', 31, 'python').
-project_file('services/web/tests/test_chat_intent.py', 111, 'python').
+project_file('services/web/tests/test_agent_workroom.py', 69, 'python').
+project_file('services/web/tests/test_api_routes.py', 21, 'python').
+project_file('services/web/tests/test_artifacts.py', 139, 'python').
+project_file('services/web/tests/test_chat_intent.py', 126, 'python').
+project_file('services/web/tests/test_conductor_ingress.py', 45, 'python').
+project_file('services/web/tests/test_prompt_router.py', 63, 'python').
+project_file('services/web/tests/test_routing_policy.py', 30, 'python').
 project_file('tests/conftest.py', 354, 'python').
 project_file('tests/test_access_fabric.py', 62, 'python').
 project_file('tests/test_agent_aggregate.py', 33, 'python').
@@ -196,7 +218,10 @@ python_function('services/orchestrator/app/api/observability.py', 'list_incident
 python_function('services/orchestrator/app/api/queries.py', 'get_task', 2, 6, 6).
 python_function('services/orchestrator/app/api/queries.py', 'get_agent', 2, 6, 6).
 python_function('services/orchestrator/app/api/queries.py', 'get_workflow', 2, 6, 6).
-python_function('services/orchestrator/app/api/queries.py', 'list_tasks', 5, 10, 8).
+python_function('services/orchestrator/app/api/queries.py', 'list_tasks', 5, 4, 8).
+python_function('services/orchestrator/app/api/queries.py', '_task_list_item', 2, 3, 2).
+python_function('services/orchestrator/app/api/queries.py', '_aggregate_state', 1, 2, 1).
+python_function('services/orchestrator/app/api/queries.py', '_matches_task_filters', 1, 5, 1).
 python_function('services/orchestrator/app/api/queries.py', 'list_agents', 3, 6, 8).
 python_function('services/orchestrator/app/api/queries.py', '_event_to_dict', 1, 2, 3).
 python_function('services/orchestrator/app/api/rag.py', 'rag_health', 1, 1, 2).
@@ -205,23 +230,50 @@ python_function('services/orchestrator/app/api/rag.py', 'search', 2, 3, 15).
 python_function('services/orchestrator/app/api/rag.py', 'ask', 2, 1, 6).
 python_function('services/orchestrator/app/api/rag.py', 'ingest_resource', 2, 2, 5).
 python_function('services/orchestrator/app/api/rag.py', '_safe_rag_diagnostics', 1, 2, 2).
+python_function('services/orchestrator/app/application/command_bus.py', '_task_outcome_payload', 1, 5, 2).
 python_function('services/orchestrator/app/application/sagas/approval_gate.py', '_is_skipped', 2, 3, 2).
-python_function('services/orchestrator/app/application/sagas/approval_gate.py', 'ensure_approval', 3, 8, 6).
+python_function('services/orchestrator/app/application/sagas/approval_gate.py', 'ensure_approval', 3, 3, 6).
+python_function('services/orchestrator/app/application/sagas/approval_gate.py', '_required_approval_id', 4, 2, 2).
+python_function('services/orchestrator/app/application/sagas/approval_gate.py', '_validate_approval_events', 4, 5, 2).
 python_function('services/orchestrator/app/application/sagas/approval_gate.py', 'follow_up_after_grant', 1, 5, 3).
-python_function('services/orchestrator/app/application/sagas/task_routing.py', 'pick_idle_agent', 2, 10, 4).
+python_function('services/orchestrator/app/application/sagas/task_routing.py', 'pick_idle_agent', 2, 4, 4).
+python_function('services/orchestrator/app/application/sagas/task_routing.py', '_agent_route_state', 1, 4, 1).
+python_function('services/orchestrator/app/application/sagas/task_routing.py', '_agent_matches', 2, 4, 2).
 python_function('services/orchestrator/app/application/sagas/task_routing.py', 'maybe_auto_assign', 1, 5, 3).
 python_function('services/orchestrator/app/domain/aggregates/agent.py', '_utc_now', 0, 1, 1).
 python_function('services/orchestrator/app/domain/aggregates/task.py', '_event_type', 1, 1, 1).
 python_function('services/orchestrator/app/domain/aggregates/task.py', '_utc_now', 0, 1, 1).
 python_function('services/orchestrator/app/domain/aggregates/task.py', '_event_data', 1, 2, 3).
 python_function('services/orchestrator/app/domain/aggregates/task.py', '_event_timestamp', 1, 3, 3).
-python_function('services/orchestrator/app/domain/events/__init__.py', '_utc_now', 0, 1, 1).
-python_function('services/orchestrator/app/domain/events/__init__.py', '_json_value', 1, 7, 5).
-python_function('services/orchestrator/app/incidents/pipeline.py', 'classify_rag_error', 1, 11, 2).
+python_function('services/orchestrator/app/domain/aggregates/task.py', '_apply_task_created', 3, 4, 4).
+python_function('services/orchestrator/app/domain/aggregates/task.py', '_apply_task_assigned', 3, 1, 1).
+python_function('services/orchestrator/app/domain/aggregates/task.py', '_apply_task_started', 3, 2, 2).
+python_function('services/orchestrator/app/domain/aggregates/task.py', '_apply_task_completed', 3, 2, 1).
+python_function('services/orchestrator/app/domain/aggregates/task.py', '_apply_task_failed', 3, 1, 1).
+python_function('services/orchestrator/app/domain/events/base.py', '_utc_now', 0, 1, 1).
+python_function('services/orchestrator/app/domain/events/base.py', '_json_value', 1, 3, 3).
+python_function('services/orchestrator/app/domain/events/base.py', '_json_datetime', 1, 1, 1).
+python_function('services/orchestrator/app/domain/events/base.py', '_json_list', 1, 2, 1).
+python_function('services/orchestrator/app/domain/events/base.py', '_json_dict', 1, 2, 2).
+python_function('services/orchestrator/app/domain/events/base.py', '_json_none', 1, 1, 0).
+python_function('services/orchestrator/app/evolution/evaluation.py', '_count_if', 1, 2, 0).
+python_function('services/orchestrator/app/evolution/evaluation.py', '_rate_if', 1, 2, 0).
+python_function('services/orchestrator/app/evolution/evaluation.py', '_should_rollback_metrics', 1, 5, 2).
+python_function('services/orchestrator/app/evolution/policy_engine.py', '_activation_metrics_row', 2, 1, 1).
+python_function('services/orchestrator/app/evolution/policy_engine.py', '_has_enough_activation_samples', 2, 3, 2).
+python_function('services/orchestrator/app/incidents/pipeline.py', 'classify_rag_error', 1, 3, 4).
+python_function('services/orchestrator/app/incidents/pipeline.py', '_rag_root_cause', 1, 5, 7).
+python_function('services/orchestrator/app/incidents/pipeline.py', '_rag_schema_missing', 2, 1, 0).
+python_function('services/orchestrator/app/incidents/pipeline.py', '_rag_index_empty', 2, 1, 1).
+python_function('services/orchestrator/app/incidents/pipeline.py', '_retriever_empty_result', 2, 1, 1).
+python_function('services/orchestrator/app/incidents/pipeline.py', '_openrouter_unconfigured', 2, 1, 1).
 python_function('services/orchestrator/app/infrastructure/eventstore.py', '_loads_json', 1, 3, 3).
 python_function('services/orchestrator/app/infrastructure/eventstore.py', '_utc_now', 0, 1, 1).
 python_function('services/orchestrator/app/infrastructure/eventstore_esdb.py', '_parse_esdb_uri', 1, 4, 3).
-python_function('services/orchestrator/app/infrastructure/eventstore_factory.py', 'build_event_store', 0, 8, 7).
+python_function('services/orchestrator/app/infrastructure/eventstore_factory.py', 'build_event_store', 0, 5, 5).
+python_function('services/orchestrator/app/infrastructure/eventstore_factory.py', '_require_eventstore_url', 2, 2, 1).
+python_function('services/orchestrator/app/infrastructure/eventstore_factory.py', '_eventstoredb_backend', 2, 1, 3).
+python_function('services/orchestrator/app/infrastructure/eventstore_factory.py', '_dual_backend', 3, 2, 5).
 python_function('services/orchestrator/app/main.py', 'lifespan', 1, 6, 21).
 python_function('services/orchestrator/app/main.py', 'health_check', 0, 1, 2).
 python_function('services/orchestrator/app/main.py', 'root', 0, 1, 1).
@@ -233,21 +285,88 @@ python_function('services/orchestrator/app/observability/context.py', 'get_corre
 python_function('services/orchestrator/app/observability/context.py', 'get_retrieval_trace_id', 0, 1, 1).
 python_function('services/orchestrator/app/observability/context.py', 'get_chat_session_id', 0, 1, 1).
 python_function('services/orchestrator/app/observability/context.py', 'observability_context', 0, 5, 4).
-python_function('services/orchestrator/app/observability/export.py', 'format_logs_text', 1, 29, 5).
-python_function('services/orchestrator/app/observability/export.py', 'build_orchestrator_bundle', 0, 11, 8).
-python_function('services/orchestrator/app/observability/incidents.py', 'classify_rag_failure', 0, 15, 4).
-python_function('services/orchestrator/app/observability/incidents.py', '_event_payload', 2, 19, 9).
+python_function('services/orchestrator/app/observability/export.py', 'format_logs_text', 1, 6, 9).
+python_function('services/orchestrator/app/observability/export.py', '_append_rag_health', 2, 6, 2).
+python_function('services/orchestrator/app/observability/export.py', '_append_incidents', 2, 5, 2).
+python_function('services/orchestrator/app/observability/export.py', '_append_incident_feed', 2, 4, 2).
+python_function('services/orchestrator/app/observability/export.py', '_append_rag_snapshots', 2, 3, 2).
+python_function('services/orchestrator/app/observability/export.py', '_append_workspace_session', 2, 5, 5).
+python_function('services/orchestrator/app/observability/export.py', '_append_workspace_context', 2, 3, 2).
+python_function('services/orchestrator/app/observability/export.py', '_append_workspace_events', 2, 2, 2).
+python_function('services/orchestrator/app/observability/export.py', '_append_workspace_chat', 2, 3, 3).
+python_function('services/orchestrator/app/observability/export.py', 'build_orchestrator_bundle', 0, 1, 8).
+python_function('services/orchestrator/app/observability/export.py', '_safe_rag_health', 1, 2, 2).
+python_function('services/orchestrator/app/observability/export.py', '_safe_fetch_incidents', 1, 3, 3).
+python_function('services/orchestrator/app/observability/export.py', '_fetch_incidents', 1, 2, 1).
+python_function('services/orchestrator/app/observability/export.py', '_safe_fetch_incident_feed', 1, 3, 2).
+python_function('services/orchestrator/app/observability/export.py', '_fetch_incident_feed', 1, 2, 1).
+python_function('services/orchestrator/app/observability/export.py', '_safe_fetch_rag_snapshots', 1, 3, 2).
+python_function('services/orchestrator/app/observability/export.py', '_fetch_rag_snapshots', 1, 2, 1).
+python_function('services/orchestrator/app/observability/incidents.py', 'classify_rag_failure', 0, 3, 5).
+python_function('services/orchestrator/app/observability/incidents.py', '_backend_unavailable', 4, 2, 1).
+python_function('services/orchestrator/app/observability/incidents.py', '_rag_timeout', 4, 2, 0).
+python_function('services/orchestrator/app/observability/incidents.py', '_vector_db_unavailable', 4, 3, 0).
+python_function('services/orchestrator/app/observability/incidents.py', '_embedding_pipeline_failed', 4, 1, 0).
+python_function('services/orchestrator/app/observability/incidents.py', '_llm_unavailable', 4, 3, 0).
+python_function('services/orchestrator/app/observability/incidents.py', '_retriever_empty_result', 4, 1, 0).
+python_function('services/orchestrator/app/observability/incidents.py', '_grounding_failed', 4, 2, 1).
+python_function('services/orchestrator/app/observability/incidents.py', '_incident_row', 0, 2, 8).
+python_function('services/orchestrator/app/observability/incidents.py', '_incident_correlation_id', 1, 3, 3).
+python_function('services/orchestrator/app/observability/incidents.py', '_incident_trace_id', 1, 2, 1).
+python_function('services/orchestrator/app/observability/incidents.py', '_incident_dict', 1, 2, 1).
+python_function('services/orchestrator/app/observability/incidents.py', '_log_incident_row', 1, 1, 1).
+python_function('services/orchestrator/app/observability/incidents.py', '_incident_event_plan', 1, 2, 5).
+python_function('services/orchestrator/app/observability/incidents.py', '_diagnostics_event_plan', 1, 3, 1).
+python_function('services/orchestrator/app/observability/incidents.py', '_remediation_event_plan', 1, 6, 4).
+python_function('services/orchestrator/app/observability/incidents.py', '_remediation_done_event', 1, 2, 0).
+python_function('services/orchestrator/app/observability/incidents.py', '_verification_event', 1, 3, 1).
+python_function('services/orchestrator/app/observability/incidents.py', '_event_payload', 2, 4, 4).
+python_function('services/orchestrator/app/observability/incidents.py', '_base_event_payload', 2, 4, 4).
+python_function('services/orchestrator/app/observability/incidents.py', '_event_context', 1, 2, 1).
+python_function('services/orchestrator/app/observability/incidents.py', '_apply_event_payload_details', 2, 4, 3).
+python_function('services/orchestrator/app/observability/incidents.py', '_payload_rag_request_failed', 1, 2, 2).
+python_function('services/orchestrator/app/observability/incidents.py', '_payload_incident_classified', 1, 1, 0).
+python_function('services/orchestrator/app/observability/incidents.py', '_payload_diagnostics_started', 1, 1, 1).
+python_function('services/orchestrator/app/observability/incidents.py', '_payload_diagnostics_completed', 1, 1, 2).
+python_function('services/orchestrator/app/observability/incidents.py', '_payload_remediation_started', 1, 1, 1).
+python_function('services/orchestrator/app/observability/incidents.py', '_payload_remediation_result', 1, 2, 1).
 python_function('services/orchestrator/app/observability/incidents.py', '_query_from_trace', 1, 4, 1).
 python_function('services/orchestrator/app/observability/incidents.py', '_check_names', 1, 6, 5).
-python_function('services/orchestrator/app/observability/incidents.py', '_checks_payload', 1, 8, 5).
+python_function('services/orchestrator/app/observability/incidents.py', '_checks_payload', 1, 4, 3).
+python_function('services/orchestrator/app/observability/incidents.py', '_checks_list_payload', 1, 3, 5).
+python_function('services/orchestrator/app/observability/incidents.py', '_check_payload', 1, 3, 1).
 python_function('services/orchestrator/app/observability/incidents.py', '_root_cause', 2, 4, 2).
-python_function('services/orchestrator/app/observability/incidents.py', '_event_status', 2, 12, 1).
+python_function('services/orchestrator/app/observability/incidents.py', '_event_status', 2, 5, 1).
 python_function('services/orchestrator/app/observability/incidents.py', '_incident_class', 1, 4, 0).
 python_function('services/orchestrator/app/observability/incidents.py', '_default_playbook', 1, 1, 1).
 python_function('services/orchestrator/app/observability/logging.py', 'log_event', 0, 3, 9).
-python_function('services/orchestrator/app/rag/chunking.py', 'chunk_text', 1, 7, 5).
+python_function('services/orchestrator/app/observability/rag_diagnostics.py', '_checks_with_status', 2, 3, 1).
+python_function('services/orchestrator/app/observability/rag_diagnostics.py', '_overall_status', 1, 3, 1).
+python_function('services/orchestrator/app/observability/rag_diagnostics.py', '_primary_incident_code', 1, 3, 2).
+python_function('services/orchestrator/app/observability/rag_diagnostics.py', '_log_diagnostics_result', 3, 2, 2).
+python_function('services/orchestrator/app/observability/rag_pipeline.py', '_result_with_trace', 1, 1, 0).
+python_function('services/orchestrator/app/rag/chunking.py', 'chunk_text', 1, 4, 3).
+python_function('services/orchestrator/app/rag/chunking.py', '_overlapping_chunks', 1, 4, 5).
+python_function('services/orchestrator/app/rag/indexer.py', '_chunks_for_body', 1, 2, 2).
+python_function('services/orchestrator/app/rag/indexer.py', '_packed_chunks', 2, 3, 1).
+python_function('services/orchestrator/app/rag/indexer.py', '_indexed_result', 3, 1, 1).
+python_function('services/orchestrator/app/rag/indexer.py', '_failed_result', 2, 1, 1).
 python_function('services/orchestrator/app/rag/openrouter.py', 'normalize_openrouter_model', 1, 3, 3).
-python_function('services/orchestrator/app/rag/store.py', '_cosine', 2, 9, 4).
+python_function('services/orchestrator/app/rag/openrouter.py', '_chat_response_error', 1, 2, 1).
+python_function('services/orchestrator/app/rag/openrouter.py', '_chat_result', 1, 6, 2).
+python_function('services/orchestrator/app/rag/retriever.py', '_no_hits_answer', 2, 1, 0).
+python_function('services/orchestrator/app/rag/retriever.py', '_unconfigured_answer', 2, 1, 0).
+python_function('services/orchestrator/app/rag/retriever.py', '_context_from_hits', 1, 2, 1).
+python_function('services/orchestrator/app/rag/retriever.py', '_rag_messages', 2, 1, 0).
+python_function('services/orchestrator/app/rag/retriever.py', '_fragment_fallback_answer', 2, 3, 2).
+python_function('services/orchestrator/app/rag/store.py', '_cosine', 2, 5, 4).
+python_function('services/orchestrator/app/rag/store.py', '_same_dimension_vectors', 2, 3, 2).
+python_function('services/orchestrator/app/rag/store.py', '_vector_norm', 1, 2, 2).
+python_function('services/orchestrator/app/rag/store.py', '_vector_hits', 2, 3, 5).
+python_function('services/orchestrator/app/rag/store.py', '_ranked_hits', 1, 2, 4).
+python_function('services/orchestrator/app/rag/store.py', '_query_tokens', 1, 3, 3).
+python_function('services/orchestrator/app/rag/store.py', '_keyword_hits', 2, 3, 5).
+python_function('services/orchestrator/app/rag/store.py', '_keyword_score', 2, 4, 4).
 python_function('services/orchestrator/app/rag/store.py', '_parse_embedding', 1, 5, 5).
 python_function('services/orchestrator/app/rag/store.py', '_row_dict', 1, 4, 3).
 python_function('services/orchestrator/app/rag/store.py', '_chunk_hit', 2, 2, 4).
@@ -262,6 +381,9 @@ python_function('services/orchestrator/tests/test_observability.py', 'test_class
 python_function('services/orchestrator/tests/test_observability.py', 'test_classify_empty_sources', 0, 2, 1).
 python_function('services/orchestrator/tests/test_observability.py', 'test_classify_grounding', 0, 2, 1).
 python_function('services/orchestrator/tests/test_observability.py', 'test_classify_backend_500', 0, 2, 1).
+python_function('services/orchestrator/tests/test_observability.py', 'test_format_logs_text_keeps_observability_sections', 0, 6, 1).
+python_function('services/orchestrator/tests/test_observability.py', 'test_incident_event_plan_includes_diagnostics_and_remediation', 0, 3, 1).
+python_function('services/orchestrator/tests/test_observability.py', 'test_event_payload_adds_diagnostics_details', 0, 4, 1).
 python_function('services/orchestrator/tests/test_task_aggregate.py', 'test_task_rehydrates_from_domain_events', 0, 5, 7).
 python_function('services/orchestrator/tests/test_task_aggregate.py', 'test_task_cannot_complete_before_assignment', 0, 4, 4).
 python_function('services/projector/app/main.py', 'lifespan', 1, 4, 10).
@@ -279,10 +401,16 @@ python_function('services/projector/app/main.py', 'rag_quality_board', 2, 2, 3).
 python_function('services/projector/app/main.py', 'resource_registry', 2, 2, 3).
 python_function('services/projector/app/main.py', 'workflow_versions', 2, 2, 3).
 python_function('services/projector/app/main.py', '_row_to_dict', 1, 3, 5).
-python_function('services/projector/app/projections/agent_fleet.py', 'project_agent_fleet', 2, 8, 4).
+python_function('services/projector/app/projections/agent_fleet.py', 'project_agent_fleet', 2, 3, 2).
+python_function('services/projector/app/projections/agent_fleet.py', '_handle_agent_registered', 3, 2, 3).
+python_function('services/projector/app/projections/agent_fleet.py', '_handle_agent_heartbeat', 3, 2, 3).
+python_function('services/projector/app/projections/agent_fleet.py', '_handle_task_assigned_to_agent', 3, 1, 1).
+python_function('services/projector/app/projections/agent_fleet.py', '_handle_agent_marked_idle', 3, 1, 1).
 python_function('services/projector/app/projections/approval_requests.py', 'project_approval_requests', 2, 6, 2).
 python_function('services/projector/app/projections/dispatcher.py', 'project_event', 2, 1, 9).
-python_function('services/projector/app/projections/dispatcher.py', '_normalize_event', 1, 7, 5).
+python_function('services/projector/app/projections/dispatcher.py', '_normalize_event', 1, 2, 3).
+python_function('services/projector/app/projections/dispatcher.py', '_event_payload', 1, 3, 1).
+python_function('services/projector/app/projections/dispatcher.py', '_event_occurred_at', 1, 4, 5).
 python_function('services/projector/app/projections/incidents.py', 'project_incidents', 2, 3, 2).
 python_function('services/projector/app/projections/incidents.py', '_handle_rag_request_failed', 2, 2, 4).
 python_function('services/projector/app/projections/incidents.py', '_handle_incident_detected', 2, 6, 4).
@@ -296,15 +424,27 @@ python_function('services/projector/app/projections/incidents.py', '_upsert_rag_
 python_function('services/projector/app/projections/incidents.py', '_upsert_service_health', 1, 1, 2).
 python_function('services/projector/app/projections/incidents.py', '_update_incident_status', 4, 1, 1).
 python_function('services/projector/app/projections/incidents.py', '_error_code', 1, 4, 1).
-python_function('services/projector/app/projections/incidents.py', '_checks_payload', 1, 10, 5).
+python_function('services/projector/app/projections/incidents.py', '_checks_payload', 1, 3, 3).
+python_function('services/projector/app/projections/incidents.py', '_raw_checks', 1, 4, 2).
+python_function('services/projector/app/projections/incidents.py', '_checks_list_payload', 1, 3, 5).
+python_function('services/projector/app/projections/incidents.py', '_check_payload', 1, 3, 1).
 python_function('services/projector/app/projections/incidents.py', '_root_cause', 1, 4, 4).
 python_function('services/projector/app/projections/incidents.py', '_diagnostics_ok', 1, 6, 3).
 python_function('services/projector/app/projections/operational_feed.py', 'project_operational_feed', 2, 3, 5).
-python_function('services/projector/app/projections/operational_feed.py', '_title_for', 2, 11, 1).
+python_function('services/projector/app/projections/operational_feed.py', '_title_for', 2, 2, 2).
 python_function('services/projector/app/projections/operational_feed.py', '_summary_for', 2, 6, 1).
 python_function('services/projector/app/projections/plugin_catalog.py', 'project_plugin_catalog', 2, 5, 3).
-python_function('services/projector/app/projections/resource_registry.py', 'project_resource_registry', 2, 8, 3).
-python_function('services/projector/app/projections/task_board.py', 'project_task_board', 2, 9, 4).
+python_function('services/projector/app/projections/resource_registry.py', 'project_resource_registry', 2, 3, 2).
+python_function('services/projector/app/projections/resource_registry.py', '_handle_resource_registered', 3, 2, 3).
+python_function('services/projector/app/projections/resource_registry.py', '_handle_transfer_requested', 3, 1, 2).
+python_function('services/projector/app/projections/resource_registry.py', '_handle_transfer_completed', 3, 2, 3).
+python_function('services/projector/app/projections/resource_registry.py', '_handle_transfer_failed', 3, 1, 2).
+python_function('services/projector/app/projections/task_board.py', 'project_task_board', 2, 3, 2).
+python_function('services/projector/app/projections/task_board.py', '_handle_task_created', 4, 2, 3).
+python_function('services/projector/app/projections/task_board.py', '_handle_task_assigned', 4, 1, 2).
+python_function('services/projector/app/projections/task_board.py', '_handle_task_started', 4, 1, 1).
+python_function('services/projector/app/projections/task_board.py', '_handle_task_completed', 4, 2, 3).
+python_function('services/projector/app/projections/task_board.py', '_handle_task_failed', 4, 1, 2).
 python_function('services/projector/app/projections/task_board.py', '_update_status', 5, 1, 1).
 python_function('services/projector/app/projections/workflow_versions.py', 'project_workflow_versions', 2, 5, 4).
 python_function('services/web/app/access_matrix.py', '_matrix_path', 0, 2, 3).
@@ -313,75 +453,148 @@ python_function('services/web/app/access_matrix.py', '_default_agents', 0, 5, 5)
 python_function('services/web/app/access_matrix.py', '_empty_agent_resource', 2, 3, 0).
 python_function('services/web/app/access_matrix.py', '_empty_human_agent', 2, 3, 0).
 python_function('services/web/app/access_matrix.py', 'default_state', 0, 1, 5).
-python_function('services/web/app/access_matrix.py', 'load_state', 0, 8, 9).
-python_function('services/web/app/access_matrix.py', '_merge_bool_matrix', 2, 7, 3).
-python_function('services/web/app/access_matrix.py', '_reindex_state', 1, 12, 7).
+python_function('services/web/app/access_matrix.py', 'load_state', 0, 3, 9).
+python_function('services/web/app/access_matrix.py', '_load_raw_state', 1, 3, 2).
+python_function('services/web/app/access_matrix.py', '_apply_state_lists', 2, 3, 1).
+python_function('services/web/app/access_matrix.py', '_apply_state_matrices', 2, 3, 2).
+python_function('services/web/app/access_matrix.py', '_merge_bool_matrix', 2, 5, 4).
+python_function('services/web/app/access_matrix.py', '_merged_bool_row', 2, 3, 3).
+python_function('services/web/app/access_matrix.py', '_reindex_state', 1, 6, 6).
+python_function('services/web/app/access_matrix.py', '_reindex_matrix', 1, 3, 2).
+python_function('services/web/app/access_matrix.py', '_reindex_matrix_row', 1, 2, 2).
 python_function('services/web/app/access_matrix.py', 'save_state', 1, 1, 6).
 python_function('services/web/app/access_matrix.py', 'agent_may_access_resource', 2, 4, 3).
 python_function('services/web/app/access_matrix.py', 'human_may_use_agent', 2, 4, 3).
 python_function('services/web/app/access_matrix.py', 'diagnose_file_list_command', 0, 1, 0).
 python_function('services/web/app/agent_workroom.py', 'create_workroom', 0, 1, 2).
 python_function('services/web/app/agent_workroom.py', 'get_workroom', 1, 1, 1).
-python_function('services/web/app/agent_workroom.py', '_plan_steps', 1, 4, 4).
+python_function('services/web/app/agent_workroom.py', '_plan_steps', 1, 5, 7).
+python_function('services/web/app/agent_workroom.py', '_build_file_list_for_goal', 1, 1, 4).
+python_function('services/web/app/agent_workroom.py', 'format_workroom_export', 1, 1, 6).
+python_function('services/web/app/agent_workroom.py', '_workroom_export_header', 1, 3, 2).
+python_function('services/web/app/agent_workroom.py', '_append_workroom_thread', 2, 6, 3).
+python_function('services/web/app/agent_workroom.py', '_append_workroom_ledger', 2, 5, 1).
+python_function('services/web/app/agent_workroom.py', '_append_workroom_result', 2, 2, 1).
 python_function('services/web/app/agent_workroom.py', '_extract_shell', 1, 4, 5).
-python_function('services/web/app/agent_workroom.py', 'run_workroom', 2, 22, 18).
+python_function('services/web/app/agent_workroom.py', 'run_workroom', 2, 6, 9).
+python_function('services/web/app/agent_workroom.py', '_reset_workroom', 2, 1, 2).
+python_function('services/web/app/agent_workroom.py', '_start_plan', 2, 2, 5).
+python_function('services/web/app/agent_workroom.py', '_workspace_scope', 1, 3, 2).
+python_function('services/web/app/agent_workroom.py', '_run_workroom_step', 3, 2, 3).
+python_function('services/web/app/agent_workroom.py', '_run_analyze_workroom_step', 3, 1, 1).
+python_function('services/web/app/agent_workroom.py', '_run_files_workroom_step', 3, 1, 1).
+python_function('services/web/app/agent_workroom.py', '_run_shell_workroom_step', 3, 1, 1).
+python_function('services/web/app/agent_workroom.py', '_run_summarize_workroom_step', 3, 1, 1).
+python_function('services/web/app/agent_workroom.py', '_run_analyze_step', 1, 1, 1).
+python_function('services/web/app/agent_workroom.py', '_run_files_step', 3, 6, 8).
+python_function('services/web/app/agent_workroom.py', '_add_permission', 5, 1, 1).
+python_function('services/web/app/agent_workroom.py', '_record_file_list_result', 3, 1, 2).
+python_function('services/web/app/agent_workroom.py', '_register_file_list_artifact', 5, 2, 3).
+python_function('services/web/app/agent_workroom.py', '_run_shell_step', 2, 4, 6).
+python_function('services/web/app/agent_workroom.py', '_record_shell_result', 3, 2, 3).
+python_function('services/web/app/agent_workroom.py', '_run_summarize_step', 1, 1, 1).
+python_function('services/web/app/agent_workroom.py', '_finish_workroom', 2, 2, 2).
 python_function('services/web/app/agent_workroom.py', 'workroom_catalog', 0, 1, 2).
-python_function('services/web/app/api_routes.py', 'start_chat_session', 1, 2, 4).
-python_function('services/web/app/api_routes.py', 'get_chat_session', 1, 2, 3).
-python_function('services/web/app/api_routes.py', 'workspace_state', 1, 1, 3).
-python_function('services/web/app/api_routes.py', 'chat_message', 1, 6, 8).
-python_function('services/web/app/api_routes.py', 'task_draft', 1, 1, 2).
-python_function('services/web/app/api_routes.py', 'create_task', 1, 6, 7).
-python_function('services/web/app/api_routes.py', 'create_task_from_draft', 1, 2, 4).
-python_function('services/web/app/api_routes.py', 'create_and_run_task', 1, 2, 4).
-python_function('services/web/app/api_routes.py', 'context_attach', 1, 1, 2).
-python_function('services/web/app/api_routes.py', 'upload_files', 3, 6, 9).
-python_function('services/web/app/api_routes.py', 'board_snapshot', 0, 1, 2).
-python_function('services/web/app/api_routes.py', 'list_tickets', 2, 10, 5).
-python_function('services/web/app/api_routes.py', 'get_ticket', 2, 5, 6).
-python_function('services/web/app/api_routes.py', 'confirm_ticket', 2, 19, 11).
-python_function('services/web/app/api_routes.py', 'archive_ticket', 2, 1, 2).
-python_function('services/web/app/api_routes.py', 'link_ticket', 2, 1, 2).
-python_function('services/web/app/api_routes.py', 'ticket_statuses', 0, 1, 1).
-python_function('services/web/app/api_routes.py', 'workspace_list_artifacts', 1, 1, 3).
-python_function('services/web/app/api_routes.py', 'workspace_get_artifact', 2, 2, 3).
-python_function('services/web/app/api_routes.py', 'workspace_file_list_export', 3, 2, 9).
-python_function('services/web/app/api_routes.py', 'workspace_chat_export', 1, 7, 7).
-python_function('services/web/app/api_routes.py', 'workspace_logs_export', 2, 1, 5).
-python_function('services/web/app/api_routes.py', 'workroom_start', 1, 2, 5).
-python_function('services/web/app/api_routes.py', 'workroom_get', 1, 2, 4).
-python_function('services/web/app/api_routes.py', 'workroom_run', 2, 2, 4).
-python_function('services/web/app/api_routes.py', 'api_resource_areas', 0, 1, 3).
-python_function('services/web/app/api_routes.py', 'api_role_scopes', 0, 1, 1).
-python_function('services/web/app/api_routes.py', 'access_matrix_get', 0, 1, 2).
-python_function('services/web/app/api_routes.py', 'access_matrix_put', 1, 1, 5).
-python_function('services/web/app/api_routes.py', 'access_matrix_reset', 0, 1, 3).
-python_function('services/web/app/api_routes.py', 'access_diagnose_file_list', 0, 1, 2).
+python_function('services/web/app/api/access_routes.py', 'api_resource_areas', 0, 1, 3).
+python_function('services/web/app/api/access_routes.py', 'api_role_scopes', 0, 1, 1).
+python_function('services/web/app/api/access_routes.py', 'access_matrix_get', 0, 1, 2).
+python_function('services/web/app/api/access_routes.py', 'access_matrix_put', 1, 1, 5).
+python_function('services/web/app/api/access_routes.py', 'access_matrix_reset', 0, 1, 3).
+python_function('services/web/app/api/access_routes.py', 'access_diagnose_file_list', 0, 1, 2).
+python_function('services/web/app/api/chat_routes.py', 'start_chat_session', 1, 2, 4).
+python_function('services/web/app/api/chat_routes.py', 'get_chat_session', 1, 2, 3).
+python_function('services/web/app/api/chat_routes.py', 'workspace_state', 1, 1, 3).
+python_function('services/web/app/api/chat_routes.py', 'chat_message', 1, 7, 8).
+python_function('services/web/app/api/chat_routes.py', 'task_draft', 1, 1, 2).
+python_function('services/web/app/api/chat_routes.py', 'context_attach', 1, 1, 2).
+python_function('services/web/app/api/chat_routes.py', 'upload_files', 3, 3, 6).
+python_function('services/web/app/api/chat_routes.py', '_upload_one_file', 2, 5, 5).
+python_function('services/web/app/api/chat_routes.py', 'board_snapshot', 0, 1, 2).
+python_function('services/web/app/api/router_routes.py', 'router_decide', 3, 1, 3).
+python_function('services/web/app/api/router_routes.py', 'routing_policy_get', 1, 1, 3).
+python_function('services/web/app/api/task_routes.py', 'create_task', 1, 6, 7).
+python_function('services/web/app/api/task_routes.py', 'create_task_from_draft', 1, 2, 4).
+python_function('services/web/app/api/task_routes.py', 'create_and_run_task', 1, 2, 4).
+python_function('services/web/app/api/task_routes.py', 'list_tickets', 2, 3, 5).
+python_function('services/web/app/api/task_routes.py', 'ticket_statuses', 0, 1, 1).
+python_function('services/web/app/api/task_routes.py', 'get_ticket', 2, 4, 5).
+python_function('services/web/app/api/task_routes.py', 'confirm_ticket', 2, 5, 8).
+python_function('services/web/app/api/task_routes.py', 'archive_ticket', 2, 1, 2).
+python_function('services/web/app/api/task_routes.py', 'link_ticket', 2, 1, 2).
+python_function('services/web/app/api/task_routes.py', '_archived_ids', 1, 2, 2).
+python_function('services/web/app/api/task_routes.py', '_filter_tickets_view', 2, 4, 2).
+python_function('services/web/app/api/task_routes.py', '_is_archived_ticket', 1, 1, 0).
+python_function('services/web/app/api/task_routes.py', '_is_active_ticket', 1, 1, 0).
+python_function('services/web/app/api/task_routes.py', '_confirmable_task_and_agent', 1, 2, 5).
+python_function('services/web/app/api/task_routes.py', '_task_from_board', 2, 5, 3).
+python_function('services/web/app/api/task_routes.py', '_assert_confirmable_task', 1, 3, 3).
+python_function('services/web/app/api/task_routes.py', '_first_idle_agent_id', 1, 5, 2).
+python_function('services/web/app/api/task_routes.py', '_assign_ticket', 3, 3, 3).
+python_function('services/web/app/api/workroom_routes.py', 'workroom_start', 1, 2, 5).
+python_function('services/web/app/api/workroom_routes.py', 'workroom_get', 1, 1, 3).
+python_function('services/web/app/api/workroom_routes.py', 'workroom_export', 1, 1, 4).
+python_function('services/web/app/api/workroom_routes.py', 'workroom_run', 2, 2, 4).
+python_function('services/web/app/api/workroom_routes.py', '_workroom_or_404', 1, 2, 2).
+python_function('services/web/app/api/workspace_routes.py', 'workspace_list_artifacts', 1, 1, 3).
+python_function('services/web/app/api/workspace_routes.py', 'workspace_get_artifact', 2, 2, 3).
+python_function('services/web/app/api/workspace_routes.py', 'workspace_file_list_export', 3, 2, 9).
+python_function('services/web/app/api/workspace_routes.py', 'workspace_chat_export', 1, 1, 5).
+python_function('services/web/app/api/workspace_routes.py', 'workspace_logs_export', 2, 1, 5).
 python_function('services/web/app/chat.py', '_orch', 0, 2, 1).
 python_function('services/web/app/chat.py', '_projector', 0, 1, 1).
-python_function('services/web/app/chat.py', 'is_file_list_intent', 1, 7, 4).
-python_function('services/web/app/chat.py', 'file_list_scope', 1, 7, 2).
+python_function('services/web/app/chat.py', 'is_file_list_intent', 1, 4, 5).
+python_function('services/web/app/chat.py', '_has_list_word', 1, 3, 1).
+python_function('services/web/app/chat.py', '_looks_like_misspelled_file_list', 1, 5, 3).
+python_function('services/web/app/chat.py', '_has_polish_file_list_words', 1, 2, 1).
+python_function('services/web/app/chat.py', '_has_english_file_list_words', 1, 2, 3).
+python_function('services/web/app/chat.py', '_has_user_files_phrase', 1, 2, 2).
+python_function('services/web/app/chat.py', 'file_list_scope', 1, 6, 5).
+python_function('services/web/app/chat.py', '_system_scope_requested', 1, 1, 2).
+python_function('services/web/app/chat.py', '_user_scope_requested', 1, 1, 2).
+python_function('services/web/app/chat.py', '_rag_scope_requested', 1, 2, 2).
+python_function('services/web/app/chat.py', '_session_scope_requested', 1, 1, 2).
 python_function('services/web/app/chat.py', '_uri_is_user_resource', 1, 6, 2).
 python_function('services/web/app/chat.py', '_uri_is_system_resource', 1, 5, 3).
-python_function('services/web/app/chat.py', 'filter_file_inventory', 2, 29, 4).
-python_function('services/web/app/chat.py', '_dedupe_rows_by_uri', 1, 8, 7).
-python_function('services/web/app/chat.py', 'fetch_file_inventory', 0, 7, 7).
-python_function('services/web/app/chat.py', 'format_file_list_reply', 1, 8, 7).
-python_function('services/web/app/chat.py', '_append_session_files', 4, 7, 3).
+python_function('services/web/app/chat.py', 'filter_file_inventory', 2, 5, 4).
+python_function('services/web/app/chat.py', '_filtered_resources', 3, 2, 1).
+python_function('services/web/app/chat.py', '_filter_rows_by_scope', 3, 4, 2).
+python_function('services/web/app/chat.py', '_rows_matching_uri', 2, 4, 2).
+python_function('services/web/app/chat.py', '_rows_in_session_scope', 2, 6, 2).
+python_function('services/web/app/chat.py', '_dedupe_rows_by_uri', 1, 3, 4).
+python_function('services/web/app/chat.py', '_row_dedupe_key', 1, 6, 4).
+python_function('services/web/app/chat.py', 'fetch_file_inventory', 0, 1, 4).
+python_function('services/web/app/chat.py', '_fetch_inventory_rows', 4, 4, 4).
+python_function('services/web/app/chat.py', 'format_file_list_reply', 1, 1, 9).
+python_function('services/web/app/chat.py', '_safe_list', 1, 2, 1).
+python_function('services/web/app/chat.py', '_list_scope_value', 2, 3, 1).
+python_function('services/web/app/chat.py', '_append_session_files', 4, 2, 4).
+python_function('services/web/app/chat.py', '_append_uploaded_session_files', 2, 3, 2).
+python_function('services/web/app/chat.py', '_append_user_context_only', 3, 6, 2).
+python_function('services/web/app/chat.py', '_append_scope_uris', 3, 4, 3).
 python_function('services/web/app/chat.py', '_format_scope_uri', 1, 2, 1).
-python_function('services/web/app/chat.py', '_append_resource_rows', 3, 7, 5).
+python_function('services/web/app/chat.py', '_append_resource_rows', 3, 3, 6).
+python_function('services/web/app/chat.py', '_format_resource_row', 2, 5, 1).
 python_function('services/web/app/chat.py', '_empty_resource_hint', 1, 2, 0).
-python_function('services/web/app/chat.py', '_append_rag_rows', 3, 9, 4).
+python_function('services/web/app/chat.py', '_append_rag_rows', 3, 5, 5).
+python_function('services/web/app/chat.py', '_rag_rows_label', 1, 2, 0).
+python_function('services/web/app/chat.py', '_format_rag_doc_row', 2, 4, 1).
 python_function('services/web/app/chat.py', '_append_file_list_errors', 2, 2, 2).
 python_function('services/web/app/chat.py', '_append_file_list_tip', 4, 5, 1).
 python_function('services/web/app/chat.py', 'build_file_list_artifact', 2, 1, 2).
 python_function('services/web/app/chat.py', 'new_session_id', 0, 1, 2).
 python_function('services/web/app/chat.py', 'get_history', 1, 1, 2).
 python_function('services/web/app/chat.py', '_append', 3, 1, 2).
+python_function('services/web/app/chat.py', 'stamp_last_assistant_routing', 2, 4, 3).
 python_function('services/web/app/chat.py', '_format_history', 1, 3, 3).
-python_function('services/web/app/chat.py', '_format_incident', 1, 15, 3).
+python_function('services/web/app/chat.py', '_format_incident', 1, 6, 4).
+python_function('services/web/app/chat.py', '_incident_detail_parts', 2, 3, 4).
+python_function('services/web/app/chat.py', '_incident_message_part', 2, 4, 1).
+python_function('services/web/app/chat.py', '_incident_trace_part', 2, 3, 1).
+python_function('services/web/app/chat.py', '_incident_correlation_part', 2, 3, 1).
+python_function('services/web/app/chat.py', '_incident_fallback_part', 2, 3, 1).
 python_function('services/web/app/chat.py', 'handle_message', 0, 5, 7).
 python_function('services/web/app/chat.py', '_file_list_answer', 1, 2, 5).
+python_function('services/web/app/chat.py', 'probe_rag', 0, 4, 7).
 python_function('services/web/app/chat.py', '_ask_rag', 0, 5, 9).
 python_function('services/web/app/chat.py', '_rag_headers', 1, 1, 0).
 python_function('services/web/app/chat.py', '_rag_query', 2, 1, 1).
@@ -393,19 +606,49 @@ python_function('services/web/app/chat.py', '_rag_search_fallback', 2, 5, 5).
 python_function('services/web/app/chat.py', '_rag_unavailable_answer', 3, 1, 1).
 python_function('services/web/app/chat.py', '_rag_diagnostics_hint', 2, 5, 3).
 python_function('services/web/app/chat.py', '_default_chat_reply', 0, 1, 0).
-python_function('services/web/app/chat.py', '_message_response', 0, 7, 3).
-python_function('services/web/app/chat.py', 'create_task', 0, 7, 5).
-python_function('services/web/app/conductor.py', 'handle_turn', 0, 7, 7).
-python_function('services/web/app/conductor.py', '_nlp2dsl_turn', 0, 7, 6).
+python_function('services/web/app/chat.py', '_message_response', 0, 1, 4).
+python_function('services/web/app/chat.py', '_response_intent', 2, 3, 0).
+python_function('services/web/app/chat.py', '_attach_inventory_response', 4, 4, 2).
+python_function('services/web/app/chat.py', '_attach_trace_response', 2, 2, 1).
+python_function('services/web/app/chat.py', 'create_task', 0, 3, 6).
+python_function('services/web/app/chat.py', '_task_create_payload', 0, 3, 2).
+python_function('services/web/app/chat.py', '_apply_task_agent', 2, 2, 0).
+python_function('services/web/app/chat.py', '_apply_task_shell', 4, 4, 0).
+python_function('services/web/app/conductor.py', '_merge_nlp2dsl_routing', 2, 2, 0).
+python_function('services/web/app/conductor.py', '_attach_routing', 3, 3, 4).
+python_function('services/web/app/conductor.py', '_enrich_decision', 2, 3, 6).
+python_function('services/web/app/conductor.py', '_rag_answer_turn', 0, 1, 1).
+python_function('services/web/app/conductor.py', '_execute_rules_route', 0, 2, 2).
+python_function('services/web/app/conductor.py', '_execute_file_list_route', 0, 1, 3).
+python_function('services/web/app/conductor.py', '_execute_shell_route', 0, 2, 5).
+python_function('services/web/app/conductor.py', '_missing_shell_response', 2, 1, 3).
+python_function('services/web/app/conductor.py', '_create_shell_task', 1, 1, 1).
+python_function('services/web/app/conductor.py', '_shell_route_response', 4, 1, 6).
+python_function('services/web/app/conductor.py', '_shell_task_reply', 2, 4, 1).
+python_function('services/web/app/conductor.py', '_execute_rag_route', 0, 1, 3).
+python_function('services/web/app/conductor.py', 'handle_turn', 0, 2, 5).
+python_function('services/web/app/conductor.py', '_message_with_form_values', 2, 5, 2).
+python_function('services/web/app/conductor.py', '_run_ingress_pipeline', 1, 4, 3).
+python_function('services/web/app/conductor.py', '_rag_probe_step', 1, 7, 9).
+python_function('services/web/app/conductor.py', '_should_skip_rag_probe', 1, 4, 3).
+python_function('services/web/app/conductor.py', '_rag_probe_decision', 0, 1, 1).
+python_function('services/web/app/conductor.py', '_rules_step', 1, 1, 3).
+python_function('services/web/app/conductor.py', '_should_skip_nlp2dsl_step', 1, 4, 3).
+python_function('services/web/app/conductor.py', '_nlp2dsl_step', 1, 4, 6).
+python_function('services/web/app/conductor.py', '_rag_answer_step', 1, 3, 5).
+python_function('services/web/app/conductor.py', '_rag_pipeline_decision', 0, 1, 1).
+python_function('services/web/app/conductor.py', '_fallback_routed_turn', 1, 2, 3).
+python_function('services/web/app/conductor.py', '_decide_default_route', 1, 1, 2).
+python_function('services/web/app/conductor.py', '_nlp2dsl_turn', 0, 7, 7).
 python_function('services/web/app/conductor.py', '_call_nlp2dsl', 2, 2, 2).
 python_function('services/web/app/conductor.py', '_nlp_output_base', 2, 1, 0).
 python_function('services/web/app/conductor.py', '_in_progress_turn', 6, 3, 3).
 python_function('services/web/app/conductor.py', '_ready_turn', 0, 1, 7).
 python_function('services/web/app/conductor.py', '_ready_action_payload', 1, 4, 3).
 python_function('services/web/app/conductor.py', '_system_file_list_payload', 4, 1, 5).
-python_function('services/web/app/conductor.py', '_shell_task_payload', 5, 4, 5).
+python_function('services/web/app/conductor.py', '_shell_task_payload', 5, 5, 8).
 python_function('services/web/app/conductor.py', '_shell_clarify_payload', 1, 1, 0).
-python_function('services/web/app/conductor.py', '_ticket_payload', 4, 3, 3).
+python_function('services/web/app/conductor.py', '_ticket_payload', 4, 4, 6).
 python_function('services/web/app/conductor.py', '_task_reply', 1, 3, 1).
 python_function('services/web/app/conductor.py', '_closed_turn', 5, 2, 2).
 python_function('services/web/app/conductor.py', '_append_turn', 3, 3, 2).
@@ -427,9 +670,41 @@ python_function('services/web/app/nlp2dsl_bridge.py', '_post_json', 2, 4, 6).
 python_function('services/web/app/nlp2dsl_bridge.py', 'form_to_prompt', 2, 6, 4).
 python_function('services/web/app/nlp2dsl_bridge.py', 'primary_action', 1, 4, 1).
 python_function('services/web/app/nlp2dsl_bridge.py', 'step_config', 1, 5, 1).
+python_function('services/web/app/prompt_router.py', '_candidate', 5, 1, 0).
+python_function('services/web/app/prompt_router.py', '_build_decision', 1, 3, 5).
+python_function('services/web/app/prompt_router.py', '_shell_prefix', 1, 3, 5).
+python_function('services/web/app/prompt_router.py', 'decide_route_rules', 1, 7, 8).
+python_function('services/web/app/prompt_router.py', '_router_flags', 3, 2, 2).
+python_function('services/web/app/prompt_router.py', '_empty_route_decision', 1, 1, 2).
+python_function('services/web/app/prompt_router.py', '_mode_route_decision', 2, 3, 2).
+python_function('services/web/app/prompt_router.py', '_file_list_route_decision', 2, 2, 4).
+python_function('services/web/app/prompt_router.py', '_shell_route_decision', 2, 2, 3).
+python_function('services/web/app/prompt_router.py', '_default_discuss_decision', 1, 1, 2).
+python_function('services/web/app/prompt_router.py', '_fallback_mode_decision', 2, 1, 2).
+python_function('services/web/app/prompt_router.py', 'decide_route_llm', 1, 4, 4).
+python_function('services/web/app/prompt_router.py', '_llm_classifier_data', 3, 2, 5).
+python_function('services/web/app/prompt_router.py', '_llm_classifier_payload', 2, 1, 2).
+python_function('services/web/app/prompt_router.py', '_llm_system_prompt', 0, 1, 0).
+python_function('services/web/app/prompt_router.py', '_normalize_router_model', 1, 2, 2).
+python_function('services/web/app/prompt_router.py', '_extract_llm_json', 1, 2, 3).
+python_function('services/web/app/prompt_router.py', '_llm_decision_from_data', 1, 4, 6).
+python_function('services/web/app/prompt_router.py', '_llm_route', 1, 2, 0).
+python_function('services/web/app/prompt_router.py', 'decide_route', 1, 4, 7).
+python_function('services/web/app/prompt_router.py', '_merged_llm_decision', 2, 6, 1).
+python_function('services/web/app/prompt_router.py', 'record_route_event', 2, 1, 3).
 python_function('services/web/app/resource_areas.py', 'list_areas', 0, 2, 1).
 python_function('services/web/app/resource_areas.py', 'list_groups', 0, 1, 0).
-python_function('services/web/app/resource_areas.py', 'agent_may_access', 3, 9, 2).
+python_function('services/web/app/resource_areas.py', 'agent_may_access', 3, 4, 3).
+python_function('services/web/app/resource_areas.py', '_area_policy_decision', 3, 5, 0).
+python_function('services/web/app/resource_areas.py', '_matrix_access_decision', 3, 3, 1).
+python_function('services/web/app/routing_policy.py', '_policy_path', 0, 2, 4).
+python_function('services/web/app/routing_policy.py', '_parse_policy', 2, 5, 8).
+python_function('services/web/app/routing_policy.py', '_parse_agents', 1, 4, 5).
+python_function('services/web/app/routing_policy.py', '_valid_ingress_order', 1, 5, 1).
+python_function('services/web/app/routing_policy.py', '_parse_mode_overrides', 1, 2, 3).
+python_function('services/web/app/routing_policy.py', '_valid_override_steps', 1, 6, 3).
+python_function('services/web/app/routing_policy.py', '_parse_rag_probe', 1, 1, 4).
+python_function('services/web/app/routing_policy.py', 'load_policy', 0, 5, 6).
 python_function('services/web/app/tickets.py', 'ticket_uri', 1, 1, 0).
 python_function('services/web/app/tickets.py', 'ticket_web_path', 1, 1, 0).
 python_function('services/web/app/tickets.py', 'status_meta', 1, 3, 2).
@@ -443,18 +718,72 @@ python_function('services/web/app/workspace.py', '_artifact_title', 1, 6, 1).
 python_function('services/web/app/workspace.py', 'register_artifact', 2, 5, 9).
 python_function('services/web/app/workspace.py', 'artifact_summaries', 1, 2, 3).
 python_function('services/web/app/workspace.py', 'get_artifact', 2, 4, 2).
-python_function('services/web/app/workspace.py', 'workspace_state', 1, 1, 4).
-python_function('services/web/app/workspace.py', 'attach_context', 1, 12, 4).
+python_function('services/web/app/workspace.py', 'workspace_state', 1, 1, 5).
+python_function('services/web/app/workspace.py', 'attach_context', 1, 2, 6).
+python_function('services/web/app/workspace.py', '_apply_context_scalars', 1, 6, 1).
+python_function('services/web/app/workspace.py', '_append_unique', 2, 3, 1).
 python_function('services/web/app/workspace.py', '_extract_ticket', 1, 2, 2).
 python_function('services/web/app/workspace.py', '_extract_shell_command', 1, 4, 4).
 python_function('services/web/app/workspace.py', 'build_task_payload', 2, 4, 5).
 python_function('services/web/app/workspace.py', 'propose_task_draft', 2, 1, 1).
-python_function('services/web/app/workspace.py', 'create_task_immediate', 1, 3, 5).
-python_function('services/web/app/workspace.py', 'handle_chat_message', 0, 22, 17).
+python_function('services/web/app/workspace.py', 'create_task_immediate', 1, 4, 6).
+python_function('services/web/app/workspace.py', '_resolved_task_agent', 3, 5, 2).
+python_function('services/web/app/workspace.py', 'handle_chat_message', 0, 7, 11).
+python_function('services/web/app/workspace.py', '_dispatch_chat_mode', 1, 3, 4).
+python_function('services/web/app/workspace.py', '_create_task_from_message', 2, 1, 4).
+python_function('services/web/app/workspace.py', '_task_chat_outcome', 4, 1, 3).
+python_function('services/web/app/workspace.py', '_task_result_reply', 3, 4, 1).
+python_function('services/web/app/workspace.py', '_search_context_outcome', 4, 1, 1).
+python_function('services/web/app/workspace.py', '_conductor_outcome', 1, 2, 2).
+python_function('services/web/app/workspace.py', '_record_chat_outcome', 2, 7, 3).
+python_function('services/web/app/workspace.py', '_record_task_outcome', 2, 4, 3).
+python_function('services/web/app/workspace.py', '_chat_response', 3, 2, 3).
 python_function('services/web/app/workspace.py', 'create_task_from_draft', 1, 4, 3).
 python_function('services/web/app/workspace.py', 'create_and_run', 1, 5, 4).
-python_function('services/web/app/workspace.py', 'export_debug_logs', 1, 15, 13).
-python_function('services/web/app/workspace.py', '_format_export_text', 1, 47, 8).
+python_function('services/web/app/workspace.py', 'format_chat_export_text', 1, 2, 7).
+python_function('services/web/app/workspace.py', '_append_chat_export_message', 2, 6, 5).
+python_function('services/web/app/workspace.py', '_append_chat_export_trace', 2, 3, 2).
+python_function('services/web/app/workspace.py', '_append_chat_export_draft', 2, 3, 2).
+python_function('services/web/app/workspace.py', 'export_debug_logs', 1, 2, 8).
+python_function('services/web/app/workspace.py', '_debug_export_base', 1, 1, 4).
+python_function('services/web/app/workspace.py', '_attach_orchestrator_debug_export', 2, 3, 5).
+python_function('services/web/app/workspace.py', '_merge_orchestrator_debug_payload', 2, 5, 1).
+python_function('services/web/app/workspace.py', '_attach_operational_feed', 2, 5, 5).
+python_function('services/web/app/workspace.py', '_filter_operational_feed', 1, 5, 1).
+python_function('services/web/app/workspace.py', '_format_export_text', 1, 2, 6).
+python_function('services/web/app/workspace.py', '_export_header', 1, 2, 3).
+python_function('services/web/app/workspace.py', '_append_export_sections', 3, 1, 12).
+python_function('services/web/app/workspace.py', '_list_section', 2, 2, 2).
+python_function('services/web/app/workspace.py', '_dict_section', 2, 2, 2).
+python_function('services/web/app/workspace.py', '_append_orchestrator_error', 2, 2, 2).
+python_function('services/web/app/workspace.py', '_trace_event_row', 2, 6, 2).
+python_function('services/web/app/workspace.py', '_trace_message_row', 2, 2, 2).
+python_function('services/web/app/workspace.py', '_routing_fingerprint', 1, 2, 2).
+python_function('services/web/app/workspace.py', '_append_context_section', 2, 4, 3).
+python_function('services/web/app/workspace.py', '_append_context_scalars', 2, 3, 2).
+python_function('services/web/app/workspace.py', '_append_context_collections', 2, 4, 4).
+python_function('services/web/app/workspace.py', '_append_inventory_section', 2, 5, 4).
+python_function('services/web/app/workspace.py', '_append_resource_inventory', 2, 3, 2).
+python_function('services/web/app/workspace.py', '_append_rag_inventory', 2, 3, 2).
+python_function('services/web/app/workspace.py', '_append_history_section', 2, 3, 2).
+python_function('services/web/app/workspace.py', '_append_history_message', 2, 6, 5).
+python_function('services/web/app/workspace.py', '_format_routing_line', 1, 12, 4).
+python_function('services/web/app/workspace.py', '_append_routing_trace_section', 3, 3, 4).
+python_function('services/web/app/workspace.py', '_append_routing_trace_decision', 3, 4, 4).
+python_function('services/web/app/workspace.py', '_append_candidate_routes', 2, 3, 2).
+python_function('services/web/app/workspace.py', '_format_candidate_route', 1, 3, 3).
+python_function('services/web/app/workspace.py', '_collect_routing_trace', 2, 4, 6).
+python_function('services/web/app/workspace.py', '_append_unique_trace_row', 3, 3, 2).
+python_function('services/web/app/workspace.py', '_append_draft_section', 2, 3, 2).
+python_function('services/web/app/workspace.py', '_append_session_events_section', 2, 3, 3).
+python_function('services/web/app/workspace.py', '_event_extra', 1, 1, 3).
+python_function('services/web/app/workspace.py', '_event_extra_parts', 1, 4, 2).
+python_function('services/web/app/workspace.py', '_routing_event_extra', 1, 6, 3).
+python_function('services/web/app/workspace.py', '_append_rag_health_section', 2, 4, 2).
+python_function('services/web/app/workspace.py', '_append_incidents_section', 2, 3, 2).
+python_function('services/web/app/workspace.py', '_append_rag_snapshots_section', 2, 3, 3).
+python_function('services/web/app/workspace.py', '_session_rag_snapshots', 1, 4, 1).
+python_function('services/web/app/workspace.py', '_append_operational_feed_section', 2, 4, 3).
 python_function('services/web/app/workspace.py', 'archive_task', 2, 2, 3).
 python_function('services/web/app/workspace.py', 'link_ticket', 2, 3, 3).
 python_function('services/web/app/workspace.py', 'fetch_live_board', 0, 1, 5).
@@ -463,19 +792,40 @@ python_function('services/web/tests/test_access_matrix.py', 'test_default_all_ch
 python_function('services/web/tests/test_access_matrix.py', 'test_save_and_deny', 1, 3, 3).
 python_function('services/web/tests/test_access_matrix.py', 'test_diagnose_file_list_no_shell', 0, 3, 1).
 python_function('services/web/tests/test_agent_workroom.py', 'test_plan_includes_files_for_lista_plikow', 0, 3, 1).
+python_function('services/web/tests/test_agent_workroom.py', 'test_list_aplikow_usera_intent_and_scope', 0, 7, 5).
+python_function('services/web/tests/test_agent_workroom.py', 'test_workroom_export_contains_goal', 0, 3, 3).
 python_function('services/web/tests/test_agent_workroom.py', 'test_files_agent_may_list_rag', 0, 2, 1).
 python_function('services/web/tests/test_agent_workroom.py', 'test_mail_agent_denied_rag', 0, 2, 1).
 python_function('services/web/tests/test_agent_workroom.py', 'test_groups_nonempty', 0, 2, 2).
 python_function('services/web/tests/test_agent_workroom.py', 'test_workroom_session_dict', 0, 3, 2).
+python_function('services/web/tests/test_agent_workroom.py', 'test_run_workroom_file_list_step', 1, 5, 4).
+python_function('services/web/tests/test_api_routes.py', 'test_api_router_keeps_public_workspace_paths', 1, 3, 1).
 python_function('services/web/tests/test_artifacts.py', 'test_register_and_get_artifact', 0, 7, 6).
+python_function('services/web/tests/test_artifacts.py', 'test_format_export_text_keeps_core_sections', 0, 5, 1).
+python_function('services/web/tests/test_artifacts.py', 'test_format_chat_export_includes_routing', 0, 6, 3).
+python_function('services/web/tests/test_artifacts.py', 'test_format_export_includes_routing_trace', 0, 6, 1).
+python_function('services/web/tests/test_artifacts.py', 'test_format_routing_line_nlp2dsl_skipped', 0, 4, 1).
 python_function('services/web/tests/test_chat_intent.py', 'test_file_list_intent_pl', 0, 5, 1).
 python_function('services/web/tests/test_chat_intent.py', 'test_format_file_list', 0, 4, 1).
-python_function('services/web/tests/test_chat_intent.py', 'test_file_list_scope_usera', 0, 4, 1).
+python_function('services/web/tests/test_chat_intent.py', 'test_file_list_intent_aplikow_typo', 0, 2, 1).
+python_function('services/web/tests/test_chat_intent.py', 'test_file_list_intent_en_and_pikow', 0, 5, 2).
+python_function('services/web/tests/test_chat_intent.py', 'test_file_list_scope_usera', 0, 5, 1).
 python_function('services/web/tests/test_chat_intent.py', 'test_filter_user_files', 0, 3, 3).
 python_function('services/web/tests/test_chat_intent.py', 'test_file_list_artifact', 0, 5, 2).
-python_function('services/web/tests/test_chat_intent.py', 'test_format_user_scope_title', 0, 3, 1).
+python_function('services/web/tests/test_chat_intent.py', 'test_format_user_scope_title', 0, 5, 1).
 python_function('services/web/tests/test_chat_intent.py', 'test_dedupe_rag_documents_by_uri', 0, 2, 2).
 python_function('services/web/tests/test_chat_intent.py', 'test_handle_message_file_list_builds_artifact', 1, 4, 2).
+python_function('services/web/tests/test_conductor_ingress.py', 'test_file_list_pipeline_skips_nlp2dsl', 1, 4, 4).
+python_function('services/web/tests/test_prompt_router.py', 'test_file_list_routes', 2, 6, 2).
+python_function('services/web/tests/test_prompt_router.py', 'test_shell_route', 0, 3, 1).
+python_function('services/web/tests/test_prompt_router.py', 'test_discuss_defaults_nlp2dsl', 0, 4, 2).
+python_function('services/web/tests/test_prompt_router.py', 'test_search_context_rag', 0, 3, 2).
+python_function('services/web/tests/test_prompt_router.py', 'test_route_decision_to_dict', 0, 3, 2).
+python_function('services/web/tests/test_prompt_router.py', 'test_decide_route_sets_timing', 0, 3, 1).
+python_function('services/web/tests/test_routing_policy.py', 'test_load_default_policy', 0, 4, 3).
+python_function('services/web/tests/test_routing_policy.py', 'test_session_agent_overrides_route', 0, 2, 2).
+python_function('services/web/tests/test_routing_policy.py', 'test_mode_override_rag_only', 0, 2, 2).
+python_function('services/web/tests/test_routing_policy.py', 'test_policy_to_dict', 0, 3, 2).
 python_function('tests/conftest.py', 'fake_postgres', 0, 1, 1).
 python_function('tests/conftest.py', 'fake_bus', 0, 1, 1).
 python_function('tests/conftest.py', 'event_store', 1, 1, 1).
@@ -611,7 +961,7 @@ python_class('services/orchestrator/app/api/rag.py', 'SearchQuery').
 python_class('services/orchestrator/app/api/rag.py', 'AskQuery').
 python_class('services/orchestrator/app/application/command_bus.py', 'CommandBus').
 python_method('CommandBus', '__init__', 2, 1, 0).
-python_method('CommandBus', 'handle', 0, 29, 29).
+python_method('CommandBus', 'handle', 0, 4, 6).
 python_method('CommandBus', 'handle_envelope', 1, 4, 2).
 python_method('CommandBus', '_create_task', 4, 6, 11).
 python_method('CommandBus', '_assign_task', 4, 3, 11).
@@ -649,7 +999,9 @@ python_method('CommandBus', '_publish', 2, 2, 1).
 python_method('CommandBus', '_apply_policy', 2, 2, 1).
 python_method('CommandBus', '_register_resource', 4, 5, 10).
 python_method('CommandBus', '_request_transfer', 4, 5, 15).
-python_method('CommandBus', '_record_task_outcome', 1, 12, 5).
+python_method('CommandBus', '_record_task_outcome', 1, 5, 5).
+python_method('CommandBus', '_should_auto_rollback', 2, 4, 2).
+python_method('CommandBus', '_rollback_workflow', 1, 1, 1).
 python_method('CommandBus', '_result', 2, 3, 2).
 python_class('services/orchestrator/app/application/sagas/approval_gate.py', 'ApprovalRequired').
 python_method('ApprovalRequired', '__init__', 0, 1, 2).
@@ -694,7 +1046,7 @@ python_method('Task', 'assign_to_agent', 1, 2, 4).
 python_method('Task', 'start', 0, 3, 4).
 python_method('Task', 'complete', 1, 2, 4).
 python_method('Task', 'fail', 1, 2, 4).
-python_method('Task', 'apply', 1, 11, 7).
+python_method('Task', 'apply', 1, 2, 5).
 python_method('Task', 'get_uncommitted_events', 0, 1, 1).
 python_method('Task', 'mark_events_committed', 0, 1, 1).
 python_method('Task', 'to_dict', 0, 3, 2).
@@ -708,103 +1060,37 @@ python_method('Workflow', 'activate_version', 0, 2, 3).
 python_method('Workflow', 'rollback_version', 1, 1, 2).
 python_method('Workflow', 'get_uncommitted_events', 0, 1, 1).
 python_method('Workflow', 'mark_events_committed', 0, 1, 1).
-python_class('services/orchestrator/app/domain/events/__init__.py', 'DomainEvent').
+python_class('services/orchestrator/app/domain/events/agents.py', 'AgentRegistered').
+python_method('AgentRegistered', 'aggregate_id', 0, 1, 1).
+python_method('AgentRegistered', 'data', 0, 1, 1).
+python_class('services/orchestrator/app/domain/events/agents.py', 'AgentHeartbeatReceived').
+python_method('AgentHeartbeatReceived', 'aggregate_id', 0, 1, 1).
+python_method('AgentHeartbeatReceived', 'data', 0, 1, 2).
+python_class('services/orchestrator/app/domain/events/agents.py', 'TaskAssignedToAgent').
+python_method('TaskAssignedToAgent', 'aggregate_id', 0, 1, 1).
+python_method('TaskAssignedToAgent', 'data', 0, 1, 1).
+python_class('services/orchestrator/app/domain/events/agents.py', 'AgentMarkedIdle').
+python_method('AgentMarkedIdle', 'aggregate_id', 0, 1, 1).
+python_method('AgentMarkedIdle', 'data', 0, 1, 1).
+python_class('services/orchestrator/app/domain/events/approvals.py', 'ApprovalRequested').
+python_method('ApprovalRequested', 'aggregate_id', 0, 1, 1).
+python_method('ApprovalRequested', 'data', 0, 2, 1).
+python_class('services/orchestrator/app/domain/events/approvals.py', 'ApprovalGranted').
+python_method('ApprovalGranted', 'aggregate_id', 0, 1, 1).
+python_method('ApprovalGranted', 'data', 0, 2, 1).
+python_class('services/orchestrator/app/domain/events/approvals.py', 'ApprovalRejected').
+python_method('ApprovalRejected', 'aggregate_id', 0, 1, 1).
+python_method('ApprovalRejected', 'data', 0, 2, 1).
+python_class('services/orchestrator/app/domain/events/approvals.py', 'ApprovalExpired').
+python_method('ApprovalExpired', 'aggregate_id', 0, 1, 1).
+python_method('ApprovalExpired', 'data', 0, 2, 1).
+python_class('services/orchestrator/app/domain/events/approvals.py', 'ChangeProposed').
+python_method('ChangeProposed', 'aggregate_id', 0, 1, 0).
+python_method('ChangeProposed', 'data', 0, 2, 0).
+python_class('services/orchestrator/app/domain/events/base.py', 'DomainEvent').
 python_method('DomainEvent', 'aggregate_id', 0, 1, 0).
 python_method('DomainEvent', 'data', 0, 1, 0).
 python_method('DomainEvent', 'to_message', 0, 3, 3).
-python_class('services/orchestrator/app/domain/events/__init__.py', 'TaskCreated').
-python_method('TaskCreated', 'aggregate_id', 0, 1, 1).
-python_method('TaskCreated', 'data', 0, 1, 2).
-python_class('services/orchestrator/app/domain/events/__init__.py', 'TaskAssigned').
-python_method('TaskAssigned', 'aggregate_id', 0, 1, 1).
-python_method('TaskAssigned', 'data', 0, 1, 1).
-python_class('services/orchestrator/app/domain/events/__init__.py', 'TaskStarted').
-python_method('TaskStarted', 'aggregate_id', 0, 1, 1).
-python_method('TaskStarted', 'data', 0, 1, 1).
-python_class('services/orchestrator/app/domain/events/__init__.py', 'TaskCompleted').
-python_method('TaskCompleted', 'aggregate_id', 0, 1, 1).
-python_method('TaskCompleted', 'data', 0, 1, 1).
-python_class('services/orchestrator/app/domain/events/__init__.py', 'TaskFailed').
-python_method('TaskFailed', 'aggregate_id', 0, 1, 1).
-python_method('TaskFailed', 'data', 0, 1, 1).
-python_class('services/orchestrator/app/domain/events/__init__.py', 'AgentRegistered').
-python_method('AgentRegistered', 'aggregate_id', 0, 1, 1).
-python_method('AgentRegistered', 'data', 0, 1, 1).
-python_class('services/orchestrator/app/domain/events/__init__.py', 'AgentHeartbeatReceived').
-python_method('AgentHeartbeatReceived', 'aggregate_id', 0, 1, 1).
-python_method('AgentHeartbeatReceived', 'data', 0, 1, 2).
-python_class('services/orchestrator/app/domain/events/__init__.py', 'TaskAssignedToAgent').
-python_method('TaskAssignedToAgent', 'aggregate_id', 0, 1, 1).
-python_method('TaskAssignedToAgent', 'data', 0, 1, 1).
-python_class('services/orchestrator/app/domain/events/__init__.py', 'AgentMarkedIdle').
-python_method('AgentMarkedIdle', 'aggregate_id', 0, 1, 1).
-python_method('AgentMarkedIdle', 'data', 0, 1, 1).
-python_class('services/orchestrator/app/domain/events/__init__.py', 'WorkflowStarted').
-python_method('WorkflowStarted', 'aggregate_id', 0, 1, 1).
-python_method('WorkflowStarted', 'data', 0, 1, 1).
-python_class('services/orchestrator/app/domain/events/__init__.py', 'WorkflowVersionProposed').
-python_method('WorkflowVersionProposed', 'aggregate_id', 0, 1, 1).
-python_method('WorkflowVersionProposed', 'data', 0, 1, 1).
-python_class('services/orchestrator/app/domain/events/__init__.py', 'WorkflowVersionValidated').
-python_method('WorkflowVersionValidated', 'aggregate_id', 0, 1, 1).
-python_method('WorkflowVersionValidated', 'data', 0, 1, 1).
-python_class('services/orchestrator/app/domain/events/__init__.py', 'WorkflowVersionApproved').
-python_method('WorkflowVersionApproved', 'aggregate_id', 0, 1, 1).
-python_method('WorkflowVersionApproved', 'data', 0, 1, 1).
-python_class('services/orchestrator/app/domain/events/__init__.py', 'WorkflowVersionShadowed').
-python_method('WorkflowVersionShadowed', 'aggregate_id', 0, 1, 1).
-python_method('WorkflowVersionShadowed', 'data', 0, 1, 1).
-python_class('services/orchestrator/app/domain/events/__init__.py', 'WorkflowVersionActivated').
-python_method('WorkflowVersionActivated', 'aggregate_id', 0, 1, 1).
-python_method('WorkflowVersionActivated', 'data', 0, 1, 1).
-python_class('services/orchestrator/app/domain/events/__init__.py', 'WorkflowVersionRolledBack').
-python_method('WorkflowVersionRolledBack', 'aggregate_id', 0, 1, 1).
-python_method('WorkflowVersionRolledBack', 'data', 0, 1, 1).
-python_class('services/orchestrator/app/domain/events/__init__.py', 'PluginProposed').
-python_method('PluginProposed', 'aggregate_id', 0, 1, 1).
-python_method('PluginProposed', 'data', 0, 1, 1).
-python_class('services/orchestrator/app/domain/events/__init__.py', 'PluginValidated').
-python_method('PluginValidated', 'aggregate_id', 0, 1, 1).
-python_method('PluginValidated', 'data', 0, 1, 1).
-python_class('services/orchestrator/app/domain/events/__init__.py', 'PluginInstalled').
-python_method('PluginInstalled', 'aggregate_id', 0, 1, 1).
-python_method('PluginInstalled', 'data', 0, 1, 1).
-python_class('services/orchestrator/app/domain/events/__init__.py', 'PluginActivated').
-python_method('PluginActivated', 'aggregate_id', 0, 1, 1).
-python_method('PluginActivated', 'data', 0, 1, 1).
-python_class('services/orchestrator/app/domain/events/__init__.py', 'PluginRolledBack').
-python_method('PluginRolledBack', 'aggregate_id', 0, 1, 1).
-python_method('PluginRolledBack', 'data', 0, 1, 1).
-python_class('services/orchestrator/app/domain/events/__init__.py', 'ApprovalRequested').
-python_method('ApprovalRequested', 'aggregate_id', 0, 1, 1).
-python_method('ApprovalRequested', 'data', 0, 1, 1).
-python_class('services/orchestrator/app/domain/events/__init__.py', 'ApprovalGranted').
-python_method('ApprovalGranted', 'aggregate_id', 0, 1, 1).
-python_method('ApprovalGranted', 'data', 0, 1, 1).
-python_class('services/orchestrator/app/domain/events/__init__.py', 'ApprovalRejected').
-python_method('ApprovalRejected', 'aggregate_id', 0, 1, 1).
-python_method('ApprovalRejected', 'data', 0, 1, 1).
-python_class('services/orchestrator/app/domain/events/__init__.py', 'ChangeProposed').
-python_method('ChangeProposed', 'aggregate_id', 0, 1, 0).
-python_method('ChangeProposed', 'data', 0, 1, 0).
-python_class('services/orchestrator/app/domain/events/__init__.py', 'CapabilityRegistered').
-python_method('CapabilityRegistered', 'aggregate_id', 0, 1, 0).
-python_method('CapabilityRegistered', 'data', 0, 1, 0).
-python_class('services/orchestrator/app/domain/events/__init__.py', 'ResourceRegistered').
-python_method('ResourceRegistered', 'aggregate_id', 0, 1, 1).
-python_method('ResourceRegistered', 'data', 0, 1, 1).
-python_class('services/orchestrator/app/domain/events/__init__.py', 'TransferRequested').
-python_method('TransferRequested', 'aggregate_id', 0, 1, 1).
-python_method('TransferRequested', 'data', 0, 1, 1).
-python_class('services/orchestrator/app/domain/events/__init__.py', 'TransferCompleted').
-python_method('TransferCompleted', 'aggregate_id', 0, 1, 1).
-python_method('TransferCompleted', 'data', 0, 1, 1).
-python_class('services/orchestrator/app/domain/events/__init__.py', 'TransferFailed').
-python_method('TransferFailed', 'aggregate_id', 0, 1, 1).
-python_method('TransferFailed', 'data', 0, 1, 1).
-python_class('services/orchestrator/app/domain/events/__init__.py', 'ApprovalExpired').
-python_method('ApprovalExpired', 'aggregate_id', 0, 1, 1).
-python_method('ApprovalExpired', 'data', 0, 1, 1).
 python_class('services/orchestrator/app/domain/events/incidents.py', 'RagRequestFailed').
 python_method('RagRequestFailed', 'aggregate_id', 0, 1, 0).
 python_method('RagRequestFailed', 'data', 0, 1, 0).
@@ -835,6 +1121,72 @@ python_method('PostRemediationVerificationPassed', 'data', 0, 1, 0).
 python_class('services/orchestrator/app/domain/events/incidents.py', 'PostRemediationVerificationFailed').
 python_method('PostRemediationVerificationFailed', 'aggregate_id', 0, 1, 0).
 python_method('PostRemediationVerificationFailed', 'data', 0, 1, 0).
+python_class('services/orchestrator/app/domain/events/plugins.py', 'PluginProposed').
+python_method('PluginProposed', 'aggregate_id', 0, 1, 1).
+python_method('PluginProposed', 'data', 0, 1, 1).
+python_class('services/orchestrator/app/domain/events/plugins.py', 'PluginValidated').
+python_method('PluginValidated', 'aggregate_id', 0, 1, 1).
+python_method('PluginValidated', 'data', 0, 1, 1).
+python_class('services/orchestrator/app/domain/events/plugins.py', 'PluginInstalled').
+python_method('PluginInstalled', 'aggregate_id', 0, 1, 1).
+python_method('PluginInstalled', 'data', 0, 1, 1).
+python_class('services/orchestrator/app/domain/events/plugins.py', 'PluginActivated').
+python_method('PluginActivated', 'aggregate_id', 0, 1, 1).
+python_method('PluginActivated', 'data', 0, 1, 1).
+python_class('services/orchestrator/app/domain/events/plugins.py', 'PluginRolledBack').
+python_method('PluginRolledBack', 'aggregate_id', 0, 1, 1).
+python_method('PluginRolledBack', 'data', 0, 1, 1).
+python_class('services/orchestrator/app/domain/events/resources.py', 'CapabilityRegistered').
+python_method('CapabilityRegistered', 'aggregate_id', 0, 1, 0).
+python_method('CapabilityRegistered', 'data', 0, 1, 0).
+python_class('services/orchestrator/app/domain/events/resources.py', 'ResourceRegistered').
+python_method('ResourceRegistered', 'aggregate_id', 0, 1, 1).
+python_method('ResourceRegistered', 'data', 0, 1, 1).
+python_class('services/orchestrator/app/domain/events/resources.py', 'TransferRequested').
+python_method('TransferRequested', 'aggregate_id', 0, 1, 1).
+python_method('TransferRequested', 'data', 0, 1, 1).
+python_class('services/orchestrator/app/domain/events/resources.py', 'TransferCompleted').
+python_method('TransferCompleted', 'aggregate_id', 0, 1, 1).
+python_method('TransferCompleted', 'data', 0, 1, 1).
+python_class('services/orchestrator/app/domain/events/resources.py', 'TransferFailed').
+python_method('TransferFailed', 'aggregate_id', 0, 1, 1).
+python_method('TransferFailed', 'data', 0, 1, 1).
+python_class('services/orchestrator/app/domain/events/tasks.py', 'TaskCreated').
+python_method('TaskCreated', 'aggregate_id', 0, 1, 1).
+python_method('TaskCreated', 'data', 0, 2, 2).
+python_class('services/orchestrator/app/domain/events/tasks.py', 'TaskAssigned').
+python_method('TaskAssigned', 'aggregate_id', 0, 1, 1).
+python_method('TaskAssigned', 'data', 0, 2, 1).
+python_class('services/orchestrator/app/domain/events/tasks.py', 'TaskStarted').
+python_method('TaskStarted', 'aggregate_id', 0, 1, 1).
+python_method('TaskStarted', 'data', 0, 2, 1).
+python_class('services/orchestrator/app/domain/events/tasks.py', 'TaskCompleted').
+python_method('TaskCompleted', 'aggregate_id', 0, 1, 1).
+python_method('TaskCompleted', 'data', 0, 2, 1).
+python_class('services/orchestrator/app/domain/events/tasks.py', 'TaskFailed').
+python_method('TaskFailed', 'aggregate_id', 0, 1, 1).
+python_method('TaskFailed', 'data', 0, 2, 1).
+python_class('services/orchestrator/app/domain/events/workflows.py', 'WorkflowStarted').
+python_method('WorkflowStarted', 'aggregate_id', 0, 1, 1).
+python_method('WorkflowStarted', 'data', 0, 1, 1).
+python_class('services/orchestrator/app/domain/events/workflows.py', 'WorkflowVersionProposed').
+python_method('WorkflowVersionProposed', 'aggregate_id', 0, 1, 1).
+python_method('WorkflowVersionProposed', 'data', 0, 1, 1).
+python_class('services/orchestrator/app/domain/events/workflows.py', 'WorkflowVersionValidated').
+python_method('WorkflowVersionValidated', 'aggregate_id', 0, 1, 1).
+python_method('WorkflowVersionValidated', 'data', 0, 1, 1).
+python_class('services/orchestrator/app/domain/events/workflows.py', 'WorkflowVersionApproved').
+python_method('WorkflowVersionApproved', 'aggregate_id', 0, 1, 1).
+python_method('WorkflowVersionApproved', 'data', 0, 1, 1).
+python_class('services/orchestrator/app/domain/events/workflows.py', 'WorkflowVersionShadowed').
+python_method('WorkflowVersionShadowed', 'aggregate_id', 0, 1, 1).
+python_method('WorkflowVersionShadowed', 'data', 0, 1, 1).
+python_class('services/orchestrator/app/domain/events/workflows.py', 'WorkflowVersionActivated').
+python_method('WorkflowVersionActivated', 'aggregate_id', 0, 1, 1).
+python_method('WorkflowVersionActivated', 'data', 0, 1, 1).
+python_class('services/orchestrator/app/domain/events/workflows.py', 'WorkflowVersionRolledBack').
+python_method('WorkflowVersionRolledBack', 'aggregate_id', 0, 1, 1).
+python_method('WorkflowVersionRolledBack', 'data', 0, 1, 1).
 python_class('services/orchestrator/app/domain/value_objects/__init__.py', 'TaskId').
 python_class('services/orchestrator/app/domain/value_objects/__init__.py', 'AgentId').
 python_class('services/orchestrator/app/domain/value_objects/__init__.py', 'WorkflowId').
@@ -863,8 +1215,11 @@ python_method('ArchitectureCatalog', 'as_graph', 0, 1, 4).
 python_class('services/orchestrator/app/evolution/evaluation.py', 'EvaluationEngine').
 python_method('EvaluationEngine', '__init__', 1, 1, 0).
 python_method('EvaluationEngine', 'record_task_outcome', 0, 4, 1).
-python_method('EvaluationEngine', '_upsert_metrics', 0, 13, 4).
-python_method('EvaluationEngine', 'should_auto_rollback', 2, 7, 3).
+python_method('EvaluationEngine', '_upsert_metrics', 0, 2, 4).
+python_method('EvaluationEngine', '_current_metrics_row', 3, 1, 1).
+python_method('EvaluationEngine', '_update_metrics', 1, 6, 2).
+python_method('EvaluationEngine', '_insert_metrics', 0, 2, 3).
+python_method('EvaluationEngine', 'should_auto_rollback', 2, 2, 2).
 python_class('services/orchestrator/app/evolution/experiments.py', 'ExperimentManager').
 python_method('ExperimentManager', '__init__', 1, 1, 0).
 python_method('ExperimentManager', 'start_experiment', 0, 2, 5).
@@ -875,12 +1230,18 @@ python_method('PolicyViolation', '__init__', 2, 2, 2).
 python_class('services/orchestrator/app/evolution/policy_engine.py', 'PolicyEngine').
 python_method('PolicyEngine', '__init__', 1, 2, 1).
 python_method('PolicyEngine', 'rule_for', 1, 1, 1).
-python_method('PolicyEngine', 'validate_command', 2, 14, 5).
-python_method('PolicyEngine', 'validate_activation_metrics', 3, 7, 7).
+python_method('PolicyEngine', 'validate_command', 2, 2, 4).
+python_method('PolicyEngine', '_validate_environment', 3, 3, 2).
+python_method('PolicyEngine', '_validate_manifest', 3, 6, 3).
+python_method('PolicyEngine', '_validate_auto_risk', 3, 6, 3).
+python_method('PolicyEngine', 'validate_activation_metrics', 3, 5, 7).
 python_class('services/orchestrator/app/incidents/pipeline.py', 'IncidentPipeline').
 python_method('IncidentPipeline', '__init__', 0, 1, 0).
 python_method('IncidentPipeline', 'handle_rag_failure', 0, 7, 14).
-python_method('IncidentPipeline', '_run_rag_diagnostics', 1, 14, 11).
+python_method('IncidentPipeline', '_run_rag_diagnostics', 1, 1, 4).
+python_method('IncidentPipeline', '_openrouter_health_check', 0, 3, 2).
+python_method('IncidentPipeline', '_rag_document_check', 0, 4, 5).
+python_method('IncidentPipeline', '_rag_chunk_check', 1, 4, 3).
 python_method('IncidentPipeline', '_remediate_rag_incident', 0, 6, 12).
 python_method('IncidentPipeline', '_verify_rag', 1, 4, 2).
 python_method('IncidentPipeline', '_append_and_publish', 2, 5, 5).
@@ -924,13 +1285,13 @@ python_method('PostgresConnection', 'fetchrow', 1, 2, 3).
 python_method('PostgresConnection', '_run_schema_migrations', 0, 5, 10).
 python_class('services/orchestrator/app/observability/incidents.py', 'IncidentCode').
 python_class('services/orchestrator/app/observability/incidents.py', 'IncidentRecorder').
-python_method('IncidentRecorder', 'record', 0, 16, 10).
+python_method('IncidentRecorder', 'record', 0, 2, 5).
 python_method('IncidentRecorder', '_persist', 1, 2, 3).
 python_method('IncidentRecorder', '_publish_event', 2, 3, 6).
 python_class('services/orchestrator/app/observability/middleware.py', 'CorrelationMiddleware').
 python_method('CorrelationMiddleware', 'dispatch', 2, 3, 4).
 python_class('services/orchestrator/app/observability/rag_diagnostics.py', 'RagDiagnostics').
-python_method('RagDiagnostics', 'run', 0, 12, 16).
+python_method('RagDiagnostics', 'run', 0, 3, 16).
 python_method('RagDiagnostics', '_check_postgres', 0, 4, 2).
 python_method('RagDiagnostics', '_check_rag_tables', 0, 5, 2).
 python_method('RagDiagnostics', '_check_openrouter_config', 0, 2, 0).
@@ -939,22 +1300,32 @@ python_method('RagDiagnostics', '_check_search', 1, 3, 3).
 python_method('RagDiagnostics', '_recommendations', 1, 6, 2).
 python_method('RagDiagnostics', '_snapshot', 1, 2, 5).
 python_class('services/orchestrator/app/observability/rag_pipeline.py', 'RagPipeline').
-python_method('RagPipeline', 'ask', 0, 10, 17).
+python_method('RagPipeline', 'ask', 0, 5, 12).
+python_method('RagPipeline', '_step_recorder', 1, 1, 4).
+python_method('RagPipeline', '_diagnostics_if_enabled', 3, 2, 2).
+python_method('RagPipeline', '_retriever_result', 3, 3, 4).
+python_method('RagPipeline', '_exception_payload', 1, 1, 5).
+python_method('RagPipeline', '_fallback_payload_if_needed', 1, 5, 4).
+python_method('RagPipeline', '_llm_error_payload', 1, 2, 6).
+python_method('RagPipeline', '_empty_result_payload', 1, 1, 3).
 python_method('RagPipeline', '_failure_payload', 0, 1, 1).
 python_class('services/orchestrator/app/rag/indexer.py', 'RagIndexer').
 python_method('RagIndexer', '__init__', 3, 1, 0).
-python_method('RagIndexer', 'ingest_resource', 0, 13, 14).
+python_method('RagIndexer', 'ingest_resource', 0, 2, 12).
+python_method('RagIndexer', '_fetch_body', 1, 5, 4).
+python_method('RagIndexer', '_embed_chunks', 1, 5, 3).
 python_class('services/orchestrator/app/rag/openrouter.py', 'OpenRouterClient').
 python_method('OpenRouterClient', '__init__', 1, 2, 2).
 python_method('OpenRouterClient', 'configured', 0, 1, 1).
 python_method('OpenRouterClient', '_headers', 0, 1, 0).
 python_method('OpenRouterClient', 'embed', 1, 5, 9).
-python_method('OpenRouterClient', 'chat', 1, 9, 8).
+python_method('OpenRouterClient', 'chat', 1, 4, 6).
+python_method('OpenRouterClient', '_post_chat', 3, 1, 3).
 python_method('OpenRouterClient', 'health', 0, 1, 0).
 python_class('services/orchestrator/app/rag/retriever.py', 'RagRetriever').
 python_method('RagRetriever', '__init__', 2, 1, 0).
 python_method('RagRetriever', 'search', 1, 4, 2).
-python_method('RagRetriever', 'ask', 1, 8, 4).
+python_method('RagRetriever', 'ask', 1, 5, 7).
 python_class('services/orchestrator/app/rag/store.py', 'RagStore').
 python_method('RagStore', '__init__', 1, 1, 0).
 python_method('RagStore', 'upsert_document_pending', 0, 1, 1).
@@ -962,8 +1333,10 @@ python_method('RagStore', 'mark_indexed', 0, 1, 1).
 python_method('RagStore', 'mark_failed', 0, 1, 1).
 python_method('RagStore', 'replace_chunks', 0, 3, 4).
 python_method('RagStore', 'list_documents', 0, 2, 2).
-python_method('RagStore', 'search', 1, 10, 11).
-python_method('RagStore', '_keyword_fallback', 1, 10, 11).
+python_method('RagStore', 'search', 1, 5, 5).
+python_method('RagStore', '_vector_search', 1, 3, 2).
+python_method('RagStore', '_fts_search', 1, 1, 1).
+python_method('RagStore', '_keyword_fallback', 1, 3, 3).
 python_class('services/orchestrator/tests/fakes.py', 'FakeEventStore').
 python_method('FakeEventStore', '__init__', 0, 1, 1).
 python_method('FakeEventStore', 'append', 3, 4, 9).
@@ -992,17 +1365,25 @@ python_class('services/web/app/agent_workroom.py', 'WorkroomSession').
 python_method('WorkroomSession', 'add_ledger', 3, 1, 2).
 python_method('WorkroomSession', 'agent_say', 3, 1, 2).
 python_method('WorkroomSession', 'to_dict', 0, 2, 1).
-python_class('services/web/app/api_routes.py', 'ChatSessionStart').
-python_class('services/web/app/api_routes.py', 'ChatMessage').
-python_class('services/web/app/api_routes.py', 'TaskDraftRequest').
-python_class('services/web/app/api_routes.py', 'CreateTaskBody').
-python_class('services/web/app/api_routes.py', 'CreateFromDraftBody').
-python_class('services/web/app/api_routes.py', 'ConfirmTicketBody').
-python_class('services/web/app/api_routes.py', 'ContextAttachBody').
-python_class('services/web/app/api_routes.py', 'SessionRef').
-python_class('services/web/app/api_routes.py', 'WorkroomStart').
-python_class('services/web/app/api_routes.py', 'WorkroomMessage').
-python_class('services/web/app/api_routes.py', 'AccessMatrixBody').
+python_class('services/web/app/api/models.py', 'ChatSessionStart').
+python_class('services/web/app/api/models.py', 'ChatMessage').
+python_class('services/web/app/api/models.py', 'TaskDraftRequest').
+python_class('services/web/app/api/models.py', 'CreateTaskBody').
+python_class('services/web/app/api/models.py', 'CreateFromDraftBody').
+python_class('services/web/app/api/models.py', 'ConfirmTicketBody').
+python_class('services/web/app/api/models.py', 'SessionRef').
+python_class('services/web/app/api/models.py', 'ContextAttachBody').
+python_class('services/web/app/api/models.py', 'WorkroomStart').
+python_class('services/web/app/api/models.py', 'WorkroomMessage').
+python_class('services/web/app/api/models.py', 'AccessMatrixBody').
+python_class('services/web/app/conductor.py', 'TurnState').
+python_class('services/web/app/prompt_router.py', 'RouteDecision').
+python_method('RouteDecision', 'to_dict', 0, 1, 1).
+python_class('services/web/app/routing_policy.py', 'RagProbeSettings').
+python_class('services/web/app/routing_policy.py', 'RoutingPolicy').
+python_method('RoutingPolicy', 'ingress_for_mode', 1, 4, 2).
+python_method('RoutingPolicy', 'agent_for_route', 1, 4, 1).
+python_method('RoutingPolicy', 'to_dict', 0, 1, 0).
 python_class('services/web/app/workspace.py', 'WorkspaceContext').
 python_method('WorkspaceContext', 'to_dict', 0, 1, 0).
 python_class('services/web/app/workspace.py', 'WorkspaceSession').

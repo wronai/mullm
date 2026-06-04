@@ -121,29 +121,48 @@ def _archived_ids(session_id: str | None) -> set[str]:
 
 
 def _filter_tickets_view(items: list[dict[str, Any]], view: str) -> list[dict[str, Any]]:
-    if view == "archived":
-        return [t for t in items if t["status_key"] == "archived"]
-    if view == "active":
-        return [t for t in items if t["status_key"] != "archived"]
-    return items
+    predicate = _TICKET_VIEW_FILTERS.get(view)
+    return [item for item in items if predicate(item)] if predicate else items
+
+
+def _is_archived_ticket(item: dict[str, Any]) -> bool:
+    return item["status_key"] == "archived"
+
+
+def _is_active_ticket(item: dict[str, Any]) -> bool:
+    return item["status_key"] != "archived"
+
+
+_TICKET_VIEW_FILTERS = {
+    "archived": _is_archived_ticket,
+    "active": _is_active_ticket,
+}
 
 
 async def _confirmable_task_and_agent(task_id: str) -> tuple[dict[str, Any], str]:
     board = await workspace_service.fetch_live_board()
-    task = next(
-        (t for t in (board.get("tasks") or []) if t.get("task_id") == task_id),
-        None,
-    )
-    if not task:
-        raise HTTPException(status_code=404, detail="ticket not found")
-    status = (task.get("status") or "pending").lower()
-    if status not in ("pending",):
-        raise HTTPException(status_code=400, detail="ticket nie jest w kolejce")
-
+    task = _task_from_board(board, task_id)
+    _assert_confirmable_task(task)
     agent_id = _first_idle_agent_id(board)
     if not agent_id:
         raise HTTPException(status_code=409, detail="brak wolnego agenta")
     return task, agent_id
+
+
+def _task_from_board(board: dict[str, Any], task_id: str) -> dict[str, Any]:
+    task = next(
+        (item for item in (board.get("tasks") or []) if item.get("task_id") == task_id),
+        None,
+    )
+    if not task:
+        raise HTTPException(status_code=404, detail="ticket not found")
+    return task
+
+
+def _assert_confirmable_task(task: dict[str, Any]) -> None:
+    status = (task.get("status") or "pending").lower()
+    if status not in ("pending",):
+        raise HTTPException(status_code=400, detail="ticket nie jest w kolejce")
 
 
 def _first_idle_agent_id(board: dict[str, Any]) -> str | None:

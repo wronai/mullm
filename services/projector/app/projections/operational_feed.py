@@ -4,6 +4,20 @@ from typing import Any
 import json
 
 
+_TITLE_FORMATTERS = {
+    "TaskCreated": lambda payload: payload.get("title") or "Task created",
+    "AgentRegistered": lambda payload: f"Agent {payload.get('agent_id')} registered",
+    "WorkflowStarted": lambda payload: f"Workflow {payload.get('workflow_id')} started",
+    "ResourceRegistered": lambda payload: payload.get("name") or payload.get("uri"),
+    "TransferCompleted": lambda payload: f"Transfer {payload.get('transfer_id')} completed",
+    "IncidentDetected": lambda payload: f"Incident {payload.get('incident_code')}",
+    "DiagnosticsCompleted": lambda payload: "RAG diagnostics completed",
+    "RemediationSucceeded": lambda payload: (
+        f"Remediation OK ({payload.get('incident_code')})"
+    ),
+}
+
+
 async def project_operational_feed(db, event: dict[str, Any]) -> None:
     payload = event["payload"]
     metadata = event.get("metadata") or {}
@@ -38,23 +52,10 @@ async def project_operational_feed(db, event: dict[str, Any]) -> None:
 
 
 def _title_for(event_type: str, payload: dict[str, Any]) -> str:
-    if event_type == "TaskCreated":
-        return payload.get("title") or "Task created"
-    if event_type == "AgentRegistered":
-        return f"Agent {payload.get('agent_id')} registered"
-    if event_type == "WorkflowStarted":
-        return f"Workflow {payload.get('workflow_id')} started"
-    if event_type == "ResourceRegistered":
-        return payload.get("name") or payload.get("uri")
-    if event_type == "TransferCompleted":
-        return f"Transfer {payload.get('transfer_id')} completed"
-    if event_type == "IncidentDetected":
-        return f"Incident {payload.get('incident_code')}"
-    if event_type == "DiagnosticsCompleted":
-        return "RAG diagnostics completed"
-    if event_type == "RemediationSucceeded":
-        return f"Remediation OK ({payload.get('incident_code')})"
-    return event_type
+    formatter = _TITLE_FORMATTERS.get(event_type)
+    if formatter is None:
+        return event_type
+    return formatter(payload)
 
 
 def _summary_for(event_type: str, payload: dict[str, Any]) -> str:

@@ -14,6 +14,8 @@ import time
 from dataclasses import dataclass, field
 from typing import Any, Literal
 
+import httpx
+
 from app import chat as chat_service
 
 RouteKind = Literal[
@@ -33,6 +35,14 @@ HandlerKind = Literal[
     "conductor._fallback_turn",
     "none",
 ]
+
+_LLM_HANDLERS: dict[str, HandlerKind] = {
+    "mullm_file_list": "conductor._mullm_file_list_turn",
+    "mullm_shell": "workspace.create_task_immediate",
+    "nlp2dsl": "nlp2dsl.workflow.chat",
+    "rag": "chat.handle_message.rag",
+    "unknown": "none",
+}
 
 
 @dataclass
@@ -137,20 +147,49 @@ def decide_route_rules(
 ) -> RouteDecision:
     """Kaskada reguł z listą kandydatów (ranking confidence)."""
     text = (message or "").strip()
+    flags = _router_flags(chat_mode, use_rag, policy_flags)
+
+    if not text:
+        return _empty_route_decision(flags)
+
+    routed = (
+        _mode_route_decision(chat_mode, flags)
+        or _file_list_route_decision(text, flags)
+        or _shell_route_decision(text, flags)
+    )
+    if routed:
+        return routed
+
+    if chat_mode == "discuss":
+        return _default_discuss_decision(flags)
+    return _fallback_mode_decision(chat_mode, flags)
+
+
+def _router_flags(
+    chat_mode: str,
+    use_rag: bool,
+    policy_flags: dict[str, Any] | None,
+) -> dict[str, Any]:
     flags = dict(policy_flags or {})
     flags.setdefault("chat_mode", chat_mode)
     flags.setdefault("use_rag", use_rag)
-    candidates: list[dict[str, Any]] = []
+    return flags
 
-    if not text:
-        chosen = _candidate("unknown", "none", "empty", 0.0, ["empty_message"])
-        return _build_decision(
-            chosen,
-            candidates=[chosen],
-            reason="Pusta wiadomość",
-            policy_flags=flags,
-        )
 
+def _empty_route_decision(flags: dict[str, Any]) -> RouteDecision:
+    chosen = _candidate("unknown", "none", "empty", 0.0, ["empty_message"])
+    return _build_decision(
+        chosen,
+        candidates=[chosen],
+        reason="Pusta wiadomość",
+        policy_flags=flags,
+    )
+
+
+def _mode_route_decision(
+    chat_mode: str,
+    flags: dict[str, Any],
+) -> RouteDecision | None:
     if chat_mode == "search_context":
         chosen = _candidate(
             "rag",
@@ -159,15 +198,13 @@ def decide_route_rules(
             0.95,
             ["mode_search_context"],
         )
-        candidates.append(chosen)
         return _build_decision(
             chosen,
-            candidates=candidates,
+            candidates=[chosen],
             reason="Tryb czatu wymusza RAG",
             fallback_route="nlp2dsl",
             policy_flags=flags,
         )
-
     if chat_mode == "run_task":
         chosen = _candidate(
             "mullm_shell",
@@ -176,83 +213,93 @@ def decide_route_rules(
             0.95,
             ["mode_run_task"],
         )
-        candidates.append(chosen)
         return _build_decision(
             chosen,
-            candidates=candidates,
+            candidates=[chosen],
             reason="Tryb Shell — ticket od razu",
             policy_flags=flags,
         )
+    return None
 
-    if chat_service.is_file_list_intent(text):
-        scope = chat_service.file_list_scope(text)
-        chosen = _candidate(
-            "mullm_file_list",
-            "conductor._mullm_file_list_turn",
-            "file_list",
-            0.92,
-            ["intent_file_list", f"scope_{scope}"],
-            list_scope=scope,
-        )
-        candidates.append(chosen)
-        candidates.append(
-            _candidate(
-                "nlp2dsl",
-                "nlp2dsl.workflow.chat",
-                "workflow",
-                0.35,
-                ["fallback_nlp2dsl"],
-            )
-        )
-        return _build_decision(
-            chosen,
-            candidates=candidates,
-            reason=f"Lista plików (scope={scope})",
-            fallback_route="nlp2dsl",
-            policy_flags=flags,
-        )
 
-    if _shell_prefix(text):
-        chosen = _candidate(
-            "mullm_shell",
-            "workspace.create_task_immediate",
-            "shell_inline",
-            0.88,
-            ["shell_prefix"],
-        )
-        candidates.append(chosen)
-        return _build_decision(
-            chosen,
-            candidates=candidates,
-            reason="Wykryto polecenie shell w tekście",
-            fallback_route="nlp2dsl",
-            policy_flags=flags,
-        )
+def _file_list_route_decision(
+    text: str,
+    flags: dict[str, Any],
+) -> RouteDecision | None:
+    if not chat_service.is_file_list_intent(text):
+        return None
+    scope = chat_service.file_list_scope(text)
+    chosen = _candidate(
+        "mullm_file_list",
+        "conductor._mullm_file_list_turn",
+        "file_list",
+        0.92,
+        ["intent_file_list", f"scope_{scope}"],
+        list_scope=scope,
+    )
+    fallback = _candidate(
+        "nlp2dsl",
+        "nlp2dsl.workflow.chat",
+        "workflow",
+        0.35,
+        ["fallback_nlp2dsl"],
+    )
+    return _build_decision(
+        chosen,
+        candidates=[chosen, fallback],
+        reason=f"Lista plików (scope={scope})",
+        fallback_route="nlp2dsl",
+        policy_flags=flags,
+    )
 
-    if chat_mode == "discuss":
-        nlp_c = _candidate(
-            "nlp2dsl",
-            "nlp2dsl.workflow.chat",
-            "workflow_dsl",
-            0.6,
-            ["default_discuss", "delegate_nlp2dsl"],
-        )
-        rag_c = _candidate(
-            "rag",
-            "chat.handle_message.rag",
-            "rag_fallback",
-            0.45,
-            ["fallback_if_nlp_down"],
-        )
-        candidates.extend([nlp_c, rag_c])
-        return _build_decision(
-            nlp_c,
-            candidates=candidates,
-            reason="Domyślny discuss → nlp2dsl (workflow); RAG gdy nlp2dsl niedostępny",
-            fallback_route="rag",
-            policy_flags=flags,
-        )
 
+def _shell_route_decision(
+    text: str,
+    flags: dict[str, Any],
+) -> RouteDecision | None:
+    if not _shell_prefix(text):
+        return None
+    chosen = _candidate(
+        "mullm_shell",
+        "workspace.create_task_immediate",
+        "shell_inline",
+        0.88,
+        ["shell_prefix"],
+    )
+    return _build_decision(
+        chosen,
+        candidates=[chosen],
+        reason="Wykryto polecenie shell w tekście",
+        fallback_route="nlp2dsl",
+        policy_flags=flags,
+    )
+
+
+def _default_discuss_decision(flags: dict[str, Any]) -> RouteDecision:
+    nlp_c = _candidate(
+        "nlp2dsl",
+        "nlp2dsl.workflow.chat",
+        "workflow_dsl",
+        0.6,
+        ["default_discuss", "delegate_nlp2dsl"],
+    )
+    rag_c = _candidate(
+        "rag",
+        "chat.handle_message.rag",
+        "rag_fallback",
+        0.45,
+        ["fallback_if_nlp_down"],
+    )
+    return _build_decision(
+        nlp_c,
+        candidates=[nlp_c, rag_c],
+        reason="Domyślny discuss → nlp2dsl (workflow); RAG gdy nlp2dsl niedostępny",
+        fallback_route="rag",
+        policy_flags=flags,
+    )
+
+
+def _fallback_mode_decision(chat_mode: str, flags: dict[str, Any]) -> RouteDecision:
     chosen = _candidate(
         "rag",
         "chat.handle_message.rag",
@@ -260,10 +307,9 @@ def decide_route_rules(
         0.5,
         [f"mode_{chat_mode}"],
     )
-    candidates.append(chosen)
     return _build_decision(
         chosen,
-        candidates=candidates,
+        candidates=[chosen],
         reason=f"Fallback dla trybu {chat_mode}",
         policy_flags=flags,
     )
@@ -275,73 +321,84 @@ async def decide_route_llm(message: str) -> RouteDecision | None:
     if not api_key:
         return None
     model = os.getenv("LLM_MODEL", "openrouter/openai/gpt-5-mini")
-    import httpx
+    try:
+        data = await _llm_classifier_data(api_key, model, message)
+        return _llm_decision_from_data(data) if data else None
+    except (httpx.HTTPError, json.JSONDecodeError, KeyError, ValueError):
+        return None
 
-    system = (
+
+async def _llm_classifier_data(
+    api_key: str,
+    model: str,
+    message: str,
+) -> dict[str, Any] | None:
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        response = await client.post(
+            "https://openrouter.ai/api/v1/chat/completions",
+            headers={
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json",
+            },
+            json=_llm_classifier_payload(model, message),
+        )
+        if response.status_code != 200:
+            return None
+        return _extract_llm_json(response.json()["choices"][0]["message"]["content"])
+
+
+def _llm_classifier_payload(model: str, message: str) -> dict[str, Any]:
+    return {
+        "model": _normalize_router_model(model),
+        "messages": [
+            {"role": "system", "content": _llm_system_prompt()},
+            {"role": "user", "content": message},
+        ],
+        "temperature": 0,
+        "max_tokens": 160,
+    }
+
+
+def _llm_system_prompt() -> str:
+    return (
         "Klasyfikuj intencję użytkownika Mullm. Odpowiedz TYLKO JSON:\n"
         '{"route":"mullm_file_list|mullm_shell|nlp2dsl|rag|unknown",'
         '"intent":"short_slug","confidence":0.0-1.0,'
         '"list_scope":"all|user|system|session|rag|null",'
         '"reason_codes":["code1"]}'
     )
-    try:
-        async with httpx.AsyncClient(timeout=30.0) as client:
-            r = await client.post(
-                "https://openrouter.ai/api/v1/chat/completions",
-                headers={
-                    "Authorization": f"Bearer {api_key}",
-                    "Content-Type": "application/json",
-                },
-                json={
-                    "model": model.replace("openrouter/", "", 1)
-                    if model.startswith("openrouter/")
-                    else model,
-                    "messages": [
-                        {"role": "system", "content": system},
-                        {"role": "user", "content": message},
-                    ],
-                    "temperature": 0,
-                    "max_tokens": 160,
-                },
-            )
-            if r.status_code != 200:
-                return None
-            content = r.json()["choices"][0]["message"]["content"]
-            m = re.search(r"\{[^{}]+\}", content, re.DOTALL)
-            if not m:
-                return None
-            data = json.loads(m.group())
-            route = data.get("route", "unknown")
-            conf = float(data.get("confidence", 0.7))
-            scope = data.get("list_scope")
-            intent = data.get("intent") or route
-            codes = list(data.get("reason_codes") or ["llm_classifier"])
-            handlers: dict[str, HandlerKind] = {
-                "mullm_file_list": "conductor._mullm_file_list_turn",
-                "mullm_shell": "workspace.create_task_immediate",
-                "nlp2dsl": "nlp2dsl.workflow.chat",
-                "rag": "chat.handle_message.rag",
-                "unknown": "none",
-            }
-            if route not in handlers:
-                route = "unknown"
-            chosen = _candidate(
-                route,  # type: ignore[arg-type]
-                handlers[route],
-                intent,
-                conf,
-                codes,
-                list_scope=scope if scope else None,
-            )
-            return _build_decision(
-                chosen,
-                candidates=[chosen],
-                reason="OpenRouter classifier",
-                used_llm=True,
-                router_mode="llm",
-            )
-    except (httpx.HTTPError, json.JSONDecodeError, KeyError, ValueError):
-        return None
+
+
+def _normalize_router_model(model: str) -> str:
+    return model.replace("openrouter/", "", 1) if model.startswith("openrouter/") else model
+
+
+def _extract_llm_json(content: str) -> dict[str, Any] | None:
+    match = re.search(r"\{[^{}]+\}", content, re.DOTALL)
+    return json.loads(match.group()) if match else None
+
+
+def _llm_decision_from_data(data: dict[str, Any]) -> RouteDecision:
+    route = _llm_route(data.get("route", "unknown"))
+    chosen = _candidate(
+        route,  # type: ignore[arg-type]
+        _LLM_HANDLERS[route],
+        data.get("intent") or route,
+        float(data.get("confidence", 0.7)),
+        list(data.get("reason_codes") or ["llm_classifier"]),
+        list_scope=data.get("list_scope") or None,
+    )
+    return _build_decision(
+        chosen,
+        candidates=[chosen],
+        reason="OpenRouter classifier",
+        used_llm=True,
+        router_mode="llm",
+    )
+
+
+def _llm_route(route: str) -> str:
+    return route if route in _LLM_HANDLERS else "unknown"
 
 
 async def decide_route(
@@ -362,28 +419,35 @@ async def decide_route(
     decision = rules
     if router_mode == "llm":
         llm = await decide_route_llm(message)
-        if llm and llm.confidence > rules.confidence:
-            llm.candidate_routes = rules.candidate_routes + [
-                c
-                for c in llm.candidate_routes
-                if c not in rules.candidate_routes
-            ]
-            llm.fallback_route = rules.route
-            llm.policy_flags = {**rules.policy_flags, **llm.policy_flags}
-            decision = llm
-        else:
-            rules.policy_flags["llm_skipped"] = True
-            if llm:
-                rules.candidate_routes.append(
-                    {
-                        "route": llm.route,
-                        "confidence": llm.confidence,
-                        "reason_codes": ["llm_lower_confidence"],
-                    }
-                )
+        decision = _merged_llm_decision(rules, llm)
     decision.timing_ms = (time.perf_counter() - t0) * 1000
     decision.router_mode = router_mode if not decision.used_llm else "llm"
     return decision
+
+
+def _merged_llm_decision(
+    rules: RouteDecision,
+    llm: RouteDecision | None,
+) -> RouteDecision:
+    if llm and llm.confidence > rules.confidence:
+        llm.candidate_routes = rules.candidate_routes + [
+            candidate
+            for candidate in llm.candidate_routes
+            if candidate not in rules.candidate_routes
+        ]
+        llm.fallback_route = rules.route
+        llm.policy_flags = {**rules.policy_flags, **llm.policy_flags}
+        return llm
+    rules.policy_flags["llm_skipped"] = True
+    if llm:
+        rules.candidate_routes.append(
+            {
+                "route": llm.route,
+                "confidence": llm.confidence,
+                "reason_codes": ["llm_lower_confidence"],
+            }
+        )
+    return rules
 
 
 def record_route_event(

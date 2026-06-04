@@ -21,50 +21,107 @@ from app.domain.events import (
 logger = logging.getLogger(__name__)
 
 
-def classify_rag_error(error: Exception | str) -> dict[str, Any]:
-    message = str(error)
-    lowered = message.lower()
-
-    if "does not exist" in lowered and ("rag_chunks" in lowered or "rag_documents" in lowered):
-        return {
+_RAG_ERROR_RULES = [
+    (
+        lambda message: (
+            "does not exist" in message
+            and ("rag_chunks" in message or "rag_documents" in message)
+        ),
+        {
             "incident_class": "config incident",
             "error_code": "RAG_SCHEMA_MISSING",
             "playbook_id": "rag.apply_schema_migrations",
             "severity": "critical",
             "confidence": 0.98,
-        }
-    if "timeout" in lowered or "timed out" in lowered:
-        return {
+        },
+    ),
+    (
+        lambda message: "timeout" in message or "timed out" in message,
+        {
             "incident_class": "availability incident",
             "error_code": "RAG_TIMEOUT",
             "playbook_id": "rag.degraded_retry",
             "severity": "warning",
             "confidence": 0.9,
-        }
-    if "openrouter" in lowered or "api_key" in lowered or "unauthorized" in lowered:
-        return {
+        },
+    ),
+    (
+        lambda message: (
+            "openrouter" in message
+            or "api_key" in message
+            or "unauthorized" in message
+        ),
+        {
             "incident_class": "config incident",
             "error_code": "EMBEDDING_PIPELINE_FAILED",
             "playbook_id": "rag.degraded_fts",
             "severity": "warning",
             "confidence": 0.85,
-        }
-    if "no matching chunks" in lowered or "empty" in lowered:
-        return {
+        },
+    ),
+    (
+        lambda message: "no matching chunks" in message or "empty" in message,
+        {
             "incident_class": "data incident",
             "error_code": "RETRIEVER_EMPTY_RESULT",
             "playbook_id": "rag.reindex_recent_resources",
             "severity": "info",
             "confidence": 0.8,
-        }
+        },
+    ),
+]
 
-    return {
-        "incident_class": "availability incident",
-        "error_code": "RAG_BACKEND_UNAVAILABLE",
-        "playbook_id": "rag.healthcheck_and_degraded_mode",
-        "severity": "critical",
-        "confidence": 0.75,
-    }
+_DEFAULT_RAG_ERROR = {
+    "incident_class": "availability incident",
+    "error_code": "RAG_BACKEND_UNAVAILABLE",
+    "playbook_id": "rag.healthcheck_and_degraded_mode",
+    "severity": "critical",
+    "confidence": 0.75,
+}
+
+
+def classify_rag_error(error: Exception | str) -> dict[str, Any]:
+    lowered = str(error).lower()
+    for predicate, classification in _RAG_ERROR_RULES:
+        if predicate(lowered):
+            return dict(classification)
+    return dict(_DEFAULT_RAG_ERROR)
+
+
+def _rag_root_cause(checks: dict[str, Any]) -> str:
+    combined_errors = " ".join(
+        str(value.get("error", ""))
+        for value in checks.values()
+        if isinstance(value, dict)
+    ).lower()
+    for predicate, root_cause in _RAG_ROOT_CAUSE_RULES:
+        if predicate(checks, combined_errors):
+            return root_cause
+    return "unknown"
+
+
+def _rag_schema_missing(checks: dict[str, Any], combined_errors: str) -> bool:
+    return "does not exist" in combined_errors
+
+
+def _rag_index_empty(checks: dict[str, Any], combined_errors: str) -> bool:
+    return checks.get("rag_documents", {}).get("count_sample") == 0
+
+
+def _retriever_empty_result(checks: dict[str, Any], combined_errors: str) -> bool:
+    return checks.get("rag_chunks", {}).get("sample_hits") == 0
+
+
+def _openrouter_unconfigured(checks: dict[str, Any], combined_errors: str) -> bool:
+    return not checks.get("openrouter_health", {}).get("configured", False)
+
+
+_RAG_ROOT_CAUSE_RULES = (
+    (_rag_schema_missing, "rag_schema_missing"),
+    (_rag_index_empty, "rag_index_empty"),
+    (_retriever_empty_result, "retriever_empty_result"),
+    (_openrouter_unconfigured, "openrouter_unconfigured_degraded_fts"),
+)
 
 
 class IncidentPipeline:
@@ -154,51 +211,40 @@ class IncidentPipeline:
 
     async def _run_rag_diagnostics(self, query: str) -> dict[str, Any]:
         checks: dict[str, Any] = {}
+        checks["openrouter_health"] = await self._openrouter_health_check()
+        checks["rag_documents"] = await self._rag_document_check()
+        checks["rag_chunks"] = await self._rag_chunk_check(query)
+        return {"root_cause": _rag_root_cause(checks), "checks": checks}
 
-        if self.openrouter:
-            try:
-                checks["openrouter_health"] = await self.openrouter.health()
-            except Exception as exc:
-                checks["openrouter_health"] = {"ok": False, "error": str(exc)}
-        else:
-            checks["openrouter_health"] = {"configured": False}
+    async def _openrouter_health_check(self) -> dict[str, Any]:
+        if not self.openrouter:
+            return {"configured": False}
+        try:
+            return await self.openrouter.health()
+        except Exception as exc:
+            return {"ok": False, "error": str(exc)}
 
-        if self.rag_store:
-            try:
-                docs = await self.rag_store.list_documents(limit=5)
-                checks["rag_documents"] = {
-                    "ok": True,
-                    "count_sample": len(docs),
-                    "statuses": sorted({doc.get("status", "unknown") for doc in docs}),
-                }
-            except Exception as exc:
-                checks["rag_documents"] = {"ok": False, "error": str(exc)}
+    async def _rag_document_check(self) -> dict[str, Any]:
+        if not self.rag_store:
+            return {"ok": False, "error": "rag_store not configured"}
+        try:
+            docs = await self.rag_store.list_documents(limit=5)
+            return {
+                "ok": True,
+                "count_sample": len(docs),
+                "statuses": sorted({doc.get("status", "unknown") for doc in docs}),
+            }
+        except Exception as exc:
+            return {"ok": False, "error": str(exc)}
 
-            try:
-                hits = await self.rag_store.search(query or "health", limit=1)
-                checks["rag_chunks"] = {"ok": True, "sample_hits": len(hits)}
-            except Exception as exc:
-                checks["rag_chunks"] = {"ok": False, "error": str(exc)}
-        else:
-            checks["rag_documents"] = {"ok": False, "error": "rag_store not configured"}
-            checks["rag_chunks"] = {"ok": False, "error": "rag_store not configured"}
-
-        root_cause = "unknown"
-        combined_errors = " ".join(
-            str(value.get("error", ""))
-            for value in checks.values()
-            if isinstance(value, dict)
-        ).lower()
-        if "does not exist" in combined_errors:
-            root_cause = "rag_schema_missing"
-        elif checks.get("rag_documents", {}).get("count_sample") == 0:
-            root_cause = "rag_index_empty"
-        elif checks.get("rag_chunks", {}).get("sample_hits") == 0:
-            root_cause = "retriever_empty_result"
-        elif not checks.get("openrouter_health", {}).get("configured", False):
-            root_cause = "openrouter_unconfigured_degraded_fts"
-
-        return {"root_cause": root_cause, "checks": checks}
+    async def _rag_chunk_check(self, query: str) -> dict[str, Any]:
+        if not self.rag_store:
+            return {"ok": False, "error": "rag_store not configured"}
+        try:
+            hits = await self.rag_store.search(query or "health", limit=1)
+            return {"ok": True, "sample_hits": len(hits)}
+        except Exception as exc:
+            return {"ok": False, "error": str(exc)}
 
     async def _remediate_rag_incident(
         self,

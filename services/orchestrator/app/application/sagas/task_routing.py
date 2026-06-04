@@ -9,21 +9,26 @@ async def pick_idle_agent(event_store, required_capabilities: list[str] | None =
     agent_ids = await event_store.get_aggregate_ids("agent")
     for agent_id in agent_ids:
         events = await event_store.get_events_for_aggregate("agent", agent_id)
-        if not events:
-            continue
-
-        capabilities: list[str] = []
-        status = "idle"
-        for record in events:
-            if record.event_type == "AgentRegistered":
-                capabilities = record.data.get("capabilities") or []
-            status = record.data.get("status", status)
-
-        if status != "idle":
-            continue
-        if all(cap in capabilities for cap in required):
+        state = _agent_route_state(events)
+        if _agent_matches(state, required):
             return agent_id
     return None
+
+
+def _agent_route_state(events: list[Any]) -> dict[str, Any]:
+    state: dict[str, Any] = {"capabilities": [], "status": "idle"}
+    for record in events:
+        if record.event_type == "AgentRegistered":
+            state["capabilities"] = record.data.get("capabilities") or []
+        state["status"] = record.data.get("status", state["status"])
+    return state
+
+
+def _agent_matches(state: dict[str, Any], required: list[str]) -> bool:
+    capabilities = state.get("capabilities") or []
+    return state.get("status") == "idle" and all(
+        capability in capabilities for capability in required
+    )
 
 
 async def maybe_auto_assign(

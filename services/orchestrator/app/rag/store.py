@@ -9,14 +9,22 @@ from uuid import uuid4
 
 
 def _cosine(a: list[float], b: list[float]) -> float:
-    if not a or not b or len(a) != len(b):
+    if not _same_dimension_vectors(a, b):
         return 0.0
     dot = sum(x * y for x, y in zip(a, b))
-    na = math.sqrt(sum(x * x for x in a))
-    nb = math.sqrt(sum(y * y for y in b))
+    na = _vector_norm(a)
+    nb = _vector_norm(b)
     if na == 0 or nb == 0:
         return 0.0
     return dot / (na * nb)
+
+
+def _same_dimension_vectors(a: list[float], b: list[float]) -> bool:
+    return bool(a and b and len(a) == len(b))
+
+
+def _vector_norm(values: list[float]) -> float:
+    return math.sqrt(sum(value * value for value in values))
 
 
 class RagStore:
@@ -135,28 +143,35 @@ class RagStore:
             return []
 
         if query_embedding:
-            rows = await self.postgres.fetch(
-                """
-                select c.chunk_id, c.resource_id, c.position, c.content, c.embedding,
-                       d.uri, d.name
-                from rag_chunks c
-                join rag_documents d on d.resource_id = c.resource_id
-                where d.status = 'indexed' and c.embedding is not null
-                order by c.created_at desc
-                limit 500
-                """
-            )
-            scored: list[tuple[float, dict[str, Any]]] = []
-            for row in rows:
-                emb = _parse_embedding(row)
-                if emb is None:
-                    continue
-                score = _cosine(query_embedding, emb)
-                scored.append((score, _chunk_hit(row, score)))
-            scored.sort(key=lambda item: item[0], reverse=True)
-            return [item[1] for item in scored[:limit] if item[0] > 0]
+            return await self._vector_search(query_embedding, limit=limit)
 
+        rows = await self._fts_search(query, limit=limit)
+        if rows:
+            return _ranked_hits(rows)
+        return await self._keyword_fallback(query, limit=limit)
+
+    async def _vector_search(
+        self,
+        query_embedding: list[float],
+        *,
+        limit: int,
+    ) -> list[dict[str, Any]]:
         rows = await self.postgres.fetch(
+            """
+            select c.chunk_id, c.resource_id, c.position, c.content, c.embedding,
+                   d.uri, d.name
+            from rag_chunks c
+            join rag_documents d on d.resource_id = c.resource_id
+            where d.status = 'indexed' and c.embedding is not null
+            order by c.created_at desc
+            limit 500
+            """
+        )
+        scored = _vector_hits(rows, query_embedding)
+        return [item[1] for item in scored[:limit] if item[0] > 0]
+
+    async def _fts_search(self, query: str, *, limit: int) -> list[Any]:
+        return await self.postgres.fetch(
             """
             select c.chunk_id, c.resource_id, c.position, c.content,
                    d.uri, d.name,
@@ -172,16 +187,9 @@ class RagStore:
             query,
             limit,
         )
-        if rows:
-            return [
-                _chunk_hit(row, float(_row_dict(row).get("rank", 0)))
-                for row in rows
-            ]
-
-        return await self._keyword_fallback(query, limit=limit)
 
     async def _keyword_fallback(self, query: str, *, limit: int) -> list[dict[str, Any]]:
-        tokens = [t for t in re.split(r"\W+", query.lower()) if len(t) > 2]
+        tokens = _query_tokens(query)
         if not tokens:
             return []
         rows = await self.postgres.fetch(
@@ -195,15 +203,50 @@ class RagStore:
             limit 300
             """
         )
-        hits: list[tuple[int, dict[str, Any]]] = []
-        for row in rows:
-            data = _row_dict(row)
-            text = (data.get("content") or "").lower()
-            score = sum(1 for token in tokens if token in text)
-            if score:
-                hits.append((score, _chunk_hit(row, float(score))))
-        hits.sort(key=lambda item: item[0], reverse=True)
+        hits = _keyword_hits(rows, tokens)
         return [item[1] for item in hits[:limit]]
+
+
+def _vector_hits(
+    rows: list[Any],
+    query_embedding: list[float],
+) -> list[tuple[float, dict[str, Any]]]:
+    scored: list[tuple[float, dict[str, Any]]] = []
+    for row in rows:
+        emb = _parse_embedding(row)
+        if emb is None:
+            continue
+        score = _cosine(query_embedding, emb)
+        scored.append((score, _chunk_hit(row, score)))
+    scored.sort(key=lambda item: item[0], reverse=True)
+    return scored
+
+
+def _ranked_hits(rows: list[Any]) -> list[dict[str, Any]]:
+    return [_chunk_hit(row, float(_row_dict(row).get("rank", 0))) for row in rows]
+
+
+def _query_tokens(query: str) -> list[str]:
+    return [token for token in re.split(r"\W+", query.lower()) if len(token) > 2]
+
+
+def _keyword_hits(
+    rows: list[Any],
+    tokens: list[str],
+) -> list[tuple[int, dict[str, Any]]]:
+    hits: list[tuple[int, dict[str, Any]]] = []
+    for row in rows:
+        score = _keyword_score(row, tokens)
+        if score:
+            hits.append((score, _chunk_hit(row, float(score))))
+    hits.sort(key=lambda item: item[0], reverse=True)
+    return hits
+
+
+def _keyword_score(row: Any, tokens: list[str]) -> int:
+    data = _row_dict(row)
+    text = (data.get("content") or "").lower()
+    return sum(1 for token in tokens if token in text)
 
 
 def _parse_embedding(row: Any) -> list[float] | None:

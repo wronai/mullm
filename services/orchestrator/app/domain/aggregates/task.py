@@ -165,46 +165,9 @@ class Task:
         event_type = _event_type(event)
         data = _event_data(event)
         timestamp = _event_timestamp(event)
-
-        if event_type == "TaskCreated":
-            self.task_id = TaskId(data["task_id"])
-            self.title = data["title"]
-            self.description = data.get("description")
-            agent_id = data.get("agent_id")
-            self.agent_id = AgentId(agent_id) if agent_id else None
-            self.priority = Priority.from_value(data.get("priority"))
-            self.execution_mode = ExecutionMode.from_value(data.get("execution_mode"))
-            self.required_capabilities = data.get("required_capabilities") or []
-            self.metadata = data.get("metadata") or {}
-            self.status = TaskStatus.PENDING
-            self.created_at = timestamp
-            self.updated_at = timestamp
-            return
-
-        if event_type == "TaskAssigned":
-            self.agent_id = AgentId(data["agent_id"])
-            self.status = TaskStatus.ASSIGNED
-            self.updated_at = timestamp
-            return
-
-        if event_type == "TaskStarted":
-            agent_id = data.get("agent_id")
-            self.agent_id = AgentId(agent_id) if agent_id else self.agent_id
-            self.status = TaskStatus.RUNNING
-            self.updated_at = timestamp
-            return
-
-        if event_type == "TaskCompleted":
-            self.status = TaskStatus.COMPLETED
-            self.result = data.get("result") or {}
-            self.completed_at = timestamp
-            self.updated_at = timestamp
-            return
-
-        if event_type == "TaskFailed":
-            self.status = TaskStatus.FAILED
-            self.error = data.get("error")
-            self.updated_at = timestamp
+        handler = _TASK_EVENT_APPLIERS.get(event_type)
+        if handler:
+            handler(self, data, timestamp)
 
     def get_uncommitted_events(self) -> List:
         return self._events.copy()
@@ -229,3 +192,53 @@ class Task:
             "result": self.result,
             "error": self.error
         }
+
+
+def _apply_task_created(task: Task, data: Dict[str, Any], timestamp: datetime) -> None:
+    task.task_id = TaskId(data["task_id"])
+    task.title = data["title"]
+    task.description = data.get("description")
+    agent_id = data.get("agent_id")
+    task.agent_id = AgentId(agent_id) if agent_id else None
+    task.priority = Priority.from_value(data.get("priority"))
+    task.execution_mode = ExecutionMode.from_value(data.get("execution_mode"))
+    task.required_capabilities = data.get("required_capabilities") or []
+    task.metadata = data.get("metadata") or {}
+    task.status = TaskStatus.PENDING
+    task.created_at = timestamp
+    task.updated_at = timestamp
+
+
+def _apply_task_assigned(task: Task, data: Dict[str, Any], timestamp: datetime) -> None:
+    task.agent_id = AgentId(data["agent_id"])
+    task.status = TaskStatus.ASSIGNED
+    task.updated_at = timestamp
+
+
+def _apply_task_started(task: Task, data: Dict[str, Any], timestamp: datetime) -> None:
+    agent_id = data.get("agent_id")
+    task.agent_id = AgentId(agent_id) if agent_id else task.agent_id
+    task.status = TaskStatus.RUNNING
+    task.updated_at = timestamp
+
+
+def _apply_task_completed(task: Task, data: Dict[str, Any], timestamp: datetime) -> None:
+    task.status = TaskStatus.COMPLETED
+    task.result = data.get("result") or {}
+    task.completed_at = timestamp
+    task.updated_at = timestamp
+
+
+def _apply_task_failed(task: Task, data: Dict[str, Any], timestamp: datetime) -> None:
+    task.status = TaskStatus.FAILED
+    task.error = data.get("error")
+    task.updated_at = timestamp
+
+
+_TASK_EVENT_APPLIERS = {
+    "TaskCreated": _apply_task_created,
+    "TaskAssigned": _apply_task_assigned,
+    "TaskStarted": _apply_task_started,
+    "TaskCompleted": _apply_task_completed,
+    "TaskFailed": _apply_task_failed,
+}

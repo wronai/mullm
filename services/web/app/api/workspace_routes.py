@@ -59,35 +59,11 @@ async def workspace_file_list_export(
 
 @router.get("/workspace/chat/export")
 async def workspace_chat_export(session_id: str):
-    """Transkrypt chatu do schowka (tylko rozmowa, bez RAG health)."""
+    """Transkrypt chatu do schowka (rozmowa + routing, bez RAG health)."""
     session = workspace_service.get_or_create(session_id)
     history = chat_service.get_history(session.session_id)
-    text = _format_chat_export(session, history)
+    text = workspace_service.format_chat_export_text(session)
     return {"session_id": session.session_id, "text": text, "message_count": len(history)}
-
-
-def _format_chat_export(session, history: list[dict]) -> str:
-    lines = [
-        "# Mullm — transkrypt chatu",
-        f"session_id: {session.session_id}",
-        "",
-    ]
-    for msg in history:
-        role = msg.get("role", "?")
-        content = (msg.get("content") or "").strip()
-        if not content:
-            continue
-        lines.append(f"## {role}")
-        lines.append(content)
-        if msg.get("sources"):
-            lines.append(f"(źródeł RAG: {len(msg['sources'])})")
-        lines.append("")
-    if session.draft:
-        lines.append("## draft (nieutworzony ticket)")
-        lines.append(f"tytuł: {session.draft.get('title')}")
-        lines.append(f"shell: {session.draft.get('shell_command') or '—'}")
-        lines.append(f"hint: {session.draft.get('execution_hint', '')}")
-    return "\n".join(lines).strip() + "\n"
 
 
 @router.get("/workspace/logs/export")

@@ -62,22 +62,39 @@ async def ensure_approval(
 
     action_type, target_fn = spec
     target_id = target_fn(data)
-    approval_id = data.get("approval_id")
-    if not approval_id:
-        raise ApprovalRequired(
-            action_type=action_type,
-            target_id=target_id,
-            message=(
-                f"{command_type} requires approval_id. "
-                f"Create approval via CreateApprovalRequest "
-                f"(action_type={action_type}, target_id={target_id}) then ApproveRequest."
-            ),
-        )
-
+    approval_id = _required_approval_id(command_type, data, action_type, target_id)
     events = await event_store.get_events_for_aggregate("approval", approval_id)
+    _validate_approval_events(events, approval_id, action_type, target_id)
+
+
+def _required_approval_id(
+    command_type: str,
+    data: dict[str, Any],
+    action_type: str,
+    target_id: str,
+) -> str:
+    approval_id = data.get("approval_id")
+    if approval_id:
+        return approval_id
+    raise ApprovalRequired(
+        action_type=action_type,
+        target_id=target_id,
+        message=(
+            f"{command_type} requires approval_id. "
+            f"Create approval via CreateApprovalRequest "
+            f"(action_type={action_type}, target_id={target_id}) then ApproveRequest."
+        ),
+    )
+
+
+def _validate_approval_events(
+    events: list[Any],
+    approval_id: str,
+    action_type: str,
+    target_id: str,
+) -> None:
     if not events:
         raise ValueError(f"Approval not found: {approval_id}")
-
     first = events[0].data
     last = events[-1].data
     if first.get("action_type") != action_type or first.get("target_id") != target_id:

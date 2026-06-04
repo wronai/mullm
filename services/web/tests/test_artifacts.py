@@ -1,6 +1,7 @@
 from app.workspace import (
     _format_export_text,
     artifact_summaries,
+    format_chat_export_text,
     get_artifact,
     get_or_create,
     register_artifact,
@@ -52,3 +53,86 @@ def test_format_export_text_keeps_core_sections():
     assert "ABC-1" in text
     assert "## Historia chatu" in text
     assert "## Zdarzenia sesji" in text
+
+
+def test_format_chat_export_includes_routing():
+    session = get_or_create("sess-chat-export")
+    session.events.clear()
+    routing = {
+        "route": "mullm_file_list",
+        "handler": "conductor._mullm_file_list_turn",
+        "confidence": 0.92,
+        "reason_codes": ["intent_file_list"],
+        "router_mode": "rules",
+    }
+    from app import chat as chat_service
+
+    chat_service._sessions[session.session_id] = [
+        {"role": "user", "content": "lista plikow usera"},
+        {"role": "assistant", "content": "Pliki…", "routing": routing},
+    ]
+    text = format_chat_export_text(session)
+    assert "## Ty" in text
+    assert "## AI" in text
+    assert "mullm_file_list" in text
+    assert "intent_file_list" in text
+    assert "## Routing trace" in text
+
+
+def test_format_export_includes_routing_trace():
+    routing = {
+        "route": "mullm_file_list",
+        "handler": "conductor._mullm_file_list_turn",
+        "intent": "file_list",
+        "confidence": 0.92,
+        "reason_codes": ["intent_file_list", "scope_user"],
+        "fallback_route": "nlp2dsl",
+        "timing_ms": 1.1,
+        "router_mode": "rules",
+        "candidate_routes": [{"route": "mullm_file_list", "confidence": 0.92}],
+    }
+    text = _format_export_text(
+        {
+            "generated_at": "2026-06-04T00:00:00+00:00",
+            "correlation_id": "corr-r",
+            "session": {
+                "context": {},
+                "chat_history": [
+                    {"role": "user", "content": "lista plikow usera"},
+                    {"role": "assistant", "content": "Pliki…", "routing": routing},
+                ],
+                "events": [
+                    {
+                        "type": "RouteDecided",
+                        "summary": "mullm_file_list → conductor",
+                        "routing": routing,
+                        "outcome": "succeeded",
+                    },
+                ],
+            },
+        }
+    )
+    assert "## Routing trace" in text
+    assert "mullm_file_list" in text
+    assert "intent_file_list" in text
+    assert "(route: mullm_file_list" in text
+    assert "if_not_chosen: nlp2dsl" in text
+
+
+def test_format_routing_line_nlp2dsl_skipped():
+    from app.workspace import _format_routing_line
+
+    line = _format_routing_line(
+        {
+            "route": "mullm_file_list",
+            "handler": "conductor._mullm_file_list_turn",
+            "confidence": 0.92,
+            "reason_codes": ["intent_file_list"],
+            "fallback_route": "nlp2dsl",
+            "nlp2dsl_skipped": True,
+            "router_mode": "rules",
+        }
+    )
+    assert "nlp2dsl: skipped" in line
+    assert "if_not_chosen: nlp2dsl" in line
+    assert "fallback: nlp2dsl" not in line

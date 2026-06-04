@@ -5,6 +5,33 @@ app {
   version: 0.1.0;
 }
 
+entity[name="ChatSessionStart"] {
+  ticket_id: string!;
+  project: string!;
+}
+
+entity[name="ChatMessage"] {
+  session_id: str | None;
+  message: string!;
+  mode: string!;
+  use_rag: bool!;
+  form_values: dict[str, Any] | None;
+  wait_for_confirmation: bool!;
+}
+
+entity[name="SessionRef"] {
+  session_id: string!;
+}
+
+entity[name="WorkroomStart"] {
+  user_session_id: str | None;
+}
+
+entity[name="WorkroomMessage"] {
+  message: string!;
+  wait_for_confirmation: bool!;
+}
+
 entity[name="ApprovalRequests"] {
   approval_id: string;
   action_type: string;
@@ -341,9 +368,9 @@ workflow[name="smoke"] {
   step-2: run cmd=curl -fsS http://127.0.0.1:8001/health;
   step-3: run cmd=curl -fsS http://127.0.0.1:8002/health;
   step-4: run cmd=if [ "$(NLP2DSL)" = "1" ] && [ -f "$(NLP2DSL_DIR)/docker-compose.yml" ]; then \;
-  step-5: run cmd=curl -fsS -o /dev/null -w 'nlp2dsl backend: %{http_code}\n' http://127.0.0.1:8010/docs && \;
-  step-6: run cmd=curl -fsS -o /dev/null -w 'nlp2dsl nlp: %{http_code}\n' http://127.0.0.1:8012/docs && \;
-  step-7: run cmd=curl -fsS -o /dev/null -w 'nlp2dsl worker: %{http_code}\n' http://127.0.0.1:8004/health; \;
+  step-5: run cmd=curl -fsS -o /dev/null -w 'nlp2dsl backend: %{http_code}\n' http://127.0.0.1:$(NLP2DSL_BACKEND_HOST_PORT)/docs && \;
+  step-6: run cmd=curl -fsS -o /dev/null -w 'nlp2dsl nlp: %{http_code}\n' http://127.0.0.1:$(NLP2DSL_NLP_HOST_PORT)/docs && \;
+  step-7: run cmd=curl -fsS -o /dev/null -w 'nlp2dsl worker: %{http_code}\n' http://127.0.0.1:$(NLP2DSL_WORKER_HOST_PORT)/health; \;
   step-8: run cmd=fi;
 }
 

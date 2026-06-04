@@ -128,6 +128,34 @@ def list_groups() -> list[dict[str, Any]]:
 
 def agent_may_access(role_id: str, area_id: str, action: str = "read") -> dict[str, Any]:
     """Decyzja MVP: allow | deny | approval (+ macierz z /access)."""
+    matrix_decision = _matrix_access_decision(role_id, area_id, action)
+    if matrix_decision:
+        return matrix_decision
+
+    areas = DEFAULT_ROLE_SCOPES.get(role_id, [])
+    meta = AREA_CATALOG.get(area_id)
+    if not meta:
+        return {"decision": "deny", "reason": "unknown_area"}
+    if area_id not in areas:
+        return {"decision": "deny", "reason": "role_not_in_scope"}
+    return _area_policy_decision(meta.get("default_policy", "approval"), area_id, action)
+
+
+def _area_policy_decision(policy: str, area_id: str, action: str) -> dict[str, Any]:
+    if policy == "allow":
+        return {"decision": "allow", "area_id": area_id, "action": action}
+    if policy == "allow_read" and action in ("read", "search", "list", "get"):
+        return {"decision": "allow", "area_id": area_id, "action": action}
+    if policy == "approval":
+        return {"decision": "approval", "area_id": area_id, "action": action}
+    return {"decision": "allow", "area_id": area_id, "action": action}
+
+
+def _matrix_access_decision(
+    role_id: str,
+    area_id: str,
+    action: str,
+) -> dict[str, Any] | None:
     try:
         from app.access_matrix import agent_may_access_resource
 
@@ -139,19 +167,5 @@ def agent_may_access(role_id: str, area_id: str, action: str = "read") -> dict[s
                 "action": action,
             }
     except Exception:
-        pass
-
-    areas = DEFAULT_ROLE_SCOPES.get(role_id, [])
-    meta = AREA_CATALOG.get(area_id)
-    if not meta:
-        return {"decision": "deny", "reason": "unknown_area"}
-    if area_id not in areas:
-        return {"decision": "deny", "reason": "role_not_in_scope"}
-    policy = meta.get("default_policy", "approval")
-    if policy == "allow":
-        return {"decision": "allow", "area_id": area_id, "action": action}
-    if policy == "allow_read" and action in ("read", "search", "list", "get"):
-        return {"decision": "allow", "area_id": area_id, "action": action}
-    if policy == "approval":
-        return {"decision": "approval", "area_id": area_id, "action": action}
-    return {"decision": "allow", "area_id": area_id, "action": action}
+        return None
+    return None

@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any, ClassVar
 
-from app.domain.events import DomainEvent
+from app.domain.events.base import DomainEvent
 
 
 @dataclass(frozen=True)

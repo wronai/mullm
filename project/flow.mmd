@@ -20,18 +20,18 @@ flowchart TD
         services__projector__app__main__resource_registry["resource_registry"]
         services__projector__app__main__workflow_versions["workflow_versions"]
         services__projector__app__db__Database__connect["connect"]
-        ...["+471 more"]
+        ...["+540 more"]
     end
 
     subgraph Exporters
-        services__orchestrator__app__observability__export__format_logs_text{{format_logs_text CC=29}}
-        services__orchestrator__app__api__observability__export_logs["export_logs"]
-        services__web__app__workspace__export_debug_logs["export_debug_logs"]
-        services__web__app__agent_workroom__format_workroom_export["format_workroom_export"]
         services__web__app__api__workspace_routes__workspace_file_list_export["workspace_file_list_export"]
         services__web__app__api__workspace_routes__workspace_chat_export["workspace_chat_export"]
         services__web__app__api__workspace_routes__workspace_logs_export["workspace_logs_export"]
         services__web__app__api__workroom_routes__workroom_export["workroom_export"]
+        services__orchestrator__app__api__observability__export_logs["export_logs"]
+        services__web__app__agent_workroom__format_workroom_export["format_workroom_export"]
+        services__web__app__workspace__format_chat_export_text["format_chat_export_text"]
+        services__web__app__workspace__export_debug_logs["export_debug_logs"]
     end
 
     class services__projector__app__main__lifespan,services__projector__app__main__health_check,services__projector__app__main__operational_feed,services__projector__app__main__task_board,services__projector__app__main__agent_fleet,services__projector__app__main__approval_requests,services__projector__app__main__plugin_catalog,services__projector__app__main__rag_documents,services__projector__app__main__incident_feed,services__projector__app__main__service_health entry

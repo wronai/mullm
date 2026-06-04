@@ -3,6 +3,7 @@ from __future__ import annotations
 from fastapi import APIRouter
 
 from app import prompt_router
+from app.routing_policy import load_policy
 
 router = APIRouter()
 
@@ -23,3 +24,9 @@ async def router_decide(
         use_rag=use_rag,
     )
     return decision.to_dict()
+
+
+@router.get("/routing/policy")
+async def routing_policy_get(reload: bool = False):
+    """Aktualna polityka ingress (YAML + domyślne)."""
+    return load_policy(reload=reload).to_dict()
