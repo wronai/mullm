@@ -1,0 +1,96 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: mullm
+      POSTGRES_USER: mullm
+      POSTGRES_PASSWORD: mullm_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db/init:/docker-entrypoint-initdb.d
+    networks:
+      - mullm_network
+
+  nats:
+    image: nats:2.9
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+    command: ["--http_port", "8222"]
+    networks:
+      - mullm_network
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - mullm_network
+
+  orchestrator:
+    build:
+      context: ./services/orchestrator
+      dockerfile: Dockerfile
+    environment:
+      - DATABASE_URL=postgresql://mullm:mullm_password@postgres:5432/mullm
+      - NATS_URL=nats://nats:4222
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - postgres
+      - nats
+      - redis
+    ports:
+      - "8001:8000"
+    networks:
+      - mullm_network
+
+  projector:
+    build:
+      context: ./services/projector
+      dockerfile: Dockerfile
+    environment:
+      - DATABASE_URL=postgresql://mullm:mullm_password@postgres:5432/mullm
+      - NATS_URL=nats://nats:4222
+    depends_on:
+      - postgres
+      - nats
+    ports:
+      - "8002:8000"
+    networks:
+      - mullm_network
+
+  web:
+    build:
+      context: ./services/web
+      dockerfile: Dockerfile
+    environment:
+      - REACT_APP_API_URL=http://localhost:8001
+    ports:
+      - "3000:3000"
+    depends_on:
+      - orchestrator
+    networks:
+      - mullm_network
+
+  shell-agent:
+    build:
+      context: ./agents/shell-agent
+      dockerfile: Dockerfile
+    environment:
+      - NATS_URL=nats://nats:4222
+      - AGENT_ID=shell-agent-1
+    depends_on:
+      - nats
+    networks:
+      - mullm_network
+
+volumes:
+  postgres_data:
+
+networks:
+  mullm_network:
+    driver: bridge

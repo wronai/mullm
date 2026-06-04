@@ -1,3 +1,69 @@
+# WUP ephemeral tracks and health dumps (wup watch / koru autonomous)
+.env.env.backup
+desktop/.env.example
+.wup/tracks/
+.wup/service-health.json
+.wup/service-health-events.jsonl
+.wup/browser-events/
+
+# Project-local IDE MCP configs include machine-specific executable paths.
+.cursor/mcp.json
+.vscode/mcp.json
+.windsurf/mcp_config.json
+
+test-results/
+!.testql/
+!.testql/autoloop-state.json
+!.testql/schemas/
+!.testql/schemas/llm-decision.schema.json
+!.testql/reports/
+!.testql/reports/llm-decision.json
+.env.vps.example
+.env
+env.d/*.env
+!env.d/*.env.example
+.swop
+.redeploy
+.diagnose.md
+.migration.md
+.restart-kiosk.md
+playwright
+# Allow tracking module-local Playwright spec dirs (after test-relocation refactor)
+!frontend/tests/playwright/
+!frontend/tests/playwright/*.spec.ts
+!connect-*/tests/playwright/
+!connect-*/tests/playwright/*.spec.ts
+# But keep playwright auto-generated artifacts ignored
+frontend/tests/playwright/__screenshots__/
+frontend/tests/playwright/test-results/
+.deployment.md
+frontend/.playwright-browsers
+.playwright-browsers
+backend/.env.example
+dsl/.env.example
+firmware/.env.example
+site/.env.example
+.idea
+tests/ui/
+frontend/tests/ui/visual-regression.spec.js-snapshots
+visual-regression.spec.js-snapshots
+screenshots/
+fixPI/.env
+fixPI/.venv/
+/logs
+logs/
+.zip
+Cargo.lock
+backups/
+frontend/playwright-report/
+frontend/test-results/
+venv
+frontend/.lint-backup
+# Symlink/mount to repo local/ — created by `npm run predev` or Docker compose
+frontend/public/labels
+node_modules
+package-lock.json
+# package-lock.json is committed for reproducible Docker builds (npm ci)
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
@@ -27,8 +93,8 @@ share/python-wheels/
 MANIFEST
 
 # PyInstaller
-#   Usually these files are written by a python script from a template
-#   before PyInstaller builds the exe, so as to inject date/other infos into it.
+#  Usually these files are written by a python script from a template
+#  before PyInstaller builds the exe, so as to inject date/other infos into it.
 *.manifest
 *.spec
 
@@ -92,34 +158,34 @@ ipython_config.py
 #   However, in case of collaboration, if having platform-specific dependencies or dependencies
 #   having no cross-platform support, pipenv may install dependencies that don't work, or not
 #   install all needed dependencies.
-# Pipfile.lock
+#Pipfile.lock
 
 # UV
 #   Similar to Pipfile.lock, it is generally recommended to include uv.lock in version control.
 #   This is especially recommended for binary packages to ensure reproducibility, and is more
 #   commonly ignored for libraries.
-# uv.lock
+#uv.lock
 
 # poetry
 #   Similar to Pipfile.lock, it is generally recommended to include poetry.lock in version control.
 #   This is especially recommended for binary packages to ensure reproducibility, and is more
 #   commonly ignored for libraries.
 #   https://python-poetry.org/docs/basic-usage/#commit-your-poetrylock-file-to-version-control
-# poetry.lock
-# poetry.toml
+#poetry.lock
+#poetry.toml
 
 # pdm
 #   Similar to Pipfile.lock, it is generally recommended to include pdm.lock in version control.
 #   pdm recommends including project-wide configuration in pdm.toml, but excluding .pdm-python.
 #   https://pdm-project.org/en/latest/usage/project/#working-with-version-control
-# pdm.lock
-# pdm.toml
+#pdm.lock
+#pdm.toml
 .pdm-python
 .pdm-build/
 
 # pixi
 #   Similar to Pipfile.lock, it is generally recommended to include pixi.lock in version control.
-# pixi.lock
+#pixi.lock
 #   Pixi creates a virtual environment in the .pixi directory, just like venv module creates one
 #   in the .venv directory. It is recommended not to include this directory in version control.
 .pixi
@@ -131,31 +197,19 @@ __pypackages__/
 celerybeat-schedule
 celerybeat.pid
 
-# Redis
-*.rdb
-*.aof
-*.pid
-
-# RabbitMQ
-mnesia/
-rabbitmq/
-rabbitmq-data/
-
-# ActiveMQ
-activemq-data/
-
 # SageMath parsed files
 *.sage.py
 
 # Environments
-.env
 .envrc
 .venv
+.venv-test
 env/
 venv/
 ENV/
 env.bak/
 venv.bak/
+**/.venv-test/
 
 # Spyder project settings
 .spyderproject
@@ -164,8 +218,8 @@ venv.bak/
 # Rope project settings
 .ropeproject
 
-# mkdocs documentation
-/site
+# mkdocs documentation (disabled — site/ is our docs project)
+# /site
 
 # mypy
 .mypy_cache/
@@ -182,26 +236,24 @@ dmypy.json
 cython_debug/
 
 # PyCharm
-#   JetBrains specific template is maintained in a separate JetBrains.gitignore that can
-#   be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
-#   and can be added to the global gitignore or merged into this file.  For a more nuclear
-#   option (not recommended) you can uncomment the following to ignore the entire idea folder.
-# .idea/
+#  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
+#  be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
+#  and can be added to the global gitignore or merged into this file.  For a more nuclear
+#  option (not recommended) you can uncomment the following to ignore the entire idea folder.
+#.idea/
 
 # Abstra
-#   Abstra is an AI-powered process automation framework.
-#   Ignore directories containing user credentials, local state, and settings.
-#   Learn more at https://abstra.io/docs
+# Abstra is an AI-powered process automation framework.
+# Ignore directories containing user credentials, local state, and settings.
+# Learn more at https://abstra.io/docs
 .abstra/
 
 # Visual Studio Code
-#   Visual Studio Code specific template is maintained in a separate VisualStudioCode.gitignore 
-#   that can be found at https://github.com/github/gitignore/blob/main/Global/VisualStudioCode.gitignore
-#   and can be added to the global gitignore or merged into this file. However, if you prefer, 
-#   you could uncomment the following to ignore the entire vscode folder
+#  Visual Studio Code specific template is maintained in a separate VisualStudioCode.gitignore
+#  that can be found at https://github.com/github/gitignore/blob/main/Global/VisualStudioCode.gitignore
+#  and can be added to the global gitignore or merged into this file. However, if you prefer,
+#  you could uncomment the following to ignore the entire vscode folder
 # .vscode/
-# Temporary file for partial code execution
-tempCodeRunnerFile.py
 
 # Ruff stuff:
 .ruff_cache/
@@ -209,10 +261,105 @@ tempCodeRunnerFile.py
 # PyPI configuration file
 .pypirc
 
+# Cursor
+#  Cursor is an AI-powered code editor. `.cursorignore` specifies files/directories to
+#  exclude from AI features like autocomplete and code analysis. Recommended for sensitive data
+#  refer to https://docs.cursor.com/context/ignore-files
+.cursorignore
+.cursorindexingignore
+
 # Marimo
 marimo/_static/
 marimo/_lsp/
 __marimo__/
 
-# Streamlit
-.streamlit/secrets.toml
+# Generated test artifacts and local data
+# (avoid adding rapidly changing files created by test/e2e scripts)
+frontend/tests/all-pages-documentation.md
+frontend/tests/all-pages-list.json
+frontend/tests/test-all-pages-curl.sh
+frontend/tests/e2e-uniqueness-report.json
+frontend/tmp/
+syntax-report.json
+_archive/syntax-report.json
+_archive/TODO.old.md
+_archive/analysis_result.md
+tmp/
+
+# Generated local tooling artifacts (do not commit)
+.testql-inspect/
+.code2llm_cache/
+bundle.js
+test-report.md
+frontend/errors.txt
+llx.toml
+
+# K8s secrets (never commit actual keys)
+**/secret.env
+!**/secret.env.example
+
+# Local databases
+backend/*.db
+*.db
+backend/*.sqlite
+
+# Pendrive / storage data (keep folder structure via .gitkeep, ignore actual data)
+pendrive/logs/system/*.log
+pendrive/logs/app/*.log
+pendrive/stats/daily/stats-*.json
+pendrive/stats/aggregated/stats-*.json
+pendrive/templates/scenarios-*.json
+pendrive/templates/xml-templates/
+pendrive/templates/dsl/
+pendrive/reports/pdf/*.pdf
+pendrive/reports/xml/*.xml
+pendrive/.device_info
+pendrive/.sync_manifest
+pendrive/README.txt
+# Local stats/restart cache (~/.identification-kiosk/stats/)
+
+# Toon project files (large binary)
+project.toon
+project.functions.toon
+
+# Makefile backup (from refactoring)
+Makefile.bak
+
+# VPS-specific env overrides
+.env.vps
+
+# Docs site generated files
+site/public/docs/
+site/public/docs-manifest.json
+site/public/artifacts/*.deb
+site/public/artifacts/*.AppImage
+site/public/artifacts/*.msi
+site/public/artifacts/*.exe
+.aider*
+.env
+
+# Quality monitoring artefacts (redsl + rebuild) — see docker-compose.quality.yml
+.redsl/
+.rebuild/
+redsl_output/
+
+# Deleted files archive (local backup, not committed)
+_archive/
+
+# regix regression reports
+.regix/
+.redup/
+.sumr/
+
+# Claude Code per-user settings
+.claude/auth.json
+
+# Koru local runtime cache
+.planfile/.koru/
+
+# Hardcoded-duplicate scan artifacts (regenerate via make detect-hardcoded-duplicates)
+project/refactor/hardcoded-duplicates.*
+project/refactor/generated/
+
+# OS-level IDE chat calibration (window id + screen coords — machine-local)
+.koru/ide-os-injector.json
