@@ -1,0 +1,211 @@
+#!/usr/bin/env python3
+"""
+mullm — cienkie CLI do BFF workspace (ten sam kontrakt co UI).
+
+Przykłady:
+  mullm chat send "lista plikow usera"
+  mullm chat session
+  mullm router decide "run ls -la ~"
+  MULLM_BASE_URL=http://127.0.0.1:3003 mullm chat send "kontynuuj"
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import sys
+import urllib.error
+import urllib.request
+from typing import Any
+
+DEFAULT_BASE = os.environ.get("MULLM_BASE_URL", "http://127.0.0.1:3003")
+SESSION_ENV = "MULLM_SESSION_ID"
+
+
+def _request(
+    method: str,
+    path: str,
+    *,
+    base: str,
+    body: dict[str, Any] | None = None,
+    params: dict[str, str] | None = None,
+) -> Any:
+    base = base.rstrip("/")
+    url = f"{base}{path}"
+    if params:
+        q = "&".join(f"{k}={urllib.request.quote(str(v))}" for k, v in params.items())
+        url = f"{url}?{q}"
+    data = None
+    headers = {"Accept": "application/json"}
+    if body is not None:
+        data = json.dumps(body).encode("utf-8")
+        headers["Content-Type"] = "application/json"
+    req = urllib.request.Request(url, data=data, headers=headers, method=method)
+    try:
+        with urllib.request.urlopen(req, timeout=120) as resp:
+            raw = resp.read().decode("utf-8")
+            return json.loads(raw) if raw else {}
+    except urllib.error.HTTPError as exc:
+        err_body = exc.read().decode("utf-8", errors="replace")
+        print(f"HTTP {exc.code}: {err_body}", file=sys.stderr)
+        raise SystemExit(1) from exc
+    except urllib.error.URLError as exc:
+        print(f"Błąd połączenia z {url}: {exc.reason}", file=sys.stderr)
+        raise SystemExit(1) from exc
+
+
+def cmd_health(base: str) -> None:
+    print(json.dumps(_request("GET", "/health", base=base), indent=2))
+
+
+def cmd_agents_status(base: str, *, as_json: bool) -> None:
+    out = _request("GET", "/api/agents/status", base=base)
+    if as_json:
+        print(json.dumps(out, indent=2, ensure_ascii=False))
+        return
+    for row in out.get("agents") or []:
+        ok = "ok" if row.get("healthy") else "down"
+        print(f"{row.get('id')}: {ok} → executor={row.get('executor_agent_id')}")
+
+
+def cmd_chat_session(base: str, *, as_json: bool, quiet: bool = False) -> str:
+    out = _request("POST", "/api/chat/session", base=base, body={})
+    sid = out.get("session_id") or ""
+    if as_json:
+        print(json.dumps(out, indent=2, ensure_ascii=False))
+    elif not quiet:
+        print(sid)
+    return sid
+
+
+def cmd_chat_send(
+    message: str,
+    *,
+    base: str,
+    session_id: str | None,
+    use_rag: bool,
+    mode: str,
+    as_json: bool,
+) -> None:
+    sid = session_id or os.environ.get(SESSION_ENV) or ""
+    if not sid:
+        sid = cmd_chat_session(base, as_json=False, quiet=True)
+        print(f"(nowa sesja: {sid})", file=sys.stderr)
+    out = _request(
+        "POST",
+        "/api/chat/message",
+        base=base,
+        body={
+            "session_id": sid,
+            "message": message,
+            "mode": mode,
+            "use_rag": use_rag,
+        },
+    )
+    if as_json:
+        print(json.dumps(out, indent=2, ensure_ascii=False))
+        return
+    routing = out.get("routing") or {}
+    route = routing.get("route", "?")
+    print(f"route: {route}")
+    if routing.get("nlp2dsl_skipped"):
+        print("nlp2dsl: skipped")
+    if routing.get("nlp2dsl"):
+        n2 = routing["nlp2dsl"]
+        print(f"nlp2dsl: {n2.get('action') or n2.get('intent')} ({n2.get('source')})")
+    print()
+    print(out.get("reply") or "")
+
+
+def cmd_router_decide(
+    message: str,
+    *,
+    base: str,
+    mode: str,
+    use_rag: bool,
+    as_json: bool,
+) -> None:
+    out = _request(
+        "GET",
+        "/api/router/decide",
+        base=base,
+        params={
+            "message": message,
+            "mode": mode,
+            "use_rag": "true" if use_rag else "false",
+        },
+    )
+    print(json.dumps(out, indent=2, ensure_ascii=False) if as_json else _format_route(out))
+
+
+def _format_route(r: dict[str, Any]) -> str:
+    codes = ", ".join(r.get("reason_codes") or [])
+    conf = int((r.get("confidence") or 0) * 100)
+    return f"{r.get('route')} @ {conf}% [{codes}]"
+
+
+def main(argv: list[str] | None = None) -> None:
+    parser = argparse.ArgumentParser(prog="mullm", description="Mullm workspace CLI (HTTP BFF)")
+    parser.add_argument(
+        "--base-url",
+        default=DEFAULT_BASE,
+        help=f"BFF URL (domyślnie {DEFAULT_BASE}, env MULLM_BASE_URL)",
+    )
+    parser.add_argument("--json", action="store_true", help="Pełna odpowiedź JSON")
+    sub = parser.add_subparsers(dest="command", required=True)
+
+    health = sub.add_parser("health", help="GET /health")
+    health.set_defaults(func=lambda a: cmd_health(a.base_url))
+
+    chat = sub.add_parser("chat", help="Czat workspace")
+    chat_sub = chat.add_subparsers(dest="chat_cmd", required=True)
+
+    sess = chat_sub.add_parser("session", help="POST /api/chat/session")
+    sess.set_defaults(
+        func=lambda a: cmd_chat_session(a.base_url, as_json=a.json),
+    )
+
+    send = chat_sub.add_parser("send", help="POST /api/chat/message")
+    send.add_argument("message", help="Tekst użytkownika")
+    send.add_argument("--session", default=None, help="session_id (lub MULLM_SESSION_ID)")
+    send.add_argument("--mode", default="discuss", choices=["discuss", "run_task", "search_context"])
+    send.add_argument("--rag", action="store_true", help="use_rag=true")
+    send.set_defaults(
+        func=lambda a: cmd_chat_send(
+            a.message,
+            base=a.base_url,
+            session_id=a.session,
+            use_rag=a.rag,
+            mode=a.mode,
+            as_json=a.json,
+        ),
+    )
+
+    agents = sub.add_parser("agents", help="Status pluginów agentów")
+    agents_sub = agents.add_subparsers(dest="agents_cmd", required=True)
+    ag_st = agents_sub.add_parser("status", help="GET /api/agents/status")
+    ag_st.set_defaults(func=lambda a: cmd_agents_status(a.base_url, as_json=a.json))
+
+    router = sub.add_parser("router", help="Suchy routing (bez wykonania)")
+    router_sub = router.add_subparsers(dest="router_cmd", required=True)
+    decide = router_sub.add_parser("decide", help="GET /api/router/decide")
+    decide.add_argument("message")
+    decide.add_argument("--mode", default="discuss")
+    decide.add_argument("--rag", action="store_true")
+    decide.set_defaults(
+        func=lambda a: cmd_router_decide(
+            a.message,
+            base=a.base_url,
+            mode=a.mode,
+            use_rag=a.rag,
+            as_json=a.json,
+        ),
+    )
+
+    args = parser.parse_args(argv)
+    args.func(args)
+
+
+if __name__ == "__main__":
+    main()

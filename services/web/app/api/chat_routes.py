@@ -40,23 +40,8 @@ async def workspace_state(session_id: str):
 @router.post("/chat/message")
 async def chat_message(body: ChatMessage):
     session = workspace_service.get_or_create(body.session_id)
-    if body.form_values and not (body.message or "").strip():
-        from app.conductor import handle_turn
-
-        outcome = await handle_turn(
-            session_id=session.session_id,
-            message="",
-            nlp_conversation_id=session.nlp2dsl_conversation_id,
-            scope_files=list(session.context.file_names),
-            scope_uris=list(session.context.uris),
-            form_values=body.form_values,
-            wait_for_confirmation=body.wait_for_confirmation,
-            chat_mode=body.mode or "discuss",
-            use_rag=body.use_rag,
-        )
-        if outcome.get("nlp2dsl_conversation_id"):
-            session.nlp2dsl_conversation_id = outcome["nlp2dsl_conversation_id"]
-        return outcome
+    if _form_only_message(body):
+        return await _form_only_chat_message(session, body)
     outcome = await workspace_service.handle_chat_message(
         session_id=session.session_id,
         message=body.message,
@@ -67,6 +52,33 @@ async def chat_message(body: ChatMessage):
     if outcome.get("error"):
         raise HTTPException(status_code=400, detail=outcome["error"])
     return outcome
+
+
+def _form_only_message(body: ChatMessage) -> bool:
+    return bool(body.form_values and not (body.message or "").strip())
+
+
+async def _form_only_chat_message(session, body: ChatMessage) -> dict[str, Any]:
+    from app.conductor import handle_turn
+
+    outcome = await handle_turn(
+        session_id=session.session_id,
+        message="",
+        nlp_conversation_id=session.nlp2dsl_conversation_id,
+        scope_files=list(session.context.file_names),
+        scope_uris=list(session.context.uris),
+        form_values=body.form_values,
+        wait_for_confirmation=body.wait_for_confirmation,
+        chat_mode=body.mode or "discuss",
+        use_rag=body.use_rag,
+    )
+    _update_nlp_conversation(session, outcome)
+    return outcome
+
+
+def _update_nlp_conversation(session, outcome: dict[str, Any]) -> None:
+    if outcome.get("nlp2dsl_conversation_id"):
+        session.nlp2dsl_conversation_id = outcome["nlp2dsl_conversation_id"]
 
 
 @router.post("/tasks/draft")

@@ -1,15 +1,34 @@
 source: code2llm
-# generated in 0.13s
+# generated in 0.34s
 schema: code2llm.planfile_tickets.v1
 project_root: /home/tom/github/wronai/mullm
 tickets:
+- signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: _rag_failure_result'
+  description: 'code2llm reports `God Function: _rag_failure_result` in `services/orchestrator/app/incidents/pipeline.py:231`.
+
+
+    Function ''_rag_failure_result'' is oversized: CC=4, fan-out=29, mutations=15.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: high
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - services/orchestrator/app/incidents/pipeline.py
+  dedupe_key: 'code2llm:smell:god_function:services/orchestrator/app/incidents/pipeline.py:231:God
+    Function: _rag_failure_result'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Module: services.web.app.static.workspace'
   description: 'code2llm reports `God Module: services.web.app.static.workspace` in
     `services/web/app/static/workspace.js:1`.
 
 
-    Module ''services.web.app.static.workspace'' is too large (168 functions, 0 classes).
+    Module ''services.web.app.static.workspace'' is too large (178 functions, 0 classes).
     Consider splitting into sub-modules.
 
 
@@ -24,26 +43,6 @@ tickets:
   - services/web/app/static/workspace.js
   dedupe_key: 'code2llm:smell:god_function:services/web/app/static/workspace.js:1:God
     Module: services.web.app.static.workspace'
-- signal: code2llm_smell_shotgun_surgery
-  title: 'Address code smell: Shotgun Surgery: agent'
-  description: 'code2llm reports `Shotgun Surgery: agent` in `services/web/app/conductor.py:186`.
-
-
-    Mutation of variable ''agent'' spans 6 functions. Changing this logic requires
-    work in many places.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: high
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - shotgun-surgery
-  files:
-  - services/web/app/conductor.py
-  dedupe_key: 'code2llm:smell:shotgun_surgery:services/web/app/conductor.py:186:Shotgun
-    Surgery: agent'
 - signal: code2llm_smell_shotgun_surgery
   title: 'Address code smell: Shotgun Surgery: agent_id'
   description: 'code2llm reports `Shotgun Surgery: agent_id` in `services/orchestrator/app/domain/aggregates/task.py:218`.
@@ -66,10 +65,10 @@ tickets:
     Surgery: agent_id'
 - signal: code2llm_smell_shotgun_surgery
   title: 'Address code smell: Shotgun Surgery: base'
-  description: 'code2llm reports `Shotgun Surgery: base` in `services/orchestrator/app/api/access.py:95`.
+  description: 'code2llm reports `Shotgun Surgery: base` in `services/web/app/access_matrix.py:110`.
 
 
-    Mutation of variable ''base'' spans 7 functions. Changing this logic requires
+    Mutation of variable ''base'' spans 8 functions. Changing this logic requires
     work in many places.
 
 
@@ -81,15 +80,15 @@ tickets:
   - code-smell
   - shotgun-surgery
   files:
-  - services/orchestrator/app/api/access.py
-  dedupe_key: 'code2llm:smell:shotgun_surgery:services/orchestrator/app/api/access.py:95:Shotgun
+  - services/web/app/access_matrix.py
+  dedupe_key: 'code2llm:smell:shotgun_surgery:services/web/app/access_matrix.py:110:Shotgun
     Surgery: base'
 - signal: code2llm_smell_shotgun_surgery
-  title: 'Address code smell: Shotgun Surgery: checks'
-  description: 'code2llm reports `Shotgun Surgery: checks` in `services/projector/app/projections/incidents.py:271`.
+  title: 'Address code smell: Shotgun Surgery: chat_service'
+  description: 'code2llm reports `Shotgun Surgery: chat_service` in `services/web/app/conductor.py:238`.
 
 
-    Mutation of variable ''checks'' spans 7 functions. Changing this logic requires
+    Mutation of variable ''chat_service'' spans 5 functions. Changing this logic requires
     work in many places.
 
 
@@ -101,12 +100,12 @@ tickets:
   - code-smell
   - shotgun-surgery
   files:
-  - services/projector/app/projections/incidents.py
-  dedupe_key: 'code2llm:smell:shotgun_surgery:services/projector/app/projections/incidents.py:271:Shotgun
-    Surgery: checks'
+  - services/web/app/conductor.py
+  dedupe_key: 'code2llm:smell:shotgun_surgery:services/web/app/conductor.py:238:Shotgun
+    Surgery: chat_service'
 - signal: code2llm_smell_shotgun_surgery
   title: 'Address code smell: Shotgun Surgery: chosen'
-  description: 'code2llm reports `Shotgun Surgery: chosen` in `services/web/app/prompt_router.py:302`.
+  description: 'code2llm reports `Shotgun Surgery: chosen` in `services/web/app/prompt_router.py:321`.
 
 
     Mutation of variable ''chosen'' spans 6 functions. Changing this logic requires
@@ -122,11 +121,11 @@ tickets:
   - shotgun-surgery
   files:
   - services/web/app/prompt_router.py
-  dedupe_key: 'code2llm:smell:shotgun_surgery:services/web/app/prompt_router.py:302:Shotgun
+  dedupe_key: 'code2llm:smell:shotgun_surgery:services/web/app/prompt_router.py:321:Shotgun
     Surgery: chosen'
 - signal: code2llm_smell_shotgun_surgery
   title: 'Address code smell: Shotgun Surgery: chunks'
-  description: 'code2llm reports `Shotgun Surgery: chunks` in `services/orchestrator/app/rag/indexer.py:80`.
+  description: 'code2llm reports `Shotgun Surgery: chunks` in `services/web/app/chat.py:449`.
 
 
     Mutation of variable ''chunks'' spans 5 functions. Changing this logic requires
@@ -141,12 +140,12 @@ tickets:
   - code-smell
   - shotgun-surgery
   files:
-  - services/orchestrator/app/rag/indexer.py
-  dedupe_key: 'code2llm:smell:shotgun_surgery:services/orchestrator/app/rag/indexer.py:80:Shotgun
+  - services/web/app/chat.py
+  dedupe_key: 'code2llm:smell:shotgun_surgery:services/web/app/chat.py:449:Shotgun
     Surgery: chunks'
 - signal: code2llm_smell_shotgun_surgery
   title: 'Address code smell: Shotgun Surgery: code'
-  description: 'code2llm reports `Shotgun Surgery: code` in `services/web/app/chat.py:474`.
+  description: 'code2llm reports `Shotgun Surgery: code` in `services/orchestrator/app/observability/incidents.py:318`.
 
 
     Mutation of variable ''code'' spans 5 functions. Changing this logic requires
@@ -161,35 +160,15 @@ tickets:
   - code-smell
   - shotgun-surgery
   files:
-  - services/web/app/chat.py
-  dedupe_key: 'code2llm:smell:shotgun_surgery:services/web/app/chat.py:474:Shotgun
+  - services/orchestrator/app/observability/incidents.py
+  dedupe_key: 'code2llm:smell:shotgun_surgery:services/orchestrator/app/observability/incidents.py:318:Shotgun
     Surgery: code'
 - signal: code2llm_smell_shotgun_surgery
-  title: 'Address code smell: Shotgun Surgery: diagnostics'
-  description: 'code2llm reports `Shotgun Surgery: diagnostics` in `services/orchestrator/app/observability/incidents.py:307`.
+  title: 'Address code smell: Shotgun Surgery: content'
+  description: 'code2llm reports `Shotgun Surgery: content` in `services/web/app/workspace.py:653`.
 
 
-    Mutation of variable ''diagnostics'' spans 6 functions. Changing this logic requires
-    work in many places.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: high
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - shotgun-surgery
-  files:
-  - services/orchestrator/app/observability/incidents.py
-  dedupe_key: 'code2llm:smell:shotgun_surgery:services/orchestrator/app/observability/incidents.py:307:Shotgun
-    Surgery: diagnostics'
-- signal: code2llm_smell_shotgun_surgery
-  title: 'Address code smell: Shotgun Surgery: events'
-  description: 'code2llm reports `Shotgun Surgery: events` in `services/web/app/workspace.py:783`.
-
-
-    Mutation of variable ''events'' spans 9 functions. Changing this logic requires
+    Mutation of variable ''content'' spans 6 functions. Changing this logic requires
     work in many places.
 
 
@@ -202,8 +181,28 @@ tickets:
   - shotgun-surgery
   files:
   - services/web/app/workspace.py
-  dedupe_key: 'code2llm:smell:shotgun_surgery:services/web/app/workspace.py:783:Shotgun
-    Surgery: events'
+  dedupe_key: 'code2llm:smell:shotgun_surgery:services/web/app/workspace.py:653:Shotgun
+    Surgery: content'
+- signal: code2llm_smell_shotgun_surgery
+  title: 'Address code smell: Shotgun Surgery: ctx'
+  description: 'code2llm reports `Shotgun Surgery: ctx` in `services/web/app/workspace.py:229`.
+
+
+    Mutation of variable ''ctx'' spans 5 functions. Changing this logic requires work
+    in many places.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: high
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - shotgun-surgery
+  files:
+  - services/web/app/workspace.py
+  dedupe_key: 'code2llm:smell:shotgun_surgery:services/web/app/workspace.py:229:Shotgun
+    Surgery: ctx'
 - signal: code2llm_smell_shotgun_surgery
   title: 'Address code smell: Shotgun Surgery: hits'
   description: 'code2llm reports `Shotgun Surgery: hits` in `services/orchestrator/app/rag/store.py:233`.
@@ -225,28 +224,8 @@ tickets:
   dedupe_key: 'code2llm:smell:shotgun_surgery:services/orchestrator/app/rag/store.py:233:Shotgun
     Surgery: hits'
 - signal: code2llm_smell_shotgun_surgery
-  title: 'Address code smell: Shotgun Surgery: items'
-  description: 'code2llm reports `Shotgun Surgery: items` in `services/web/app/workspace.py:238`.
-
-
-    Mutation of variable ''items'' spans 5 functions. Changing this logic requires
-    work in many places.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: high
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - shotgun-surgery
-  files:
-  - services/web/app/workspace.py
-  dedupe_key: 'code2llm:smell:shotgun_surgery:services/web/app/workspace.py:238:Shotgun
-    Surgery: items'
-- signal: code2llm_smell_shotgun_surgery
   title: 'Address code smell: Shotgun Surgery: key'
-  description: 'code2llm reports `Shotgun Surgery: key` in `services/web/app/workspace.py:835`.
+  description: 'code2llm reports `Shotgun Surgery: key` in `services/web/app/workspace.py:1238`.
 
 
     Mutation of variable ''key'' spans 7 functions. Changing this logic requires work
@@ -262,14 +241,14 @@ tickets:
   - shotgun-surgery
   files:
   - services/web/app/workspace.py
-  dedupe_key: 'code2llm:smell:shotgun_surgery:services/web/app/workspace.py:835:Shotgun
+  dedupe_key: 'code2llm:smell:shotgun_surgery:services/web/app/workspace.py:1238:Shotgun
     Surgery: key'
 - signal: code2llm_smell_shotgun_surgery
   title: 'Address code smell: Shotgun Surgery: lines'
-  description: 'code2llm reports `Shotgun Surgery: lines` in `services/web/app/workspace.py:884`.
+  description: 'code2llm reports `Shotgun Surgery: lines` in `services/web/app/workspace.py:839`.
 
 
-    Mutation of variable ''lines'' spans 46 functions. Changing this logic requires
+    Mutation of variable ''lines'' spans 49 functions. Changing this logic requires
     work in many places.
 
 
@@ -282,7 +261,7 @@ tickets:
   - shotgun-surgery
   files:
   - services/web/app/workspace.py
-  dedupe_key: 'code2llm:smell:shotgun_surgery:services/web/app/workspace.py:884:Shotgun
+  dedupe_key: 'code2llm:smell:shotgun_surgery:services/web/app/workspace.py:839:Shotgun
     Surgery: lines'
 - signal: code2llm_smell_shotgun_surgery
   title: 'Address code smell: Shotgun Surgery: lowered'
@@ -305,51 +284,11 @@ tickets:
   dedupe_key: 'code2llm:smell:shotgun_surgery:services/orchestrator/app/incidents/pipeline.py:83:Shotgun
     Surgery: lowered'
 - signal: code2llm_smell_shotgun_surgery
-  title: 'Address code smell: Shotgun Surgery: occurred_at'
-  description: 'code2llm reports `Shotgun Surgery: occurred_at` in `services/orchestrator/app/domain/aggregates/task.py:22`.
+  title: 'Address code smell: Shotgun Surgery: message'
+  description: 'code2llm reports `Shotgun Surgery: message` in `services/web/app/workspace.py:267`.
 
 
-    Mutation of variable ''occurred_at'' spans 8 functions. Changing this logic requires
-    work in many places.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: high
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - shotgun-surgery
-  files:
-  - services/orchestrator/app/domain/aggregates/task.py
-  dedupe_key: 'code2llm:smell:shotgun_surgery:services/orchestrator/app/domain/aggregates/task.py:22:Shotgun
-    Surgery: occurred_at'
-- signal: code2llm_smell_shotgun_surgery
-  title: 'Address code smell: Shotgun Surgery: out'
-  description: 'code2llm reports `Shotgun Surgery: out` in `services/web/app/chat.py:784`.
-
-
-    Mutation of variable ''out'' spans 15 functions. Changing this logic requires
-    work in many places.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: high
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - shotgun-surgery
-  files:
-  - services/web/app/chat.py
-  dedupe_key: 'code2llm:smell:shotgun_surgery:services/web/app/chat.py:784:Shotgun
-    Surgery: out'
-- signal: code2llm_smell_shotgun_surgery
-  title: 'Address code smell: Shotgun Surgery: routing'
-  description: 'code2llm reports `Shotgun Surgery: routing` in `services/web/app/workspace.py:927`.
-
-
-    Mutation of variable ''routing'' spans 5 functions. Changing this logic requires
+    Mutation of variable ''message'' spans 9 functions. Changing this logic requires
     work in many places.
 
 
@@ -362,14 +301,174 @@ tickets:
   - shotgun-surgery
   files:
   - services/web/app/workspace.py
-  dedupe_key: 'code2llm:smell:shotgun_surgery:services/web/app/workspace.py:927:Shotgun
+  dedupe_key: 'code2llm:smell:shotgun_surgery:services/web/app/workspace.py:267:Shotgun
+    Surgery: message'
+- signal: code2llm_smell_shotgun_surgery
+  title: 'Address code smell: Shotgun Surgery: normalized'
+  description: 'code2llm reports `Shotgun Surgery: normalized` in `services/orchestrator/app/rag/chunking.py:4`.
+
+
+    Mutation of variable ''normalized'' spans 8 functions. Changing this logic requires
+    work in many places.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: high
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - shotgun-surgery
+  files:
+  - services/orchestrator/app/rag/chunking.py
+  dedupe_key: 'code2llm:smell:shotgun_surgery:services/orchestrator/app/rag/chunking.py:4:Shotgun
+    Surgery: normalized'
+- signal: code2llm_smell_shotgun_surgery
+  title: 'Address code smell: Shotgun Surgery: out'
+  description: 'code2llm reports `Shotgun Surgery: out` in `services/web/app/access_matrix.py:125`.
+
+
+    Mutation of variable ''out'' spans 18 functions. Changing this logic requires
+    work in many places.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: high
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - shotgun-surgery
+  files:
+  - services/web/app/access_matrix.py
+  dedupe_key: 'code2llm:smell:shotgun_surgery:services/web/app/access_matrix.py:125:Shotgun
+    Surgery: out'
+- signal: code2llm_smell_shotgun_surgery
+  title: 'Address code smell: Shotgun Surgery: outcome'
+  description: 'code2llm reports `Shotgun Surgery: outcome` in `services/web/app/workspace.py:515`.
+
+
+    Mutation of variable ''outcome'' spans 7 functions. Changing this logic requires
+    work in many places.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: high
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - shotgun-surgery
+  files:
+  - services/web/app/workspace.py
+  dedupe_key: 'code2llm:smell:shotgun_surgery:services/web/app/workspace.py:515:Shotgun
+    Surgery: outcome'
+- signal: code2llm_smell_shotgun_surgery
+  title: 'Address code smell: Shotgun Surgery: parts'
+  description: 'code2llm reports `Shotgun Surgery: parts` in `services/web/app/workspace.py:1283`.
+
+
+    Mutation of variable ''parts'' spans 7 functions. Changing this logic requires
+    work in many places.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: high
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - shotgun-surgery
+  files:
+  - services/web/app/workspace.py
+  dedupe_key: 'code2llm:smell:shotgun_surgery:services/web/app/workspace.py:1283:Shotgun
+    Surgery: parts'
+- signal: code2llm_smell_shotgun_surgery
+  title: 'Address code smell: Shotgun Surgery: payload'
+  description: 'code2llm reports `Shotgun Surgery: payload` in `services/orchestrator/app/observability/incidents.py:318`.
+
+
+    Mutation of variable ''payload'' spans 33 functions. Changing this logic requires
+    work in many places.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: high
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - shotgun-surgery
+  files:
+  - services/orchestrator/app/observability/incidents.py
+  dedupe_key: 'code2llm:smell:shotgun_surgery:services/orchestrator/app/observability/incidents.py:318:Shotgun
+    Surgery: payload'
+- signal: code2llm_smell_shotgun_surgery
+  title: 'Address code smell: Shotgun Surgery: routing'
+  description: 'code2llm reports `Shotgun Surgery: routing` in `services/web/app/workspace.py:1294`.
+
+
+    Mutation of variable ''routing'' spans 6 functions. Changing this logic requires
+    work in many places.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: high
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - shotgun-surgery
+  files:
+  - services/web/app/workspace.py
+  dedupe_key: 'code2llm:smell:shotgun_surgery:services/web/app/workspace.py:1294:Shotgun
     Surgery: routing'
 - signal: code2llm_smell_shotgun_surgery
+  title: 'Address code smell: Shotgun Surgery: row'
+  description: 'code2llm reports `Shotgun Surgery: row` in `services/web/app/workspace.py:1238`.
+
+
+    Mutation of variable ''row'' spans 11 functions. Changing this logic requires
+    work in many places.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: high
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - shotgun-surgery
+  files:
+  - services/web/app/workspace.py
+  dedupe_key: 'code2llm:smell:shotgun_surgery:services/web/app/workspace.py:1238:Shotgun
+    Surgery: row'
+- signal: code2llm_smell_shotgun_surgery
+  title: 'Address code smell: Shotgun Surgery: seen'
+  description: 'code2llm reports `Shotgun Surgery: seen` in `services/web/app/workspace.py:1238`.
+
+
+    Mutation of variable ''seen'' spans 5 functions. Changing this logic requires
+    work in many places.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: high
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - shotgun-surgery
+  files:
+  - services/web/app/workspace.py
+  dedupe_key: 'code2llm:smell:shotgun_surgery:services/web/app/workspace.py:1238:Shotgun
+    Surgery: seen'
+- signal: code2llm_smell_shotgun_surgery
   title: 'Address code smell: Shotgun Surgery: session'
-  description: 'code2llm reports `Shotgun Surgery: session` in `services/web/app/agent_workroom.py:290`.
+  description: 'code2llm reports `Shotgun Surgery: session` in `services/web/app/agent_workroom.py:496`.
 
 
-    Mutation of variable ''session'' spans 29 functions. Changing this logic requires
+    Mutation of variable ''session'' spans 35 functions. Changing this logic requires
     work in many places.
 
 
@@ -382,14 +481,14 @@ tickets:
   - shotgun-surgery
   files:
   - services/web/app/agent_workroom.py
-  dedupe_key: 'code2llm:smell:shotgun_surgery:services/web/app/agent_workroom.py:290:Shotgun
+  dedupe_key: 'code2llm:smell:shotgun_surgery:services/web/app/agent_workroom.py:496:Shotgun
     Surgery: session'
 - signal: code2llm_smell_shotgun_surgery
-  title: 'Address code smell: Shotgun Surgery: text'
-  description: 'code2llm reports `Shotgun Surgery: text` in `services/web/app/prompt_router.py:141`.
+  title: 'Address code smell: Shotgun Surgery: state'
+  description: 'code2llm reports `Shotgun Surgery: state` in `services/web/app/access_matrix.py:218`.
 
 
-    Mutation of variable ''text'' spans 6 functions. Changing this logic requires
+    Mutation of variable ''state'' spans 9 functions. Changing this logic requires
     work in many places.
 
 
@@ -401,12 +500,72 @@ tickets:
   - code-smell
   - shotgun-surgery
   files:
-  - services/web/app/prompt_router.py
-  dedupe_key: 'code2llm:smell:shotgun_surgery:services/web/app/prompt_router.py:141:Shotgun
+  - services/web/app/access_matrix.py
+  dedupe_key: 'code2llm:smell:shotgun_surgery:services/web/app/access_matrix.py:218:Shotgun
+    Surgery: state'
+- signal: code2llm_smell_shotgun_surgery
+  title: 'Address code smell: Shotgun Surgery: status'
+  description: 'code2llm reports `Shotgun Surgery: status` in `services/web/app/chat.py:449`.
+
+
+    Mutation of variable ''status'' spans 9 functions. Changing this logic requires
+    work in many places.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: high
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - shotgun-surgery
+  files:
+  - services/web/app/chat.py
+  dedupe_key: 'code2llm:smell:shotgun_surgery:services/web/app/chat.py:449:Shotgun
+    Surgery: status'
+- signal: code2llm_smell_shotgun_surgery
+  title: 'Address code smell: Shotgun Surgery: task'
+  description: 'code2llm reports `Shotgun Surgery: task` in `services/orchestrator/app/domain/aggregates/task.py:218`.
+
+
+    Mutation of variable ''task'' spans 10 functions. Changing this logic requires
+    work in many places.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: high
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - shotgun-surgery
+  files:
+  - services/orchestrator/app/domain/aggregates/task.py
+  dedupe_key: 'code2llm:smell:shotgun_surgery:services/orchestrator/app/domain/aggregates/task.py:218:Shotgun
+    Surgery: task'
+- signal: code2llm_smell_shotgun_surgery
+  title: 'Address code smell: Shotgun Surgery: text'
+  description: 'code2llm reports `Shotgun Surgery: text` in `services/web/app/chat.py:91`.
+
+
+    Mutation of variable ''text'' spans 8 functions. Changing this logic requires
+    work in many places.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: high
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - shotgun-surgery
+  files:
+  - services/web/app/chat.py
+  dedupe_key: 'code2llm:smell:shotgun_surgery:services/web/app/chat.py:91:Shotgun
     Surgery: text'
 - signal: code2llm_smell_shotgun_surgery
   title: 'Address code smell: Shotgun Surgery: uri'
-  description: 'code2llm reports `Shotgun Surgery: uri` in `services/web/app/workspace.py:1139`.
+  description: 'code2llm reports `Shotgun Surgery: uri` in `services/web/app/chat.py:449`.
 
 
     Mutation of variable ''uri'' spans 6 functions. Changing this logic requires work
@@ -421,8 +580,8 @@ tickets:
   - code-smell
   - shotgun-surgery
   files:
-  - services/web/app/workspace.py
-  dedupe_key: 'code2llm:smell:shotgun_surgery:services/web/app/workspace.py:1139:Shotgun
+  - services/web/app/chat.py
+  dedupe_key: 'code2llm:smell:shotgun_surgery:services/web/app/chat.py:449:Shotgun
     Surgery: uri'
 - signal: code2llm_cc
   title: 'Reduce cyclomatic complexity: services.web.app.static.app.text (CC=16)'
@@ -442,32 +601,15 @@ tickets:
   - services/web/app/static/app.js
   dedupe_key: code2llm:cc:services/web/app/static/app.js:services.web.app.static.app.text
 - signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: action, area_id, role_id'
-  description: 'code2llm reports `Data Clump: action, area_id, role_id` in `services/web/app/resource_areas.py:129`.
+  title: 'Address code smell: Data Clump: aggregate_id, events, self, aggregate_type'
+  description: 'code2llm reports `Data Clump: aggregate_id, events, self, aggregate_type`
+    in `services/orchestrator/app/infrastructure/eventstore_dual.py:15`.
 
 
-    Arguments (action, area_id, role_id) are used together in multiple functions:
-    services.web.app.resource_areas.agent_may_access, services.web.app.resource_areas._matrix_access_decision.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - data-clump
-  files:
-  - services/web/app/resource_areas.py
-  dedupe_key: 'code2llm:smell:data_clump:services/web/app/resource_areas.py:129:Data
-    Clump: action, area_id, role_id'
-- signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: action, area_id, role_id'
-  description: 'code2llm reports `Data Clump: action, area_id, role_id` in `services/web/app/resource_areas.py:154`.
-
-
-    Arguments (action, area_id, role_id) are used together in multiple functions:
-    services.web.app.resource_areas.agent_may_access, services.web.app.resource_areas._matrix_access_decision.
+    Arguments (aggregate_id, events, self, aggregate_type) are used together in multiple
+    functions: services.orchestrator.app.infrastructure.eventstore_dual.DualEventStore.append,
+    services.orchestrator.app.infrastructure.eventstore.EventStore.append, services.orchestrator.app.infrastructure.eventstore_esdb.EsdbEventStore.append,
+    services.orchestrator.app.application.command_bus.CommandBus._append_and_publish.
 
 
     Make the smallest refactor that removes the smell and run local tests.'
@@ -478,17 +620,236 @@ tickets:
   - code-smell
   - data-clump
   files:
-  - services/web/app/resource_areas.py
-  dedupe_key: 'code2llm:smell:data_clump:services/web/app/resource_areas.py:154:Data
-    Clump: action, area_id, role_id'
+  - services/orchestrator/app/infrastructure/eventstore_dual.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/infrastructure/eventstore_dual.py:15:Data
+    Clump: aggregate_id, events, self, aggregate_type'
 - signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: correlation_id, command_id, metadata, data,
-    self'
-  description: 'code2llm reports `Data Clump: correlation_id, command_id, metadata,
-    data, self` in `services/orchestrator/app/application/command_bus.py:119`.
+  title: 'Address code smell: Data Clump: aggregate_id, events, self, aggregate_type'
+  description: 'code2llm reports `Data Clump: aggregate_id, events, self, aggregate_type`
+    in `services/orchestrator/app/infrastructure/eventstore.py:56`.
 
 
-    Arguments (correlation_id, command_id, metadata, data, self) are used together
+    Arguments (aggregate_id, events, self, aggregate_type) are used together in multiple
+    functions: services.orchestrator.app.infrastructure.eventstore_dual.DualEventStore.append,
+    services.orchestrator.app.infrastructure.eventstore.EventStore.append, services.orchestrator.app.infrastructure.eventstore_esdb.EsdbEventStore.append,
+    services.orchestrator.app.application.command_bus.CommandBus._append_and_publish.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/infrastructure/eventstore.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/infrastructure/eventstore.py:56:Data
+    Clump: aggregate_id, events, self, aggregate_type'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: aggregate_id, events, self, aggregate_type'
+  description: 'code2llm reports `Data Clump: aggregate_id, events, self, aggregate_type`
+    in `services/orchestrator/app/infrastructure/eventstore_esdb.py:51`.
+
+
+    Arguments (aggregate_id, events, self, aggregate_type) are used together in multiple
+    functions: services.orchestrator.app.infrastructure.eventstore_dual.DualEventStore.append,
+    services.orchestrator.app.infrastructure.eventstore.EventStore.append, services.orchestrator.app.infrastructure.eventstore_esdb.EsdbEventStore.append,
+    services.orchestrator.app.application.command_bus.CommandBus._append_and_publish.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/infrastructure/eventstore_esdb.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/infrastructure/eventstore_esdb.py:51:Data
+    Clump: aggregate_id, events, self, aggregate_type'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: aggregate_id, events, self, aggregate_type'
+  description: 'code2llm reports `Data Clump: aggregate_id, events, self, aggregate_type`
+    in `services/orchestrator/app/application/command_bus.py:768`.
+
+
+    Arguments (aggregate_id, events, self, aggregate_type) are used together in multiple
+    functions: services.orchestrator.app.infrastructure.eventstore_dual.DualEventStore.append,
+    services.orchestrator.app.infrastructure.eventstore.EventStore.append, services.orchestrator.app.infrastructure.eventstore_esdb.EsdbEventStore.append,
+    services.orchestrator.app.application.command_bus.CommandBus._append_and_publish.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/application/command_bus.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:768:Data
+    Clump: aggregate_id, events, self, aggregate_type'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: aggregate_id, self, aggregate_type'
+  description: 'code2llm reports `Data Clump: aggregate_id, self, aggregate_type`
+    in `services/orchestrator/app/infrastructure/eventstore_dual.py:46`.
+
+
+    Arguments (aggregate_id, self, aggregate_type) are used together in multiple functions:
+    services.orchestrator.app.infrastructure.eventstore_dual.DualEventStore.get_events_for_aggregate,
+    services.orchestrator.app.infrastructure.eventstore.EventStore.get_events_for_aggregate,
+    services.orchestrator.app.infrastructure.eventstore_esdb.EsdbEventStore.get_events_for_aggregate.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/infrastructure/eventstore_dual.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/infrastructure/eventstore_dual.py:46:Data
+    Clump: aggregate_id, self, aggregate_type'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: aggregate_id, self, aggregate_type'
+  description: 'code2llm reports `Data Clump: aggregate_id, self, aggregate_type`
+    in `services/orchestrator/app/infrastructure/eventstore.py:125`.
+
+
+    Arguments (aggregate_id, self, aggregate_type) are used together in multiple functions:
+    services.orchestrator.app.infrastructure.eventstore_dual.DualEventStore.get_events_for_aggregate,
+    services.orchestrator.app.infrastructure.eventstore.EventStore.get_events_for_aggregate,
+    services.orchestrator.app.infrastructure.eventstore_esdb.EsdbEventStore.get_events_for_aggregate.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/infrastructure/eventstore.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/infrastructure/eventstore.py:125:Data
+    Clump: aggregate_id, self, aggregate_type'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: aggregate_id, self, aggregate_type'
+  description: 'code2llm reports `Data Clump: aggregate_id, self, aggregate_type`
+    in `services/orchestrator/app/infrastructure/eventstore_esdb.py:126`.
+
+
+    Arguments (aggregate_id, self, aggregate_type) are used together in multiple functions:
+    services.orchestrator.app.infrastructure.eventstore_dual.DualEventStore.get_events_for_aggregate,
+    services.orchestrator.app.infrastructure.eventstore.EventStore.get_events_for_aggregate,
+    services.orchestrator.app.infrastructure.eventstore_esdb.EsdbEventStore.get_events_for_aggregate.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/infrastructure/eventstore_esdb.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/infrastructure/eventstore_esdb.py:126:Data
+    Clump: aggregate_id, self, aggregate_type'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: data, command_type, rule, self'
+  description: 'code2llm reports `Data Clump: data, command_type, rule, self` in `services/orchestrator/app/evolution/policy_engine.py:52`.
+
+
+    Arguments (data, command_type, rule, self) are used together in multiple functions:
+    services.orchestrator.app.evolution.policy_engine.PolicyEngine._validate_manifest,
+    services.orchestrator.app.evolution.policy_engine.PolicyEngine._validate_auto_risk.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/evolution/policy_engine.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/evolution/policy_engine.py:52:Data
+    Clump: data, command_type, rule, self'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: data, command_type, rule, self'
+  description: 'code2llm reports `Data Clump: data, command_type, rule, self` in `services/orchestrator/app/evolution/policy_engine.py:72`.
+
+
+    Arguments (data, command_type, rule, self) are used together in multiple functions:
+    services.orchestrator.app.evolution.policy_engine.PolicyEngine._validate_manifest,
+    services.orchestrator.app.evolution.policy_engine.PolicyEngine._validate_auto_risk.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/evolution/policy_engine.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/evolution/policy_engine.py:72:Data
+    Clump: data, command_type, rule, self'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: data, command_type, self'
+  description: 'code2llm reports `Data Clump: data, command_type, self` in `services/orchestrator/app/application/command_bus.py:795`.
+
+
+    Arguments (data, command_type, self) are used together in multiple functions:
+    services.orchestrator.app.application.command_bus.CommandBus._apply_policy, services.orchestrator.app.evolution.policy_engine.PolicyEngine.validate_command.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/application/command_bus.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:795:Data
+    Clump: data, command_type, self'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: data, command_type, self'
+  description: 'code2llm reports `Data Clump: data, command_type, self` in `services/orchestrator/app/evolution/policy_engine.py:24`.
+
+
+    Arguments (data, command_type, self) are used together in multiple functions:
+    services.orchestrator.app.application.command_bus.CommandBus._apply_policy, services.orchestrator.app.evolution.policy_engine.PolicyEngine.validate_command.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/evolution/policy_engine.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/evolution/policy_engine.py:24:Data
+    Clump: data, command_type, self'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: data, self, metadata, correlation_id, command_id'
+  description: 'code2llm reports `Data Clump: data, self, metadata, correlation_id,
+    command_id` in `services/orchestrator/app/application/command_bus.py:119`.
+
+
+    Arguments (data, self, metadata, correlation_id, command_id) are used together
     in multiple functions: services.orchestrator.app.application.command_bus.CommandBus._create_task,
     services.orchestrator.app.application.command_bus.CommandBus._assign_task, services.orchestrator.app.application.command_bus.CommandBus._start_task,
     services.orchestrator.app.application.command_bus.CommandBus._complete_task, services.orchestrator.app.application.command_bus.CommandBus._fail_task,
@@ -525,15 +886,14 @@ tickets:
   files:
   - services/orchestrator/app/application/command_bus.py
   dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:119:Data
-    Clump: correlation_id, command_id, metadata, data, self'
+    Clump: data, self, metadata, correlation_id, command_id'
 - signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: correlation_id, command_id, metadata, data,
-    self'
-  description: 'code2llm reports `Data Clump: correlation_id, command_id, metadata,
-    data, self` in `services/orchestrator/app/application/command_bus.py:161`.
+  title: 'Address code smell: Data Clump: data, self, metadata, correlation_id, command_id'
+  description: 'code2llm reports `Data Clump: data, self, metadata, correlation_id,
+    command_id` in `services/orchestrator/app/application/command_bus.py:161`.
 
 
-    Arguments (correlation_id, command_id, metadata, data, self) are used together
+    Arguments (data, self, metadata, correlation_id, command_id) are used together
     in multiple functions: services.orchestrator.app.application.command_bus.CommandBus._create_task,
     services.orchestrator.app.application.command_bus.CommandBus._assign_task, services.orchestrator.app.application.command_bus.CommandBus._start_task,
     services.orchestrator.app.application.command_bus.CommandBus._complete_task, services.orchestrator.app.application.command_bus.CommandBus._fail_task,
@@ -570,15 +930,14 @@ tickets:
   files:
   - services/orchestrator/app/application/command_bus.py
   dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:161:Data
-    Clump: correlation_id, command_id, metadata, data, self'
+    Clump: data, self, metadata, correlation_id, command_id'
 - signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: correlation_id, command_id, metadata, data,
-    self'
-  description: 'code2llm reports `Data Clump: correlation_id, command_id, metadata,
-    data, self` in `services/orchestrator/app/application/command_bus.py:201`.
+  title: 'Address code smell: Data Clump: data, self, metadata, correlation_id, command_id'
+  description: 'code2llm reports `Data Clump: data, self, metadata, correlation_id,
+    command_id` in `services/orchestrator/app/application/command_bus.py:201`.
 
 
-    Arguments (correlation_id, command_id, metadata, data, self) are used together
+    Arguments (data, self, metadata, correlation_id, command_id) are used together
     in multiple functions: services.orchestrator.app.application.command_bus.CommandBus._create_task,
     services.orchestrator.app.application.command_bus.CommandBus._assign_task, services.orchestrator.app.application.command_bus.CommandBus._start_task,
     services.orchestrator.app.application.command_bus.CommandBus._complete_task, services.orchestrator.app.application.command_bus.CommandBus._fail_task,
@@ -615,15 +974,14 @@ tickets:
   files:
   - services/orchestrator/app/application/command_bus.py
   dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:201:Data
-    Clump: correlation_id, command_id, metadata, data, self'
+    Clump: data, self, metadata, correlation_id, command_id'
 - signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: correlation_id, command_id, metadata, data,
-    self'
-  description: 'code2llm reports `Data Clump: correlation_id, command_id, metadata,
-    data, self` in `services/orchestrator/app/application/command_bus.py:222`.
+  title: 'Address code smell: Data Clump: data, self, metadata, correlation_id, command_id'
+  description: 'code2llm reports `Data Clump: data, self, metadata, correlation_id,
+    command_id` in `services/orchestrator/app/application/command_bus.py:222`.
 
 
-    Arguments (correlation_id, command_id, metadata, data, self) are used together
+    Arguments (data, self, metadata, correlation_id, command_id) are used together
     in multiple functions: services.orchestrator.app.application.command_bus.CommandBus._create_task,
     services.orchestrator.app.application.command_bus.CommandBus._assign_task, services.orchestrator.app.application.command_bus.CommandBus._start_task,
     services.orchestrator.app.application.command_bus.CommandBus._complete_task, services.orchestrator.app.application.command_bus.CommandBus._fail_task,
@@ -660,15 +1018,14 @@ tickets:
   files:
   - services/orchestrator/app/application/command_bus.py
   dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:222:Data
-    Clump: correlation_id, command_id, metadata, data, self'
+    Clump: data, self, metadata, correlation_id, command_id'
 - signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: correlation_id, command_id, metadata, data,
-    self'
-  description: 'code2llm reports `Data Clump: correlation_id, command_id, metadata,
-    data, self` in `services/orchestrator/app/application/command_bus.py:256`.
+  title: 'Address code smell: Data Clump: data, self, metadata, correlation_id, command_id'
+  description: 'code2llm reports `Data Clump: data, self, metadata, correlation_id,
+    command_id` in `services/orchestrator/app/application/command_bus.py:256`.
 
 
-    Arguments (correlation_id, command_id, metadata, data, self) are used together
+    Arguments (data, self, metadata, correlation_id, command_id) are used together
     in multiple functions: services.orchestrator.app.application.command_bus.CommandBus._create_task,
     services.orchestrator.app.application.command_bus.CommandBus._assign_task, services.orchestrator.app.application.command_bus.CommandBus._start_task,
     services.orchestrator.app.application.command_bus.CommandBus._complete_task, services.orchestrator.app.application.command_bus.CommandBus._fail_task,
@@ -705,15 +1062,14 @@ tickets:
   files:
   - services/orchestrator/app/application/command_bus.py
   dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:256:Data
-    Clump: correlation_id, command_id, metadata, data, self'
+    Clump: data, self, metadata, correlation_id, command_id'
 - signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: correlation_id, command_id, metadata, data,
-    self'
-  description: 'code2llm reports `Data Clump: correlation_id, command_id, metadata,
-    data, self` in `services/orchestrator/app/application/command_bus.py:295`.
+  title: 'Address code smell: Data Clump: data, self, metadata, correlation_id, command_id'
+  description: 'code2llm reports `Data Clump: data, self, metadata, correlation_id,
+    command_id` in `services/orchestrator/app/application/command_bus.py:295`.
 
 
-    Arguments (correlation_id, command_id, metadata, data, self) are used together
+    Arguments (data, self, metadata, correlation_id, command_id) are used together
     in multiple functions: services.orchestrator.app.application.command_bus.CommandBus._create_task,
     services.orchestrator.app.application.command_bus.CommandBus._assign_task, services.orchestrator.app.application.command_bus.CommandBus._start_task,
     services.orchestrator.app.application.command_bus.CommandBus._complete_task, services.orchestrator.app.application.command_bus.CommandBus._fail_task,
@@ -750,15 +1106,14 @@ tickets:
   files:
   - services/orchestrator/app/application/command_bus.py
   dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:295:Data
-    Clump: correlation_id, command_id, metadata, data, self'
+    Clump: data, self, metadata, correlation_id, command_id'
 - signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: correlation_id, command_id, metadata, data,
-    self'
-  description: 'code2llm reports `Data Clump: correlation_id, command_id, metadata,
-    data, self` in `services/orchestrator/app/application/command_bus.py:319`.
+  title: 'Address code smell: Data Clump: data, self, metadata, correlation_id, command_id'
+  description: 'code2llm reports `Data Clump: data, self, metadata, correlation_id,
+    command_id` in `services/orchestrator/app/application/command_bus.py:319`.
 
 
-    Arguments (correlation_id, command_id, metadata, data, self) are used together
+    Arguments (data, self, metadata, correlation_id, command_id) are used together
     in multiple functions: services.orchestrator.app.application.command_bus.CommandBus._create_task,
     services.orchestrator.app.application.command_bus.CommandBus._assign_task, services.orchestrator.app.application.command_bus.CommandBus._start_task,
     services.orchestrator.app.application.command_bus.CommandBus._complete_task, services.orchestrator.app.application.command_bus.CommandBus._fail_task,
@@ -795,15 +1150,14 @@ tickets:
   files:
   - services/orchestrator/app/application/command_bus.py
   dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:319:Data
-    Clump: correlation_id, command_id, metadata, data, self'
+    Clump: data, self, metadata, correlation_id, command_id'
 - signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: correlation_id, command_id, metadata, data,
-    self'
-  description: 'code2llm reports `Data Clump: correlation_id, command_id, metadata,
-    data, self` in `services/orchestrator/app/application/command_bus.py:343`.
+  title: 'Address code smell: Data Clump: data, self, metadata, correlation_id, command_id'
+  description: 'code2llm reports `Data Clump: data, self, metadata, correlation_id,
+    command_id` in `services/orchestrator/app/application/command_bus.py:343`.
 
 
-    Arguments (correlation_id, command_id, metadata, data, self) are used together
+    Arguments (data, self, metadata, correlation_id, command_id) are used together
     in multiple functions: services.orchestrator.app.application.command_bus.CommandBus._create_task,
     services.orchestrator.app.application.command_bus.CommandBus._assign_task, services.orchestrator.app.application.command_bus.CommandBus._start_task,
     services.orchestrator.app.application.command_bus.CommandBus._complete_task, services.orchestrator.app.application.command_bus.CommandBus._fail_task,
@@ -840,15 +1194,14 @@ tickets:
   files:
   - services/orchestrator/app/application/command_bus.py
   dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:343:Data
-    Clump: correlation_id, command_id, metadata, data, self'
+    Clump: data, self, metadata, correlation_id, command_id'
 - signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: correlation_id, command_id, metadata, data,
-    self'
-  description: 'code2llm reports `Data Clump: correlation_id, command_id, metadata,
-    data, self` in `services/orchestrator/app/application/command_bus.py:366`.
+  title: 'Address code smell: Data Clump: data, self, metadata, correlation_id, command_id'
+  description: 'code2llm reports `Data Clump: data, self, metadata, correlation_id,
+    command_id` in `services/orchestrator/app/application/command_bus.py:366`.
 
 
-    Arguments (correlation_id, command_id, metadata, data, self) are used together
+    Arguments (data, self, metadata, correlation_id, command_id) are used together
     in multiple functions: services.orchestrator.app.application.command_bus.CommandBus._create_task,
     services.orchestrator.app.application.command_bus.CommandBus._assign_task, services.orchestrator.app.application.command_bus.CommandBus._start_task,
     services.orchestrator.app.application.command_bus.CommandBus._complete_task, services.orchestrator.app.application.command_bus.CommandBus._fail_task,
@@ -885,15 +1238,14 @@ tickets:
   files:
   - services/orchestrator/app/application/command_bus.py
   dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:366:Data
-    Clump: correlation_id, command_id, metadata, data, self'
+    Clump: data, self, metadata, correlation_id, command_id'
 - signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: correlation_id, command_id, metadata, data,
-    self'
-  description: 'code2llm reports `Data Clump: correlation_id, command_id, metadata,
-    data, self` in `services/orchestrator/app/application/command_bus.py:382`.
+  title: 'Address code smell: Data Clump: data, self, metadata, correlation_id, command_id'
+  description: 'code2llm reports `Data Clump: data, self, metadata, correlation_id,
+    command_id` in `services/orchestrator/app/application/command_bus.py:382`.
 
 
-    Arguments (correlation_id, command_id, metadata, data, self) are used together
+    Arguments (data, self, metadata, correlation_id, command_id) are used together
     in multiple functions: services.orchestrator.app.application.command_bus.CommandBus._create_task,
     services.orchestrator.app.application.command_bus.CommandBus._assign_task, services.orchestrator.app.application.command_bus.CommandBus._start_task,
     services.orchestrator.app.application.command_bus.CommandBus._complete_task, services.orchestrator.app.application.command_bus.CommandBus._fail_task,
@@ -930,15 +1282,14 @@ tickets:
   files:
   - services/orchestrator/app/application/command_bus.py
   dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:382:Data
-    Clump: correlation_id, command_id, metadata, data, self'
+    Clump: data, self, metadata, correlation_id, command_id'
 - signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: correlation_id, command_id, metadata, data,
-    self'
-  description: 'code2llm reports `Data Clump: correlation_id, command_id, metadata,
-    data, self` in `services/orchestrator/app/application/command_bus.py:395`.
+  title: 'Address code smell: Data Clump: data, self, metadata, correlation_id, command_id'
+  description: 'code2llm reports `Data Clump: data, self, metadata, correlation_id,
+    command_id` in `services/orchestrator/app/application/command_bus.py:395`.
 
 
-    Arguments (correlation_id, command_id, metadata, data, self) are used together
+    Arguments (data, self, metadata, correlation_id, command_id) are used together
     in multiple functions: services.orchestrator.app.application.command_bus.CommandBus._create_task,
     services.orchestrator.app.application.command_bus.CommandBus._assign_task, services.orchestrator.app.application.command_bus.CommandBus._start_task,
     services.orchestrator.app.application.command_bus.CommandBus._complete_task, services.orchestrator.app.application.command_bus.CommandBus._fail_task,
@@ -975,15 +1326,14 @@ tickets:
   files:
   - services/orchestrator/app/application/command_bus.py
   dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:395:Data
-    Clump: correlation_id, command_id, metadata, data, self'
+    Clump: data, self, metadata, correlation_id, command_id'
 - signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: correlation_id, command_id, metadata, data,
-    self'
-  description: 'code2llm reports `Data Clump: correlation_id, command_id, metadata,
-    data, self` in `services/orchestrator/app/application/command_bus.py:408`.
+  title: 'Address code smell: Data Clump: data, self, metadata, correlation_id, command_id'
+  description: 'code2llm reports `Data Clump: data, self, metadata, correlation_id,
+    command_id` in `services/orchestrator/app/application/command_bus.py:408`.
 
 
-    Arguments (correlation_id, command_id, metadata, data, self) are used together
+    Arguments (data, self, metadata, correlation_id, command_id) are used together
     in multiple functions: services.orchestrator.app.application.command_bus.CommandBus._create_task,
     services.orchestrator.app.application.command_bus.CommandBus._assign_task, services.orchestrator.app.application.command_bus.CommandBus._start_task,
     services.orchestrator.app.application.command_bus.CommandBus._complete_task, services.orchestrator.app.application.command_bus.CommandBus._fail_task,
@@ -1020,15 +1370,14 @@ tickets:
   files:
   - services/orchestrator/app/application/command_bus.py
   dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:408:Data
-    Clump: correlation_id, command_id, metadata, data, self'
+    Clump: data, self, metadata, correlation_id, command_id'
 - signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: correlation_id, command_id, metadata, data,
-    self'
-  description: 'code2llm reports `Data Clump: correlation_id, command_id, metadata,
-    data, self` in `services/orchestrator/app/application/command_bus.py:434`.
+  title: 'Address code smell: Data Clump: data, self, metadata, correlation_id, command_id'
+  description: 'code2llm reports `Data Clump: data, self, metadata, correlation_id,
+    command_id` in `services/orchestrator/app/application/command_bus.py:434`.
 
 
-    Arguments (correlation_id, command_id, metadata, data, self) are used together
+    Arguments (data, self, metadata, correlation_id, command_id) are used together
     in multiple functions: services.orchestrator.app.application.command_bus.CommandBus._create_task,
     services.orchestrator.app.application.command_bus.CommandBus._assign_task, services.orchestrator.app.application.command_bus.CommandBus._start_task,
     services.orchestrator.app.application.command_bus.CommandBus._complete_task, services.orchestrator.app.application.command_bus.CommandBus._fail_task,
@@ -1065,15 +1414,14 @@ tickets:
   files:
   - services/orchestrator/app/application/command_bus.py
   dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:434:Data
-    Clump: correlation_id, command_id, metadata, data, self'
+    Clump: data, self, metadata, correlation_id, command_id'
 - signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: correlation_id, command_id, metadata, data,
-    self'
-  description: 'code2llm reports `Data Clump: correlation_id, command_id, metadata,
-    data, self` in `services/orchestrator/app/application/command_bus.py:453`.
+  title: 'Address code smell: Data Clump: data, self, metadata, correlation_id, command_id'
+  description: 'code2llm reports `Data Clump: data, self, metadata, correlation_id,
+    command_id` in `services/orchestrator/app/application/command_bus.py:453`.
 
 
-    Arguments (correlation_id, command_id, metadata, data, self) are used together
+    Arguments (data, self, metadata, correlation_id, command_id) are used together
     in multiple functions: services.orchestrator.app.application.command_bus.CommandBus._create_task,
     services.orchestrator.app.application.command_bus.CommandBus._assign_task, services.orchestrator.app.application.command_bus.CommandBus._start_task,
     services.orchestrator.app.application.command_bus.CommandBus._complete_task, services.orchestrator.app.application.command_bus.CommandBus._fail_task,
@@ -1110,15 +1458,14 @@ tickets:
   files:
   - services/orchestrator/app/application/command_bus.py
   dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:453:Data
-    Clump: correlation_id, command_id, metadata, data, self'
+    Clump: data, self, metadata, correlation_id, command_id'
 - signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: correlation_id, command_id, metadata, data,
-    self'
-  description: 'code2llm reports `Data Clump: correlation_id, command_id, metadata,
-    data, self` in `services/orchestrator/app/application/command_bus.py:477`.
+  title: 'Address code smell: Data Clump: data, self, metadata, correlation_id, command_id'
+  description: 'code2llm reports `Data Clump: data, self, metadata, correlation_id,
+    command_id` in `services/orchestrator/app/application/command_bus.py:477`.
 
 
-    Arguments (correlation_id, command_id, metadata, data, self) are used together
+    Arguments (data, self, metadata, correlation_id, command_id) are used together
     in multiple functions: services.orchestrator.app.application.command_bus.CommandBus._create_task,
     services.orchestrator.app.application.command_bus.CommandBus._assign_task, services.orchestrator.app.application.command_bus.CommandBus._start_task,
     services.orchestrator.app.application.command_bus.CommandBus._complete_task, services.orchestrator.app.application.command_bus.CommandBus._fail_task,
@@ -1155,15 +1502,14 @@ tickets:
   files:
   - services/orchestrator/app/application/command_bus.py
   dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:477:Data
-    Clump: correlation_id, command_id, metadata, data, self'
+    Clump: data, self, metadata, correlation_id, command_id'
 - signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: correlation_id, command_id, metadata, data,
-    self'
-  description: 'code2llm reports `Data Clump: correlation_id, command_id, metadata,
-    data, self` in `services/orchestrator/app/application/command_bus.py:523`.
+  title: 'Address code smell: Data Clump: data, self, metadata, correlation_id, command_id'
+  description: 'code2llm reports `Data Clump: data, self, metadata, correlation_id,
+    command_id` in `services/orchestrator/app/application/command_bus.py:523`.
 
 
-    Arguments (correlation_id, command_id, metadata, data, self) are used together
+    Arguments (data, self, metadata, correlation_id, command_id) are used together
     in multiple functions: services.orchestrator.app.application.command_bus.CommandBus._create_task,
     services.orchestrator.app.application.command_bus.CommandBus._assign_task, services.orchestrator.app.application.command_bus.CommandBus._start_task,
     services.orchestrator.app.application.command_bus.CommandBus._complete_task, services.orchestrator.app.application.command_bus.CommandBus._fail_task,
@@ -1200,15 +1546,14 @@ tickets:
   files:
   - services/orchestrator/app/application/command_bus.py
   dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:523:Data
-    Clump: correlation_id, command_id, metadata, data, self'
+    Clump: data, self, metadata, correlation_id, command_id'
 - signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: correlation_id, command_id, metadata, data,
-    self'
-  description: 'code2llm reports `Data Clump: correlation_id, command_id, metadata,
-    data, self` in `services/orchestrator/app/application/command_bus.py:539`.
+  title: 'Address code smell: Data Clump: data, self, metadata, correlation_id, command_id'
+  description: 'code2llm reports `Data Clump: data, self, metadata, correlation_id,
+    command_id` in `services/orchestrator/app/application/command_bus.py:539`.
 
 
-    Arguments (correlation_id, command_id, metadata, data, self) are used together
+    Arguments (data, self, metadata, correlation_id, command_id) are used together
     in multiple functions: services.orchestrator.app.application.command_bus.CommandBus._create_task,
     services.orchestrator.app.application.command_bus.CommandBus._assign_task, services.orchestrator.app.application.command_bus.CommandBus._start_task,
     services.orchestrator.app.application.command_bus.CommandBus._complete_task, services.orchestrator.app.application.command_bus.CommandBus._fail_task,
@@ -1245,15 +1590,14 @@ tickets:
   files:
   - services/orchestrator/app/application/command_bus.py
   dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:539:Data
-    Clump: correlation_id, command_id, metadata, data, self'
+    Clump: data, self, metadata, correlation_id, command_id'
 - signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: correlation_id, command_id, metadata, data,
-    self'
-  description: 'code2llm reports `Data Clump: correlation_id, command_id, metadata,
-    data, self` in `services/orchestrator/app/application/command_bus.py:550`.
+  title: 'Address code smell: Data Clump: data, self, metadata, correlation_id, command_id'
+  description: 'code2llm reports `Data Clump: data, self, metadata, correlation_id,
+    command_id` in `services/orchestrator/app/application/command_bus.py:550`.
 
 
-    Arguments (correlation_id, command_id, metadata, data, self) are used together
+    Arguments (data, self, metadata, correlation_id, command_id) are used together
     in multiple functions: services.orchestrator.app.application.command_bus.CommandBus._create_task,
     services.orchestrator.app.application.command_bus.CommandBus._assign_task, services.orchestrator.app.application.command_bus.CommandBus._start_task,
     services.orchestrator.app.application.command_bus.CommandBus._complete_task, services.orchestrator.app.application.command_bus.CommandBus._fail_task,
@@ -1290,15 +1634,14 @@ tickets:
   files:
   - services/orchestrator/app/application/command_bus.py
   dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:550:Data
-    Clump: correlation_id, command_id, metadata, data, self'
+    Clump: data, self, metadata, correlation_id, command_id'
 - signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: correlation_id, command_id, metadata, data,
-    self'
-  description: 'code2llm reports `Data Clump: correlation_id, command_id, metadata,
-    data, self` in `services/orchestrator/app/application/command_bus.py:561`.
+  title: 'Address code smell: Data Clump: data, self, metadata, correlation_id, command_id'
+  description: 'code2llm reports `Data Clump: data, self, metadata, correlation_id,
+    command_id` in `services/orchestrator/app/application/command_bus.py:561`.
 
 
-    Arguments (correlation_id, command_id, metadata, data, self) are used together
+    Arguments (data, self, metadata, correlation_id, command_id) are used together
     in multiple functions: services.orchestrator.app.application.command_bus.CommandBus._create_task,
     services.orchestrator.app.application.command_bus.CommandBus._assign_task, services.orchestrator.app.application.command_bus.CommandBus._start_task,
     services.orchestrator.app.application.command_bus.CommandBus._complete_task, services.orchestrator.app.application.command_bus.CommandBus._fail_task,
@@ -1335,15 +1678,14 @@ tickets:
   files:
   - services/orchestrator/app/application/command_bus.py
   dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:561:Data
-    Clump: correlation_id, command_id, metadata, data, self'
+    Clump: data, self, metadata, correlation_id, command_id'
 - signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: correlation_id, command_id, metadata, data,
-    self'
-  description: 'code2llm reports `Data Clump: correlation_id, command_id, metadata,
-    data, self` in `services/orchestrator/app/application/command_bus.py:575`.
+  title: 'Address code smell: Data Clump: data, self, metadata, correlation_id, command_id'
+  description: 'code2llm reports `Data Clump: data, self, metadata, correlation_id,
+    command_id` in `services/orchestrator/app/application/command_bus.py:575`.
 
 
-    Arguments (correlation_id, command_id, metadata, data, self) are used together
+    Arguments (data, self, metadata, correlation_id, command_id) are used together
     in multiple functions: services.orchestrator.app.application.command_bus.CommandBus._create_task,
     services.orchestrator.app.application.command_bus.CommandBus._assign_task, services.orchestrator.app.application.command_bus.CommandBus._start_task,
     services.orchestrator.app.application.command_bus.CommandBus._complete_task, services.orchestrator.app.application.command_bus.CommandBus._fail_task,
@@ -1380,15 +1722,14 @@ tickets:
   files:
   - services/orchestrator/app/application/command_bus.py
   dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:575:Data
-    Clump: correlation_id, command_id, metadata, data, self'
+    Clump: data, self, metadata, correlation_id, command_id'
 - signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: correlation_id, command_id, metadata, data,
-    self'
-  description: 'code2llm reports `Data Clump: correlation_id, command_id, metadata,
-    data, self` in `services/orchestrator/app/application/command_bus.py:589`.
+  title: 'Address code smell: Data Clump: data, self, metadata, correlation_id, command_id'
+  description: 'code2llm reports `Data Clump: data, self, metadata, correlation_id,
+    command_id` in `services/orchestrator/app/application/command_bus.py:589`.
 
 
-    Arguments (correlation_id, command_id, metadata, data, self) are used together
+    Arguments (data, self, metadata, correlation_id, command_id) are used together
     in multiple functions: services.orchestrator.app.application.command_bus.CommandBus._create_task,
     services.orchestrator.app.application.command_bus.CommandBus._assign_task, services.orchestrator.app.application.command_bus.CommandBus._start_task,
     services.orchestrator.app.application.command_bus.CommandBus._complete_task, services.orchestrator.app.application.command_bus.CommandBus._fail_task,
@@ -1425,15 +1766,14 @@ tickets:
   files:
   - services/orchestrator/app/application/command_bus.py
   dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:589:Data
-    Clump: correlation_id, command_id, metadata, data, self'
+    Clump: data, self, metadata, correlation_id, command_id'
 - signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: correlation_id, command_id, metadata, data,
-    self'
-  description: 'code2llm reports `Data Clump: correlation_id, command_id, metadata,
-    data, self` in `services/orchestrator/app/application/command_bus.py:607`.
+  title: 'Address code smell: Data Clump: data, self, metadata, correlation_id, command_id'
+  description: 'code2llm reports `Data Clump: data, self, metadata, correlation_id,
+    command_id` in `services/orchestrator/app/application/command_bus.py:607`.
 
 
-    Arguments (correlation_id, command_id, metadata, data, self) are used together
+    Arguments (data, self, metadata, correlation_id, command_id) are used together
     in multiple functions: services.orchestrator.app.application.command_bus.CommandBus._create_task,
     services.orchestrator.app.application.command_bus.CommandBus._assign_task, services.orchestrator.app.application.command_bus.CommandBus._start_task,
     services.orchestrator.app.application.command_bus.CommandBus._complete_task, services.orchestrator.app.application.command_bus.CommandBus._fail_task,
@@ -1470,15 +1810,14 @@ tickets:
   files:
   - services/orchestrator/app/application/command_bus.py
   dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:607:Data
-    Clump: correlation_id, command_id, metadata, data, self'
+    Clump: data, self, metadata, correlation_id, command_id'
 - signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: correlation_id, command_id, metadata, data,
-    self'
-  description: 'code2llm reports `Data Clump: correlation_id, command_id, metadata,
-    data, self` in `services/orchestrator/app/application/command_bus.py:635`.
+  title: 'Address code smell: Data Clump: data, self, metadata, correlation_id, command_id'
+  description: 'code2llm reports `Data Clump: data, self, metadata, correlation_id,
+    command_id` in `services/orchestrator/app/application/command_bus.py:635`.
 
 
-    Arguments (correlation_id, command_id, metadata, data, self) are used together
+    Arguments (data, self, metadata, correlation_id, command_id) are used together
     in multiple functions: services.orchestrator.app.application.command_bus.CommandBus._create_task,
     services.orchestrator.app.application.command_bus.CommandBus._assign_task, services.orchestrator.app.application.command_bus.CommandBus._start_task,
     services.orchestrator.app.application.command_bus.CommandBus._complete_task, services.orchestrator.app.application.command_bus.CommandBus._fail_task,
@@ -1515,15 +1854,14 @@ tickets:
   files:
   - services/orchestrator/app/application/command_bus.py
   dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:635:Data
-    Clump: correlation_id, command_id, metadata, data, self'
+    Clump: data, self, metadata, correlation_id, command_id'
 - signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: correlation_id, command_id, metadata, data,
-    self'
-  description: 'code2llm reports `Data Clump: correlation_id, command_id, metadata,
-    data, self` in `services/orchestrator/app/application/command_bus.py:648`.
+  title: 'Address code smell: Data Clump: data, self, metadata, correlation_id, command_id'
+  description: 'code2llm reports `Data Clump: data, self, metadata, correlation_id,
+    command_id` in `services/orchestrator/app/application/command_bus.py:648`.
 
 
-    Arguments (correlation_id, command_id, metadata, data, self) are used together
+    Arguments (data, self, metadata, correlation_id, command_id) are used together
     in multiple functions: services.orchestrator.app.application.command_bus.CommandBus._create_task,
     services.orchestrator.app.application.command_bus.CommandBus._assign_task, services.orchestrator.app.application.command_bus.CommandBus._start_task,
     services.orchestrator.app.application.command_bus.CommandBus._complete_task, services.orchestrator.app.application.command_bus.CommandBus._fail_task,
@@ -1560,15 +1898,14 @@ tickets:
   files:
   - services/orchestrator/app/application/command_bus.py
   dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:648:Data
-    Clump: correlation_id, command_id, metadata, data, self'
+    Clump: data, self, metadata, correlation_id, command_id'
 - signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: correlation_id, command_id, metadata, data,
-    self'
-  description: 'code2llm reports `Data Clump: correlation_id, command_id, metadata,
-    data, self` in `services/orchestrator/app/application/command_bus.py:801`.
+  title: 'Address code smell: Data Clump: data, self, metadata, correlation_id, command_id'
+  description: 'code2llm reports `Data Clump: data, self, metadata, correlation_id,
+    command_id` in `services/orchestrator/app/application/command_bus.py:801`.
 
 
-    Arguments (correlation_id, command_id, metadata, data, self) are used together
+    Arguments (data, self, metadata, correlation_id, command_id) are used together
     in multiple functions: services.orchestrator.app.application.command_bus.CommandBus._create_task,
     services.orchestrator.app.application.command_bus.CommandBus._assign_task, services.orchestrator.app.application.command_bus.CommandBus._start_task,
     services.orchestrator.app.application.command_bus.CommandBus._complete_task, services.orchestrator.app.application.command_bus.CommandBus._fail_task,
@@ -1605,15 +1942,14 @@ tickets:
   files:
   - services/orchestrator/app/application/command_bus.py
   dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:801:Data
-    Clump: correlation_id, command_id, metadata, data, self'
+    Clump: data, self, metadata, correlation_id, command_id'
 - signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: correlation_id, command_id, metadata, data,
-    self'
-  description: 'code2llm reports `Data Clump: correlation_id, command_id, metadata,
-    data, self` in `services/orchestrator/app/application/command_bus.py:844`.
+  title: 'Address code smell: Data Clump: data, self, metadata, correlation_id, command_id'
+  description: 'code2llm reports `Data Clump: data, self, metadata, correlation_id,
+    command_id` in `services/orchestrator/app/application/command_bus.py:844`.
 
 
-    Arguments (correlation_id, command_id, metadata, data, self) are used together
+    Arguments (data, self, metadata, correlation_id, command_id) are used together
     in multiple functions: services.orchestrator.app.application.command_bus.CommandBus._create_task,
     services.orchestrator.app.application.command_bus.CommandBus._assign_task, services.orchestrator.app.application.command_bus.CommandBus._start_task,
     services.orchestrator.app.application.command_bus.CommandBus._complete_task, services.orchestrator.app.application.command_bus.CommandBus._fail_task,
@@ -1650,14 +1986,524 @@ tickets:
   files:
   - services/orchestrator/app/application/command_bus.py
   dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:844:Data
-    Clump: correlation_id, command_id, metadata, data, self'
+    Clump: data, self, metadata, correlation_id, command_id'
 - signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: event_type, db, payload, occurred_at'
-  description: 'code2llm reports `Data Clump: event_type, db, payload, occurred_at`
+  title: 'Address code smell: Data Clump: data, task, timestamp'
+  description: 'code2llm reports `Data Clump: data, task, timestamp` in `services/orchestrator/app/domain/aggregates/task.py:197`.
+
+
+    Arguments (data, task, timestamp) are used together in multiple functions: services.orchestrator.app.domain.aggregates.task._apply_task_created,
+    services.orchestrator.app.domain.aggregates.task._apply_task_assigned, services.orchestrator.app.domain.aggregates.task._apply_task_started,
+    services.orchestrator.app.domain.aggregates.task._apply_task_completed, services.orchestrator.app.domain.aggregates.task._apply_task_failed.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/domain/aggregates/task.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/domain/aggregates/task.py:197:Data
+    Clump: data, task, timestamp'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: data, task, timestamp'
+  description: 'code2llm reports `Data Clump: data, task, timestamp` in `services/orchestrator/app/domain/aggregates/task.py:212`.
+
+
+    Arguments (data, task, timestamp) are used together in multiple functions: services.orchestrator.app.domain.aggregates.task._apply_task_created,
+    services.orchestrator.app.domain.aggregates.task._apply_task_assigned, services.orchestrator.app.domain.aggregates.task._apply_task_started,
+    services.orchestrator.app.domain.aggregates.task._apply_task_completed, services.orchestrator.app.domain.aggregates.task._apply_task_failed.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/domain/aggregates/task.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/domain/aggregates/task.py:212:Data
+    Clump: data, task, timestamp'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: data, task, timestamp'
+  description: 'code2llm reports `Data Clump: data, task, timestamp` in `services/orchestrator/app/domain/aggregates/task.py:218`.
+
+
+    Arguments (data, task, timestamp) are used together in multiple functions: services.orchestrator.app.domain.aggregates.task._apply_task_created,
+    services.orchestrator.app.domain.aggregates.task._apply_task_assigned, services.orchestrator.app.domain.aggregates.task._apply_task_started,
+    services.orchestrator.app.domain.aggregates.task._apply_task_completed, services.orchestrator.app.domain.aggregates.task._apply_task_failed.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/domain/aggregates/task.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/domain/aggregates/task.py:218:Data
+    Clump: data, task, timestamp'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: data, task, timestamp'
+  description: 'code2llm reports `Data Clump: data, task, timestamp` in `services/orchestrator/app/domain/aggregates/task.py:225`.
+
+
+    Arguments (data, task, timestamp) are used together in multiple functions: services.orchestrator.app.domain.aggregates.task._apply_task_created,
+    services.orchestrator.app.domain.aggregates.task._apply_task_assigned, services.orchestrator.app.domain.aggregates.task._apply_task_started,
+    services.orchestrator.app.domain.aggregates.task._apply_task_completed, services.orchestrator.app.domain.aggregates.task._apply_task_failed.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/domain/aggregates/task.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/domain/aggregates/task.py:225:Data
+    Clump: data, task, timestamp'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: data, task, timestamp'
+  description: 'code2llm reports `Data Clump: data, task, timestamp` in `services/orchestrator/app/domain/aggregates/task.py:232`.
+
+
+    Arguments (data, task, timestamp) are used together in multiple functions: services.orchestrator.app.domain.aggregates.task._apply_task_created,
+    services.orchestrator.app.domain.aggregates.task._apply_task_assigned, services.orchestrator.app.domain.aggregates.task._apply_task_started,
+    services.orchestrator.app.domain.aggregates.task._apply_task_completed, services.orchestrator.app.domain.aggregates.task._apply_task_failed.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/domain/aggregates/task.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/domain/aggregates/task.py:232:Data
+    Clump: data, task, timestamp'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: destination_path, uri, self'
+  description: 'code2llm reports `Data Clump: destination_path, uri, self` in `services/orchestrator/app/access/adapters/base.py:30`.
+
+
+    Arguments (destination_path, uri, self) are used together in multiple functions:
+    services.orchestrator.app.access.adapters.base.ResourceAdapter.copy_to_local,
+    services.orchestrator.app.access.adapters.localfs.LocalFsAdapter.copy_to_local,
+    services.orchestrator.app.access.adapters.http_adapter.HttpAdapter.copy_to_local.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/access/adapters/base.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/access/adapters/base.py:30:Data
+    Clump: destination_path, uri, self'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: destination_path, uri, self'
+  description: 'code2llm reports `Data Clump: destination_path, uri, self` in `services/orchestrator/app/access/adapters/localfs.py:60`.
+
+
+    Arguments (destination_path, uri, self) are used together in multiple functions:
+    services.orchestrator.app.access.adapters.base.ResourceAdapter.copy_to_local,
+    services.orchestrator.app.access.adapters.localfs.LocalFsAdapter.copy_to_local,
+    services.orchestrator.app.access.adapters.http_adapter.HttpAdapter.copy_to_local.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/access/adapters/localfs.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/access/adapters/localfs.py:60:Data
+    Clump: destination_path, uri, self'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: destination_path, uri, self'
+  description: 'code2llm reports `Data Clump: destination_path, uri, self` in `services/orchestrator/app/access/adapters/http_adapter.py:39`.
+
+
+    Arguments (destination_path, uri, self) are used together in multiple functions:
+    services.orchestrator.app.access.adapters.base.ResourceAdapter.copy_to_local,
+    services.orchestrator.app.access.adapters.localfs.LocalFsAdapter.copy_to_local,
+    services.orchestrator.app.access.adapters.http_adapter.HttpAdapter.copy_to_local.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/access/adapters/http_adapter.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/access/adapters/http_adapter.py:39:Data
+    Clump: destination_path, uri, self'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: limit, offset, status'
+  description: 'code2llm reports `Data Clump: limit, offset, status` in `services/projector/app/main.py:94`.
+
+
+    Arguments (limit, offset, status) are used together in multiple functions: services.projector.app.main.task_board,
+    services.projector.app.main.agent_fleet, services.projector.app.main.approval_requests,
+    services.projector.app.main.plugin_catalog, services.projector.app.main.incident_feed.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/projector/app/main.py
+  dedupe_key: 'code2llm:smell:data_clump:services/projector/app/main.py:94:Data Clump:
+    limit, offset, status'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: limit, offset, status'
+  description: 'code2llm reports `Data Clump: limit, offset, status` in `services/projector/app/main.py:123`.
+
+
+    Arguments (limit, offset, status) are used together in multiple functions: services.projector.app.main.task_board,
+    services.projector.app.main.agent_fleet, services.projector.app.main.approval_requests,
+    services.projector.app.main.plugin_catalog, services.projector.app.main.incident_feed.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/projector/app/main.py
+  dedupe_key: 'code2llm:smell:data_clump:services/projector/app/main.py:123:Data Clump:
+    limit, offset, status'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: limit, offset, status'
+  description: 'code2llm reports `Data Clump: limit, offset, status` in `services/projector/app/main.py:152`.
+
+
+    Arguments (limit, offset, status) are used together in multiple functions: services.projector.app.main.task_board,
+    services.projector.app.main.agent_fleet, services.projector.app.main.approval_requests,
+    services.projector.app.main.plugin_catalog, services.projector.app.main.incident_feed.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/projector/app/main.py
+  dedupe_key: 'code2llm:smell:data_clump:services/projector/app/main.py:152:Data Clump:
+    limit, offset, status'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: limit, offset, status'
+  description: 'code2llm reports `Data Clump: limit, offset, status` in `services/projector/app/main.py:181`.
+
+
+    Arguments (limit, offset, status) are used together in multiple functions: services.projector.app.main.task_board,
+    services.projector.app.main.agent_fleet, services.projector.app.main.approval_requests,
+    services.projector.app.main.plugin_catalog, services.projector.app.main.incident_feed.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/projector/app/main.py
+  dedupe_key: 'code2llm:smell:data_clump:services/projector/app/main.py:181:Data Clump:
+    limit, offset, status'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: limit, offset, status'
+  description: 'code2llm reports `Data Clump: limit, offset, status` in `services/projector/app/main.py:226`.
+
+
+    Arguments (limit, offset, status) are used together in multiple functions: services.projector.app.main.task_board,
+    services.projector.app.main.agent_fleet, services.projector.app.main.approval_requests,
+    services.projector.app.main.plugin_catalog, services.projector.app.main.incident_feed.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/projector/app/main.py
+  dedupe_key: 'code2llm:smell:data_clump:services/projector/app/main.py:226:Data Clump:
+    limit, offset, status'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: payload, occurred_at, db'
+  description: 'code2llm reports `Data Clump: payload, occurred_at, db` in `services/projector/app/projections/resource_registry.py:19`.
+
+
+    Arguments (payload, occurred_at, db) are used together in multiple functions:
+    services.projector.app.projections.resource_registry._handle_resource_registered,
+    services.projector.app.projections.resource_registry._handle_transfer_requested,
+    services.projector.app.projections.resource_registry._handle_transfer_completed,
+    services.projector.app.projections.resource_registry._handle_transfer_failed,
+    services.projector.app.projections.incidents._upsert_rag_quality, services.projector.app.projections.agent_fleet._handle_agent_registered,
+    services.projector.app.projections.agent_fleet._handle_agent_heartbeat, services.projector.app.projections.agent_fleet._handle_task_assigned_to_agent,
+    services.projector.app.projections.agent_fleet._handle_agent_marked_idle.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/projector/app/projections/resource_registry.py
+  dedupe_key: 'code2llm:smell:data_clump:services/projector/app/projections/resource_registry.py:19:Data
+    Clump: payload, occurred_at, db'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: payload, occurred_at, db'
+  description: 'code2llm reports `Data Clump: payload, occurred_at, db` in `services/projector/app/projections/resource_registry.py:46`.
+
+
+    Arguments (payload, occurred_at, db) are used together in multiple functions:
+    services.projector.app.projections.resource_registry._handle_resource_registered,
+    services.projector.app.projections.resource_registry._handle_transfer_requested,
+    services.projector.app.projections.resource_registry._handle_transfer_completed,
+    services.projector.app.projections.resource_registry._handle_transfer_failed,
+    services.projector.app.projections.incidents._upsert_rag_quality, services.projector.app.projections.agent_fleet._handle_agent_registered,
+    services.projector.app.projections.agent_fleet._handle_agent_heartbeat, services.projector.app.projections.agent_fleet._handle_task_assigned_to_agent,
+    services.projector.app.projections.agent_fleet._handle_agent_marked_idle.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/projector/app/projections/resource_registry.py
+  dedupe_key: 'code2llm:smell:data_clump:services/projector/app/projections/resource_registry.py:46:Data
+    Clump: payload, occurred_at, db'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: payload, occurred_at, db'
+  description: 'code2llm reports `Data Clump: payload, occurred_at, db` in `services/projector/app/projections/resource_registry.py:77`.
+
+
+    Arguments (payload, occurred_at, db) are used together in multiple functions:
+    services.projector.app.projections.resource_registry._handle_resource_registered,
+    services.projector.app.projections.resource_registry._handle_transfer_requested,
+    services.projector.app.projections.resource_registry._handle_transfer_completed,
+    services.projector.app.projections.resource_registry._handle_transfer_failed,
+    services.projector.app.projections.incidents._upsert_rag_quality, services.projector.app.projections.agent_fleet._handle_agent_registered,
+    services.projector.app.projections.agent_fleet._handle_agent_heartbeat, services.projector.app.projections.agent_fleet._handle_task_assigned_to_agent,
+    services.projector.app.projections.agent_fleet._handle_agent_marked_idle.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/projector/app/projections/resource_registry.py
+  dedupe_key: 'code2llm:smell:data_clump:services/projector/app/projections/resource_registry.py:77:Data
+    Clump: payload, occurred_at, db'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: payload, occurred_at, db'
+  description: 'code2llm reports `Data Clump: payload, occurred_at, db` in `services/projector/app/projections/resource_registry.py:101`.
+
+
+    Arguments (payload, occurred_at, db) are used together in multiple functions:
+    services.projector.app.projections.resource_registry._handle_resource_registered,
+    services.projector.app.projections.resource_registry._handle_transfer_requested,
+    services.projector.app.projections.resource_registry._handle_transfer_completed,
+    services.projector.app.projections.resource_registry._handle_transfer_failed,
+    services.projector.app.projections.incidents._upsert_rag_quality, services.projector.app.projections.agent_fleet._handle_agent_registered,
+    services.projector.app.projections.agent_fleet._handle_agent_heartbeat, services.projector.app.projections.agent_fleet._handle_task_assigned_to_agent,
+    services.projector.app.projections.agent_fleet._handle_agent_marked_idle.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/projector/app/projections/resource_registry.py
+  dedupe_key: 'code2llm:smell:data_clump:services/projector/app/projections/resource_registry.py:101:Data
+    Clump: payload, occurred_at, db'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: payload, occurred_at, db'
+  description: 'code2llm reports `Data Clump: payload, occurred_at, db` in `services/projector/app/projections/incidents.py:193`.
+
+
+    Arguments (payload, occurred_at, db) are used together in multiple functions:
+    services.projector.app.projections.resource_registry._handle_resource_registered,
+    services.projector.app.projections.resource_registry._handle_transfer_requested,
+    services.projector.app.projections.resource_registry._handle_transfer_completed,
+    services.projector.app.projections.resource_registry._handle_transfer_failed,
+    services.projector.app.projections.incidents._upsert_rag_quality, services.projector.app.projections.agent_fleet._handle_agent_registered,
+    services.projector.app.projections.agent_fleet._handle_agent_heartbeat, services.projector.app.projections.agent_fleet._handle_task_assigned_to_agent,
+    services.projector.app.projections.agent_fleet._handle_agent_marked_idle.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/projector/app/projections/incidents.py
+  dedupe_key: 'code2llm:smell:data_clump:services/projector/app/projections/incidents.py:193:Data
+    Clump: payload, occurred_at, db'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: payload, occurred_at, db'
+  description: 'code2llm reports `Data Clump: payload, occurred_at, db` in `services/projector/app/projections/agent_fleet.py:19`.
+
+
+    Arguments (payload, occurred_at, db) are used together in multiple functions:
+    services.projector.app.projections.resource_registry._handle_resource_registered,
+    services.projector.app.projections.resource_registry._handle_transfer_requested,
+    services.projector.app.projections.resource_registry._handle_transfer_completed,
+    services.projector.app.projections.resource_registry._handle_transfer_failed,
+    services.projector.app.projections.incidents._upsert_rag_quality, services.projector.app.projections.agent_fleet._handle_agent_registered,
+    services.projector.app.projections.agent_fleet._handle_agent_heartbeat, services.projector.app.projections.agent_fleet._handle_task_assigned_to_agent,
+    services.projector.app.projections.agent_fleet._handle_agent_marked_idle.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/projector/app/projections/agent_fleet.py
+  dedupe_key: 'code2llm:smell:data_clump:services/projector/app/projections/agent_fleet.py:19:Data
+    Clump: payload, occurred_at, db'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: payload, occurred_at, db'
+  description: 'code2llm reports `Data Clump: payload, occurred_at, db` in `services/projector/app/projections/agent_fleet.py:40`.
+
+
+    Arguments (payload, occurred_at, db) are used together in multiple functions:
+    services.projector.app.projections.resource_registry._handle_resource_registered,
+    services.projector.app.projections.resource_registry._handle_transfer_requested,
+    services.projector.app.projections.resource_registry._handle_transfer_completed,
+    services.projector.app.projections.resource_registry._handle_transfer_failed,
+    services.projector.app.projections.incidents._upsert_rag_quality, services.projector.app.projections.agent_fleet._handle_agent_registered,
+    services.projector.app.projections.agent_fleet._handle_agent_heartbeat, services.projector.app.projections.agent_fleet._handle_task_assigned_to_agent,
+    services.projector.app.projections.agent_fleet._handle_agent_marked_idle.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/projector/app/projections/agent_fleet.py
+  dedupe_key: 'code2llm:smell:data_clump:services/projector/app/projections/agent_fleet.py:40:Data
+    Clump: payload, occurred_at, db'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: payload, occurred_at, db'
+  description: 'code2llm reports `Data Clump: payload, occurred_at, db` in `services/projector/app/projections/agent_fleet.py:59`.
+
+
+    Arguments (payload, occurred_at, db) are used together in multiple functions:
+    services.projector.app.projections.resource_registry._handle_resource_registered,
+    services.projector.app.projections.resource_registry._handle_transfer_requested,
+    services.projector.app.projections.resource_registry._handle_transfer_completed,
+    services.projector.app.projections.resource_registry._handle_transfer_failed,
+    services.projector.app.projections.incidents._upsert_rag_quality, services.projector.app.projections.agent_fleet._handle_agent_registered,
+    services.projector.app.projections.agent_fleet._handle_agent_heartbeat, services.projector.app.projections.agent_fleet._handle_task_assigned_to_agent,
+    services.projector.app.projections.agent_fleet._handle_agent_marked_idle.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/projector/app/projections/agent_fleet.py
+  dedupe_key: 'code2llm:smell:data_clump:services/projector/app/projections/agent_fleet.py:59:Data
+    Clump: payload, occurred_at, db'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: payload, occurred_at, db'
+  description: 'code2llm reports `Data Clump: payload, occurred_at, db` in `services/projector/app/projections/agent_fleet.py:78`.
+
+
+    Arguments (payload, occurred_at, db) are used together in multiple functions:
+    services.projector.app.projections.resource_registry._handle_resource_registered,
+    services.projector.app.projections.resource_registry._handle_transfer_requested,
+    services.projector.app.projections.resource_registry._handle_transfer_completed,
+    services.projector.app.projections.resource_registry._handle_transfer_failed,
+    services.projector.app.projections.incidents._upsert_rag_quality, services.projector.app.projections.agent_fleet._handle_agent_registered,
+    services.projector.app.projections.agent_fleet._handle_agent_heartbeat, services.projector.app.projections.agent_fleet._handle_task_assigned_to_agent,
+    services.projector.app.projections.agent_fleet._handle_agent_marked_idle.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/projector/app/projections/agent_fleet.py
+  dedupe_key: 'code2llm:smell:data_clump:services/projector/app/projections/agent_fleet.py:78:Data
+    Clump: payload, occurred_at, db'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: payload, occurred_at, db, event_type'
+  description: 'code2llm reports `Data Clump: payload, occurred_at, db, event_type`
     in `services/projector/app/projections/task_board.py:19`.
 
 
-    Arguments (event_type, db, payload, occurred_at) are used together in multiple
+    Arguments (payload, occurred_at, db, event_type) are used together in multiple
     functions: services.projector.app.projections.task_board._handle_task_created,
     services.projector.app.projections.task_board._handle_task_assigned, services.projector.app.projections.task_board._handle_task_started,
     services.projector.app.projections.task_board._handle_task_completed, services.projector.app.projections.task_board._handle_task_failed.
@@ -1673,14 +2519,14 @@ tickets:
   files:
   - services/projector/app/projections/task_board.py
   dedupe_key: 'code2llm:smell:data_clump:services/projector/app/projections/task_board.py:19:Data
-    Clump: event_type, db, payload, occurred_at'
+    Clump: payload, occurred_at, db, event_type'
 - signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: event_type, db, payload, occurred_at'
-  description: 'code2llm reports `Data Clump: event_type, db, payload, occurred_at`
+  title: 'Address code smell: Data Clump: payload, occurred_at, db, event_type'
+  description: 'code2llm reports `Data Clump: payload, occurred_at, db, event_type`
     in `services/projector/app/projections/task_board.py:55`.
 
 
-    Arguments (event_type, db, payload, occurred_at) are used together in multiple
+    Arguments (payload, occurred_at, db, event_type) are used together in multiple
     functions: services.projector.app.projections.task_board._handle_task_created,
     services.projector.app.projections.task_board._handle_task_assigned, services.projector.app.projections.task_board._handle_task_started,
     services.projector.app.projections.task_board._handle_task_completed, services.projector.app.projections.task_board._handle_task_failed.
@@ -1696,14 +2542,14 @@ tickets:
   files:
   - services/projector/app/projections/task_board.py
   dedupe_key: 'code2llm:smell:data_clump:services/projector/app/projections/task_board.py:55:Data
-    Clump: event_type, db, payload, occurred_at'
+    Clump: payload, occurred_at, db, event_type'
 - signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: event_type, db, payload, occurred_at'
-  description: 'code2llm reports `Data Clump: event_type, db, payload, occurred_at`
+  title: 'Address code smell: Data Clump: payload, occurred_at, db, event_type'
+  description: 'code2llm reports `Data Clump: payload, occurred_at, db, event_type`
     in `services/projector/app/projections/task_board.py:78`.
 
 
-    Arguments (event_type, db, payload, occurred_at) are used together in multiple
+    Arguments (payload, occurred_at, db, event_type) are used together in multiple
     functions: services.projector.app.projections.task_board._handle_task_created,
     services.projector.app.projections.task_board._handle_task_assigned, services.projector.app.projections.task_board._handle_task_started,
     services.projector.app.projections.task_board._handle_task_completed, services.projector.app.projections.task_board._handle_task_failed.
@@ -1719,14 +2565,14 @@ tickets:
   files:
   - services/projector/app/projections/task_board.py
   dedupe_key: 'code2llm:smell:data_clump:services/projector/app/projections/task_board.py:78:Data
-    Clump: event_type, db, payload, occurred_at'
+    Clump: payload, occurred_at, db, event_type'
 - signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: event_type, db, payload, occurred_at'
-  description: 'code2llm reports `Data Clump: event_type, db, payload, occurred_at`
+  title: 'Address code smell: Data Clump: payload, occurred_at, db, event_type'
+  description: 'code2llm reports `Data Clump: payload, occurred_at, db, event_type`
     in `services/projector/app/projections/task_board.py:87`.
 
 
-    Arguments (event_type, db, payload, occurred_at) are used together in multiple
+    Arguments (payload, occurred_at, db, event_type) are used together in multiple
     functions: services.projector.app.projections.task_board._handle_task_created,
     services.projector.app.projections.task_board._handle_task_assigned, services.projector.app.projections.task_board._handle_task_started,
     services.projector.app.projections.task_board._handle_task_completed, services.projector.app.projections.task_board._handle_task_failed.
@@ -1742,14 +2588,14 @@ tickets:
   files:
   - services/projector/app/projections/task_board.py
   dedupe_key: 'code2llm:smell:data_clump:services/projector/app/projections/task_board.py:87:Data
-    Clump: event_type, db, payload, occurred_at'
+    Clump: payload, occurred_at, db, event_type'
 - signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: event_type, db, payload, occurred_at'
-  description: 'code2llm reports `Data Clump: event_type, db, payload, occurred_at`
+  title: 'Address code smell: Data Clump: payload, occurred_at, db, event_type'
+  description: 'code2llm reports `Data Clump: payload, occurred_at, db, event_type`
     in `services/projector/app/projections/task_board.py:109`.
 
 
-    Arguments (event_type, db, payload, occurred_at) are used together in multiple
+    Arguments (payload, occurred_at, db, event_type) are used together in multiple
     functions: services.projector.app.projections.task_board._handle_task_created,
     services.projector.app.projections.task_board._handle_task_assigned, services.projector.app.projections.task_board._handle_task_started,
     services.projector.app.projections.task_board._handle_task_completed, services.projector.app.projections.task_board._handle_task_failed.
@@ -1765,13 +2611,93 @@ tickets:
   files:
   - services/projector/app/projections/task_board.py
   dedupe_key: 'code2llm:smell:data_clump:services/projector/app/projections/task_board.py:109:Data
-    Clump: event_type, db, payload, occurred_at'
+    Clump: payload, occurred_at, db, event_type'
 - signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: lines, list_scope, scope_uris'
-  description: 'code2llm reports `Data Clump: lines, list_scope, scope_uris` in `services/web/app/chat.py:300`.
+  title: 'Address code smell: Data Clump: payload, subject, self'
+  description: 'code2llm reports `Data Clump: payload, subject, self` in `services/orchestrator/app/infrastructure/nats_bus.py:40`.
 
 
-    Arguments (lines, list_scope, scope_uris) are used together in multiple functions:
+    Arguments (payload, subject, self) are used together in multiple functions: services.orchestrator.app.infrastructure.nats_bus.NATSBus.publish,
+    services.orchestrator.app.application.command_bus.CommandBus._publish.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/infrastructure/nats_bus.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/infrastructure/nats_bus.py:40:Data
+    Clump: payload, subject, self'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: payload, subject, self'
+  description: 'code2llm reports `Data Clump: payload, subject, self` in `services/orchestrator/app/application/command_bus.py:791`.
+
+
+    Arguments (payload, subject, self) are used together in multiple functions: services.orchestrator.app.infrastructure.nats_bus.NATSBus.publish,
+    services.orchestrator.app.application.command_bus.CommandBus._publish.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/orchestrator/app/application/command_bus.py
+  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:791:Data
+    Clump: payload, subject, self'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: role_id, action, area_id'
+  description: 'code2llm reports `Data Clump: role_id, action, area_id` in `services/web/app/resource_areas.py:129`.
+
+
+    Arguments (role_id, action, area_id) are used together in multiple functions:
+    services.web.app.resource_areas.agent_may_access, services.web.app.resource_areas._matrix_access_decision.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/web/app/resource_areas.py
+  dedupe_key: 'code2llm:smell:data_clump:services/web/app/resource_areas.py:129:Data
+    Clump: role_id, action, area_id'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: role_id, action, area_id'
+  description: 'code2llm reports `Data Clump: role_id, action, area_id` in `services/web/app/resource_areas.py:154`.
+
+
+    Arguments (role_id, action, area_id) are used together in multiple functions:
+    services.web.app.resource_areas.agent_may_access, services.web.app.resource_areas._matrix_access_decision.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - services/web/app/resource_areas.py
+  dedupe_key: 'code2llm:smell:data_clump:services/web/app/resource_areas.py:154:Data
+    Clump: role_id, action, area_id'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: scope_uris, list_scope, lines'
+  description: 'code2llm reports `Data Clump: scope_uris, list_scope, lines` in `services/web/app/chat.py:366`.
+
+
+    Arguments (scope_uris, list_scope, lines) are used together in multiple functions:
     services.web.app.chat._append_user_context_only, services.web.app.chat._append_scope_uris.
 
 
@@ -1784,14 +2710,14 @@ tickets:
   - data-clump
   files:
   - services/web/app/chat.py
-  dedupe_key: 'code2llm:smell:data_clump:services/web/app/chat.py:300:Data Clump:
-    lines, list_scope, scope_uris'
+  dedupe_key: 'code2llm:smell:data_clump:services/web/app/chat.py:366:Data Clump:
+    scope_uris, list_scope, lines'
 - signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: lines, list_scope, scope_uris'
-  description: 'code2llm reports `Data Clump: lines, list_scope, scope_uris` in `services/web/app/chat.py:314`.
+  title: 'Address code smell: Data Clump: scope_uris, list_scope, lines'
+  description: 'code2llm reports `Data Clump: scope_uris, list_scope, lines` in `services/web/app/chat.py:380`.
 
 
-    Arguments (lines, list_scope, scope_uris) are used together in multiple functions:
+    Arguments (scope_uris, list_scope, lines) are used together in multiple functions:
     services.web.app.chat._append_user_context_only, services.web.app.chat._append_scope_uris.
 
 
@@ -1804,15 +2730,15 @@ tickets:
   - data-clump
   files:
   - services/web/app/chat.py
-  dedupe_key: 'code2llm:smell:data_clump:services/web/app/chat.py:314:Data Clump:
-    lines, list_scope, scope_uris'
+  dedupe_key: 'code2llm:smell:data_clump:services/web/app/chat.py:380:Data Clump:
+    scope_uris, list_scope, lines'
 - signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: llm_error, http_status, text, source_count'
-  description: 'code2llm reports `Data Clump: llm_error, http_status, text, source_count`
+  title: 'Address code smell: Data Clump: text, llm_error, http_status, source_count'
+  description: 'code2llm reports `Data Clump: text, llm_error, http_status, source_count`
     in `services/orchestrator/app/observability/incidents.py:41`.
 
 
-    Arguments (llm_error, http_status, text, source_count) are used together in multiple
+    Arguments (text, llm_error, http_status, source_count) are used together in multiple
     functions: services.orchestrator.app.observability.incidents._backend_unavailable,
     services.orchestrator.app.observability.incidents._rag_timeout, services.orchestrator.app.observability.incidents._vector_db_unavailable,
     services.orchestrator.app.observability.incidents._embedding_pipeline_failed,
@@ -1830,14 +2756,14 @@ tickets:
   files:
   - services/orchestrator/app/observability/incidents.py
   dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/observability/incidents.py:41:Data
-    Clump: llm_error, http_status, text, source_count'
+    Clump: text, llm_error, http_status, source_count'
 - signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: llm_error, http_status, text, source_count'
-  description: 'code2llm reports `Data Clump: llm_error, http_status, text, source_count`
+  title: 'Address code smell: Data Clump: text, llm_error, http_status, source_count'
+  description: 'code2llm reports `Data Clump: text, llm_error, http_status, source_count`
     in `services/orchestrator/app/observability/incidents.py:50`.
 
 
-    Arguments (llm_error, http_status, text, source_count) are used together in multiple
+    Arguments (text, llm_error, http_status, source_count) are used together in multiple
     functions: services.orchestrator.app.observability.incidents._backend_unavailable,
     services.orchestrator.app.observability.incidents._rag_timeout, services.orchestrator.app.observability.incidents._vector_db_unavailable,
     services.orchestrator.app.observability.incidents._embedding_pipeline_failed,
@@ -1855,14 +2781,14 @@ tickets:
   files:
   - services/orchestrator/app/observability/incidents.py
   dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/observability/incidents.py:50:Data
-    Clump: llm_error, http_status, text, source_count'
+    Clump: text, llm_error, http_status, source_count'
 - signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: llm_error, http_status, text, source_count'
-  description: 'code2llm reports `Data Clump: llm_error, http_status, text, source_count`
+  title: 'Address code smell: Data Clump: text, llm_error, http_status, source_count'
+  description: 'code2llm reports `Data Clump: text, llm_error, http_status, source_count`
     in `services/orchestrator/app/observability/incidents.py:59`.
 
 
-    Arguments (llm_error, http_status, text, source_count) are used together in multiple
+    Arguments (text, llm_error, http_status, source_count) are used together in multiple
     functions: services.orchestrator.app.observability.incidents._backend_unavailable,
     services.orchestrator.app.observability.incidents._rag_timeout, services.orchestrator.app.observability.incidents._vector_db_unavailable,
     services.orchestrator.app.observability.incidents._embedding_pipeline_failed,
@@ -1880,14 +2806,14 @@ tickets:
   files:
   - services/orchestrator/app/observability/incidents.py
   dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/observability/incidents.py:59:Data
-    Clump: llm_error, http_status, text, source_count'
+    Clump: text, llm_error, http_status, source_count'
 - signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: llm_error, http_status, text, source_count'
-  description: 'code2llm reports `Data Clump: llm_error, http_status, text, source_count`
+  title: 'Address code smell: Data Clump: text, llm_error, http_status, source_count'
+  description: 'code2llm reports `Data Clump: text, llm_error, http_status, source_count`
     in `services/orchestrator/app/observability/incidents.py:68`.
 
 
-    Arguments (llm_error, http_status, text, source_count) are used together in multiple
+    Arguments (text, llm_error, http_status, source_count) are used together in multiple
     functions: services.orchestrator.app.observability.incidents._backend_unavailable,
     services.orchestrator.app.observability.incidents._rag_timeout, services.orchestrator.app.observability.incidents._vector_db_unavailable,
     services.orchestrator.app.observability.incidents._embedding_pipeline_failed,
@@ -1905,14 +2831,14 @@ tickets:
   files:
   - services/orchestrator/app/observability/incidents.py
   dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/observability/incidents.py:68:Data
-    Clump: llm_error, http_status, text, source_count'
+    Clump: text, llm_error, http_status, source_count'
 - signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: llm_error, http_status, text, source_count'
-  description: 'code2llm reports `Data Clump: llm_error, http_status, text, source_count`
+  title: 'Address code smell: Data Clump: text, llm_error, http_status, source_count'
+  description: 'code2llm reports `Data Clump: text, llm_error, http_status, source_count`
     in `services/orchestrator/app/observability/incidents.py:77`.
 
 
-    Arguments (llm_error, http_status, text, source_count) are used together in multiple
+    Arguments (text, llm_error, http_status, source_count) are used together in multiple
     functions: services.orchestrator.app.observability.incidents._backend_unavailable,
     services.orchestrator.app.observability.incidents._rag_timeout, services.orchestrator.app.observability.incidents._vector_db_unavailable,
     services.orchestrator.app.observability.incidents._embedding_pipeline_failed,
@@ -1930,14 +2856,14 @@ tickets:
   files:
   - services/orchestrator/app/observability/incidents.py
   dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/observability/incidents.py:77:Data
-    Clump: llm_error, http_status, text, source_count'
+    Clump: text, llm_error, http_status, source_count'
 - signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: llm_error, http_status, text, source_count'
-  description: 'code2llm reports `Data Clump: llm_error, http_status, text, source_count`
+  title: 'Address code smell: Data Clump: text, llm_error, http_status, source_count'
+  description: 'code2llm reports `Data Clump: text, llm_error, http_status, source_count`
     in `services/orchestrator/app/observability/incidents.py:86`.
 
 
-    Arguments (llm_error, http_status, text, source_count) are used together in multiple
+    Arguments (text, llm_error, http_status, source_count) are used together in multiple
     functions: services.orchestrator.app.observability.incidents._backend_unavailable,
     services.orchestrator.app.observability.incidents._rag_timeout, services.orchestrator.app.observability.incidents._vector_db_unavailable,
     services.orchestrator.app.observability.incidents._embedding_pipeline_failed,
@@ -1955,14 +2881,14 @@ tickets:
   files:
   - services/orchestrator/app/observability/incidents.py
   dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/observability/incidents.py:86:Data
-    Clump: llm_error, http_status, text, source_count'
+    Clump: text, llm_error, http_status, source_count'
 - signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: llm_error, http_status, text, source_count'
-  description: 'code2llm reports `Data Clump: llm_error, http_status, text, source_count`
+  title: 'Address code smell: Data Clump: text, llm_error, http_status, source_count'
+  description: 'code2llm reports `Data Clump: text, llm_error, http_status, source_count`
     in `services/orchestrator/app/observability/incidents.py:95`.
 
 
-    Arguments (llm_error, http_status, text, source_count) are used together in multiple
+    Arguments (text, llm_error, http_status, source_count) are used together in multiple
     functions: services.orchestrator.app.observability.incidents._backend_unavailable,
     services.orchestrator.app.observability.incidents._rag_timeout, services.orchestrator.app.observability.incidents._vector_db_unavailable,
     services.orchestrator.app.observability.incidents._embedding_pipeline_failed,
@@ -1980,598 +2906,13 @@ tickets:
   files:
   - services/orchestrator/app/observability/incidents.py
   dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/observability/incidents.py:95:Data
-    Clump: llm_error, http_status, text, source_count'
+    Clump: text, llm_error, http_status, source_count'
 - signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: occurred_at, db, payload'
-  description: 'code2llm reports `Data Clump: occurred_at, db, payload` in `services/projector/app/projections/agent_fleet.py:19`.
+  title: 'Address code smell: Data Clump: user_message, step, session'
+  description: 'code2llm reports `Data Clump: user_message, step, session` in `services/web/app/agent_workroom.py:321`.
 
 
-    Arguments (occurred_at, db, payload) are used together in multiple functions:
-    services.projector.app.projections.agent_fleet._handle_agent_registered, services.projector.app.projections.agent_fleet._handle_agent_heartbeat,
-    services.projector.app.projections.agent_fleet._handle_task_assigned_to_agent,
-    services.projector.app.projections.agent_fleet._handle_agent_marked_idle, services.projector.app.projections.incidents._upsert_rag_quality,
-    services.projector.app.projections.resource_registry._handle_resource_registered,
-    services.projector.app.projections.resource_registry._handle_transfer_requested,
-    services.projector.app.projections.resource_registry._handle_transfer_completed,
-    services.projector.app.projections.resource_registry._handle_transfer_failed.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - data-clump
-  files:
-  - services/projector/app/projections/agent_fleet.py
-  dedupe_key: 'code2llm:smell:data_clump:services/projector/app/projections/agent_fleet.py:19:Data
-    Clump: occurred_at, db, payload'
-- signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: occurred_at, db, payload'
-  description: 'code2llm reports `Data Clump: occurred_at, db, payload` in `services/projector/app/projections/agent_fleet.py:40`.
-
-
-    Arguments (occurred_at, db, payload) are used together in multiple functions:
-    services.projector.app.projections.agent_fleet._handle_agent_registered, services.projector.app.projections.agent_fleet._handle_agent_heartbeat,
-    services.projector.app.projections.agent_fleet._handle_task_assigned_to_agent,
-    services.projector.app.projections.agent_fleet._handle_agent_marked_idle, services.projector.app.projections.incidents._upsert_rag_quality,
-    services.projector.app.projections.resource_registry._handle_resource_registered,
-    services.projector.app.projections.resource_registry._handle_transfer_requested,
-    services.projector.app.projections.resource_registry._handle_transfer_completed,
-    services.projector.app.projections.resource_registry._handle_transfer_failed.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - data-clump
-  files:
-  - services/projector/app/projections/agent_fleet.py
-  dedupe_key: 'code2llm:smell:data_clump:services/projector/app/projections/agent_fleet.py:40:Data
-    Clump: occurred_at, db, payload'
-- signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: occurred_at, db, payload'
-  description: 'code2llm reports `Data Clump: occurred_at, db, payload` in `services/projector/app/projections/agent_fleet.py:59`.
-
-
-    Arguments (occurred_at, db, payload) are used together in multiple functions:
-    services.projector.app.projections.agent_fleet._handle_agent_registered, services.projector.app.projections.agent_fleet._handle_agent_heartbeat,
-    services.projector.app.projections.agent_fleet._handle_task_assigned_to_agent,
-    services.projector.app.projections.agent_fleet._handle_agent_marked_idle, services.projector.app.projections.incidents._upsert_rag_quality,
-    services.projector.app.projections.resource_registry._handle_resource_registered,
-    services.projector.app.projections.resource_registry._handle_transfer_requested,
-    services.projector.app.projections.resource_registry._handle_transfer_completed,
-    services.projector.app.projections.resource_registry._handle_transfer_failed.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - data-clump
-  files:
-  - services/projector/app/projections/agent_fleet.py
-  dedupe_key: 'code2llm:smell:data_clump:services/projector/app/projections/agent_fleet.py:59:Data
-    Clump: occurred_at, db, payload'
-- signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: occurred_at, db, payload'
-  description: 'code2llm reports `Data Clump: occurred_at, db, payload` in `services/projector/app/projections/agent_fleet.py:78`.
-
-
-    Arguments (occurred_at, db, payload) are used together in multiple functions:
-    services.projector.app.projections.agent_fleet._handle_agent_registered, services.projector.app.projections.agent_fleet._handle_agent_heartbeat,
-    services.projector.app.projections.agent_fleet._handle_task_assigned_to_agent,
-    services.projector.app.projections.agent_fleet._handle_agent_marked_idle, services.projector.app.projections.incidents._upsert_rag_quality,
-    services.projector.app.projections.resource_registry._handle_resource_registered,
-    services.projector.app.projections.resource_registry._handle_transfer_requested,
-    services.projector.app.projections.resource_registry._handle_transfer_completed,
-    services.projector.app.projections.resource_registry._handle_transfer_failed.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - data-clump
-  files:
-  - services/projector/app/projections/agent_fleet.py
-  dedupe_key: 'code2llm:smell:data_clump:services/projector/app/projections/agent_fleet.py:78:Data
-    Clump: occurred_at, db, payload'
-- signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: occurred_at, db, payload'
-  description: 'code2llm reports `Data Clump: occurred_at, db, payload` in `services/projector/app/projections/incidents.py:193`.
-
-
-    Arguments (occurred_at, db, payload) are used together in multiple functions:
-    services.projector.app.projections.agent_fleet._handle_agent_registered, services.projector.app.projections.agent_fleet._handle_agent_heartbeat,
-    services.projector.app.projections.agent_fleet._handle_task_assigned_to_agent,
-    services.projector.app.projections.agent_fleet._handle_agent_marked_idle, services.projector.app.projections.incidents._upsert_rag_quality,
-    services.projector.app.projections.resource_registry._handle_resource_registered,
-    services.projector.app.projections.resource_registry._handle_transfer_requested,
-    services.projector.app.projections.resource_registry._handle_transfer_completed,
-    services.projector.app.projections.resource_registry._handle_transfer_failed.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - data-clump
-  files:
-  - services/projector/app/projections/incidents.py
-  dedupe_key: 'code2llm:smell:data_clump:services/projector/app/projections/incidents.py:193:Data
-    Clump: occurred_at, db, payload'
-- signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: occurred_at, db, payload'
-  description: 'code2llm reports `Data Clump: occurred_at, db, payload` in `services/projector/app/projections/resource_registry.py:19`.
-
-
-    Arguments (occurred_at, db, payload) are used together in multiple functions:
-    services.projector.app.projections.agent_fleet._handle_agent_registered, services.projector.app.projections.agent_fleet._handle_agent_heartbeat,
-    services.projector.app.projections.agent_fleet._handle_task_assigned_to_agent,
-    services.projector.app.projections.agent_fleet._handle_agent_marked_idle, services.projector.app.projections.incidents._upsert_rag_quality,
-    services.projector.app.projections.resource_registry._handle_resource_registered,
-    services.projector.app.projections.resource_registry._handle_transfer_requested,
-    services.projector.app.projections.resource_registry._handle_transfer_completed,
-    services.projector.app.projections.resource_registry._handle_transfer_failed.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - data-clump
-  files:
-  - services/projector/app/projections/resource_registry.py
-  dedupe_key: 'code2llm:smell:data_clump:services/projector/app/projections/resource_registry.py:19:Data
-    Clump: occurred_at, db, payload'
-- signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: occurred_at, db, payload'
-  description: 'code2llm reports `Data Clump: occurred_at, db, payload` in `services/projector/app/projections/resource_registry.py:46`.
-
-
-    Arguments (occurred_at, db, payload) are used together in multiple functions:
-    services.projector.app.projections.agent_fleet._handle_agent_registered, services.projector.app.projections.agent_fleet._handle_agent_heartbeat,
-    services.projector.app.projections.agent_fleet._handle_task_assigned_to_agent,
-    services.projector.app.projections.agent_fleet._handle_agent_marked_idle, services.projector.app.projections.incidents._upsert_rag_quality,
-    services.projector.app.projections.resource_registry._handle_resource_registered,
-    services.projector.app.projections.resource_registry._handle_transfer_requested,
-    services.projector.app.projections.resource_registry._handle_transfer_completed,
-    services.projector.app.projections.resource_registry._handle_transfer_failed.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - data-clump
-  files:
-  - services/projector/app/projections/resource_registry.py
-  dedupe_key: 'code2llm:smell:data_clump:services/projector/app/projections/resource_registry.py:46:Data
-    Clump: occurred_at, db, payload'
-- signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: occurred_at, db, payload'
-  description: 'code2llm reports `Data Clump: occurred_at, db, payload` in `services/projector/app/projections/resource_registry.py:77`.
-
-
-    Arguments (occurred_at, db, payload) are used together in multiple functions:
-    services.projector.app.projections.agent_fleet._handle_agent_registered, services.projector.app.projections.agent_fleet._handle_agent_heartbeat,
-    services.projector.app.projections.agent_fleet._handle_task_assigned_to_agent,
-    services.projector.app.projections.agent_fleet._handle_agent_marked_idle, services.projector.app.projections.incidents._upsert_rag_quality,
-    services.projector.app.projections.resource_registry._handle_resource_registered,
-    services.projector.app.projections.resource_registry._handle_transfer_requested,
-    services.projector.app.projections.resource_registry._handle_transfer_completed,
-    services.projector.app.projections.resource_registry._handle_transfer_failed.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - data-clump
-  files:
-  - services/projector/app/projections/resource_registry.py
-  dedupe_key: 'code2llm:smell:data_clump:services/projector/app/projections/resource_registry.py:77:Data
-    Clump: occurred_at, db, payload'
-- signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: occurred_at, db, payload'
-  description: 'code2llm reports `Data Clump: occurred_at, db, payload` in `services/projector/app/projections/resource_registry.py:101`.
-
-
-    Arguments (occurred_at, db, payload) are used together in multiple functions:
-    services.projector.app.projections.agent_fleet._handle_agent_registered, services.projector.app.projections.agent_fleet._handle_agent_heartbeat,
-    services.projector.app.projections.agent_fleet._handle_task_assigned_to_agent,
-    services.projector.app.projections.agent_fleet._handle_agent_marked_idle, services.projector.app.projections.incidents._upsert_rag_quality,
-    services.projector.app.projections.resource_registry._handle_resource_registered,
-    services.projector.app.projections.resource_registry._handle_transfer_requested,
-    services.projector.app.projections.resource_registry._handle_transfer_completed,
-    services.projector.app.projections.resource_registry._handle_transfer_failed.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - data-clump
-  files:
-  - services/projector/app/projections/resource_registry.py
-  dedupe_key: 'code2llm:smell:data_clump:services/projector/app/projections/resource_registry.py:101:Data
-    Clump: occurred_at, db, payload'
-- signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: self, aggregate_type, aggregate_id'
-  description: 'code2llm reports `Data Clump: self, aggregate_type, aggregate_id`
-    in `services/orchestrator/app/infrastructure/eventstore_dual.py:46`.
-
-
-    Arguments (self, aggregate_type, aggregate_id) are used together in multiple functions:
-    services.orchestrator.app.infrastructure.eventstore_dual.DualEventStore.get_events_for_aggregate,
-    services.orchestrator.app.infrastructure.eventstore.EventStore.get_events_for_aggregate,
-    services.orchestrator.app.infrastructure.eventstore_esdb.EsdbEventStore.get_events_for_aggregate.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - data-clump
-  files:
-  - services/orchestrator/app/infrastructure/eventstore_dual.py
-  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/infrastructure/eventstore_dual.py:46:Data
-    Clump: self, aggregate_type, aggregate_id'
-- signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: self, aggregate_type, aggregate_id'
-  description: 'code2llm reports `Data Clump: self, aggregate_type, aggregate_id`
-    in `services/orchestrator/app/infrastructure/eventstore.py:125`.
-
-
-    Arguments (self, aggregate_type, aggregate_id) are used together in multiple functions:
-    services.orchestrator.app.infrastructure.eventstore_dual.DualEventStore.get_events_for_aggregate,
-    services.orchestrator.app.infrastructure.eventstore.EventStore.get_events_for_aggregate,
-    services.orchestrator.app.infrastructure.eventstore_esdb.EsdbEventStore.get_events_for_aggregate.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - data-clump
-  files:
-  - services/orchestrator/app/infrastructure/eventstore.py
-  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/infrastructure/eventstore.py:125:Data
-    Clump: self, aggregate_type, aggregate_id'
-- signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: self, aggregate_type, aggregate_id'
-  description: 'code2llm reports `Data Clump: self, aggregate_type, aggregate_id`
-    in `services/orchestrator/app/infrastructure/eventstore_esdb.py:126`.
-
-
-    Arguments (self, aggregate_type, aggregate_id) are used together in multiple functions:
-    services.orchestrator.app.infrastructure.eventstore_dual.DualEventStore.get_events_for_aggregate,
-    services.orchestrator.app.infrastructure.eventstore.EventStore.get_events_for_aggregate,
-    services.orchestrator.app.infrastructure.eventstore_esdb.EsdbEventStore.get_events_for_aggregate.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - data-clump
-  files:
-  - services/orchestrator/app/infrastructure/eventstore_esdb.py
-  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/infrastructure/eventstore_esdb.py:126:Data
-    Clump: self, aggregate_type, aggregate_id'
-- signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: self, aggregate_type, events, aggregate_id'
-  description: 'code2llm reports `Data Clump: self, aggregate_type, events, aggregate_id`
-    in `services/orchestrator/app/infrastructure/eventstore_dual.py:15`.
-
-
-    Arguments (self, aggregate_type, events, aggregate_id) are used together in multiple
-    functions: services.orchestrator.app.infrastructure.eventstore_dual.DualEventStore.append,
-    services.orchestrator.app.infrastructure.eventstore.EventStore.append, services.orchestrator.app.infrastructure.eventstore_esdb.EsdbEventStore.append,
-    services.orchestrator.app.application.command_bus.CommandBus._append_and_publish.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - data-clump
-  files:
-  - services/orchestrator/app/infrastructure/eventstore_dual.py
-  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/infrastructure/eventstore_dual.py:15:Data
-    Clump: self, aggregate_type, events, aggregate_id'
-- signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: self, aggregate_type, events, aggregate_id'
-  description: 'code2llm reports `Data Clump: self, aggregate_type, events, aggregate_id`
-    in `services/orchestrator/app/infrastructure/eventstore.py:56`.
-
-
-    Arguments (self, aggregate_type, events, aggregate_id) are used together in multiple
-    functions: services.orchestrator.app.infrastructure.eventstore_dual.DualEventStore.append,
-    services.orchestrator.app.infrastructure.eventstore.EventStore.append, services.orchestrator.app.infrastructure.eventstore_esdb.EsdbEventStore.append,
-    services.orchestrator.app.application.command_bus.CommandBus._append_and_publish.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - data-clump
-  files:
-  - services/orchestrator/app/infrastructure/eventstore.py
-  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/infrastructure/eventstore.py:56:Data
-    Clump: self, aggregate_type, events, aggregate_id'
-- signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: self, aggregate_type, events, aggregate_id'
-  description: 'code2llm reports `Data Clump: self, aggregate_type, events, aggregate_id`
-    in `services/orchestrator/app/infrastructure/eventstore_esdb.py:51`.
-
-
-    Arguments (self, aggregate_type, events, aggregate_id) are used together in multiple
-    functions: services.orchestrator.app.infrastructure.eventstore_dual.DualEventStore.append,
-    services.orchestrator.app.infrastructure.eventstore.EventStore.append, services.orchestrator.app.infrastructure.eventstore_esdb.EsdbEventStore.append,
-    services.orchestrator.app.application.command_bus.CommandBus._append_and_publish.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - data-clump
-  files:
-  - services/orchestrator/app/infrastructure/eventstore_esdb.py
-  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/infrastructure/eventstore_esdb.py:51:Data
-    Clump: self, aggregate_type, events, aggregate_id'
-- signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: self, aggregate_type, events, aggregate_id'
-  description: 'code2llm reports `Data Clump: self, aggregate_type, events, aggregate_id`
-    in `services/orchestrator/app/application/command_bus.py:768`.
-
-
-    Arguments (self, aggregate_type, events, aggregate_id) are used together in multiple
-    functions: services.orchestrator.app.infrastructure.eventstore_dual.DualEventStore.append,
-    services.orchestrator.app.infrastructure.eventstore.EventStore.append, services.orchestrator.app.infrastructure.eventstore_esdb.EsdbEventStore.append,
-    services.orchestrator.app.application.command_bus.CommandBus._append_and_publish.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - data-clump
-  files:
-  - services/orchestrator/app/application/command_bus.py
-  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:768:Data
-    Clump: self, aggregate_type, events, aggregate_id'
-- signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: self, data, command_type'
-  description: 'code2llm reports `Data Clump: self, data, command_type` in `services/orchestrator/app/evolution/policy_engine.py:24`.
-
-
-    Arguments (self, data, command_type) are used together in multiple functions:
-    services.orchestrator.app.evolution.policy_engine.PolicyEngine.validate_command,
-    services.orchestrator.app.application.command_bus.CommandBus._apply_policy.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - data-clump
-  files:
-  - services/orchestrator/app/evolution/policy_engine.py
-  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/evolution/policy_engine.py:24:Data
-    Clump: self, data, command_type'
-- signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: self, data, command_type'
-  description: 'code2llm reports `Data Clump: self, data, command_type` in `services/orchestrator/app/application/command_bus.py:795`.
-
-
-    Arguments (self, data, command_type) are used together in multiple functions:
-    services.orchestrator.app.evolution.policy_engine.PolicyEngine.validate_command,
-    services.orchestrator.app.application.command_bus.CommandBus._apply_policy.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - data-clump
-  files:
-  - services/orchestrator/app/application/command_bus.py
-  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:795:Data
-    Clump: self, data, command_type'
-- signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: self, data, rule, command_type'
-  description: 'code2llm reports `Data Clump: self, data, rule, command_type` in `services/orchestrator/app/evolution/policy_engine.py:52`.
-
-
-    Arguments (self, data, rule, command_type) are used together in multiple functions:
-    services.orchestrator.app.evolution.policy_engine.PolicyEngine._validate_manifest,
-    services.orchestrator.app.evolution.policy_engine.PolicyEngine._validate_auto_risk.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - data-clump
-  files:
-  - services/orchestrator/app/evolution/policy_engine.py
-  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/evolution/policy_engine.py:52:Data
-    Clump: self, data, rule, command_type'
-- signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: self, data, rule, command_type'
-  description: 'code2llm reports `Data Clump: self, data, rule, command_type` in `services/orchestrator/app/evolution/policy_engine.py:72`.
-
-
-    Arguments (self, data, rule, command_type) are used together in multiple functions:
-    services.orchestrator.app.evolution.policy_engine.PolicyEngine._validate_manifest,
-    services.orchestrator.app.evolution.policy_engine.PolicyEngine._validate_auto_risk.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - data-clump
-  files:
-  - services/orchestrator/app/evolution/policy_engine.py
-  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/evolution/policy_engine.py:72:Data
-    Clump: self, data, rule, command_type'
-- signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: self, destination_path, uri'
-  description: 'code2llm reports `Data Clump: self, destination_path, uri` in `services/orchestrator/app/access/adapters/base.py:30`.
-
-
-    Arguments (self, destination_path, uri) are used together in multiple functions:
-    services.orchestrator.app.access.adapters.base.ResourceAdapter.copy_to_local,
-    services.orchestrator.app.access.adapters.localfs.LocalFsAdapter.copy_to_local,
-    services.orchestrator.app.access.adapters.http_adapter.HttpAdapter.copy_to_local.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - data-clump
-  files:
-  - services/orchestrator/app/access/adapters/base.py
-  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/access/adapters/base.py:30:Data
-    Clump: self, destination_path, uri'
-- signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: self, destination_path, uri'
-  description: 'code2llm reports `Data Clump: self, destination_path, uri` in `services/orchestrator/app/access/adapters/localfs.py:60`.
-
-
-    Arguments (self, destination_path, uri) are used together in multiple functions:
-    services.orchestrator.app.access.adapters.base.ResourceAdapter.copy_to_local,
-    services.orchestrator.app.access.adapters.localfs.LocalFsAdapter.copy_to_local,
-    services.orchestrator.app.access.adapters.http_adapter.HttpAdapter.copy_to_local.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - data-clump
-  files:
-  - services/orchestrator/app/access/adapters/localfs.py
-  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/access/adapters/localfs.py:60:Data
-    Clump: self, destination_path, uri'
-- signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: self, destination_path, uri'
-  description: 'code2llm reports `Data Clump: self, destination_path, uri` in `services/orchestrator/app/access/adapters/http_adapter.py:39`.
-
-
-    Arguments (self, destination_path, uri) are used together in multiple functions:
-    services.orchestrator.app.access.adapters.base.ResourceAdapter.copy_to_local,
-    services.orchestrator.app.access.adapters.localfs.LocalFsAdapter.copy_to_local,
-    services.orchestrator.app.access.adapters.http_adapter.HttpAdapter.copy_to_local.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - data-clump
-  files:
-  - services/orchestrator/app/access/adapters/http_adapter.py
-  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/access/adapters/http_adapter.py:39:Data
-    Clump: self, destination_path, uri'
-- signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: self, payload, subject'
-  description: 'code2llm reports `Data Clump: self, payload, subject` in `services/orchestrator/app/infrastructure/nats_bus.py:40`.
-
-
-    Arguments (self, payload, subject) are used together in multiple functions: services.orchestrator.app.infrastructure.nats_bus.NATSBus.publish,
-    services.orchestrator.app.application.command_bus.CommandBus._publish.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - data-clump
-  files:
-  - services/orchestrator/app/infrastructure/nats_bus.py
-  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/infrastructure/nats_bus.py:40:Data
-    Clump: self, payload, subject'
-- signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: self, payload, subject'
-  description: 'code2llm reports `Data Clump: self, payload, subject` in `services/orchestrator/app/application/command_bus.py:791`.
-
-
-    Arguments (self, payload, subject) are used together in multiple functions: services.orchestrator.app.infrastructure.nats_bus.NATSBus.publish,
-    services.orchestrator.app.application.command_bus.CommandBus._publish.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - data-clump
-  files:
-  - services/orchestrator/app/application/command_bus.py
-  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/application/command_bus.py:791:Data
-    Clump: self, payload, subject'
-- signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: session, user_message, step'
-  description: 'code2llm reports `Data Clump: session, user_message, step` in `services/web/app/agent_workroom.py:321`.
-
-
-    Arguments (session, user_message, step) are used together in multiple functions:
+    Arguments (user_message, step, session) are used together in multiple functions:
     services.web.app.agent_workroom._run_workroom_step, services.web.app.agent_workroom._run_analyze_workroom_step,
     services.web.app.agent_workroom._run_files_workroom_step, services.web.app.agent_workroom._run_shell_workroom_step,
     services.web.app.agent_workroom._run_summarize_workroom_step, services.web.app.agent_workroom._run_files_step.
@@ -2587,13 +2928,13 @@ tickets:
   files:
   - services/web/app/agent_workroom.py
   dedupe_key: 'code2llm:smell:data_clump:services/web/app/agent_workroom.py:321:Data
-    Clump: session, user_message, step'
+    Clump: user_message, step, session'
 - signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: session, user_message, step'
-  description: 'code2llm reports `Data Clump: session, user_message, step` in `services/web/app/agent_workroom.py:353`.
+  title: 'Address code smell: Data Clump: user_message, step, session'
+  description: 'code2llm reports `Data Clump: user_message, step, session` in `services/web/app/agent_workroom.py:353`.
 
 
-    Arguments (session, user_message, step) are used together in multiple functions:
+    Arguments (user_message, step, session) are used together in multiple functions:
     services.web.app.agent_workroom._run_workroom_step, services.web.app.agent_workroom._run_analyze_workroom_step,
     services.web.app.agent_workroom._run_files_workroom_step, services.web.app.agent_workroom._run_shell_workroom_step,
     services.web.app.agent_workroom._run_summarize_workroom_step, services.web.app.agent_workroom._run_files_step.
@@ -2609,13 +2950,13 @@ tickets:
   files:
   - services/web/app/agent_workroom.py
   dedupe_key: 'code2llm:smell:data_clump:services/web/app/agent_workroom.py:353:Data
-    Clump: session, user_message, step'
+    Clump: user_message, step, session'
 - signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: session, user_message, step'
-  description: 'code2llm reports `Data Clump: session, user_message, step` in `services/web/app/agent_workroom.py:366`.
+  title: 'Address code smell: Data Clump: user_message, step, session'
+  description: 'code2llm reports `Data Clump: user_message, step, session` in `services/web/app/agent_workroom.py:366`.
 
 
-    Arguments (session, user_message, step) are used together in multiple functions:
+    Arguments (user_message, step, session) are used together in multiple functions:
     services.web.app.agent_workroom._run_workroom_step, services.web.app.agent_workroom._run_analyze_workroom_step,
     services.web.app.agent_workroom._run_files_workroom_step, services.web.app.agent_workroom._run_shell_workroom_step,
     services.web.app.agent_workroom._run_summarize_workroom_step, services.web.app.agent_workroom._run_files_step.
@@ -2631,13 +2972,13 @@ tickets:
   files:
   - services/web/app/agent_workroom.py
   dedupe_key: 'code2llm:smell:data_clump:services/web/app/agent_workroom.py:366:Data
-    Clump: session, user_message, step'
+    Clump: user_message, step, session'
 - signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: session, user_message, step'
-  description: 'code2llm reports `Data Clump: session, user_message, step` in `services/web/app/agent_workroom.py:384`.
+  title: 'Address code smell: Data Clump: user_message, step, session'
+  description: 'code2llm reports `Data Clump: user_message, step, session` in `services/web/app/agent_workroom.py:384`.
 
 
-    Arguments (session, user_message, step) are used together in multiple functions:
+    Arguments (user_message, step, session) are used together in multiple functions:
     services.web.app.agent_workroom._run_workroom_step, services.web.app.agent_workroom._run_analyze_workroom_step,
     services.web.app.agent_workroom._run_files_workroom_step, services.web.app.agent_workroom._run_shell_workroom_step,
     services.web.app.agent_workroom._run_summarize_workroom_step, services.web.app.agent_workroom._run_files_step.
@@ -2653,13 +2994,13 @@ tickets:
   files:
   - services/web/app/agent_workroom.py
   dedupe_key: 'code2llm:smell:data_clump:services/web/app/agent_workroom.py:384:Data
-    Clump: session, user_message, step'
+    Clump: user_message, step, session'
 - signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: session, user_message, step'
-  description: 'code2llm reports `Data Clump: session, user_message, step` in `services/web/app/agent_workroom.py:400`.
+  title: 'Address code smell: Data Clump: user_message, step, session'
+  description: 'code2llm reports `Data Clump: user_message, step, session` in `services/web/app/agent_workroom.py:400`.
 
 
-    Arguments (session, user_message, step) are used together in multiple functions:
+    Arguments (user_message, step, session) are used together in multiple functions:
     services.web.app.agent_workroom._run_workroom_step, services.web.app.agent_workroom._run_analyze_workroom_step,
     services.web.app.agent_workroom._run_files_workroom_step, services.web.app.agent_workroom._run_shell_workroom_step,
     services.web.app.agent_workroom._run_summarize_workroom_step, services.web.app.agent_workroom._run_files_step.
@@ -2675,13 +3016,13 @@ tickets:
   files:
   - services/web/app/agent_workroom.py
   dedupe_key: 'code2llm:smell:data_clump:services/web/app/agent_workroom.py:400:Data
-    Clump: session, user_message, step'
+    Clump: user_message, step, session'
 - signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: session, user_message, step'
-  description: 'code2llm reports `Data Clump: session, user_message, step` in `services/web/app/agent_workroom.py:431`.
+  title: 'Address code smell: Data Clump: user_message, step, session'
+  description: 'code2llm reports `Data Clump: user_message, step, session` in `services/web/app/agent_workroom.py:431`.
 
 
-    Arguments (session, user_message, step) are used together in multiple functions:
+    Arguments (user_message, step, session) are used together in multiple functions:
     services.web.app.agent_workroom._run_workroom_step, services.web.app.agent_workroom._run_analyze_workroom_step,
     services.web.app.agent_workroom._run_files_workroom_step, services.web.app.agent_workroom._run_shell_workroom_step,
     services.web.app.agent_workroom._run_summarize_workroom_step, services.web.app.agent_workroom._run_files_step.
@@ -2697,217 +3038,7 @@ tickets:
   files:
   - services/web/app/agent_workroom.py
   dedupe_key: 'code2llm:smell:data_clump:services/web/app/agent_workroom.py:431:Data
-    Clump: session, user_message, step'
-- signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: status, offset, limit'
-  description: 'code2llm reports `Data Clump: status, offset, limit` in `services/projector/app/main.py:94`.
-
-
-    Arguments (status, offset, limit) are used together in multiple functions: services.projector.app.main.task_board,
-    services.projector.app.main.agent_fleet, services.projector.app.main.approval_requests,
-    services.projector.app.main.plugin_catalog, services.projector.app.main.incident_feed.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - data-clump
-  files:
-  - services/projector/app/main.py
-  dedupe_key: 'code2llm:smell:data_clump:services/projector/app/main.py:94:Data Clump:
-    status, offset, limit'
-- signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: status, offset, limit'
-  description: 'code2llm reports `Data Clump: status, offset, limit` in `services/projector/app/main.py:123`.
-
-
-    Arguments (status, offset, limit) are used together in multiple functions: services.projector.app.main.task_board,
-    services.projector.app.main.agent_fleet, services.projector.app.main.approval_requests,
-    services.projector.app.main.plugin_catalog, services.projector.app.main.incident_feed.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - data-clump
-  files:
-  - services/projector/app/main.py
-  dedupe_key: 'code2llm:smell:data_clump:services/projector/app/main.py:123:Data Clump:
-    status, offset, limit'
-- signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: status, offset, limit'
-  description: 'code2llm reports `Data Clump: status, offset, limit` in `services/projector/app/main.py:152`.
-
-
-    Arguments (status, offset, limit) are used together in multiple functions: services.projector.app.main.task_board,
-    services.projector.app.main.agent_fleet, services.projector.app.main.approval_requests,
-    services.projector.app.main.plugin_catalog, services.projector.app.main.incident_feed.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - data-clump
-  files:
-  - services/projector/app/main.py
-  dedupe_key: 'code2llm:smell:data_clump:services/projector/app/main.py:152:Data Clump:
-    status, offset, limit'
-- signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: status, offset, limit'
-  description: 'code2llm reports `Data Clump: status, offset, limit` in `services/projector/app/main.py:181`.
-
-
-    Arguments (status, offset, limit) are used together in multiple functions: services.projector.app.main.task_board,
-    services.projector.app.main.agent_fleet, services.projector.app.main.approval_requests,
-    services.projector.app.main.plugin_catalog, services.projector.app.main.incident_feed.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - data-clump
-  files:
-  - services/projector/app/main.py
-  dedupe_key: 'code2llm:smell:data_clump:services/projector/app/main.py:181:Data Clump:
-    status, offset, limit'
-- signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: status, offset, limit'
-  description: 'code2llm reports `Data Clump: status, offset, limit` in `services/projector/app/main.py:226`.
-
-
-    Arguments (status, offset, limit) are used together in multiple functions: services.projector.app.main.task_board,
-    services.projector.app.main.agent_fleet, services.projector.app.main.approval_requests,
-    services.projector.app.main.plugin_catalog, services.projector.app.main.incident_feed.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - data-clump
-  files:
-  - services/projector/app/main.py
-  dedupe_key: 'code2llm:smell:data_clump:services/projector/app/main.py:226:Data Clump:
-    status, offset, limit'
-- signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: task, data, timestamp'
-  description: 'code2llm reports `Data Clump: task, data, timestamp` in `services/orchestrator/app/domain/aggregates/task.py:197`.
-
-
-    Arguments (task, data, timestamp) are used together in multiple functions: services.orchestrator.app.domain.aggregates.task._apply_task_created,
-    services.orchestrator.app.domain.aggregates.task._apply_task_assigned, services.orchestrator.app.domain.aggregates.task._apply_task_started,
-    services.orchestrator.app.domain.aggregates.task._apply_task_completed, services.orchestrator.app.domain.aggregates.task._apply_task_failed.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - data-clump
-  files:
-  - services/orchestrator/app/domain/aggregates/task.py
-  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/domain/aggregates/task.py:197:Data
-    Clump: task, data, timestamp'
-- signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: task, data, timestamp'
-  description: 'code2llm reports `Data Clump: task, data, timestamp` in `services/orchestrator/app/domain/aggregates/task.py:212`.
-
-
-    Arguments (task, data, timestamp) are used together in multiple functions: services.orchestrator.app.domain.aggregates.task._apply_task_created,
-    services.orchestrator.app.domain.aggregates.task._apply_task_assigned, services.orchestrator.app.domain.aggregates.task._apply_task_started,
-    services.orchestrator.app.domain.aggregates.task._apply_task_completed, services.orchestrator.app.domain.aggregates.task._apply_task_failed.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - data-clump
-  files:
-  - services/orchestrator/app/domain/aggregates/task.py
-  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/domain/aggregates/task.py:212:Data
-    Clump: task, data, timestamp'
-- signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: task, data, timestamp'
-  description: 'code2llm reports `Data Clump: task, data, timestamp` in `services/orchestrator/app/domain/aggregates/task.py:218`.
-
-
-    Arguments (task, data, timestamp) are used together in multiple functions: services.orchestrator.app.domain.aggregates.task._apply_task_created,
-    services.orchestrator.app.domain.aggregates.task._apply_task_assigned, services.orchestrator.app.domain.aggregates.task._apply_task_started,
-    services.orchestrator.app.domain.aggregates.task._apply_task_completed, services.orchestrator.app.domain.aggregates.task._apply_task_failed.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - data-clump
-  files:
-  - services/orchestrator/app/domain/aggregates/task.py
-  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/domain/aggregates/task.py:218:Data
-    Clump: task, data, timestamp'
-- signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: task, data, timestamp'
-  description: 'code2llm reports `Data Clump: task, data, timestamp` in `services/orchestrator/app/domain/aggregates/task.py:225`.
-
-
-    Arguments (task, data, timestamp) are used together in multiple functions: services.orchestrator.app.domain.aggregates.task._apply_task_created,
-    services.orchestrator.app.domain.aggregates.task._apply_task_assigned, services.orchestrator.app.domain.aggregates.task._apply_task_started,
-    services.orchestrator.app.domain.aggregates.task._apply_task_completed, services.orchestrator.app.domain.aggregates.task._apply_task_failed.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - data-clump
-  files:
-  - services/orchestrator/app/domain/aggregates/task.py
-  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/domain/aggregates/task.py:225:Data
-    Clump: task, data, timestamp'
-- signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: task, data, timestamp'
-  description: 'code2llm reports `Data Clump: task, data, timestamp` in `services/orchestrator/app/domain/aggregates/task.py:232`.
-
-
-    Arguments (task, data, timestamp) are used together in multiple functions: services.orchestrator.app.domain.aggregates.task._apply_task_created,
-    services.orchestrator.app.domain.aggregates.task._apply_task_assigned, services.orchestrator.app.domain.aggregates.task._apply_task_started,
-    services.orchestrator.app.domain.aggregates.task._apply_task_completed, services.orchestrator.app.domain.aggregates.task._apply_task_failed.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - data-clump
-  files:
-  - services/orchestrator/app/domain/aggregates/task.py
-  dedupe_key: 'code2llm:smell:data_clump:services/orchestrator/app/domain/aggregates/task.py:232:Data
-    Clump: task, data, timestamp'
+    Clump: user_message, step, session'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: App'
   description: 'code2llm reports `God Function: App` in `services/web/src/main.jsx:53`.
@@ -2929,7 +3060,7 @@ tickets:
     App'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: _append_chat_export_message'
-  description: 'code2llm reports `God Function: _append_chat_export_message` in `services/web/app/workspace.py:620`.
+  description: 'code2llm reports `God Function: _append_chat_export_message` in `services/web/app/workspace.py:653`.
 
 
     Function ''_append_chat_export_message'' is oversized: CC=6, fan-out=6, mutations=8.
@@ -2944,11 +3075,11 @@ tickets:
   - god-function
   files:
   - services/web/app/workspace.py
-  dedupe_key: 'code2llm:smell:god_function:services/web/app/workspace.py:620:God Function:
+  dedupe_key: 'code2llm:smell:god_function:services/web/app/workspace.py:653:God Function:
     _append_chat_export_message'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: _append_context_collections'
-  description: 'code2llm reports `God Function: _append_context_collections` in `services/web/app/workspace.py:870`.
+  description: 'code2llm reports `God Function: _append_context_collections` in `services/web/app/workspace.py:1046`.
 
 
     Function ''_append_context_collections'' is oversized: CC=4, fan-out=4, mutations=7.
@@ -2963,11 +3094,11 @@ tickets:
   - god-function
   files:
   - services/web/app/workspace.py
-  dedupe_key: 'code2llm:smell:god_function:services/web/app/workspace.py:870:God Function:
-    _append_context_collections'
+  dedupe_key: 'code2llm:smell:god_function:services/web/app/workspace.py:1046:God
+    Function: _append_context_collections'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: _append_context_section'
-  description: 'code2llm reports `God Function: _append_context_section` in `services/web/app/workspace.py:846`.
+  description: 'code2llm reports `God Function: _append_context_section` in `services/web/app/workspace.py:1022`.
 
 
     Function ''_append_context_section'' is oversized: CC=4, fan-out=3, mutations=7.
@@ -2982,14 +3113,14 @@ tickets:
   - god-function
   files:
   - services/web/app/workspace.py
-  dedupe_key: 'code2llm:smell:god_function:services/web/app/workspace.py:846:God Function:
-    _append_context_section'
+  dedupe_key: 'code2llm:smell:god_function:services/web/app/workspace.py:1022:God
+    Function: _append_context_section'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: _append_export_sections'
-  description: 'code2llm reports `God Function: _append_export_sections` in `services/web/app/workspace.py:783`.
+  description: 'code2llm reports `God Function: _append_export_sections` in `services/web/app/workspace.py:858`.
 
 
-    Function ''_append_export_sections'' is oversized: CC=1, fan-out=12, mutations=2.
+    Function ''_append_export_sections'' is oversized: CC=2, fan-out=15, mutations=3.
 
 
     Make the smallest refactor that removes the smell and run local tests.'
@@ -3001,11 +3132,11 @@ tickets:
   - god-function
   files:
   - services/web/app/workspace.py
-  dedupe_key: 'code2llm:smell:god_function:services/web/app/workspace.py:783:God Function:
+  dedupe_key: 'code2llm:smell:god_function:services/web/app/workspace.py:858:God Function:
     _append_export_sections'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: _append_history_message'
-  description: 'code2llm reports `God Function: _append_history_message` in `services/web/app/workspace.py:927`.
+  description: 'code2llm reports `God Function: _append_history_message` in `services/web/app/workspace.py:1103`.
 
 
     Function ''_append_history_message'' is oversized: CC=6, fan-out=5, mutations=7.
@@ -3020,14 +3151,14 @@ tickets:
   - god-function
   files:
   - services/web/app/workspace.py
-  dedupe_key: 'code2llm:smell:god_function:services/web/app/workspace.py:927:God Function:
-    _append_history_message'
+  dedupe_key: 'code2llm:smell:god_function:services/web/app/workspace.py:1103:God
+    Function: _append_history_message'
 - signal: code2llm_smell_god_function
-  title: 'Address code smell: God Function: _append_resource_rows'
-  description: 'code2llm reports `God Function: _append_resource_rows` in `services/web/app/chat.py:332`.
+  title: 'Address code smell: God Function: _append_nfo'
+  description: 'code2llm reports `God Function: _append_nfo` in `services/orchestrator/app/observability/export.py:88`.
 
 
-    Function ''_append_resource_rows'' is oversized: CC=7, fan-out=6, mutations=8.
+    Function ''_append_nfo'' is oversized: CC=7, fan-out=4, mutations=9.
 
 
     Make the smallest refactor that removes the smell and run local tests.'
@@ -3038,9 +3169,28 @@ tickets:
   - code-smell
   - god-function
   files:
-  - services/web/app/chat.py
-  dedupe_key: 'code2llm:smell:god_function:services/web/app/chat.py:332:God Function:
-    _append_resource_rows'
+  - services/orchestrator/app/observability/export.py
+  dedupe_key: 'code2llm:smell:god_function:services/orchestrator/app/observability/export.py:88:God
+    Function: _append_nfo'
+- signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: _append_nfo_section'
+  description: 'code2llm reports `God Function: _append_nfo_section` in `services/web/app/workspace.py:952`.
+
+
+    Function ''_append_nfo_section'' is oversized: CC=7, fan-out=4, mutations=9.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - services/web/app/workspace.py
+  dedupe_key: 'code2llm:smell:god_function:services/web/app/workspace.py:952:God Function:
+    _append_nfo_section'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: _apply_task_created'
   description: 'code2llm reports `God Function: _apply_task_created` in `services/orchestrator/app/domain/aggregates/task.py:197`.
@@ -3079,6 +3229,25 @@ tickets:
   - services/orchestrator/app/application/command_bus.py
   dedupe_key: 'code2llm:smell:god_function:services/orchestrator/app/application/command_bus.py:161:God
     Function: _assign_task'
+- signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: _attach_routing'
+  description: 'code2llm reports `God Function: _attach_routing` in `services/web/app/conductor.py:43`.
+
+
+    Function ''_attach_routing'' is oversized: CC=5, fan-out=6, mutations=8.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - services/web/app/conductor.py
+  dedupe_key: 'code2llm:smell:god_function:services/web/app/conductor.py:43:God Function:
+    _attach_routing'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: _complete_task'
   description: 'code2llm reports `God Function: _complete_task` in `services/orchestrator/app/application/command_bus.py:222`.
@@ -3119,7 +3288,7 @@ tickets:
     Function: _create_task'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: _enrich_decision'
-  description: 'code2llm reports `God Function: _enrich_decision` in `services/web/app/conductor.py:48`.
+  description: 'code2llm reports `God Function: _enrich_decision` in `services/web/app/conductor.py:64`.
 
 
     Function ''_enrich_decision'' is oversized: CC=3, fan-out=6, mutations=8.
@@ -3134,7 +3303,7 @@ tickets:
   - god-function
   files:
   - services/web/app/conductor.py
-  dedupe_key: 'code2llm:smell:god_function:services/web/app/conductor.py:48:God Function:
+  dedupe_key: 'code2llm:smell:god_function:services/web/app/conductor.py:64:God Function:
     _enrich_decision'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: _fail_task'
@@ -3156,11 +3325,13 @@ tickets:
   dedupe_key: 'code2llm:smell:god_function:services/orchestrator/app/application/command_bus.py:256:God
     Function: _fail_task'
 - signal: code2llm_smell_god_function
-  title: 'Address code smell: God Function: _format_routing_line'
-  description: 'code2llm reports `God Function: _format_routing_line` in `services/web/app/workspace.py:941`.
+  title: 'Address code smell: God Function: _merge_orchestrator_debug_payload'
+  description: 'code2llm reports `God Function: _merge_orchestrator_debug_payload`
+    in `services/web/app/workspace.py:785`.
 
 
-    Function ''_format_routing_line'' is oversized: CC=6, fan-out=4, mutations=11.
+    Function ''_merge_orchestrator_debug_payload'' is oversized: CC=6, fan-out=4,
+    mutations=8.
 
 
     Make the smallest refactor that removes the smell and run local tests.'
@@ -3172,8 +3343,8 @@ tickets:
   - god-function
   files:
   - services/web/app/workspace.py
-  dedupe_key: 'code2llm:smell:god_function:services/web/app/workspace.py:941:God Function:
-    _format_routing_line'
+  dedupe_key: 'code2llm:smell:god_function:services/web/app/workspace.py:785:God Function:
+    _merge_orchestrator_debug_payload'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: _plan_steps'
   description: 'code2llm reports `God Function: _plan_steps` in `services/web/app/agent_workroom.py:106`.
@@ -3213,25 +3384,6 @@ tickets:
   dedupe_key: 'code2llm:smell:god_function:services/orchestrator/app/application/command_bus.py:801:God
     Function: _register_resource'
 - signal: code2llm_smell_god_function
-  title: 'Address code smell: God Function: _remediate_rag_incident'
-  description: 'code2llm reports `God Function: _remediate_rag_incident` in `services/orchestrator/app/incidents/pipeline.py:230`.
-
-
-    Function ''_remediate_rag_incident'' is oversized: CC=6, fan-out=12, mutations=0.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - god-function
-  files:
-  - services/orchestrator/app/incidents/pipeline.py
-  dedupe_key: 'code2llm:smell:god_function:services/orchestrator/app/incidents/pipeline.py:230:God
-    Function: _remediate_rag_incident'
-- signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: _request_transfer'
   description: 'code2llm reports `God Function: _request_transfer` in `services/orchestrator/app/application/command_bus.py:844`.
 
@@ -3251,6 +3403,25 @@ tickets:
   dedupe_key: 'code2llm:smell:god_function:services/orchestrator/app/application/command_bus.py:844:God
     Function: _request_transfer'
 - signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: _routing_optional_parts'
+  description: 'code2llm reports `God Function: _routing_optional_parts` in `services/web/app/workspace.py:1133`.
+
+
+    Function ''_routing_optional_parts'' is oversized: CC=4, fan-out=7, mutations=7.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - services/web/app/workspace.py
+  dedupe_key: 'code2llm:smell:god_function:services/web/app/workspace.py:1133:God
+    Function: _routing_optional_parts'
+- signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: _run_schema_migrations'
   description: 'code2llm reports `God Function: _run_schema_migrations` in `services/orchestrator/app/infrastructure/postgres.py:79`.
 
@@ -3269,6 +3440,25 @@ tickets:
   - services/orchestrator/app/infrastructure/postgres.py
   dedupe_key: 'code2llm:smell:god_function:services/orchestrator/app/infrastructure/postgres.py:79:God
     Function: _run_schema_migrations'
+- signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: _try_continue_turn'
+  description: 'code2llm reports `God Function: _try_continue_turn` in `services/web/app/conductor.py:473`.
+
+
+    Function ''_try_continue_turn'' is oversized: CC=4, fan-out=13, mutations=0.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - services/web/app/conductor.py
+  dedupe_key: 'code2llm:smell:god_function:services/web/app/conductor.py:473:God Function:
+    _try_continue_turn'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: append'
   description: 'code2llm reports `God Function: append` in `services/orchestrator/app/infrastructure/eventstore.py:56`.
@@ -3309,7 +3499,7 @@ tickets:
     Function: append'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: appendMsgTo'
-  description: 'code2llm reports `God Function: appendMsgTo` in `services/web/app/static/workspace.js:595`.
+  description: 'code2llm reports `God Function: appendMsgTo` in `services/web/app/static/workspace.js:619`.
 
 
     Function ''appendMsgTo'' is oversized: CC=14, fan-out=11, mutations=0.
@@ -3324,7 +3514,7 @@ tickets:
   - god-function
   files:
   - services/web/app/static/workspace.js
-  dedupe_key: 'code2llm:smell:god_function:services/web/app/static/workspace.js:595:God
+  dedupe_key: 'code2llm:smell:god_function:services/web/app/static/workspace.js:619:God
     Function: appendMsgTo'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: ask'
@@ -3347,7 +3537,7 @@ tickets:
     Function: ask'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: buildChatTextFromDom'
-  description: 'code2llm reports `God Function: buildChatTextFromDom` in `services/web/app/static/workspace.js:961`.
+  description: 'code2llm reports `God Function: buildChatTextFromDom` in `services/web/app/static/workspace.js:985`.
 
 
     Function ''buildChatTextFromDom'' is oversized: CC=14, fan-out=11, mutations=0.
@@ -3362,8 +3552,65 @@ tickets:
   - god-function
   files:
   - services/web/app/static/workspace.js
-  dedupe_key: 'code2llm:smell:god_function:services/web/app/static/workspace.js:961:God
+  dedupe_key: 'code2llm:smell:god_function:services/web/app/static/workspace.js:985:God
     Function: buildChatTextFromDom'
+- signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: build_orchestrator_bundle'
+  description: 'code2llm reports `God Function: build_orchestrator_bundle` in `services/orchestrator/app/observability/export.py:189`.
+
+
+    Function ''build_orchestrator_bundle'' is oversized: CC=1, fan-out=11, mutations=0.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - services/orchestrator/app/observability/export.py
+  dedupe_key: 'code2llm:smell:god_function:services/orchestrator/app/observability/export.py:189:God
+    Function: build_orchestrator_bundle'
+- signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: export_debug_logs'
+  description: 'code2llm reports `God Function: export_debug_logs` in `services/web/app/workspace.py:700`.
+
+
+    Function ''export_debug_logs'' is oversized: CC=2, fan-out=14, mutations=0.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - services/web/app/workspace.py
+  dedupe_key: 'code2llm:smell:god_function:services/web/app/workspace.py:700:God Function:
+    export_debug_logs'
+- signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: format_logs_text'
+  description: 'code2llm reports `God Function: format_logs_text` in `services/orchestrator/app/observability/export.py:19`.
+
+
+    Function ''format_logs_text'' is oversized: CC=7, fan-out=11, mutations=2.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - services/orchestrator/app/observability/export.py
+  dedupe_key: 'code2llm:smell:god_function:services/orchestrator/app/observability/export.py:19:God
+    Function: format_logs_text'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: get_events_for_aggregate'
   description: 'code2llm reports `God Function: get_events_for_aggregate` in `services/orchestrator/app/infrastructure/eventstore_esdb.py:126`.
@@ -3383,44 +3630,6 @@ tickets:
   - services/orchestrator/app/infrastructure/eventstore_esdb.py
   dedupe_key: 'code2llm:smell:god_function:services/orchestrator/app/infrastructure/eventstore_esdb.py:126:God
     Function: get_events_for_aggregate'
-- signal: code2llm_smell_god_function
-  title: 'Address code smell: God Function: handle_chat_message'
-  description: 'code2llm reports `God Function: handle_chat_message` in `services/web/app/workspace.py:330`.
-
-
-    Function ''handle_chat_message'' is oversized: CC=7, fan-out=11, mutations=0.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - god-function
-  files:
-  - services/web/app/workspace.py
-  dedupe_key: 'code2llm:smell:god_function:services/web/app/workspace.py:330:God Function:
-    handle_chat_message'
-- signal: code2llm_smell_god_function
-  title: 'Address code smell: God Function: handle_rag_failure'
-  description: 'code2llm reports `God Function: handle_rag_failure` in `services/orchestrator/app/incidents/pipeline.py:124`.
-
-
-    Function ''handle_rag_failure'' is oversized: CC=7, fan-out=14, mutations=0.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - god-function
-  files:
-  - services/orchestrator/app/incidents/pipeline.py
-  dedupe_key: 'code2llm:smell:god_function:services/orchestrator/app/incidents/pipeline.py:124:God
-    Function: handle_rag_failure'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: ingest_resource'
   description: 'code2llm reports `God Function: ingest_resource` in `services/orchestrator/app/rag/indexer.py:26`.
@@ -3480,7 +3689,7 @@ tickets:
     Function: lifespan'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: new_session'
-  description: 'code2llm reports `God Function: new_session` in `services/web/app/workspace.py:80`.
+  description: 'code2llm reports `God Function: new_session` in `services/web/app/workspace.py:89`.
 
 
     Function ''new_session'' is oversized: CC=1, fan-out=5, mutations=8.
@@ -3495,7 +3704,7 @@ tickets:
   - god-function
   files:
   - services/web/app/workspace.py
-  dedupe_key: 'code2llm:smell:god_function:services/web/app/workspace.py:80:God Function:
+  dedupe_key: 'code2llm:smell:god_function:services/web/app/workspace.py:89:God Function:
     new_session'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: observability_context'
@@ -3518,7 +3727,7 @@ tickets:
     Function: observability_context'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: openTicketDialogFromDraft'
-  description: 'code2llm reports `God Function: openTicketDialogFromDraft` in `services/web/app/static/workspace.js:892`.
+  description: 'code2llm reports `God Function: openTicketDialogFromDraft` in `services/web/app/static/workspace.js:916`.
 
 
     Function ''openTicketDialogFromDraft'' is oversized: CC=13, fan-out=3, mutations=0.
@@ -3533,7 +3742,7 @@ tickets:
   - god-function
   files:
   - services/web/app/static/workspace.js
-  dedupe_key: 'code2llm:smell:god_function:services/web/app/static/workspace.js:892:God
+  dedupe_key: 'code2llm:smell:god_function:services/web/app/static/workspace.js:916:God
     Function: openTicketDialogFromDraft'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: parse_uri'
@@ -3593,6 +3802,25 @@ tickets:
   dedupe_key: 'code2llm:smell:god_function:services/web/app/static/workspace.js:242:God
     Function: renderClarify'
 - signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: renderRoutingTrace'
+  description: 'code2llm reports `God Function: renderRoutingTrace` in `services/web/app/static/workspace.js:329`.
+
+
+    Function ''renderRoutingTrace'' is oversized: CC=10, fan-out=11, mutations=0.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - services/web/app/static/workspace.js
+  dedupe_key: 'code2llm:smell:god_function:services/web/app/static/workspace.js:329:God
+    Function: renderRoutingTrace'
+- signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: run'
   description: 'code2llm reports `God Function: run` in `services/orchestrator/app/observability/rag_diagnostics.py:57`.
 
@@ -3651,7 +3879,7 @@ tickets:
     Function: selectTicket'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: sendChat'
-  description: 'code2llm reports `God Function: sendChat` in `services/web/app/static/workspace.js:725`.
+  description: 'code2llm reports `God Function: sendChat` in `services/web/app/static/workspace.js:749`.
 
 
     Function ''sendChat'' is oversized: CC=4, fan-out=14, mutations=0.
@@ -3666,7 +3894,7 @@ tickets:
   - god-function
   files:
   - services/web/app/static/workspace.js
-  dedupe_key: 'code2llm:smell:god_function:services/web/app/static/workspace.js:725:God
+  dedupe_key: 'code2llm:smell:god_function:services/web/app/static/workspace.js:749:God
     Function: sendChat'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: upload_resource'
@@ -3775,7 +4003,7 @@ tickets:
   description: 'code2llm reports `God Module: services.web.app.chat` in `services/web/app/chat.py:1`.
 
 
-    Module ''services.web.app.chat'' is too large (65 functions, 0 classes). Consider
+    Module ''services.web.app.chat'' is too large (76 functions, 0 classes). Consider
     splitting into sub-modules.
 
 
@@ -3795,7 +4023,7 @@ tickets:
   description: 'code2llm reports `God Module: services.web.app.conductor` in `services/web/app/conductor.py:1`.
 
 
-    Module ''services.web.app.conductor'' is too large (41 functions, 1 classes).
+    Module ''services.web.app.conductor'' is too large (53 functions, 1 classes).
     Consider splitting into sub-modules.
 
 
@@ -3815,7 +4043,7 @@ tickets:
   description: 'code2llm reports `God Module: services.web.app.workspace` in `services/web/app/workspace.py:1`.
 
 
-    Module ''services.web.app.workspace'' is too large (79 functions, 2 classes).
+    Module ''services.web.app.workspace'' is too large (98 functions, 2 classes).
     Consider splitting into sub-modules.
 
 

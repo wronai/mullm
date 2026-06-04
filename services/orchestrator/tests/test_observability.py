@@ -1,10 +1,12 @@
+import pytest
+
 from app.observability.incidents import (
     IncidentCode,
     _event_payload,
     _incident_event_plan,
     classify_rag_failure,
 )
-from app.observability.export import format_logs_text
+from app.observability.export import build_orchestrator_bundle, format_logs_text
 
 
 def test_classify_llm_unavailable():
@@ -66,10 +68,38 @@ def test_format_logs_text_keeps_observability_sections():
     )
 
     assert "## RAG health" in text
+    assert "## NFO" in text
     assert "## Incidents" in text
     assert "trace=trace-1" in text
     assert "## Workspace session" in text
     assert "## Raw JSON" in text
+
+
+@pytest.mark.asyncio
+async def test_build_bundle_uses_expanded_log_limit():
+    class FakePostgres:
+        def __init__(self) -> None:
+            self.limits: list[int] = []
+
+        async def fetch(self, _query, *args):
+            self.limits.append(args[-1])
+            return []
+
+    class FakeDiagnostics:
+        async def run(self, query=None):
+            return {"status": "healthy", "checks": []}
+
+    postgres = FakePostgres()
+    bundle = await build_orchestrator_bundle(
+        postgres=postgres,
+        rag_diagnostics=FakeDiagnostics(),
+        correlation_id=None,
+        limit=250,
+    )
+
+    assert bundle["log_limit"] == 250
+    assert postgres.limits == [250, 250, 250]
+    assert bundle["nfo"]["package"] == "nfo"
 
 
 def test_incident_event_plan_includes_diagnostics_and_remediation():

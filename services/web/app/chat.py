@@ -51,6 +51,18 @@ def _projector() -> str:
     )
 
 
+_CONTINUE_INTENT = re.compile(
+    r"^(kontynuuj|continue|resume|dalej|idź dalej|go on|carry on)[\s!.?]*$",
+    re.IGNORECASE,
+)
+
+
+def is_continue_intent(message: str) -> bool:
+    """Krótka komenda kontynuacji (bez nowej intencji DSL)."""
+    return bool(_CONTINUE_INTENT.match((message or "").strip()))
+
+
+# @intract.v1 id:mullm.intent.file_list.detect scope:function intent:detect:file_list domain:routing forbid:shell validate:input_presence,return_value meaning:"Wykrywa listę plików z rejestru, nie shell na hoście"
 def is_file_list_intent(message: str) -> bool:
     text = (message or "").strip()
     if _FILE_LIST_INTENT.search(text):
@@ -65,6 +77,31 @@ def is_file_list_intent(message: str) -> bool:
             _has_user_files_phrase,
         )
     )
+
+
+_SHELL_NL_INTENT = re.compile(
+    r"(?i)(dysk|miejsce\s+na\s+dysk|docker|kontener|git\s|status\s+git|"
+    r"proces(y|ów)?|port\s+\d|wi[eę]ksze\s+ni[żz]|rozmiar\s+plik|"
+    r"chmod|npm\s|pip\s|curl\s|wget\s|df\s|du\s-|free\s|htop|"
+    r"grep\s|kill\s|ping\s|systemctl|journalctl|"
+    r"sprawd[zź]\s+(?!plik)|policz\s+|"
+    r"znajd[zź]\s+(?!plik)|poka[zż]\s+(?!plik))",
+)
+
+
+# @intract.v1 id:mullm.intent.shell_nl.detect scope:function intent:detect:shell_nl domain:routing validate:input_presence,return_value meaning:"NL shell przez nlp2cmd; wyklucza file_list i prefix run"
+def is_shell_nl_intent(message: str) -> bool:
+    """
+    Naturalny język → shell przez nlp2cmd (nie rejestr plików, nie jawny prefix run).
+    """
+    text = (message or "").strip()
+    if not text or is_file_list_intent(text):
+        return False
+    from app.prompt_router import _shell_prefix
+
+    if _shell_prefix(text):
+        return False
+    return bool(_SHELL_NL_INTENT.search(text))
 
 
 def _has_list_word(text: str, *, english: bool = False) -> bool:

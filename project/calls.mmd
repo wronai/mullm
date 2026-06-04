@@ -1,413 +1,420 @@
 flowchart LR
-%% generated in 0.02s
+%% generated in 0.03s
     subgraph agents__shell_agent
-        agents__shell_agent__app__nats_consumer__ShellAgent__handle_message["handle_message"]
         agents__shell_agent__app__executor__run_shell_command["run_shell_command"]
+        agents__shell_agent__app__nats_consumer__ShellAgent__handle_message["handle_message"]
     end
     subgraph services__orchestrator
-        services__orchestrator__app__api__rag__ask["ask"]
-        services__orchestrator__app__observability__export___append_workspace_session["_append_workspace_session"]
-        services__orchestrator__app__rag__store___vector_hits["_vector_hits"]
-        services__orchestrator__app__application__sagas__task_routing___agent_matches["_agent_matches"]
-        services__orchestrator__app__rag__indexer___chunks_for_body["_chunks_for_body"]
-        services__orchestrator__app__domain__aggregates__task___utc_now["_utc_now"]
-        services__orchestrator__app__access__transport__TransportService__copy["copy"]
-        services__orchestrator__app__rag__chunking__chunk_text["chunk_text"]
-        services__orchestrator__app__observability__export___append_incidents["_append_incidents"]
-        services__orchestrator__app__observability__export___append_rag_snapshots["_append_rag_snapshots"]
-        services__orchestrator__app__api__commands__reject_request["reject_request"]
-        services__orchestrator__app__rag__indexer___failed_result["_failed_result"]
-        services__orchestrator__app__api__access__register_resource["register_resource"]
-        services__orchestrator__app__infrastructure__eventstore___utc_now["_utc_now"]
-        services__orchestrator__app__api__commands__create_approval["create_approval"]
         services__orchestrator__app__rag__store___cosine["_cosine"]
-        services__orchestrator__app__access__transport__TransportService__probe["probe"]
-        services__orchestrator__app__observability__logging__log_event["log_event"]
-        services__orchestrator__app__rag__store__RagStore___keyword_fallback["_keyword_fallback"]
-        services__orchestrator__app__api__commands__expire_approval["expire_approval"]
-        services__orchestrator__app__incidents__pipeline__IncidentPipeline___run_rag_diagnostics["_run_rag_diagnostics"]
-        services__orchestrator__app__rag__indexer___packed_chunks["_packed_chunks"]
-        services__orchestrator__app__rag__openrouter__OpenRouterClient____init__["__init__"]
-        services__orchestrator__app__observability__export___append_workspace_context["_append_workspace_context"]
-        services__orchestrator__app__rag__retriever__RagRetriever__ask["ask"]
-        services__orchestrator__app__rag__store___chunk_hit["_chunk_hit"]
-        services__orchestrator__app__application__sagas__approval_gate___validate_approval_events["_validate_approval_events"]
-        services__orchestrator__app__application__sagas__approval_gate___is_skipped["_is_skipped"]
-        services__orchestrator__app__domain__aggregates__agent__Agent__heartbeat["heartbeat"]
-        services__orchestrator__app__observability__export___safe_fetch_rag_snapshots["_safe_fetch_rag_snapshots"]
-        services__orchestrator__app__api__commands__rollback_plugin["rollback_plugin"]
-        services__orchestrator__app__infrastructure__eventstore_factory__build_event_store["build_event_store"]
-        services__orchestrator__app__domain__aggregates__task__Task__apply["apply"]
-        services__orchestrator__app__observability__context__observability_context["observability_context"]
-        services__orchestrator__app__rag__store___ranked_hits["_ranked_hits"]
-        services__orchestrator__app__application__sagas__approval_gate__ensure_approval["ensure_approval"]
-        services__orchestrator__app__incidents__pipeline___rag_root_cause["_rag_root_cause"]
-        services__orchestrator__app__domain__aggregates__task__Task__complete["complete"]
-        services__orchestrator__app__rag__store___keyword_hits["_keyword_hits"]
-        services__orchestrator__app__observability__export___append_workspace_events["_append_workspace_events"]
-        services__orchestrator__app__observability__export___safe_rag_health["_safe_rag_health"]
-        services__orchestrator__app__domain__aggregates__task___event_data["_event_data"]
-        services__orchestrator__app__infrastructure__eventstore_esdb__EsdbEventStore____init__["__init__"]
+        services__orchestrator__app__observability__rag_pipeline__RagPipeline___exception_payload["_exception_payload"]
         services__orchestrator__app__observability__context__get_correlation_id["get_correlation_id"]
-        services__orchestrator__app__observability__context__get_retrieval_trace_id["get_retrieval_trace_id"]
-        services__orchestrator__app__rag__store__RagStore___vector_search["_vector_search"]
-        services__orchestrator__app__infrastructure__eventstore__EventStore__append["append"]
-        services__orchestrator__app__api__access__upload_resource["upload_resource"]
-        services__orchestrator__app__access__uri__parse_uri["parse_uri"]
-        services__orchestrator__app__domain__aggregates__task___event_type["_event_type"]
-        services__orchestrator__app__api__commands__propose_plugin["propose_plugin"]
-        services__orchestrator__app__api__commands__validate_workflow_version["validate_workflow_version"]
-        services__orchestrator__app__observability__context__get_chat_session_id["get_chat_session_id"]
-        services__orchestrator__app__infrastructure__eventstore_factory___dual_backend["_dual_backend"]
-        services__orchestrator__app__api__rag__search["search"]
-        services__orchestrator__app__api__observability__export_logs["export_logs"]
-        services__orchestrator__app__observability__export___fetch_incidents["_fetch_incidents"]
-        services__orchestrator__app__observability__context__new_correlation_id["new_correlation_id"]
-        services__orchestrator__app__rag__openrouter__OpenRouterClient__chat["chat"]
-        services__orchestrator__app__infrastructure__eventstore_factory___eventstoredb_backend["_eventstoredb_backend"]
-        services__orchestrator__app__observability__export__build_orchestrator_bundle["build_orchestrator_bundle"]
-        services__orchestrator__app__rag__openrouter___chat_response_error["_chat_response_error"]
-        services__orchestrator__app__incidents__pipeline__classify_rag_error["classify_rag_error"]
-        services__orchestrator__app__infrastructure__eventstore___loads_json["_loads_json"]
-        services__orchestrator__app__api__observability__rag_health["rag_health"]
         services__orchestrator__app__rag__indexer___indexed_result["_indexed_result"]
-        services__orchestrator__app__infrastructure__eventstore_esdb___parse_esdb_uri["_parse_esdb_uri"]
-        services__orchestrator__app__rag__indexer__RagIndexer__ingest_resource["ingest_resource"]
-        services__orchestrator__app__observability__export___safe_fetch_incident_feed["_safe_fetch_incident_feed"]
-        services__orchestrator__app__domain__aggregates__task__Task__start["start"]
-        services__orchestrator__app__incidents__pipeline__IncidentPipeline__handle_rag_failure["handle_rag_failure"]
-        services__orchestrator__app__api__observability__list_incidents["list_incidents"]
-        services__orchestrator__app__observability__context__new_retrieval_trace_id["new_retrieval_trace_id"]
-        services__orchestrator__app__application__sagas__task_routing__maybe_auto_assign["maybe_auto_assign"]
-        services__orchestrator__app__observability__export___safe_fetch_incidents["_safe_fetch_incidents"]
-        services__orchestrator__app__infrastructure__eventstore__EventStore___record_from_row["_record_from_row"]
-        services__orchestrator__app__domain__aggregates__task___event_timestamp["_event_timestamp"]
-        services__orchestrator__app__observability__export___append_workspace_chat["_append_workspace_chat"]
-        services__orchestrator__app__domain__aggregates__task__Task__fail["fail"]
-        services__orchestrator__app__rag__store___keyword_score["_keyword_score"]
-        services__orchestrator__app__rag__retriever___no_hits_answer["_no_hits_answer"]
         services__orchestrator__app__domain__aggregates__task__Task____init__["__init__"]
-        services__orchestrator__app__rag__store___parse_embedding["_parse_embedding"]
-        services__orchestrator__app__observability__export___fetch_rag_snapshots["_fetch_rag_snapshots"]
-        services__orchestrator__app__rag__store___vector_norm["_vector_norm"]
-        services__orchestrator__app__rag__retriever___unconfigured_answer["_unconfigured_answer"]
-        services__orchestrator__app__rag__store___row_dict["_row_dict"]
-        services__orchestrator__app__rag__openrouter___chat_result["_chat_result"]
-        services__orchestrator__app__api__commands___dispatch["_dispatch"]
-        services__orchestrator__app__api__commands__approve_request["approve_request"]
-        services__orchestrator__app__api__commands__activate_plugin["activate_plugin"]
-        services__orchestrator__app__api__commands__propose_workflow_version["propose_workflow_version"]
-        services__orchestrator__app__rag__store___same_dimension_vectors["_same_dimension_vectors"]
-        services__orchestrator__app__observability__export__format_logs_text["format_logs_text"]
-        services__orchestrator__app__application__sagas__task_routing___agent_route_state["_agent_route_state"]
-        services__orchestrator__app__access__uri__build_uri["build_uri"]
-        services__orchestrator__app__rag__retriever___fragment_fallback_answer["_fragment_fallback_answer"]
         services__orchestrator__app__observability__middleware__CorrelationMiddleware__dispatch["dispatch"]
-        services__orchestrator__app__rag__openrouter__normalize_openrouter_model["normalize_openrouter_model"]
-        services__orchestrator__app__infrastructure__eventstore_factory___require_eventstore_url["_require_eventstore_url"]
-        services__orchestrator__app__rag__retriever___context_from_hits["_context_from_hits"]
-        services__orchestrator__app__access__transport__TransportService__fetch["fetch"]
-        services__orchestrator__app__rag__store__RagStore__list_documents["list_documents"]
-        services__orchestrator__app__observability__export___append_rag_health["_append_rag_health"]
-        services__orchestrator__app__rag__retriever___rag_messages["_rag_messages"]
-        services__orchestrator__app__observability__export___fetch_incident_feed["_fetch_incident_feed"]
-        services__orchestrator__app__application__sagas__task_routing__pick_idle_agent["pick_idle_agent"]
-        services__orchestrator__app__access__adapters__get_adapter["get_adapter"]
-        services__orchestrator__app__api__commands__validate_plugin["validate_plugin"]
-        services__orchestrator__app__observability__export___append_incident_feed["_append_incident_feed"]
-        services__orchestrator__app__rag__store___query_tokens["_query_tokens"]
-        services__orchestrator__app__api__commands__rollback_workflow_version["rollback_workflow_version"]
-        services__orchestrator__app__api__observability__rag_diagnose["rag_diagnose"]
-        services__orchestrator__app__domain__aggregates__task__Task__assign_to_agent["assign_to_agent"]
-        services__orchestrator__app__api__commands__install_plugin["install_plugin"]
-        services__orchestrator__app__config__Settings__model_post_init["model_post_init"]
-        services__orchestrator__app__api__commands__approve_workflow_version["approve_workflow_version"]
+        services__orchestrator__app__api__access__upload_resource["upload_resource"]
+        services__orchestrator__app__rag__chunking___overlapping_chunks["_overlapping_chunks"]
+        services__orchestrator__app__observability__logging__log_event["log_event"]
+        services__orchestrator__app__observability__rag_pipeline__RagPipeline__ask["ask"]
+        services__orchestrator__app__application__sagas__task_routing___agent_route_state["_agent_route_state"]
+        services__orchestrator__app__domain__aggregates__task___event_type["_event_type"]
+        services__orchestrator__app__api__queries__get_workflow["get_workflow"]
+        services__orchestrator__app__evolution__policy_engine___has_enough_activation_samples["_has_enough_activation_samples"]
+        services__orchestrator__app__rag__openrouter___chat_response_error["_chat_response_error"]
+        services__orchestrator__app__api__commands__propose_plugin["propose_plugin"]
         services__orchestrator__app__rag__store__RagStore__search["search"]
-        services__orchestrator__app__api__access__build_resource_uri["build_resource_uri"]
-        services__orchestrator__app__api__commands__activate_workflow_version["activate_workflow_version"]
+        services__orchestrator__app__api__commands__create_approval["create_approval"]
+        services__orchestrator__app__rag__retriever___rag_messages["_rag_messages"]
+        services__orchestrator__app__api__queries___aggregate_state["_aggregate_state"]
+        services__orchestrator__app__infrastructure__eventstore_esdb___parse_esdb_uri["_parse_esdb_uri"]
+        services__orchestrator__app__api__commands__approve_request["approve_request"]
+        services__orchestrator__app__api__commands__rollback_workflow_version["rollback_workflow_version"]
+        services__orchestrator__app__api__commands__install_plugin["install_plugin"]
+        services__orchestrator__app__rag__store___same_dimension_vectors["_same_dimension_vectors"]
+        services__orchestrator__app__rag__chunking__chunk_text["chunk_text"]
+        services__orchestrator__app__rag__store___ranked_hits["_ranked_hits"]
+        services__orchestrator__app__application__sagas__task_routing__maybe_auto_assign["maybe_auto_assign"]
+        services__orchestrator__app__api__commands__expire_approval["expire_approval"]
+        services__orchestrator__app__domain__aggregates__task___event_data["_event_data"]
+        services__orchestrator__app__rag__store__RagStore___keyword_fallback["_keyword_fallback"]
+        services__orchestrator__app__rag__store___vector_hits["_vector_hits"]
+        services__orchestrator__app__application__sagas__approval_gate__follow_up_after_grant["follow_up_after_grant"]
+        services__orchestrator__app__observability__rag_diagnostics___checks_with_status["_checks_with_status"]
+        services__orchestrator__app__domain__aggregates__task___utc_now["_utc_now"]
+        services__orchestrator__app__api__commands___dispatch["_dispatch"]
+        services__orchestrator__app__application__command_bus__CommandBus___activate_workflow_version["_activate_workflow_version"]
+        services__orchestrator__app__rag__store__RagStore__list_documents["list_documents"]
+        services__orchestrator__app__api__queries__get_agent["get_agent"]
+        services__orchestrator__app__rag__indexer___failed_result["_failed_result"]
+        services__orchestrator__app__infrastructure__eventstore__EventStore___record_from_row["_record_from_row"]
+        services__orchestrator__app__observability__rag_diagnostics___log_diagnostics_result["_log_diagnostics_result"]
+        services__orchestrator__app__application__command_bus__CommandBus___rollback_plugin["_rollback_plugin"]
+        services__orchestrator__app__incidents__pipeline__classify_rag_error["classify_rag_error"]
+        services__orchestrator__app__api__commands__propose_workflow_version["propose_workflow_version"]
+        services__orchestrator__app__api__queries__get_task["get_task"]
+        services__orchestrator__app__rag__retriever__RagRetriever__ask["ask"]
+        services__orchestrator__app__infrastructure__eventstore___loads_json["_loads_json"]
+        services__orchestrator__app__domain__aggregates__task___event_timestamp["_event_timestamp"]
+        services__orchestrator__app__api__rag__search["search"]
+        services__orchestrator__app__observability__rag_diagnostics___overall_status["_overall_status"]
+        services__orchestrator__app__infrastructure__eventstore_factory___require_eventstore_url["_require_eventstore_url"]
+        services__orchestrator__app__observability__context__get_retrieval_trace_id["get_retrieval_trace_id"]
+        services__orchestrator__app__application__command_bus__CommandBus___register_resource["_register_resource"]
+        services__orchestrator__app__observability__context__observability_context["observability_context"]
+        services__orchestrator__app__application__command_bus__CommandBus___create_task["_create_task"]
+        services__orchestrator__app__rag__store___row_dict["_row_dict"]
+        services__orchestrator__app__api__queries___matches_task_filters["_matches_task_filters"]
+        services__orchestrator__app__domain__aggregates__agent__Agent__heartbeat["heartbeat"]
         services__orchestrator__app__application__sagas__approval_gate___required_approval_id["_required_approval_id"]
+        services__orchestrator__app__rag__indexer___chunks_for_body["_chunks_for_body"]
+        services__orchestrator__app__domain__aggregates__task__Task__fail["fail"]
+        services__orchestrator__app__observability__rag_pipeline___result_with_trace["_result_with_trace"]
+        services__orchestrator__app__rag__store___query_tokens["_query_tokens"]
+        services__orchestrator__app__application__command_bus__CommandBus___approve_request["_approve_request"]
+        services__orchestrator__app__rag__store___vector_norm["_vector_norm"]
+        services__orchestrator__app__domain__aggregates__task__Task__apply["apply"]
+        services__orchestrator__app__application__sagas__approval_gate___is_skipped["_is_skipped"]
+        services__orchestrator__app__application__command_bus__CommandBus___record_task_outcome["_record_task_outcome"]
+        services__orchestrator__app__api__commands__activate_plugin["activate_plugin"]
+        services__orchestrator__app__application__sagas__task_routing__pick_idle_agent["pick_idle_agent"]
+        services__orchestrator__app__rag__openrouter__OpenRouterClient__chat["chat"]
+        services__orchestrator__app__infrastructure__eventstore_factory__build_event_store["build_event_store"]
+        services__orchestrator__app__rag__store___keyword_score["_keyword_score"]
+        services__orchestrator__app__observability__incidents__classify_rag_failure["classify_rag_failure"]
+        services__orchestrator__app__incidents__pipeline__IncidentPipeline__handle_rag_failure["handle_rag_failure"]
+        services__orchestrator__app__observability__rag_diagnostics___primary_incident_code["_primary_incident_code"]
+        services__orchestrator__app__incidents__pipeline___rag_failure_result["_rag_failure_result"]
+        services__orchestrator__app__api__rag__ask["ask"]
+        services__orchestrator__app__api__queries__list_tasks["list_tasks"]
+        services__orchestrator__app__api__queries___event_to_dict["_event_to_dict"]
+        services__orchestrator__app__api__queries___task_list_item["_task_list_item"]
+        services__orchestrator__app__rag__indexer__RagIndexer__ingest_resource["ingest_resource"]
+        services__orchestrator__app__infrastructure__eventstore_factory___dual_backend["_dual_backend"]
+        services__orchestrator__app__api__commands__reject_request["reject_request"]
+        services__orchestrator__app__rag__indexer___packed_chunks["_packed_chunks"]
+        services__orchestrator__app__api__commands__activate_workflow_version["activate_workflow_version"]
+        services__orchestrator__app__access__adapters__get_adapter["get_adapter"]
+        services__orchestrator__app__config__Settings__model_post_init["model_post_init"]
+        services__orchestrator__app__rag__retriever___fragment_fallback_answer["_fragment_fallback_answer"]
+        services__orchestrator__app__application__command_bus__CommandBus___rollback_workflow_version["_rollback_workflow_version"]
+        services__orchestrator__app__application__sagas__approval_gate___validate_approval_events["_validate_approval_events"]
+        services__orchestrator__app__observability__rag_pipeline__RagPipeline___llm_error_payload["_llm_error_payload"]
+        services__orchestrator__app__rag__openrouter__normalize_openrouter_model["normalize_openrouter_model"]
+        services__orchestrator__app__rag__openrouter___chat_result["_chat_result"]
+        services__orchestrator__app__api__commands__validate_plugin["validate_plugin"]
+        services__orchestrator__app__api__commands__rollback_plugin["rollback_plugin"]
+        services__orchestrator__app__incidents__pipeline___rag_failure_events["_rag_failure_events"]
+        services__orchestrator__app__application__sagas__approval_gate__ensure_approval["ensure_approval"]
+        services__orchestrator__app__observability__rag_pipeline__RagPipeline___empty_result_payload["_empty_result_payload"]
+        services__orchestrator__app__observability__context__new_retrieval_trace_id["new_retrieval_trace_id"]
+        services__orchestrator__app__access__transport__TransportService__probe["probe"]
+        services__orchestrator__app__observability__rag_diagnostics__RagDiagnostics__run["run"]
+        services__orchestrator__app__rag__retriever___unconfigured_answer["_unconfigured_answer"]
+        services__orchestrator__app__rag__store___parse_embedding["_parse_embedding"]
+        services__orchestrator__app__observability__context__new_correlation_id["new_correlation_id"]
+        services__orchestrator__app__access__transport__TransportService__copy["copy"]
+        services__orchestrator__app__rag__retriever___context_from_hits["_context_from_hits"]
+        services__orchestrator__app__domain__aggregates__task__Task__complete["complete"]
+        services__orchestrator__app__domain__aggregates__task__Task__assign_to_agent["assign_to_agent"]
+        services__orchestrator__app__infrastructure__eventstore___utc_now["_utc_now"]
+        services__orchestrator__app__application__command_bus___task_outcome_payload["_task_outcome_payload"]
+        services__orchestrator__app__rag__retriever___no_hits_answer["_no_hits_answer"]
+        services__orchestrator__app__access__uri__parse_uri["parse_uri"]
+        services__orchestrator__app__api__access__register_resource["register_resource"]
+        services__orchestrator__app__incidents__pipeline___rag_root_cause["_rag_root_cause"]
+        services__orchestrator__app__infrastructure__eventstore_factory___eventstoredb_backend["_eventstoredb_backend"]
+        services__orchestrator__app__infrastructure__eventstore__EventStore__append["append"]
+        services__orchestrator__app__observability__rag_pipeline__RagPipeline___step_recorder["_step_recorder"]
+        services__orchestrator__app__api__commands__approve_workflow_version["approve_workflow_version"]
+        services__orchestrator__app__evolution__policy_engine__PolicyEngine__validate_activation_metrics["validate_activation_metrics"]
+        services__orchestrator__app__rag__openrouter__OpenRouterClient____init__["__init__"]
+        services__orchestrator__app__api__commands__validate_workflow_version["validate_workflow_version"]
+        services__orchestrator__app__access__uri__build_uri["build_uri"]
+        services__orchestrator__app__rag__store___keyword_hits["_keyword_hits"]
+        services__orchestrator__app__evolution__policy_engine___activation_metrics_row["_activation_metrics_row"]
+        services__orchestrator__app__domain__aggregates__task__Task__start["start"]
+        services__orchestrator__app__application__sagas__task_routing___agent_matches["_agent_matches"]
+        services__orchestrator__app__api__access__build_resource_uri["build_resource_uri"]
+        services__orchestrator__app__rag__store__RagStore___vector_search["_vector_search"]
+        services__orchestrator__app__access__transport__TransportService__fetch["fetch"]
+        services__orchestrator__app__infrastructure__eventstore_esdb__EsdbEventStore____init__["__init__"]
+        services__orchestrator__app__rag__store___chunk_hit["_chunk_hit"]
+        services__orchestrator__app__application__command_bus__CommandBus___activate_plugin["_activate_plugin"]
     end
     subgraph services__projector
-        services__projector__app__main__rag_documents["rag_documents"]
-        services__projector__app__projections__approval_requests__project_approval_requests["project_approval_requests"]
-        services__projector__app__main__service_health["service_health"]
-        services__projector__app__projections__incidents___handle_diagnostics_started["_handle_diagnostics_started"]
+        services__projector__app__projections__task_board__project_task_board["project_task_board"]
+        services__projector__app__projections__dispatcher___event_payload["_event_payload"]
+        services__projector__app__projections__incidents___upsert_service_health["_upsert_service_health"]
+        services__projector__app__projections__incidents___handle_rag_request_failed["_handle_rag_request_failed"]
+        services__projector__app__projections__incidents___raw_checks["_raw_checks"]
         services__projector__app__projections__operational_feed___title_for["_title_for"]
-        services__projector__app__projections__agent_fleet__project_agent_fleet["project_agent_fleet"]
-        services__projector__app__projections__task_board___update_status["_update_status"]
-        services__projector__app__projections__incidents___check_payload["_check_payload"]
-        services__projector__app__main___row_to_dict["_row_to_dict"]
+        services__projector__app__projections__incidents___handle_diagnostics_started["_handle_diagnostics_started"]
+        services__projector__app__main__remediation_history["remediation_history"]
+        services__projector__app__projections__approval_requests__project_approval_requests["project_approval_requests"]
+        services__projector__app__main__operational_feed["operational_feed"]
+        services__projector__app__projections__incidents___handle_diagnostics_completed["_handle_diagnostics_completed"]
+        services__projector__app__projections__dispatcher___event_occurred_at["_event_occurred_at"]
+        services__projector__app__projections__task_board___handle_task_started["_handle_task_started"]
+        services__projector__app__main__plugin_catalog["plugin_catalog"]
+        services__projector__app__projections__incidents___checks_payload["_checks_payload"]
+        services__projector__app__main__resource_registry["resource_registry"]
         services__projector__app__main__agent_fleet["agent_fleet"]
-        services__projector__app__projections__dispatcher__project_event["project_event"]
+        services__projector__app__projections__incidents___handle_incident_classified["_handle_incident_classified"]
+        services__projector__app__main__incident_feed["incident_feed"]
+        services__projector__app__main___row_to_dict["_row_to_dict"]
+        services__projector__app__main__task_board["task_board"]
+        services__projector__app__projections__operational_feed__project_operational_feed["project_operational_feed"]
+        services__projector__app__projections__incidents___handle_post_remediation_verification["_handle_post_remediation_verif"]
+        services__projector__app__projections__incidents___upsert_rag_quality["_upsert_rag_quality"]
+        services__projector__app__main__rag_quality_board["rag_quality_board"]
+        services__projector__app__projections__incidents___update_incident_status["_update_incident_status"]
+        services__projector__app__projections__incidents___handle_remediation_finished["_handle_remediation_finished"]
+        services__projector__app__main__workflow_versions["workflow_versions"]
+        services__projector__app__projections__incidents___handle_remediation_started["_handle_remediation_started"]
+        services__projector__app__projections__incidents___error_code["_error_code"]
+        services__projector__app__projections__resource_registry__project_resource_registry["project_resource_registry"]
         services__projector__app__projections__incidents___checks_list_payload["_checks_list_payload"]
         services__projector__app__projections__operational_feed___summary_for["_summary_for"]
-        services__projector__app__projections__task_board___handle_task_started["_handle_task_started"]
-        services__projector__app__projections__incidents___handle_remediation_finished["_handle_remediation_finished"]
-        services__projector__app__main__resource_registry["resource_registry"]
-        services__projector__app__projections__operational_feed__project_operational_feed["project_operational_feed"]
-        services__projector__app__projections__incidents___handle_diagnostics_completed["_handle_diagnostics_completed"]
-        services__projector__app__main__rag_quality_board["rag_quality_board"]
-        services__projector__app__projections__workflow_versions__project_workflow_versions["project_workflow_versions"]
-        services__projector__app__projections__dispatcher___normalize_event["_normalize_event"]
-        services__projector__app__main__plugin_catalog["plugin_catalog"]
-        services__projector__app__main__approval_requests["approval_requests"]
-        services__projector__app__projections__incidents___checks_payload["_checks_payload"]
-        services__projector__app__main__incident_feed["incident_feed"]
-        services__projector__app__projections__incidents___handle_remediation_started["_handle_remediation_started"]
-        services__projector__app__main__workflow_versions["workflow_versions"]
-        services__projector__app__main__remediation_history["remediation_history"]
-        services__projector__app__projections__incidents___root_cause["_root_cause"]
-        services__projector__app__main__task_board["task_board"]
-        services__projector__app__projections__incidents___update_incident_status["_update_incident_status"]
-        services__projector__app__projections__incidents___upsert_rag_quality["_upsert_rag_quality"]
-        services__projector__app__main__operational_feed["operational_feed"]
         services__projector__app__projections__incidents__project_incidents["project_incidents"]
-        services__projector__app__projections__resource_registry__project_resource_registry["project_resource_registry"]
-        services__projector__app__projections__incidents___upsert_service_health["_upsert_service_health"]
-        services__projector__app__projections__incidents___handle_incident_classified["_handle_incident_classified"]
-        services__projector__app__projections__incidents___handle_rag_request_failed["_handle_rag_request_failed"]
-        services__projector__app__projections__incidents___error_code["_error_code"]
-        services__projector__app__projections__task_board__project_task_board["project_task_board"]
-        services__projector__app__projections__incidents___handle_post_remediation_verification["_handle_post_remediation_verif"]
         services__projector__app__projections__plugin_catalog__project_plugin_catalog["project_plugin_catalog"]
-        services__projector__app__projections__incidents___raw_checks["_raw_checks"]
-        services__projector__app__projections__incidents___handle_incident_detected["_handle_incident_detected"]
+        services__projector__app__projections__incidents___check_payload["_check_payload"]
         services__projector__app__projections__incidents___diagnostics_ok["_diagnostics_ok"]
+        services__projector__app__projections__agent_fleet__project_agent_fleet["project_agent_fleet"]
+        services__projector__app__projections__dispatcher___normalize_event["_normalize_event"]
+        services__projector__app__projections__incidents___root_cause["_root_cause"]
+        services__projector__app__projections__incidents___handle_incident_detected["_handle_incident_detected"]
+        services__projector__app__projections__task_board___update_status["_update_status"]
+        services__projector__app__main__approval_requests["approval_requests"]
+        services__projector__app__projections__workflow_versions__project_workflow_versions["project_workflow_versions"]
+        services__projector__app__main__service_health["service_health"]
+        services__projector__app__main__rag_documents["rag_documents"]
+        services__projector__app__projections__dispatcher__project_event["project_event"]
     end
     subgraph services__web
-        services__web__app__static__access__id["id"]
-        services__web__app__static__access__load["load"]
+        services__web__app__agent_workroom___extract_shell["_extract_shell"]
+        services__web__app__access_matrix___reindex_matrix_row["_reindex_matrix_row"]
         services__web__app__static__workspace__downloadArtifact["downloadArtifact"]
-        services__web__app__chat___incident_trace_part["_incident_trace_part"]
-        services__web__app__static__workspace__copyChatToClipboard["copyChatToClipboard"]
-        services__web__app__static__workspace__color["color"]
-        services__web__app__static__access__renderAgentResourceMatrix["renderAgentResourceMatrix"]
-        services__web__app__static__workspace__renderTicketDetail["renderTicketDetail"]
-        services__web__app__chat___incident_detail_parts["_incident_detail_parts"]
-        services__web__app__static__workspace__showArtifactPreview["showArtifactPreview"]
-        services__web__src__main__postJson["postJson"]
-        services__web__app__static__access__data["data"]
-        services__web__app__static__workspace__loadTicketDetail["loadTicketDetail"]
-        services__web__app__chat___message_response["_message_response"]
-        services__web__src__main__refresh["refresh"]
-        services__web__app__static__access__toast["toast"]
-        services__web__app__static__app__escapeHtml["escapeHtml"]
-        services__web__app__static__workspace__updateArtifactPreviewTabs["updateArtifactPreviewTabs"]
-        services__web__app__chat___rag_headers["_rag_headers"]
-        services__web__app__nlp2dsl_bridge___post_json["_post_json"]
-        services__web__app__static__access__api["api"]
-        services__web__app__static__workspace__saveContextFromForm["saveContextFromForm"]
-        services__web__app__tickets__ticket_web_path["ticket_web_path"]
-        services__web__app__static__workroom__ta["ta"]
-        services__web__app__chat___empty_resource_hint["_empty_resource_hint"]
-        services__web__app__static__workspace__clearArtifactPreview["clearArtifactPreview"]
-        services__web__app__static__workspace__ensureSession["ensureSession"]
-        services__web__app__chat__filter_file_inventory["filter_file_inventory"]
-        services__web__app__static__workspace__copyChatViewToClipboard["copyChatViewToClipboard"]
-        services__web__app__api__chat_routes___upload_one_file["_upload_one_file"]
-        services__web__app__static__workspace__archiveTicket["archiveTicket"]
-        services__web__app__static__workroom__refresh["refresh"]
-        services__web__app__chat___dedupe_rows_by_uri["_dedupe_rows_by_uri"]
-        services__web__app__static__workspace__when["when"]
+        services__web__app__static__workspace__confirmTicket["confirmTicket"]
+        services__web__app__conductor__handle_turn["handle_turn"]
         services__web__app__static__app__appendMessage["appendMessage"]
-        services__web__app__static__workspace__agentId["agentId"]
-        services__web__app__static__workroom__ensureWorkroom["ensureWorkroom"]
-        services__web__app__static__workroom__data["data"]
-        services__web__app__static__workroom__buildFallbackExport["buildFallbackExport"]
-        services__web__app__static__workspace__renderClarify["renderClarify"]
-        services__web__app__static__workspace__preferredArtifactTab["preferredArtifactTab"]
-        services__web__app__static__workspace__ta["ta"]
-        services__web__app__static__access__save["save"]
-        services__web__app__access_matrix___apply_state_matrices["_apply_state_matrices"]
-        services__web__app__static__workspace__copyBtn["copyBtn"]
-        services__web__app__static__workspace__focusCreatedTicket["focusCreatedTicket"]
-        services__web__app__tickets__status_meta["status_meta"]
-        services__web__app__static__workspace__selectArtifact["selectArtifact"]
-        services__web__app__static__workspace__state["state"]
+        services__web__app__static__workroom__toast["toast"]
+        services__web__app__static__workspace__copyChatViewToClipboard["copyChatViewToClipboard"]
+        services__web__app__static__workspace__archiveTicket["archiveTicket"]
+        services__web__app__api__chat_routes___upload_one_file["_upload_one_file"]
+        services__web__app__static__workspace__formValuesText["formValuesText"]
+        services__web__app__static__app__rowTask["rowTask"]
+        services__web__app__static__workspace__showRoutingToast["showRoutingToast"]
+        services__web__app__api__chat_routes___update_nlp_conversation["_update_nlp_conversation"]
+        services__web__app__access_matrix__save_state["save_state"]
+        services__web__app__static__workspace__chatPayload["chatPayload"]
+        services__web__app__tickets__enrich_task["enrich_task"]
+        services__web__app__static__workspace__ticketWebUrl["ticketWebUrl"]
+        services__web__app__agent_workroom___append_workroom_result["_append_workroom_result"]
+        services__web__app__api__task_routes__confirm_ticket["confirm_ticket"]
+        services__web__app__static__workspace__fields["fields"]
+        services__web__app__static__access__id["id"]
+        services__web__app__static__workroom__renderThread["renderThread"]
+        services__web__app__static__workspace__renderRoutingTrace["renderRoutingTrace"]
+        services__web__app__agent_workroom__format_workroom_export["format_workroom_export"]
+        services__web__app__static__workspace__when["when"]
         services__web__app__static__workspace__updateArtifactTab["updateArtifactTab"]
+        services__web__app__static__workroom__lastState["lastState"]
+        services__web__app__static__workspace__showFileListToast["showFileListToast"]
+        services__web__app__agent_workroom___record_file_list_result["_record_file_list_result"]
+        services__web__app__static__workspace__renderChat["renderChat"]
+        services__web__app__static__access__res["res"]
+        services__web__app__static__app__uploadFiles["uploadFiles"]
+        services__web__app__static__workroom__state["state"]
+        services__web__app__static__workspace__renderContext["renderContext"]
+        services__web__app__static__workspace__renderTasks["renderTasks"]
+        services__web__app__tickets__status_meta["status_meta"]
+        services__web__app__access_matrix___matrix_path["_matrix_path"]
+        services__web__app__static__workspace__appendMsgTo["appendMsgTo"]
+        services__web__src__main__created["created"]
+        services__web__app__static__workspace__state["state"]
+        services__web__app__resource_areas___matrix_access_decision["_matrix_access_decision"]
+        services__web__app__api__workroom_routes__workroom_get["workroom_get"]
+        services__web__app__agent_workroom___run_analyze_workroom_step["_run_analyze_workroom_step"]
+        services__web__app__static__workspace__bindTicketDetailActions["bindTicketDetailActions"]
+        services__web__app__static__workspace__saveSessionAgent["saveSessionAgent"]
+        services__web__app__static__workspace__setInputValue["setInputValue"]
+        services__web__app__api__task_routes__list_tickets["list_tickets"]
+        services__web__app__static__workspace__ticketStatus["ticketStatus"]
+        services__web__app__resource_areas__agent_may_access["agent_may_access"]
+        services__web__app__static__workspace__req["req"]
+        services__web__app__access_matrix___apply_state_matrices["_apply_state_matrices"]
+        services__web__app__resource_areas__list_areas["list_areas"]
+        services__web__app__static__access__escapeHtml["escapeHtml"]
+        services__web__app__static__access__save["save"]
+        services__web__app__api__chat_routes___form_only_message["_form_only_message"]
+        services__web__src__main__createTask["createTask"]
+        services__web__app__static__workspace__api["api"]
+        services__web__app__static__access__resetAll["resetAll"]
+        services__web__app__static__workroom__runAgents["runAgents"]
+        services__web__src__main__fetchJson["fetchJson"]
+        services__web__app__static__workspace__routingTraceText["routingTraceText"]
+        services__web__app__agent_workroom___reset_workroom["_reset_workroom"]
+        services__web__app__static__workspace__ticketUri["ticketUri"]
+        services__web__app__static__access__load["load"]
+        services__web__app__static__workspace__routingTraceRows["routingTraceRows"]
+        services__web__app__static__access__api["api"]
+        services__web__app__static__workspace__deep["deep"]
+        services__web__app__tickets__ticket_uri["ticket_uri"]
+        services__web__app__agent_workroom___record_shell_result["_record_shell_result"]
+        services__web__app__api__task_routes___assert_confirmable_task["_assert_confirmable_task"]
+        services__web__app__static__workspace__renderRoutingPolicy["renderRoutingPolicy"]
+        services__web__app__access_matrix__default_state["default_state"]
+        services__web__app__static__workspace__renderClarify["renderClarify"]
+        services__web__app__static__workspace__copyBtn["copyBtn"]
+        services__web__app__static__access__renderHumanAgentMatrix["renderHumanAgentMatrix"]
+        services__web__app__static__workspace__filterTasks["filterTasks"]
+        services__web__app__static__workspace__color["color"]
+        services__web__app__static__workspace__renderDraft["renderDraft"]
+        services__web__app__agent_workroom__get_workroom["get_workroom"]
+        services__web__app__resource_areas___area_policy_decision["_area_policy_decision"]
+        services__web__app__api__task_routes__get_ticket["get_ticket"]
+        services__web__app__agent_workroom___start_plan["_start_plan"]
+        services__web__app__resource_areas__list_groups["list_groups"]
+        services__web__app__static__workspace__initRouting["initRouting"]
+        services__web__app__agent_workroom___run_files_step["_run_files_step"]
+        services__web__app__static__workroom__renderState["renderState"]
+        services__web__app__static__access__title["title"]
+        services__web__app__access_matrix__human_may_use_agent["human_may_use_agent"]
+        services__web__app__static__workspace__items["items"]
+        services__web__app__access_matrix___empty_agent_resource["_empty_agent_resource"]
+        services__web__app__agent_workroom___run_workroom_step["_run_workroom_step"]
+        services__web__src__main__App["App"]
+        services__web__app__static__app__escapeHtml["escapeHtml"]
+        services__web__app__static__workspace__loadTickets["loadTickets"]
+        services__web__app__static__workroom__renderCatalog["renderCatalog"]
+        services__web__app__api__chat_routes__upload_files["upload_files"]
+        services__web__app__static__workroom__loadAreas["loadAreas"]
+        services__web__app__static__access__toast["toast"]
+        services__web__app__static__workspace__appendRouteBadge["appendRouteBadge"]
+        services__web__app__agent_workroom___run_files_workroom_step["_run_files_workroom_step"]
+        services__web__app__api__router_routes__routing_policy_get["routing_policy_get"]
+        services__web__app__static__workspace__selectArtifact["selectArtifact"]
+        services__web__app__static__workspace__draft["draft"]
+        services__web__app__static__workspace__copyLogsToClipboard["copyLogsToClipboard"]
+        services__web__app__static__workspace__submitDraft["submitDraft"]
+        services__web__app__static__workroom__data["data"]
+        services__web__app__access_matrix___default_resources["_default_resources"]
+        services__web__app__static__workspace__clearArtifactPreview["clearArtifactPreview"]
+        services__web__app__static__workspace__preferredArtifactTab["preferredArtifactTab"]
+        services__web__app__api__task_routes___assign_ticket["_assign_ticket"]
+        services__web__app__static__workspace__showArtifactPreview["showArtifactPreview"]
+        services__web__app__static__workspace__div["div"]
+        services__web__app__static__workspace__raw["raw"]
+        services__web__app__agent_workroom___workroom_export_header["_workroom_export_header"]
+        services__web__app__static__workspace__uploadFiles["uploadFiles"]
+        services__web__src__main__taskMetrics["taskMetrics"]
+        services__web__app__static__workroom__buildFallbackExport["buildFallbackExport"]
+        services__web__app__static__workspace__refreshWorkspace["refreshWorkspace"]
+        services__web__app__static__workspace__renderArtifactPreviewBody["renderArtifactPreviewBody"]
+        services__web__app__agent_workroom___run_summarize_step["_run_summarize_step"]
+        services__web__app__static__workspace__createFromDraft["createFromDraft"]
+        services__web__app__static__workspace__ensureSession["ensureSession"]
+        services__web__src__main__refresh["refresh"]
+        services__web__app__static__workroom__api["api"]
+        services__web__app__agent_workroom___run_shell_step["_run_shell_step"]
+        services__web__app__static__workroom__ta["ta"]
+        services__web__app__static__workspace__cacheArtifactFull["cacheArtifactFull"]
+        services__web__app__agent_workroom__workroom_catalog["workroom_catalog"]
+        services__web__app__api__task_routes___confirmable_task_and_agent["_confirmable_task_and_agent"]
+        services__web__app__static__workspace__renderFileChips["renderFileChips"]
+        services__web__app__static__workspace__ensureDraftFromInput["ensureDraftFromInput"]
+        services__web__app__access_matrix__load_state["load_state"]
+        services__web__app__static__workspace__draftCreated["draftCreated"]
+        services__web__app__api__workroom_routes__workroom_export["workroom_export"]
+        services__web__app__static__workspace__focusCreatedTicket["focusCreatedTicket"]
+        services__web__app__static__workspace__formatNlp2dslBadge["formatNlp2dslBadge"]
+        services__web__app__static__workspace__escapeHtml["escapeHtml"]
+        services__web__app__static__workroom__refresh["refresh"]
+        services__web__app__static__workroom__st["st"]
+        services__web__app__static__app__ensureSession["ensureSession"]
+        services__web__app__static__workspace__syncArtifacts["syncArtifacts"]
+        services__web__app__agent_workroom___run_summarize_workroom_step["_run_summarize_workroom_step"]
+        services__web__app__access_matrix___merge_bool_matrix["_merge_bool_matrix"]
+        services__web__app__static__workspace__saveContextFromForm["saveContextFromForm"]
+        services__web__app__static__workspace__submitTaskForm["submitTaskForm"]
+        services__web__app__static__workspace__finishDraftCreation["finishDraftCreation"]
+        services__web__app__agent_workroom___run_shell_workroom_step["_run_shell_workroom_step"]
+        services__web__app__static__workspace__sendChat["sendChat"]
+        services__web__app__static__workspace__syncContextNote["syncContextNote"]
+        services__web__app__static__workspace__n2html["n2html"]
+        services__web__app__static__workspace__updateArtifactPreviewTabs["updateArtifactPreviewTabs"]
+        services__web__app__access_matrix___reindex_state["_reindex_state"]
+        services__web__app__static__workspace__formatRouteBadge["formatRouteBadge"]
+        services__web__app__static__workspace__collectClarifyValues["collectClarifyValues"]
+        services__web__app__static__workroom__buildLedgerExport["buildLedgerExport"]
+        services__web__app__static__workspace__handleChatResponse["handleChatResponse"]
+        services__web__app__static__workroom__renderLedger["renderLedger"]
+        services__web__app__api__chat_routes__chat_message["chat_message"]
+        services__web__app__static__access__renderAgentResourceMatrix["renderAgentResourceMatrix"]
+        services__web__app__static__workspace__id["id"]
+        services__web__app__api__chat_routes___form_only_chat_message["_form_only_chat_message"]
+        services__web__app__api__task_routes___filter_tickets_view["_filter_tickets_view"]
+        services__web__app__static__workspace__renderArtifactList["renderArtifactList"]
+        services__web__app__static__workroom__escapeHtml["escapeHtml"]
+        services__web__app__static__app__text["text"]
+        services__web__app__static__access__checked["checked"]
+        services__web__app__access_matrix___default_agents["_default_agents"]
+        services__web__app__static__workspace__msgRoleLabel["msgRoleLabel"]
+        services__web__app__static__access__data["data"]
+        services__web__app__agent_workroom___add_permission["_add_permission"]
+        services__web__app__agent_workroom___plan_steps["_plan_steps"]
+        services__web__app__static__workspace__ta["ta"]
+        services__web__app__static__workspace__routingLineFromMsgEl["routingLineFromMsgEl"]
+        services__web__app__static__workspace__appendMsg["appendMsg"]
+        services__web__app__tickets__ticket_web_path["ticket_web_path"]
+        services__web__app__static__workspace__renderEmptyTicketDetail["renderEmptyTicketDetail"]
+        services__web__app__static__workspace__m2["m2"]
+        services__web__app__routing_policy__load_policy["load_policy"]
+        services__web__app__static__workspace__uploadPendingChatFiles["uploadPendingChatFiles"]
+        services__web__app__static__access__renderAll["renderAll"]
+        services__web__app__static__workroom__copyWorkroomLogs["copyWorkroomLogs"]
+        services__web__app__api__task_routes___task_from_board["_task_from_board"]
+        services__web__app__agent_workroom___workspace_scope["_workspace_scope"]
+        services__web__app__access_matrix___reindex_matrix["_reindex_matrix"]
+        services__web__app__static__workspace__ticketDetailHtml["ticketDetailHtml"]
+        services__web__app__static__workspace__clearChatInput["clearChatInput"]
+        services__web__app__static__workspace__copyChatToClipboard["copyChatToClipboard"]
+        services__web__app__access_matrix___load_raw_state["_load_raw_state"]
+        services__web__app__agent_workroom___append_workroom_thread["_append_workroom_thread"]
+        services__web__app__static__workspace__formatChatContent["formatChatContent"]
+        services__web__app__agent_workroom___run_analyze_step["_run_analyze_step"]
+        services__web__app__access_matrix___merged_bool_row["_merged_bool_row"]
+        services__web__app__access_matrix___empty_human_agent["_empty_human_agent"]
+        services__web__app__static__workspace__buildChatTextFromDom["buildChatTextFromDom"]
+        services__web__app__agent_workroom___finish_workroom["_finish_workroom"]
+        services__web__src__main__metrics["metrics"]
+        services__web__app__access_matrix___apply_state_lists["_apply_state_lists"]
+        services__web__app__static__workspace__head["head"]
+        services__web__app__static__workroom__copyWorkroomAll["copyWorkroomAll"]
         services__web__app__access_matrix__agent_may_access_resource["agent_may_access_resource"]
         services__web__app__static__workspace__renderTextList["renderTextList"]
-        services__web__app__static__workspace__collectClarifyValues["collectClarifyValues"]
         services__web__app__static__workspace__setChatSending["setChatSending"]
-        services__web__app__static__workspace__ensureDraftFromInput["ensureDraftFromInput"]
-        services__web__app__conductor__handle_turn["handle_turn"]
-        services__web__app__static__workspace__deep["deep"]
-        services__web__app__nlp2dsl_bridge__health["health"]
-        services__web__app__api__chat_routes__chat_message["chat_message"]
-        services__web__app__static__workspace__fields["fields"]
-        services__web__app__chat___looks_like_misspelled_file_list["_looks_like_misspelled_file_li"]
-        services__web__app__static__workspace__raw["raw"]
-        services__web__app__static__workroom__copyWorkroomLogs["copyWorkroomLogs"]
-        services__web__app__static__workspace__filterTasks["filterTasks"]
-        services__web__app__static__workspace__chatPayload["chatPayload"]
-        services__web__app__static__access__checked["checked"]
-        services__web__app__static__workspace__renderTasks["renderTasks"]
-        services__web__app__static__workspace__syncContextNote["syncContextNote"]
-        services__web__app__chat___has_polish_file_list_words["_has_polish_file_list_words"]
-        services__web__app__static__workspace__ticketWebUrl["ticketWebUrl"]
+        services__web__app__agent_workroom___append_workroom_ledger["_append_workroom_ledger"]
         services__web__app__static__workspace__chatInput["chatInput"]
-        services__web__app__static__workspace__clearChatInput["clearChatInput"]
-        services__web__app__static__workspace__formatChatContent["formatChatContent"]
-        services__web__app__static__workroom__api["api"]
-        services__web__app__chat___uri_is_user_resource["_uri_is_user_resource"]
-        services__web__app__static__workspace__toast["toast"]
-        services__web__app__access_matrix___empty_agent_resource["_empty_agent_resource"]
-        services__web__app__chat___format_history["_format_history"]
-        services__web__app__static__workspace__confirmTicket["confirmTicket"]
-        services__web__app__static__workspace__routingTraceRows["routingTraceRows"]
-        services__web__app__static__workspace__id["id"]
-        services__web__app__chat___uri_is_system_resource["_uri_is_system_resource"]
-        services__web__app__static__workroom__state["state"]
-        services__web__app__static__workspace__m2["m2"]
-        services__web__app__static__workspace__head["head"]
-        services__web__app__static__workspace__ticketStatus["ticketStatus"]
-        services__web__app__access_matrix___merge_bool_matrix["_merge_bool_matrix"]
-        services__web__app__access_matrix__save_state["save_state"]
-        services__web__app__static__app__rowTask["rowTask"]
-        services__web__app__access_matrix__load_state["load_state"]
-        services__web__app__static__workspace__buildChatTextFromDom["buildChatTextFromDom"]
-        services__web__app__static__app__text["text"]
-        services__web__app__chat___append["_append"]
-        services__web__app__chat__handle_message["handle_message"]
-        services__web__app__access_matrix___empty_human_agent["_empty_human_agent"]
-        services__web__app__chat___format_incident["_format_incident"]
-        services__web__app__chat___rag_rows_label["_rag_rows_label"]
-        services__web__app__chat__format_file_list_reply["format_file_list_reply"]
-        services__web__src__main__createTask["createTask"]
-        services__web__app__static__workspace__msgRoleLabel["msgRoleLabel"]
-        services__web__app__chat___append_resource_rows["_append_resource_rows"]
-        services__web__app__static__workspace__draftCreated["draftCreated"]
-        services__web__app__static__workspace__appendMsg["appendMsg"]
-        services__web__app__chat___ask_rag["_ask_rag"]
-        services__web__app__static__workspace__items["items"]
+        services__web__app__agent_workroom__run_workroom["run_workroom"]
         services__web__app__static__workroom__copyText["copyText"]
-        services__web__app__static__workspace__renderDraft["renderDraft"]
-        services__web__app__chat___row_dedupe_key["_row_dedupe_key"]
-        services__web__app__static__workroom__escapeHtml["escapeHtml"]
-        services__web__app__static__workspace__renderArtifactPreviewBody["renderArtifactPreviewBody"]
-        services__web__app__static__workspace__uploadFiles["uploadFiles"]
-        services__web__app__static__workspace__setInputValue["setInputValue"]
-        services__web__app__nlp2dsl_bridge__chat_message["chat_message"]
         services__web__app__static__app__renderHistory["renderHistory"]
-        services__web__app__static__workroom__toast["toast"]
-        services__web__app__static__workspace__submitTaskForm["submitTaskForm"]
-        services__web__app__resource_areas___area_policy_decision["_area_policy_decision"]
-        services__web__app__static__workspace__finishDraftCreation["finishDraftCreation"]
-        services__web__app__nlp2dsl_bridge__chat_start["chat_start"]
-        services__web__app__tickets__enrich_task["enrich_task"]
-        services__web__app__chat__fetch_file_inventory["fetch_file_inventory"]
-        services__web__app__chat___file_list_answer["_file_list_answer"]
-        services__web__src__main__taskMetrics["taskMetrics"]
-        services__web__app__static__workroom__renderCatalog["renderCatalog"]
-        services__web__app__static__workspace__routingLineFromMsgEl["routingLineFromMsgEl"]
-        services__web__app__static__workspace__copyLogsToClipboard["copyLogsToClipboard"]
-        services__web__app__static__access__title["title"]
-        services__web__app__static__workroom__copyWorkroomAll["copyWorkroomAll"]
-        services__web__app__chat___incident_message_part["_incident_message_part"]
-        services__web__app__static__workspace__renderRoutingTrace["renderRoutingTrace"]
-        services__web__app__static__workspace__formatRouteBadge["formatRouteBadge"]
-        services__web__app__access_matrix___default_resources["_default_resources"]
-        services__web__app__static__workspace__ticketUri["ticketUri"]
-        services__web__app__static__workspace__renderArtifactList["renderArtifactList"]
-        services__web__app__access_matrix___default_agents["_default_agents"]
-        services__web__app__chat__is_file_list_intent["is_file_list_intent"]
-        services__web__app__static__workspace__renderChat["renderChat"]
-        services__web__app__static__workspace__appendPendingChatInput["appendPendingChatInput"]
-        services__web__app__chat___has_english_file_list_words["_has_english_file_list_words"]
-        services__web__app__api__workroom_routes__workroom_get["workroom_get"]
-        services__web__app__api__router_routes__routing_policy_get["routing_policy_get"]
-        services__web__app__static__workspace__drafted["drafted"]
-        services__web__app__api__chat_routes__upload_files["upload_files"]
-        services__web__app__static__workspace__renderEmptyTicketDetail["renderEmptyTicketDetail"]
-        services__web__src__main__fetchJson["fetchJson"]
-        services__web__app__static__access__resetAll["resetAll"]
-        services__web__app__nlp2dsl_bridge__backend_candidates["backend_candidates"]
-        services__web__app__static__workspace__handleChatResponse["handleChatResponse"]
-        services__web__app__access_matrix___reindex_state["_reindex_state"]
-        services__web__src__main__metrics["metrics"]
-        services__web__app__chat___append_session_files["_append_session_files"]
-        services__web__app__static__workspace__routingTraceText["routingTraceText"]
-        services__web__app__static__workroom__renderState["renderState"]
-        services__web__app__chat___rows_in_session_scope["_rows_in_session_scope"]
-        services__web__app__static__workspace__uploadPendingChatFiles["uploadPendingChatFiles"]
-        services__web__app__static__access__res["res"]
-        services__web__app__chat__get_history["get_history"]
-        services__web__app__access_matrix__default_state["default_state"]
-        services__web__app__chat___default_chat_reply["_default_chat_reply"]
-        services__web__app__static__access__renderAll["renderAll"]
-        services__web__app__static__workroom__buildLedgerExport["buildLedgerExport"]
-        services__web__app__nlp2dsl_bridge__backend_url["backend_url"]
-        services__web__src__main__created["created"]
-        services__web__src__main__App["App"]
-        services__web__app__chat___has_list_word["_has_list_word"]
-        services__web__app__chat___filtered_resources["_filtered_resources"]
-        services__web__app__static__app__ensureSession["ensureSession"]
-        services__web__app__chat___append_user_context_only["_append_user_context_only"]
-        services__web__app__static__workspace__renderContext["renderContext"]
-        services__web__app__static__workspace__submitDraft["submitDraft"]
-        services__web__app__chat___incident_fallback_part["_incident_fallback_part"]
-        services__web__app__static__workspace__syncArtifacts["syncArtifacts"]
-        services__web__app__static__workspace__selectTicket["selectTicket"]
-        services__web__app__static__workspace__copyText["copyText"]
-        services__web__app__static__workspace__cacheArtifactFull["cacheArtifactFull"]
-        services__web__app__chat___filter_rows_by_scope["_filter_rows_by_scope"]
-        services__web__app__resource_areas___matrix_access_decision["_matrix_access_decision"]
-        services__web__app__chat___format_scope_uri["_format_scope_uri"]
-        services__web__app__tickets__ticket_uri["ticket_uri"]
-        services__web__app__static__workspace__createFromDraft["createFromDraft"]
-        services__web__app__chat___list_scope_value["_list_scope_value"]
-        services__web__app__static__workspace__refreshWorkspace["refreshWorkspace"]
-        services__web__app__chat___append_file_list_tip["_append_file_list_tip"]
-        services__web__app__chat___safe_list["_safe_list"]
-        services__web__app__chat___format_rag_doc_row["_format_rag_doc_row"]
-        services__web__app__static__workspace__draft["draft"]
-        services__web__app__chat___append_file_list_errors["_append_file_list_errors"]
-        services__web__app__access_matrix___load_raw_state["_load_raw_state"]
-        services__web__app__access_matrix___apply_state_lists["_apply_state_lists"]
-        services__web__app__static__workroom__renderThread["renderThread"]
-        services__web__app__static__workspace__showRoutingToast["showRoutingToast"]
-        services__web__app__chat___append_rag_rows["_append_rag_rows"]
-        services__web__app__api__workroom_routes__workroom_export["workroom_export"]
-        services__web__app__static__workspace__formValuesText["formValuesText"]
-        services__web__app__static__workspace__bindTicketDetailActions["bindTicketDetailActions"]
-        services__web__app__static__workspace__appendMsgTo["appendMsgTo"]
-        services__web__app__access_matrix___matrix_path["_matrix_path"]
-        services__web__app__static__workroom__runAgents["runAgents"]
-        services__web__app__routing_policy__load_policy["load_policy"]
-        services__web__app__access_matrix__human_may_use_agent["human_may_use_agent"]
-        services__web__app__static__workroom__renderLedger["renderLedger"]
-        services__web__app__static__workspace__loadTickets["loadTickets"]
-        services__web__app__chat___append_uploaded_session_files["_append_uploaded_session_files"]
-        services__web__app__chat___append_scope_uris["_append_scope_uris"]
-        services__web__app__static__workspace__appendRouteBadge["appendRouteBadge"]
-        services__web__app__static__workspace__renderFileChips["renderFileChips"]
-        services__web__app__static__workspace__api["api"]
-        services__web__app__static__app__uploadFiles["uploadFiles"]
-        services__web__app__static__workspace__renderRoutingPolicy["renderRoutingPolicy"]
-        services__web__app__static__workspace__text["text"]
-        services__web__app__static__workroom__loadAreas["loadAreas"]
         services__web__app__static__workspace__bindCopyChatButtons["bindCopyChatButtons"]
-        services__web__app__static__workspace__ticketDetailHtml["ticketDetailHtml"]
-        services__web__app__static__access__escapeHtml["escapeHtml"]
-        services__web__app__static__workspace__saveSessionAgent["saveSessionAgent"]
+        services__web__app__api__task_routes___archived_ids["_archived_ids"]
         services__web__app__api__workroom_routes___workroom_or_404["_workroom_or_404"]
-        services__web__app__static__workspace__showFileListToast["showFileListToast"]
-        services__web__app__static__workroom__st["st"]
-        services__web__app__static__workspace__req["req"]
-        services__web__app__access_matrix___reindex_matrix["_reindex_matrix"]
-        services__web__app__chat___incident_correlation_part["_incident_correlation_part"]
-        services__web__app__access_matrix___reindex_matrix_row["_reindex_matrix_row"]
+        services__web__app__static__workroom__ensureWorkroom["ensureWorkroom"]
+        services__web__app__static__workspace__text["text"]
+        services__web__app__api__task_routes___first_idle_agent_id["_first_idle_agent_id"]
         services__web__app__static__workroom__text["text"]
-        services__web__app__static__access__renderHumanAgentMatrix["renderHumanAgentMatrix"]
-        services__web__app__static__workspace__initRouting["initRouting"]
-        services__web__app__static__workspace__div["div"]
-        services__web__app__static__workroom__lastState["lastState"]
-        services__web__app__chat__file_list_scope["file_list_scope"]
-        services__web__app__chat__probe_rag["probe_rag"]
-        services__web__app__static__workspace__escapeHtml["escapeHtml"]
-        services__web__app__static__workspace__sendChat["sendChat"]
-        services__web__app__chat___rows_matching_uri["_rows_matching_uri"]
-        services__web__app__resource_areas__agent_may_access["agent_may_access"]
+        services__web__app__static__workspace__drafted["drafted"]
+        services__web__app__static__workspace__loadTicketDetail["loadTicketDetail"]
+        services__web__app__static__workspace__appendPendingChatInput["appendPendingChatInput"]
+        services__web__app__agent_workroom___register_file_list_artifact["_register_file_list_artifact"]
+        services__web__app__static__workspace__toast["toast"]
+        services__web__app__static__workspace__copyText["copyText"]
+        services__web__app__static__workspace__agentId["agentId"]
+        services__web__src__main__postJson["postJson"]
+        services__web__app__static__workspace__renderTicketDetail["renderTicketDetail"]
+        services__web__app__static__workspace__selectTicket["selectTicket"]
     end
     services__projector__app__main__operational_feed --> services__projector__app__main___row_to_dict
     services__projector__app__main__task_board --> services__projector__app__main___row_to_dict
@@ -421,6 +428,9 @@ flowchart LR
     services__projector__app__main__rag_quality_board --> services__projector__app__main___row_to_dict
     services__projector__app__main__resource_registry --> services__projector__app__main___row_to_dict
     services__projector__app__main__workflow_versions --> services__projector__app__main___row_to_dict
+    services__projector__app__projections__task_board___handle_task_started --> services__projector__app__projections__task_board___update_status
+    services__projector__app__projections__operational_feed__project_operational_feed --> services__projector__app__projections__operational_feed___title_for
+    services__projector__app__projections__operational_feed__project_operational_feed --> services__projector__app__projections__operational_feed___summary_for
     services__projector__app__projections__dispatcher__project_event --> services__projector__app__projections__dispatcher___normalize_event
     services__projector__app__projections__dispatcher__project_event --> services__projector__app__projections__operational_feed__project_operational_feed
     services__projector__app__projections__dispatcher__project_event --> services__projector__app__projections__task_board__project_task_board
@@ -430,14 +440,79 @@ flowchart LR
     services__projector__app__projections__dispatcher__project_event --> services__projector__app__projections__plugin_catalog__project_plugin_catalog
     services__projector__app__projections__dispatcher__project_event --> services__projector__app__projections__resource_registry__project_resource_registry
     services__projector__app__projections__dispatcher__project_event --> services__projector__app__projections__incidents__project_incidents
+    services__projector__app__projections__dispatcher___normalize_event --> services__projector__app__projections__dispatcher___event_payload
+    services__projector__app__projections__dispatcher___normalize_event --> services__projector__app__projections__dispatcher___event_occurred_at
+    services__projector__app__projections__incidents___handle_rag_request_failed --> services__projector__app__projections__incidents___upsert_rag_quality
+    services__projector__app__projections__incidents___handle_rag_request_failed --> services__projector__app__projections__incidents___upsert_service_health
+    services__projector__app__projections__incidents___handle_rag_request_failed --> services__projector__app__projections__incidents___error_code
+    services__projector__app__projections__incidents___handle_incident_detected --> services__projector__app__projections__incidents___error_code
+    services__projector__app__projections__incidents___handle_incident_classified --> services__projector__app__projections__incidents___error_code
+    services__projector__app__projections__incidents___handle_diagnostics_started --> services__projector__app__projections__incidents___update_incident_status
+    services__projector__app__projections__incidents___handle_diagnostics_completed --> services__projector__app__projections__incidents___checks_payload
+    services__projector__app__projections__incidents___handle_diagnostics_completed --> services__projector__app__projections__incidents___diagnostics_ok
+    services__projector__app__projections__incidents___handle_diagnostics_completed --> services__projector__app__projections__incidents___upsert_service_health
+    services__projector__app__projections__incidents___handle_diagnostics_completed --> services__projector__app__projections__incidents___root_cause
+    services__projector__app__projections__incidents___handle_diagnostics_completed --> services__projector__app__projections__incidents___error_code
+    services__projector__app__projections__incidents___handle_remediation_started --> services__projector__app__projections__incidents___update_incident_status
+    services__projector__app__projections__incidents___handle_remediation_finished --> services__projector__app__projections__incidents___update_incident_status
+    services__projector__app__projections__incidents___handle_post_remediation_verification --> services__projector__app__projections__incidents___update_incident_status
+    services__projector__app__projections__incidents___handle_post_remediation_verification --> services__projector__app__projections__incidents___upsert_service_health
+    services__projector__app__projections__incidents___upsert_rag_quality --> services__projector__app__projections__incidents___error_code
+    services__projector__app__projections__incidents___checks_payload --> services__projector__app__projections__incidents___raw_checks
+    services__projector__app__projections__incidents___checks_payload --> services__projector__app__projections__incidents___checks_list_payload
+    services__projector__app__projections__incidents___checks_list_payload --> services__projector__app__projections__incidents___check_payload
+    services__projector__app__projections__incidents___root_cause --> services__projector__app__projections__incidents___error_code
+    services__web__app__resource_areas__agent_may_access --> services__web__app__resource_areas___matrix_access_decision
+    services__web__app__resource_areas__agent_may_access --> services__web__app__resource_areas___area_policy_decision
+    services__web__app__resource_areas___matrix_access_decision --> services__web__app__access_matrix__agent_may_access_resource
+    services__web__app__agent_workroom___plan_steps --> services__web__app__agent_workroom___extract_shell
+    services__web__app__agent_workroom__format_workroom_export --> services__web__app__agent_workroom___workroom_export_header
+    services__web__app__agent_workroom__format_workroom_export --> services__web__app__agent_workroom___append_workroom_thread
+    services__web__app__agent_workroom__format_workroom_export --> services__web__app__agent_workroom___append_workroom_ledger
+    services__web__app__agent_workroom__format_workroom_export --> services__web__app__agent_workroom___append_workroom_result
+    services__web__app__agent_workroom__run_workroom --> services__web__app__agent_workroom__get_workroom
+    services__web__app__agent_workroom__run_workroom --> services__web__app__agent_workroom___reset_workroom
+    services__web__app__agent_workroom__run_workroom --> services__web__app__agent_workroom___start_plan
+    services__web__app__agent_workroom__run_workroom --> services__web__app__agent_workroom___workspace_scope
+    services__web__app__agent_workroom__run_workroom --> services__web__app__agent_workroom___finish_workroom
+    services__web__app__agent_workroom__run_workroom --> services__web__app__agent_workroom___run_workroom_step
+    services__web__app__agent_workroom___start_plan --> services__web__app__agent_workroom___plan_steps
+    services__web__app__agent_workroom___run_analyze_workroom_step --> services__web__app__agent_workroom___run_analyze_step
+    services__web__app__agent_workroom___run_files_workroom_step --> services__web__app__agent_workroom___run_files_step
+    services__web__app__agent_workroom___run_shell_workroom_step --> services__web__app__agent_workroom___run_shell_step
+    services__web__app__agent_workroom___run_summarize_workroom_step --> services__web__app__agent_workroom___run_summarize_step
+    services__web__app__agent_workroom___run_files_step --> services__web__app__resource_areas__agent_may_access
+    services__web__app__agent_workroom___run_files_step --> services__web__app__agent_workroom___record_file_list_result
+    services__web__app__agent_workroom___run_files_step --> services__web__app__agent_workroom___register_file_list_artifact
+    services__web__app__agent_workroom___run_files_step --> services__web__app__agent_workroom___add_permission
+    services__web__app__agent_workroom___run_shell_step --> services__web__app__agent_workroom___extract_shell
+    services__web__app__agent_workroom___run_shell_step --> services__web__app__resource_areas__agent_may_access
+    services__web__app__agent_workroom___run_shell_step --> services__web__app__agent_workroom___record_shell_result
+    services__web__app__agent_workroom__workroom_catalog --> services__web__app__resource_areas__list_areas
+    services__web__app__agent_workroom__workroom_catalog --> services__web__app__resource_areas__list_groups
     services__web__app__tickets__enrich_task --> services__web__app__tickets__status_meta
     services__web__app__tickets__enrich_task --> services__web__app__tickets__ticket_uri
     services__web__app__tickets__enrich_task --> services__web__app__tickets__ticket_web_path
-    services__web__app__nlp2dsl_bridge__backend_url --> services__web__app__nlp2dsl_bridge__backend_candidates
-    services__web__app__nlp2dsl_bridge__health --> services__web__app__nlp2dsl_bridge__backend_candidates
-    services__web__app__nlp2dsl_bridge__chat_start --> services__web__app__nlp2dsl_bridge___post_json
-    services__web__app__nlp2dsl_bridge__chat_message --> services__web__app__nlp2dsl_bridge___post_json
-    services__web__app__nlp2dsl_bridge___post_json --> services__web__app__nlp2dsl_bridge__backend_candidates
+    services__web__app__access_matrix__default_state --> services__web__app__access_matrix___default_resources
+    services__web__app__access_matrix__default_state --> services__web__app__access_matrix___default_agents
+    services__web__app__access_matrix__default_state --> services__web__app__access_matrix___empty_agent_resource
+    services__web__app__access_matrix__default_state --> services__web__app__access_matrix___empty_human_agent
+    services__web__app__access_matrix__load_state --> services__web__app__access_matrix___matrix_path
+    services__web__app__access_matrix__load_state --> services__web__app__access_matrix___load_raw_state
+    services__web__app__access_matrix__load_state --> services__web__app__access_matrix__default_state
+    services__web__app__access_matrix__load_state --> services__web__app__access_matrix___apply_state_lists
+    services__web__app__access_matrix__load_state --> services__web__app__access_matrix___apply_state_matrices
+    services__web__app__access_matrix__load_state --> services__web__app__access_matrix___reindex_state
+    services__web__app__access_matrix___apply_state_matrices --> services__web__app__access_matrix___merge_bool_matrix
+    services__web__app__access_matrix___merge_bool_matrix --> services__web__app__access_matrix___merged_bool_row
+    services__web__app__access_matrix___reindex_state --> services__web__app__access_matrix___default_resources
+    services__web__app__access_matrix___reindex_state --> services__web__app__access_matrix___default_agents
+    services__web__app__access_matrix___reindex_state --> services__web__app__access_matrix___reindex_matrix
+    services__web__app__access_matrix___reindex_matrix --> services__web__app__access_matrix___reindex_matrix_row
+    services__web__app__access_matrix__save_state --> services__web__app__access_matrix___reindex_state
+    services__web__app__access_matrix__save_state --> services__web__app__access_matrix___matrix_path
+    services__web__app__access_matrix__agent_may_access_resource --> services__web__app__access_matrix__load_state
+    services__web__app__access_matrix__human_may_use_agent --> services__web__app__access_matrix__load_state
     services__web__app__static__access__renderAgentResourceMatrix --> services__web__app__static__access__escapeHtml
     services__web__app__static__access__checked --> services__web__app__static__access__escapeHtml
     services__web__app__static__access__renderHumanAgentMatrix --> services__web__app__static__access__escapeHtml
@@ -497,14 +572,77 @@ flowchart LR
     services__web__app__static__app__text --> services__web__app__static__app__appendMessage
     services__web__app__static__app__rowTask --> services__web__app__static__app__escapeHtml
     services__web__app__api__router_routes__routing_policy_get --> services__web__app__routing_policy__load_policy
-    services__web__app__api__chat_routes__chat_message --> services__web__app__conductor__handle_turn
-    services__web__app__api__chat_routes__upload_files --> services__web__app__api__chat_routes___upload_one_file
+    services__web__app__api__task_routes__list_tickets --> services__web__app__api__task_routes___archived_ids
+    services__web__app__api__task_routes__list_tickets --> services__web__app__tickets__enrich_task
+    services__web__app__api__task_routes__list_tickets --> services__web__app__api__task_routes___filter_tickets_view
+    services__web__app__api__task_routes__get_ticket --> services__web__app__api__task_routes___archived_ids
+    services__web__app__api__task_routes__get_ticket --> services__web__app__tickets__enrich_task
+    services__web__app__api__task_routes__confirm_ticket --> services__web__app__api__task_routes___confirmable_task_and_agent
+    services__web__app__api__task_routes__confirm_ticket --> services__web__app__api__task_routes___assign_ticket
+    services__web__app__api__task_routes___confirmable_task_and_agent --> services__web__app__api__task_routes___task_from_board
+    services__web__app__api__task_routes___confirmable_task_and_agent --> services__web__app__api__task_routes___assert_confirmable_task
+    services__web__app__api__task_routes___confirmable_task_and_agent --> services__web__app__api__task_routes___first_idle_agent_id
     services__web__app__api__workroom_routes__workroom_get --> services__web__app__api__workroom_routes___workroom_or_404
     services__web__app__api__workroom_routes__workroom_export --> services__web__app__api__workroom_routes___workroom_or_404
+    services__web__src__main__App --> services__web__src__main__taskMetrics
+    services__web__src__main__App --> services__web__src__main__fetchJson
+    services__web__src__main__metrics --> services__web__src__main__fetchJson
+    services__web__src__main__refresh --> services__web__src__main__fetchJson
+    services__web__src__main__createTask --> services__web__src__main__postJson
+    services__web__src__main__createTask --> services__web__src__main__refresh
+    services__web__src__main__created --> services__web__src__main__postJson
     services__orchestrator__app__config__Settings__model_post_init --> services__orchestrator__app__rag__openrouter__normalize_openrouter_model
     services__orchestrator__app__infrastructure__eventstore__EventStore__append --> services__orchestrator__app__infrastructure__eventstore___utc_now
     services__orchestrator__app__infrastructure__eventstore__EventStore___record_from_row --> services__orchestrator__app__infrastructure__eventstore___loads_json
+    services__orchestrator__app__infrastructure__eventstore_factory__build_event_store --> services__orchestrator__app__infrastructure__eventstore_factory___eventstoredb_backend
+    services__orchestrator__app__infrastructure__eventstore_factory__build_event_store --> services__orchestrator__app__infrastructure__eventstore_factory___dual_backend
+    services__orchestrator__app__infrastructure__eventstore_factory___eventstoredb_backend --> services__orchestrator__app__infrastructure__eventstore_factory___require_eventstore_url
+    services__orchestrator__app__infrastructure__eventstore_factory___dual_backend --> services__orchestrator__app__infrastructure__eventstore_factory___require_eventstore_url
     services__orchestrator__app__infrastructure__eventstore_esdb__EsdbEventStore____init__ --> services__orchestrator__app__infrastructure__eventstore_esdb___parse_esdb_uri
+    services__orchestrator__app__rag__retriever__RagRetriever__ask --> services__orchestrator__app__rag__retriever___context_from_hits
+    services__orchestrator__app__rag__retriever__RagRetriever__ask --> services__orchestrator__app__rag__retriever___no_hits_answer
+    services__orchestrator__app__rag__retriever__RagRetriever__ask --> services__orchestrator__app__rag__retriever___unconfigured_answer
+    services__orchestrator__app__rag__retriever__RagRetriever__ask --> services__orchestrator__app__rag__retriever___fragment_fallback_answer
+    services__orchestrator__app__rag__retriever__RagRetriever__ask --> services__orchestrator__app__rag__retriever___rag_messages
+    services__orchestrator__app__rag__store___cosine --> services__orchestrator__app__rag__store___vector_norm
+    services__orchestrator__app__rag__store___cosine --> services__orchestrator__app__rag__store___same_dimension_vectors
+    services__orchestrator__app__rag__store__RagStore__list_documents --> services__orchestrator__app__rag__store___row_dict
+    services__orchestrator__app__rag__store__RagStore__search --> services__orchestrator__app__rag__store___ranked_hits
+    services__orchestrator__app__rag__store__RagStore___vector_search --> services__orchestrator__app__rag__store___vector_hits
+    services__orchestrator__app__rag__store__RagStore___keyword_fallback --> services__orchestrator__app__rag__store___query_tokens
+    services__orchestrator__app__rag__store__RagStore___keyword_fallback --> services__orchestrator__app__rag__store___keyword_hits
+    services__orchestrator__app__rag__store___vector_hits --> services__orchestrator__app__rag__store___parse_embedding
+    services__orchestrator__app__rag__store___vector_hits --> services__orchestrator__app__rag__store___cosine
+    services__orchestrator__app__rag__store___vector_hits --> services__orchestrator__app__rag__store___chunk_hit
+    services__orchestrator__app__rag__store___ranked_hits --> services__orchestrator__app__rag__store___chunk_hit
+    services__orchestrator__app__rag__store___ranked_hits --> services__orchestrator__app__rag__store___row_dict
+    services__orchestrator__app__rag__store___keyword_hits --> services__orchestrator__app__rag__store___keyword_score
+    services__orchestrator__app__rag__store___keyword_hits --> services__orchestrator__app__rag__store___chunk_hit
+    services__orchestrator__app__rag__store___keyword_score --> services__orchestrator__app__rag__store___row_dict
+    services__orchestrator__app__rag__store___parse_embedding --> services__orchestrator__app__rag__store___row_dict
+    services__orchestrator__app__rag__store___chunk_hit --> services__orchestrator__app__rag__store___row_dict
+    services__orchestrator__app__rag__openrouter__OpenRouterClient____init__ --> services__orchestrator__app__rag__openrouter__normalize_openrouter_model
+    services__orchestrator__app__rag__openrouter__OpenRouterClient__chat --> services__orchestrator__app__rag__openrouter___chat_response_error
+    services__orchestrator__app__rag__openrouter__OpenRouterClient__chat --> services__orchestrator__app__rag__openrouter___chat_result
+    services__orchestrator__app__rag__indexer__RagIndexer__ingest_resource --> services__orchestrator__app__rag__indexer___chunks_for_body
+    services__orchestrator__app__rag__indexer__RagIndexer__ingest_resource --> services__orchestrator__app__rag__indexer___packed_chunks
+    services__orchestrator__app__rag__indexer__RagIndexer__ingest_resource --> services__orchestrator__app__rag__indexer___indexed_result
+    services__orchestrator__app__rag__indexer__RagIndexer__ingest_resource --> services__orchestrator__app__rag__indexer___failed_result
+    services__orchestrator__app__rag__indexer___chunks_for_body --> services__orchestrator__app__rag__chunking__chunk_text
+    services__orchestrator__app__application__command_bus__CommandBus___create_task --> services__orchestrator__app__application__sagas__task_routing__maybe_auto_assign
+    services__orchestrator__app__application__command_bus__CommandBus___activate_workflow_version --> services__orchestrator__app__application__sagas__approval_gate__ensure_approval
+    services__orchestrator__app__application__command_bus__CommandBus___rollback_workflow_version --> services__orchestrator__app__application__sagas__approval_gate__ensure_approval
+    services__orchestrator__app__application__command_bus__CommandBus___activate_plugin --> services__orchestrator__app__application__sagas__approval_gate__ensure_approval
+    services__orchestrator__app__application__command_bus__CommandBus___rollback_plugin --> services__orchestrator__app__application__sagas__approval_gate__ensure_approval
+    services__orchestrator__app__application__command_bus__CommandBus___approve_request --> services__orchestrator__app__application__sagas__approval_gate__follow_up_after_grant
+    services__orchestrator__app__application__command_bus__CommandBus___register_resource --> services__orchestrator__app__access__uri__parse_uri
+    services__orchestrator__app__application__command_bus__CommandBus___record_task_outcome --> services__orchestrator__app__application__command_bus___task_outcome_payload
+    services__orchestrator__app__application__sagas__task_routing__pick_idle_agent --> services__orchestrator__app__application__sagas__task_routing___agent_route_state
+    services__orchestrator__app__application__sagas__task_routing__pick_idle_agent --> services__orchestrator__app__application__sagas__task_routing___agent_matches
+    services__orchestrator__app__application__sagas__task_routing__maybe_auto_assign --> services__orchestrator__app__application__sagas__task_routing__pick_idle_agent
+    services__orchestrator__app__application__sagas__approval_gate__ensure_approval --> services__orchestrator__app__application__sagas__approval_gate___is_skipped
+    services__orchestrator__app__application__sagas__approval_gate__ensure_approval --> services__orchestrator__app__application__sagas__approval_gate___required_approval_id
+    services__orchestrator__app__application__sagas__approval_gate__ensure_approval --> services__orchestrator__app__application__sagas__approval_gate___validate_approval_events
     services__orchestrator__app__access__transport__TransportService__probe --> services__orchestrator__app__access__uri__parse_uri
     services__orchestrator__app__access__transport__TransportService__probe --> services__orchestrator__app__access__adapters__get_adapter
     services__orchestrator__app__access__transport__TransportService__fetch --> services__orchestrator__app__access__uri__parse_uri
@@ -512,11 +650,35 @@ flowchart LR
     services__orchestrator__app__access__transport__TransportService__copy --> services__orchestrator__app__access__uri__parse_uri
     services__orchestrator__app__access__transport__TransportService__copy --> services__orchestrator__app__access__adapters__get_adapter
     services__orchestrator__app__domain__aggregates__agent__Agent__heartbeat --> services__orchestrator__app__infrastructure__eventstore___utc_now
+    services__orchestrator__app__domain__aggregates__task___event_data --> services__web__app__static__access__data
+    services__orchestrator__app__domain__aggregates__task___event_timestamp --> services__orchestrator__app__domain__aggregates__task___utc_now
+    services__orchestrator__app__domain__aggregates__task__Task____init__ --> services__orchestrator__app__infrastructure__eventstore___utc_now
+    services__orchestrator__app__domain__aggregates__task__Task__assign_to_agent --> services__orchestrator__app__infrastructure__eventstore___utc_now
+    services__orchestrator__app__domain__aggregates__task__Task__start --> services__orchestrator__app__infrastructure__eventstore___utc_now
+    services__orchestrator__app__domain__aggregates__task__Task__complete --> services__orchestrator__app__infrastructure__eventstore___utc_now
+    services__orchestrator__app__domain__aggregates__task__Task__fail --> services__orchestrator__app__infrastructure__eventstore___utc_now
+    services__orchestrator__app__domain__aggregates__task__Task__apply --> services__orchestrator__app__domain__aggregates__task___event_type
+    services__orchestrator__app__domain__aggregates__task__Task__apply --> services__orchestrator__app__domain__aggregates__task___event_data
+    services__orchestrator__app__domain__aggregates__task__Task__apply --> services__orchestrator__app__domain__aggregates__task___event_timestamp
+    services__orchestrator__app__observability__rag_pipeline__RagPipeline__ask --> services__orchestrator__app__observability__context__get_correlation_id
+    services__orchestrator__app__observability__rag_pipeline__RagPipeline__ask --> services__orchestrator__app__observability__rag_pipeline___result_with_trace
+    services__orchestrator__app__observability__rag_pipeline__RagPipeline__ask --> services__orchestrator__app__observability__context__get_retrieval_trace_id
+    services__orchestrator__app__observability__rag_pipeline__RagPipeline__ask --> services__orchestrator__app__observability__context__new_retrieval_trace_id
+    services__orchestrator__app__observability__rag_pipeline__RagPipeline___step_recorder --> services__orchestrator__app__observability__logging__log_event
+    services__orchestrator__app__observability__rag_pipeline__RagPipeline___exception_payload --> services__orchestrator__app__observability__incidents__classify_rag_failure
+    services__orchestrator__app__observability__rag_pipeline__RagPipeline___llm_error_payload --> services__orchestrator__app__observability__incidents__classify_rag_failure
+    services__orchestrator__app__observability__rag_pipeline__RagPipeline___llm_error_payload --> services__orchestrator__app__observability__rag_pipeline___result_with_trace
+    services__orchestrator__app__observability__rag_pipeline__RagPipeline___empty_result_payload --> services__orchestrator__app__observability__rag_pipeline___result_with_trace
     services__orchestrator__app__observability__middleware__CorrelationMiddleware__dispatch --> services__orchestrator__app__observability__context__new_correlation_id
     services__orchestrator__app__observability__middleware__CorrelationMiddleware__dispatch --> services__orchestrator__app__observability__context__observability_context
-    services__orchestrator__app__observability__logging__log_event --> services__orchestrator__app__observability__context__get_correlation_id
-    services__orchestrator__app__observability__logging__log_event --> services__orchestrator__app__observability__context__get_retrieval_trace_id
-    services__orchestrator__app__observability__logging__log_event --> services__orchestrator__app__observability__context__get_chat_session_id
+    services__orchestrator__app__observability__rag_diagnostics___overall_status --> services__orchestrator__app__observability__rag_diagnostics___checks_with_status
+    services__orchestrator__app__observability__rag_diagnostics___primary_incident_code --> services__orchestrator__app__observability__rag_diagnostics___checks_with_status
+    services__orchestrator__app__observability__rag_diagnostics___log_diagnostics_result --> services__orchestrator__app__observability__logging__log_event
+    services__orchestrator__app__observability__rag_diagnostics__RagDiagnostics__run --> services__orchestrator__app__observability__context__get_correlation_id
+    services__orchestrator__app__observability__rag_diagnostics__RagDiagnostics__run --> services__orchestrator__app__observability__rag_diagnostics___overall_status
+    services__orchestrator__app__observability__rag_diagnostics__RagDiagnostics__run --> services__orchestrator__app__observability__rag_diagnostics___primary_incident_code
+    services__orchestrator__app__observability__rag_diagnostics__RagDiagnostics__run --> services__orchestrator__app__observability__rag_diagnostics___log_diagnostics_result
+    services__orchestrator__app__observability__rag_diagnostics__RagDiagnostics__run --> services__orchestrator__app__observability__context__get_retrieval_trace_id
     services__orchestrator__app__api__commands__propose_workflow_version --> services__orchestrator__app__api__commands___dispatch
     services__orchestrator__app__api__commands__validate_workflow_version --> services__orchestrator__app__api__commands___dispatch
     services__orchestrator__app__api__commands__approve_workflow_version --> services__orchestrator__app__api__commands___dispatch
@@ -531,14 +693,12 @@ flowchart LR
     services__orchestrator__app__api__commands__approve_request --> services__orchestrator__app__api__commands___dispatch
     services__orchestrator__app__api__commands__reject_request --> services__orchestrator__app__api__commands___dispatch
     services__orchestrator__app__api__commands__expire_approval --> services__orchestrator__app__api__commands___dispatch
-    services__orchestrator__app__api__observability__rag_health --> services__orchestrator__app__observability__context__observability_context
-    services__orchestrator__app__api__observability__rag_health --> services__orchestrator__app__observability__context__new_retrieval_trace_id
-    services__orchestrator__app__api__observability__rag_diagnose --> services__orchestrator__app__observability__context__observability_context
-    services__orchestrator__app__api__observability__rag_diagnose --> services__orchestrator__app__observability__context__new_retrieval_trace_id
-    services__orchestrator__app__api__observability__export_logs --> services__orchestrator__app__observability__context__observability_context
-    services__orchestrator__app__api__observability__export_logs --> services__orchestrator__app__observability__export__build_orchestrator_bundle
-    services__orchestrator__app__api__observability__export_logs --> services__orchestrator__app__observability__context__new_correlation_id
-    services__orchestrator__app__api__observability__list_incidents --> services__orchestrator__app__observability__context__get_correlation_id
+    services__orchestrator__app__api__queries__get_task --> services__orchestrator__app__api__queries___event_to_dict
+    services__orchestrator__app__api__queries__get_agent --> services__orchestrator__app__api__queries___event_to_dict
+    services__orchestrator__app__api__queries__get_workflow --> services__orchestrator__app__api__queries___event_to_dict
+    services__orchestrator__app__api__queries__list_tasks --> services__orchestrator__app__api__queries___task_list_item
+    services__orchestrator__app__api__queries___task_list_item --> services__orchestrator__app__api__queries___aggregate_state
+    services__orchestrator__app__api__queries___task_list_item --> services__orchestrator__app__api__queries___matches_task_filters
     services__orchestrator__app__api__rag__search --> services__orchestrator__app__observability__context__new_retrieval_trace_id
     services__orchestrator__app__api__rag__search --> services__orchestrator__app__observability__context__observability_context
     services__orchestrator__app__api__rag__ask --> services__orchestrator__app__observability__context__new_retrieval_trace_id
@@ -548,13 +708,11 @@ flowchart LR
     services__orchestrator__app__api__access__build_resource_uri --> services__orchestrator__app__access__uri__build_uri
     services__orchestrator__app__api__access__upload_resource --> services__orchestrator__app__access__uri__build_uri
     agents__shell_agent__app__nats_consumer__ShellAgent__handle_message --> agents__shell_agent__app__executor__run_shell_command
-    services__web__src__main__App --> services__web__src__main__taskMetrics
-    services__web__src__main__App --> services__web__src__main__fetchJson
-    services__web__src__main__metrics --> services__web__src__main__fetchJson
-    services__web__src__main__refresh --> services__web__src__main__fetchJson
-    services__web__src__main__createTask --> services__web__src__main__postJson
-    services__web__src__main__createTask --> services__web__src__main__refresh
-    services__web__src__main__created --> services__web__src__main__postJson
+    services__orchestrator__app__rag__chunking__chunk_text --> services__orchestrator__app__rag__chunking___overlapping_chunks
+    services__orchestrator__app__incidents__pipeline__IncidentPipeline__handle_rag_failure --> services__orchestrator__app__incidents__pipeline__classify_rag_error
+    services__orchestrator__app__incidents__pipeline__IncidentPipeline__handle_rag_failure --> services__orchestrator__app__incidents__pipeline___rag_failure_events
+    services__orchestrator__app__incidents__pipeline__IncidentPipeline__handle_rag_failure --> services__orchestrator__app__incidents__pipeline___rag_failure_result
+    services__orchestrator__app__incidents__pipeline___rag_failure_result --> services__orchestrator__app__incidents__pipeline___rag_root_cause
     services__web__app__static__workspace__ensureSession --> services__web__app__static__workspace__api
     services__web__app__static__workspace__loadTickets --> services__web__app__static__workspace__api
     services__web__app__static__workspace__refreshWorkspace --> services__web__app__static__workspace__ensureSession
@@ -623,6 +781,9 @@ flowchart LR
     services__web__app__static__workspace__agentId --> services__web__app__static__workspace__api
     services__web__app__static__workspace__renderRoutingTrace --> services__web__app__static__workspace__routingTraceRows
     services__web__app__static__workspace__renderRoutingTrace --> services__web__app__static__workspace__escapeHtml
+    services__web__app__static__workspace__renderRoutingTrace --> services__web__app__static__workspace__formatNlp2dslBadge
+    services__web__app__static__workspace__n2html --> services__web__app__static__workspace__escapeHtml
+    services__web__app__static__workspace__n2html --> services__web__app__static__workspace__formatNlp2dslBadge
     services__web__app__static__workspace__routingTraceText --> services__web__app__static__workspace__routingTraceRows
     services__web__app__static__workspace__routingTraceText --> services__web__app__static__workspace__formatRouteBadge
     services__web__app__static__workspace__renderChat --> services__web__app__static__workspace__appendMsgTo
@@ -648,6 +809,7 @@ flowchart LR
     services__web__app__static__workspace__showArtifactPreview --> services__web__app__static__workspace__downloadArtifact
     services__web__app__static__workspace__updateArtifactPreviewTabs --> services__web__app__static__workspace__updateArtifactTab
     services__web__app__static__workspace__downloadArtifact --> services__web__app__static__workspace__toast
+    services__web__app__static__workspace__formatRouteBadge --> services__web__app__static__workspace__formatNlp2dslBadge
     services__web__app__static__workspace__appendRouteBadge --> services__web__app__static__workspace__formatRouteBadge
     services__web__app__static__workspace__appendMsgTo --> services__web__app__static__workspace__msgRoleLabel
     services__web__app__static__workspace__appendMsgTo --> services__web__app__static__workspace__copyText
@@ -733,162 +895,10 @@ flowchart LR
     services__web__app__static__workspace__submitTaskForm --> services__web__app__static__workspace__api
     services__web__app__static__workspace__submitTaskForm --> services__web__app__static__workspace__toast
     services__web__app__static__workspace__submitTaskForm --> services__web__app__static__workspace__refreshWorkspace
-    services__projector__app__projections__operational_feed__project_operational_feed --> services__projector__app__projections__operational_feed___title_for
-    services__projector__app__projections__operational_feed__project_operational_feed --> services__projector__app__projections__operational_feed___summary_for
-    services__projector__app__projections__incidents___handle_rag_request_failed --> services__projector__app__projections__incidents___upsert_rag_quality
-    services__projector__app__projections__incidents___handle_rag_request_failed --> services__projector__app__projections__incidents___upsert_service_health
-    services__projector__app__projections__incidents___handle_rag_request_failed --> services__projector__app__projections__incidents___error_code
-    services__projector__app__projections__incidents___handle_incident_detected --> services__projector__app__projections__incidents___error_code
-    services__projector__app__projections__incidents___handle_incident_classified --> services__projector__app__projections__incidents___error_code
-    services__projector__app__projections__incidents___handle_diagnostics_started --> services__projector__app__projections__incidents___update_incident_status
-    services__projector__app__projections__incidents___handle_diagnostics_completed --> services__projector__app__projections__incidents___checks_payload
-    services__projector__app__projections__incidents___handle_diagnostics_completed --> services__projector__app__projections__incidents___diagnostics_ok
-    services__projector__app__projections__incidents___handle_diagnostics_completed --> services__projector__app__projections__incidents___upsert_service_health
-    services__projector__app__projections__incidents___handle_diagnostics_completed --> services__projector__app__projections__incidents___root_cause
-    services__projector__app__projections__incidents___handle_diagnostics_completed --> services__projector__app__projections__incidents___error_code
-    services__projector__app__projections__incidents___handle_remediation_started --> services__projector__app__projections__incidents___update_incident_status
-    services__projector__app__projections__incidents___handle_remediation_finished --> services__projector__app__projections__incidents___update_incident_status
-    services__projector__app__projections__incidents___handle_post_remediation_verification --> services__projector__app__projections__incidents___update_incident_status
-    services__projector__app__projections__incidents___handle_post_remediation_verification --> services__projector__app__projections__incidents___upsert_service_health
-    services__projector__app__projections__incidents___upsert_rag_quality --> services__projector__app__projections__incidents___error_code
-    services__projector__app__projections__incidents___checks_payload --> services__projector__app__projections__incidents___raw_checks
-    services__projector__app__projections__incidents___checks_payload --> services__projector__app__projections__incidents___checks_list_payload
-    services__projector__app__projections__incidents___checks_list_payload --> services__projector__app__projections__incidents___check_payload
-    services__projector__app__projections__incidents___root_cause --> services__projector__app__projections__incidents___error_code
-    services__orchestrator__app__rag__openrouter__OpenRouterClient____init__ --> services__orchestrator__app__rag__openrouter__normalize_openrouter_model
-    services__orchestrator__app__rag__openrouter__OpenRouterClient__chat --> services__orchestrator__app__rag__openrouter___chat_response_error
-    services__orchestrator__app__rag__openrouter__OpenRouterClient__chat --> services__orchestrator__app__rag__openrouter___chat_result
-    services__orchestrator__app__rag__store___cosine --> services__orchestrator__app__rag__store___vector_norm
-    services__orchestrator__app__rag__store___cosine --> services__orchestrator__app__rag__store___same_dimension_vectors
-    services__orchestrator__app__rag__store__RagStore__list_documents --> services__orchestrator__app__rag__store___row_dict
-    services__orchestrator__app__rag__store__RagStore__search --> services__orchestrator__app__rag__store___ranked_hits
-    services__orchestrator__app__rag__store__RagStore___vector_search --> services__orchestrator__app__rag__store___vector_hits
-    services__orchestrator__app__rag__store__RagStore___keyword_fallback --> services__orchestrator__app__rag__store___query_tokens
-    services__orchestrator__app__rag__store__RagStore___keyword_fallback --> services__orchestrator__app__rag__store___keyword_hits
-    services__orchestrator__app__rag__store___vector_hits --> services__orchestrator__app__rag__store___parse_embedding
-    services__orchestrator__app__rag__store___vector_hits --> services__orchestrator__app__rag__store___cosine
-    services__orchestrator__app__rag__store___vector_hits --> services__orchestrator__app__rag__store___chunk_hit
-    services__orchestrator__app__rag__store___ranked_hits --> services__orchestrator__app__rag__store___chunk_hit
-    services__orchestrator__app__rag__store___ranked_hits --> services__orchestrator__app__rag__store___row_dict
-    services__orchestrator__app__rag__store___keyword_hits --> services__orchestrator__app__rag__store___keyword_score
-    services__orchestrator__app__rag__store___keyword_hits --> services__orchestrator__app__rag__store___chunk_hit
-    services__orchestrator__app__rag__store___keyword_score --> services__orchestrator__app__rag__store___row_dict
-    services__orchestrator__app__rag__store___parse_embedding --> services__orchestrator__app__rag__store___row_dict
-    services__orchestrator__app__rag__store___chunk_hit --> services__orchestrator__app__rag__store___row_dict
-    services__orchestrator__app__rag__indexer__RagIndexer__ingest_resource --> services__orchestrator__app__rag__indexer___chunks_for_body
-    services__orchestrator__app__rag__indexer__RagIndexer__ingest_resource --> services__orchestrator__app__rag__indexer___packed_chunks
-    services__orchestrator__app__rag__indexer__RagIndexer__ingest_resource --> services__orchestrator__app__rag__indexer___indexed_result
-    services__orchestrator__app__rag__indexer__RagIndexer__ingest_resource --> services__orchestrator__app__rag__indexer___failed_result
-    services__orchestrator__app__rag__indexer___chunks_for_body --> services__orchestrator__app__rag__chunking__chunk_text
-    services__web__app__resource_areas__agent_may_access --> services__web__app__resource_areas___matrix_access_decision
-    services__web__app__resource_areas__agent_may_access --> services__web__app__resource_areas___area_policy_decision
-    services__web__app__resource_areas___matrix_access_decision --> services__web__app__access_matrix__agent_may_access_resource
-    services__orchestrator__app__application__sagas__task_routing__pick_idle_agent --> services__orchestrator__app__application__sagas__task_routing___agent_route_state
-    services__orchestrator__app__application__sagas__task_routing__pick_idle_agent --> services__orchestrator__app__application__sagas__task_routing___agent_matches
-    services__orchestrator__app__application__sagas__task_routing__maybe_auto_assign --> services__orchestrator__app__application__sagas__task_routing__pick_idle_agent
-    services__orchestrator__app__application__sagas__approval_gate__ensure_approval --> services__orchestrator__app__application__sagas__approval_gate___is_skipped
-    services__orchestrator__app__application__sagas__approval_gate__ensure_approval --> services__orchestrator__app__application__sagas__approval_gate___required_approval_id
-    services__orchestrator__app__application__sagas__approval_gate__ensure_approval --> services__orchestrator__app__application__sagas__approval_gate___validate_approval_events
-    services__web__app__access_matrix__default_state --> services__web__app__access_matrix___default_resources
-    services__web__app__access_matrix__default_state --> services__web__app__access_matrix___default_agents
-    services__web__app__access_matrix__default_state --> services__web__app__access_matrix___empty_agent_resource
-    services__web__app__access_matrix__default_state --> services__web__app__access_matrix___empty_human_agent
-    services__web__app__access_matrix__load_state --> services__web__app__access_matrix___matrix_path
-    services__web__app__access_matrix__load_state --> services__web__app__access_matrix___load_raw_state
-    services__web__app__access_matrix__load_state --> services__web__app__access_matrix__default_state
-    services__web__app__access_matrix__load_state --> services__web__app__access_matrix___apply_state_lists
-    services__web__app__access_matrix__load_state --> services__web__app__access_matrix___apply_state_matrices
-    services__web__app__access_matrix__load_state --> services__web__app__access_matrix___reindex_state
-    services__web__app__access_matrix___apply_state_matrices --> services__web__app__access_matrix___merge_bool_matrix
-    services__web__app__access_matrix___reindex_state --> services__web__app__access_matrix___default_resources
-    services__web__app__access_matrix___reindex_state --> services__web__app__access_matrix___default_agents
-    services__web__app__access_matrix___reindex_state --> services__web__app__access_matrix___reindex_matrix
-    services__web__app__access_matrix___reindex_matrix --> services__web__app__access_matrix___reindex_matrix_row
-    services__web__app__access_matrix__save_state --> services__web__app__access_matrix___reindex_state
-    services__web__app__access_matrix__save_state --> services__web__app__access_matrix___matrix_path
-    services__web__app__access_matrix__agent_may_access_resource --> services__web__app__access_matrix__load_state
-    services__web__app__access_matrix__human_may_use_agent --> services__web__app__access_matrix__load_state
-    services__orchestrator__app__infrastructure__eventstore_factory__build_event_store --> services__orchestrator__app__infrastructure__eventstore_factory___eventstoredb_backend
-    services__orchestrator__app__infrastructure__eventstore_factory__build_event_store --> services__orchestrator__app__infrastructure__eventstore_factory___dual_backend
-    services__orchestrator__app__infrastructure__eventstore_factory___eventstoredb_backend --> services__orchestrator__app__infrastructure__eventstore_factory___require_eventstore_url
-    services__orchestrator__app__infrastructure__eventstore_factory___dual_backend --> services__orchestrator__app__infrastructure__eventstore_factory___require_eventstore_url
-    services__orchestrator__app__incidents__pipeline__IncidentPipeline__handle_rag_failure --> services__orchestrator__app__incidents__pipeline__classify_rag_error
-    services__orchestrator__app__incidents__pipeline__IncidentPipeline___run_rag_diagnostics --> services__orchestrator__app__incidents__pipeline___rag_root_cause
-    services__projector__app__projections__task_board___handle_task_started --> services__projector__app__projections__task_board___update_status
-    services__orchestrator__app__domain__aggregates__task___event_data --> services__web__app__static__access__data
-    services__orchestrator__app__domain__aggregates__task___event_timestamp --> services__orchestrator__app__domain__aggregates__task___utc_now
-    services__orchestrator__app__domain__aggregates__task__Task____init__ --> services__orchestrator__app__infrastructure__eventstore___utc_now
-    services__orchestrator__app__domain__aggregates__task__Task__assign_to_agent --> services__orchestrator__app__infrastructure__eventstore___utc_now
-    services__orchestrator__app__domain__aggregates__task__Task__start --> services__orchestrator__app__infrastructure__eventstore___utc_now
-    services__orchestrator__app__domain__aggregates__task__Task__complete --> services__orchestrator__app__infrastructure__eventstore___utc_now
-    services__orchestrator__app__domain__aggregates__task__Task__fail --> services__orchestrator__app__infrastructure__eventstore___utc_now
-    services__orchestrator__app__domain__aggregates__task__Task__apply --> services__orchestrator__app__domain__aggregates__task___event_type
-    services__orchestrator__app__domain__aggregates__task__Task__apply --> services__orchestrator__app__domain__aggregates__task___event_data
-    services__orchestrator__app__domain__aggregates__task__Task__apply --> services__orchestrator__app__domain__aggregates__task___event_timestamp
-    services__orchestrator__app__observability__export__format_logs_text --> services__orchestrator__app__observability__export___append_rag_health
-    services__orchestrator__app__observability__export__format_logs_text --> services__orchestrator__app__observability__export___append_incidents
-    services__orchestrator__app__observability__export__format_logs_text --> services__orchestrator__app__observability__export___append_incident_feed
-    services__orchestrator__app__observability__export__format_logs_text --> services__orchestrator__app__observability__export___append_rag_snapshots
-    services__orchestrator__app__observability__export__format_logs_text --> services__orchestrator__app__observability__export___append_workspace_session
-    services__orchestrator__app__observability__export___append_workspace_session --> services__orchestrator__app__observability__export___append_workspace_context
-    services__orchestrator__app__observability__export___append_workspace_session --> services__orchestrator__app__observability__export___append_workspace_events
-    services__orchestrator__app__observability__export___append_workspace_session --> services__orchestrator__app__observability__export___append_workspace_chat
-    services__orchestrator__app__observability__export__build_orchestrator_bundle --> services__orchestrator__app__observability__export__format_logs_text
-    services__orchestrator__app__observability__export__build_orchestrator_bundle --> services__orchestrator__app__observability__export___safe_rag_health
-    services__orchestrator__app__observability__export__build_orchestrator_bundle --> services__orchestrator__app__observability__export___safe_fetch_incidents
-    services__orchestrator__app__observability__export__build_orchestrator_bundle --> services__orchestrator__app__observability__export___safe_fetch_incident_feed
-    services__orchestrator__app__observability__export__build_orchestrator_bundle --> services__orchestrator__app__observability__export___safe_fetch_rag_snapshots
-    services__orchestrator__app__observability__export___safe_fetch_incidents --> services__orchestrator__app__observability__export___fetch_incidents
-    services__orchestrator__app__observability__export___safe_fetch_incident_feed --> services__orchestrator__app__observability__export___fetch_incident_feed
-    services__orchestrator__app__observability__export___safe_fetch_rag_snapshots --> services__orchestrator__app__observability__export___fetch_rag_snapshots
-    services__orchestrator__app__rag__retriever__RagRetriever__ask --> services__orchestrator__app__rag__retriever___context_from_hits
-    services__orchestrator__app__rag__retriever__RagRetriever__ask --> services__orchestrator__app__rag__retriever___no_hits_answer
-    services__orchestrator__app__rag__retriever__RagRetriever__ask --> services__orchestrator__app__rag__retriever___unconfigured_answer
-    services__orchestrator__app__rag__retriever__RagRetriever__ask --> services__orchestrator__app__rag__retriever___fragment_fallback_answer
-    services__orchestrator__app__rag__retriever__RagRetriever__ask --> services__orchestrator__app__rag__retriever___rag_messages
-    services__web__app__chat___looks_like_misspelled_file_list --> services__web__app__chat___has_list_word
-    services__web__app__chat___has_polish_file_list_words --> services__web__app__chat___has_list_word
-    services__web__app__chat___has_english_file_list_words --> services__web__app__chat___has_list_word
-    services__web__app__chat___uri_is_system_resource --> services__web__app__chat___uri_is_user_resource
-    services__web__app__chat__filter_file_inventory --> services__web__app__chat___filtered_resources
-    services__web__app__chat__filter_file_inventory --> services__web__app__chat___filter_rows_by_scope
-    services__web__app__chat___filtered_resources --> services__web__app__chat___filter_rows_by_scope
-    services__web__app__chat___filter_rows_by_scope --> services__web__app__chat___rows_matching_uri
-    services__web__app__chat___filter_rows_by_scope --> services__web__app__chat___rows_in_session_scope
-    services__web__app__chat___rows_in_session_scope --> services__web__app__chat___uri_is_user_resource
-    services__web__app__chat___dedupe_rows_by_uri --> services__web__app__chat___row_dedupe_key
-    services__web__app__chat___row_dedupe_key --> services__web__app__static__access__id
-    services__web__app__chat__fetch_file_inventory --> services__web__app__chat___dedupe_rows_by_uri
-    services__web__app__chat__format_file_list_reply --> services__web__app__chat___safe_list
-    services__web__app__chat__format_file_list_reply --> services__web__app__chat___list_scope_value
-    services__web__app__chat__format_file_list_reply --> services__web__app__chat___append_session_files
-    services__web__app__chat__format_file_list_reply --> services__web__app__chat___append_resource_rows
-    services__web__app__chat__format_file_list_reply --> services__web__app__chat___append_rag_rows
-    services__web__app__chat__format_file_list_reply --> services__web__app__chat___append_file_list_errors
-    services__web__app__chat__format_file_list_reply --> services__web__app__chat___append_file_list_tip
-    services__web__app__chat___append_session_files --> services__web__app__chat___append_uploaded_session_files
-    services__web__app__chat___append_session_files --> services__web__app__chat___append_user_context_only
-    services__web__app__chat___append_session_files --> services__web__app__chat___append_scope_uris
-    services__web__app__chat___append_user_context_only --> services__web__app__chat___uri_is_user_resource
-    services__web__app__chat___append_scope_uris --> services__web__app__chat___format_scope_uri
-    services__web__app__chat___format_scope_uri --> services__web__app__chat___uri_is_user_resource
-    services__web__app__chat___append_resource_rows --> services__web__app__chat___empty_resource_hint
-    services__web__app__chat___append_rag_rows --> services__web__app__chat___format_rag_doc_row
-    services__web__app__chat___append_rag_rows --> services__web__app__chat___rag_rows_label
-    services__web__app__chat___format_history --> services__web__app__chat__get_history
-    services__web__app__chat___format_incident --> services__web__app__chat___incident_detail_parts
-    services__web__app__chat___incident_detail_parts --> services__web__app__chat___incident_message_part
-    services__web__app__chat___incident_detail_parts --> services__web__app__chat___incident_trace_part
-    services__web__app__chat___incident_detail_parts --> services__web__app__chat___incident_correlation_part
-    services__web__app__chat___incident_detail_parts --> services__web__app__chat___incident_fallback_part
-    services__web__app__chat__handle_message --> services__web__app__chat___append
-    services__web__app__chat__handle_message --> services__web__app__chat___message_response
-    services__web__app__chat__handle_message --> services__web__app__chat___file_list_answer
-    services__web__app__chat__handle_message --> services__web__app__chat___default_chat_reply
-    services__web__app__chat__handle_message --> services__web__app__chat___ask_rag
-    services__web__app__chat___file_list_answer --> services__web__app__chat__file_list_scope
-    services__web__app__chat___file_list_answer --> services__web__app__chat__filter_file_inventory
-    services__web__app__chat___file_list_answer --> services__web__app__chat__format_file_list_reply
-    services__web__app__chat___file_list_answer --> services__web__app__chat__is_file_list_intent
-    services__web__app__chat___file_list_answer --> services__web__app__chat__fetch_file_inventory
-    services__web__app__chat__probe_rag --> services__web__app__chat___rag_headers
+    services__orchestrator__app__evolution__policy_engine__PolicyEngine__validate_activation_metrics --> services__orchestrator__app__evolution__policy_engine___activation_metrics_row
+    services__orchestrator__app__evolution__policy_engine__PolicyEngine__validate_activation_metrics --> services__orchestrator__app__evolution__policy_engine___has_enough_activation_samples
+    services__web__app__api__chat_routes__chat_message --> services__web__app__api__chat_routes___form_only_message
+    services__web__app__api__chat_routes__chat_message --> services__web__app__api__chat_routes___form_only_chat_message
+    services__web__app__api__chat_routes___form_only_chat_message --> services__web__app__api__chat_routes___update_nlp_conversation
+    services__web__app__api__chat_routes___form_only_chat_message --> services__web__app__conductor__handle_turn
+    services__web__app__api__chat_routes__upload_files --> services__web__app__api__chat_routes___upload_one_file

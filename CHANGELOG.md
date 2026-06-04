@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.10] - 2026-06-04
 
 ### Fixed
+- Fix unused-imports issues (ticket-c1d18761)
+
+## [0.1.10] - 2026-06-04
+
+### Fixed
 - Fix unused-imports issues (ticket-3a5af6fe)
 - Fix ai-boilerplate issues (ticket-266fc850)
 - Fix unused-imports issues (ticket-6e82225b)
@@ -110,6 +115,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix string-concat issues (ticket-a296c376)
 
 ## [Unreleased]
+
+## [0.0.9] - 2026-06-04
+
+### Docs
+- Update CHANGELOG.md
+- Update SUMD.md
+- Update SUMR.md
+- Update TODO.md
+- Update docs/README.md
+- Update docs/agent-orchestration.md
+- Update docs/e2e-chat-routing.md
+- Update docs/quality-intract-propact.md
+- Update docs/routing-model.cyberdsl
+- Update project/README.md
+- ... and 1 more files
+
+### Test
+- Update tests/pacts/mullm-chat.md
+- Update tests/pacts/mullm-openapi.json
+
+### Other
+- Update .env.example
+- Update Makefile
+- Update app.doql.less
+- Update integrations/nlp2cmd/agent_manifest.yaml
+- Update integrations/nlp2dsl/agent_manifest.yaml
+- Update intract.yaml
+- Update planfile.yaml
+- Update project/analysis.toon.yaml
+- Update project/calls.mmd
+- Update project/calls.png
+- ... and 54 more files
 
 ## [0.0.8] - 2026-06-04
 

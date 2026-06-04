@@ -11,7 +11,7 @@ from typing import Any
 
 import yaml
 
-_DEFAULT_ORDER = ["rag_probe", "rules", "nlp2dsl", "rag_answer"]
+_DEFAULT_ORDER = ["rag_probe", "rules", "agent_shell", "nlp2dsl", "rag_answer"]
 
 _VALID_STEPS = frozenset(_DEFAULT_ORDER)
 

@@ -1,0 +1,149 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Mullm Web BFF",
+    "version": "0.1.0",
+    "description": "Minimal OpenAPI for propact smoke (chat routing E2E)."
+  },
+  "servers": [{ "url": "http://127.0.0.1:3003" }],
+  "paths": {
+    "/health": {
+      "get": {
+        "operationId": "healthCheck",
+        "summary": "Service health",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": { "type": "object" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/agents/status": {
+      "get": {
+        "operationId": "agentsStatus",
+        "summary": "Plugin agent health (nlp2cmd, nlp2dsl)",
+        "responses": {
+          "200": {
+            "description": "Agent plugin statuses",
+            "content": {
+              "application/json": {
+                "schema": { "type": "object" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/routing/policy": {
+      "get": {
+        "operationId": "routingPolicy",
+        "summary": "Ingress routing policy YAML",
+        "responses": {
+          "200": {
+            "description": "Policy document",
+            "content": {
+              "application/json": {
+                "schema": { "type": "object" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/chat/session": {
+      "post": {
+        "operationId": "chatSessionStart",
+        "summary": "Create chat session",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "type": "object" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "session_id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "session_id": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/router/decide": {
+      "get": {
+        "operationId": "routerDecide",
+        "summary": "Dry-run prompt routing",
+        "parameters": [
+          {
+            "name": "message",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "use_rag",
+            "in": "query",
+            "schema": { "type": "boolean", "default": false }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Route decision",
+            "content": {
+              "application/json": {
+                "schema": { "type": "object" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/chat/message": {
+      "post": {
+        "operationId": "chatMessage",
+        "summary": "Full chat turn (ingress pipeline)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["session_id", "message"],
+                "properties": {
+                  "session_id": { "type": "string" },
+                  "message": { "type": "string" },
+                  "mode": { "type": "string", "default": "discuss" },
+                  "use_rag": { "type": "boolean", "default": false }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Turn result with routing",
+            "content": {
+              "application/json": {
+                "schema": { "type": "object" }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

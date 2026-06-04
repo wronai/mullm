@@ -600,6 +600,7 @@
     const parts = [routing.route, `${pct}%`, codes, ms].filter(Boolean);
     const fb = routing.fallback_route;
     if (fb && fb !== routing.route) parts.push(`if_not:${fb}`);
+    if (routing.shell_plugin) parts.push(`${routing.shell_plugin}→shell`);
     if (routing.nlp2dsl_skipped) parts.push("nlp2dsl⊘");
     else if (routing.nlp2dsl_invoked) parts.push("nlp2dsl✓");
     const n2 = formatNlp2dslBadge(routing.nlp2dsl);
@@ -1020,7 +1021,7 @@
   async function copyLogsToClipboard() {
     await ensureSession();
     const data = await api(
-      `/api/workspace/logs/export?session_id=${encodeURIComponent(sessionId)}&limit=40`
+      `/api/workspace/logs/export?session_id=${encodeURIComponent(sessionId)}&limit=200`
     );
     await copyText(data.text || JSON.stringify(data, null, 2), "logi");
   }

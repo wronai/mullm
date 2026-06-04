@@ -11,6 +11,15 @@ import httpx
 
 from app import chat as chat_service
 
+DEFAULT_LOG_EXPORT_LIMIT = 100
+MAX_LOG_EXPORT_LIMIT = 500
+NFO_EXPORT_SCHEMA = "mullm.logs.nfo.v1"
+
+try:  # Optional in local tests; pinned in service requirements for Docker.
+    import nfo as _nfo
+except Exception:  # pragma: no cover - depends on runtime image extras.
+    _nfo = None
+
 
 def _orch() -> str:
     return chat_service._orch()
@@ -341,10 +350,7 @@ async def handle_chat_message(
         return {"error": "empty message"}
 
     session.add_event("PromptReceived", message[:120] or "(pusty)", mode=mode)
-
-    ticket = _extract_ticket(message)
-    if ticket:
-        attach_context(session.session_id, ticket_id=ticket)
+    _attach_ticket_context(session, message)
 
     ctx = session.context
     outcome, task_result = await _dispatch_chat_mode(
@@ -363,6 +369,12 @@ async def handle_chat_message(
     _record_chat_outcome(session, message, mode=mode, outcome=outcome)
     _record_task_outcome(session, task_result)
     return _chat_response(session, outcome, task_result)
+
+
+def _attach_ticket_context(session: WorkspaceSession, message: str) -> None:
+    ticket = _extract_ticket(message)
+    if ticket:
+        attach_context(session.session_id, ticket_id=ticket)
 
 
 async def _dispatch_chat_mode(
@@ -494,20 +506,41 @@ def _record_chat_outcome(
     outcome: dict[str, Any],
 ) -> None:
     session.add_event("ChatMessageAdded", message[:120] or "(formularz)", mode=mode)
-    if outcome.get("artifact"):
-        outcome["artifact"] = register_artifact(
-            session,
-            outcome["artifact"],
-            source_message=message,
-        )
+    _register_outcome_artifact(session, message, outcome)
+    _record_file_list_event(session, outcome)
+    _record_rag_trace_event(session, outcome)
+    _record_rag_incident_event(session, outcome)
+
+
+def _register_outcome_artifact(
+    session: WorkspaceSession,
+    message: str,
+    outcome: dict[str, Any],
+) -> None:
+    if not outcome.get("artifact"):
+        return
+    outcome["artifact"] = register_artifact(
+        session,
+        outcome["artifact"],
+        source_message=message,
+    )
+
+
+def _record_file_list_event(session: WorkspaceSession, outcome: dict[str, Any]) -> None:
     if outcome.get("intent") == "file_list":
         session.add_event("FileListReturned", "Lista plików z rejestru + RAG")
+
+
+def _record_rag_trace_event(session: WorkspaceSession, outcome: dict[str, Any]) -> None:
     if outcome.get("retrieval_trace_id"):
         session.add_event(
             "RagTrace",
             outcome["retrieval_trace_id"],
             trace=outcome["retrieval_trace_id"],
         )
+
+
+def _record_rag_incident_event(session: WorkspaceSession, outcome: dict[str, Any]) -> None:
     if outcome.get("incident"):
         inc = outcome["incident"]
         session.add_event(
@@ -656,22 +689,55 @@ def _append_chat_export_draft(
     lines.append("")
 
 
-async def export_debug_logs(session_id: str, *, limit: int = 30) -> dict[str, Any]:
+def clamp_log_export_limit(limit: int | str | None) -> int:
+    try:
+        value = int(limit) if limit is not None else DEFAULT_LOG_EXPORT_LIMIT
+    except (TypeError, ValueError):
+        value = DEFAULT_LOG_EXPORT_LIMIT
+    return min(max(value, 1), MAX_LOG_EXPORT_LIMIT)
+
+
+async def export_debug_logs(
+    session_id: str,
+    *,
+    limit: int = DEFAULT_LOG_EXPORT_LIMIT,
+) -> dict[str, Any]:
     """Zbiera logi sesji + orchestrator + feed do kopiowania do schowka."""
+    limit = clamp_log_export_limit(limit)
     session = get_or_create(session_id)
     correlation_id = session.session_id
     bundle = _debug_export_base(session)
+    bundle["log_limit"] = limit
+    _emit_nfo_event(
+        "workspace.logs_export.started",
+        correlation_id=correlation_id,
+        limit=limit,
+        session_events=len(session.events),
+        chat_messages=len(chat_service.get_history(session.session_id)),
+    )
 
     try:
         bundle["inventory"] = await chat_service.fetch_file_inventory()
     except Exception as exc:
         bundle["inventory"] = {"errors": [str(exc)]}
+        _emit_nfo_event(
+            "workspace.logs_export.inventory_error",
+            correlation_id=correlation_id,
+            error=str(exc),
+        )
 
     async with httpx.AsyncClient(timeout=30.0) as client:
         await _attach_orchestrator_debug_export(client, bundle, limit=limit)
         await _attach_operational_feed(client, bundle, limit=limit)
 
+    bundle["nfo"] = _build_nfo_package(bundle)
     bundle["text"] = _format_export_text(bundle)
+    _emit_nfo_event(
+        "workspace.logs_export.finished",
+        correlation_id=correlation_id,
+        limit=limit,
+        **_nfo_counts(bundle),
+    )
     return bundle
 
 
@@ -685,6 +751,7 @@ def _debug_export_base(session: WorkspaceSession) -> dict[str, Any]:
             "context": session.context.to_dict(),
             "events": session.events,
             "chat_history": chat_service.get_history(session.session_id),
+            "artifacts": artifact_summaries(session),
             "draft": session.draft,
         },
     }
@@ -708,6 +775,11 @@ async def _attach_orchestrator_debug_export(
             _merge_orchestrator_debug_payload(bundle, response.json())
     except httpx.HTTPError as exc:
         bundle["orchestrator_error"] = str(exc)
+        _emit_nfo_event(
+            "workspace.logs_export.orchestrator_error",
+            correlation_id=correlation_id,
+            error=str(exc),
+        )
 
 
 def _merge_orchestrator_debug_payload(
@@ -717,12 +789,15 @@ def _merge_orchestrator_debug_payload(
     bundle["rag_health"] = orch.get("rag_health")
     bundle["incidents"] = orch.get("incidents")
     bundle["incident_feed"] = orch.get("incident_feed")
+    if orch.get("nfo"):
+        bundle["orchestrator_nfo"] = orch["nfo"]
     correlation_id = bundle.get("correlation_id")
+    limit = _visible_log_limit(bundle)
     bundle["rag_snapshots"] = [
         snap
         for snap in (orch.get("rag_snapshots") or [])
         if snap.get("correlation_id") == correlation_id
-    ][:10]
+    ][:limit]
     bundle["rag_health"] = bundle.get("rag_health") or orch.get("rag_health")
 
 
@@ -735,7 +810,7 @@ async def _attach_operational_feed(
     try:
         response = await client.get(
             f"{_projector()}/projections/feed",
-            params={"limit": 25},
+            params={"limit": limit},
         )
         if response.status_code == 200:
             bundle["operational_feed"] = _filter_operational_feed(
@@ -787,16 +862,22 @@ def _append_export_sections(
 ) -> None:
     history = _list_section(sess, "chat_history")
     events = _list_section(sess, "events")
+    limit = _visible_log_limit(bundle)
+    _append_nfo_section(lines, _dict_section(bundle, "nfo") or _build_nfo_package(bundle))
     _append_context_section(lines, _dict_section(sess, "context"))
     _append_inventory_section(lines, _dict_section(bundle, "inventory"))
     _append_history_section(lines, history)
     _append_routing_trace_section(lines, history, events)
     _append_draft_section(lines, sess)
-    _append_session_events_section(lines, events)
+    _append_session_events_section(lines, events, limit=limit)
     _append_rag_health_section(lines, _dict_section(bundle, "rag_health"))
     _append_incidents_section(lines, _list_section(bundle, "incidents"))
-    _append_rag_snapshots_section(lines, bundle)
-    _append_operational_feed_section(lines, _list_section(bundle, "operational_feed"))
+    _append_rag_snapshots_section(lines, bundle, limit=limit)
+    _append_operational_feed_section(
+        lines,
+        _list_section(bundle, "operational_feed"),
+        limit=limit,
+    )
 
 
 def _list_section(payload: dict[str, Any], key: str) -> list[Any]:
@@ -807,6 +888,87 @@ def _list_section(payload: dict[str, Any], key: str) -> list[Any]:
 def _dict_section(payload: dict[str, Any], key: str) -> dict[str, Any]:
     value = payload.get(key)
     return value if isinstance(value, dict) else {}
+
+
+def _visible_log_limit(bundle: dict[str, Any]) -> int:
+    return clamp_log_export_limit(bundle.get("log_limit"))
+
+
+def _nfo_package_version() -> str:
+    return str(getattr(_nfo, "__version__", "unavailable"))
+
+
+def _emit_nfo_event(name: str, **fields: Any) -> None:
+    if _nfo is None:
+        return
+    try:
+        _nfo.configure(name="mullm.web.nfo", propagate_stdlib=True)
+        _nfo.event(name, service="web-bff", **fields)
+    except Exception:
+        return
+
+
+def _build_nfo_package(bundle: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "schema": NFO_EXPORT_SCHEMA,
+        "package": "nfo",
+        "package_version": _nfo_package_version(),
+        "service": bundle.get("service") or "web-bff",
+        "generated_at": bundle.get("generated_at"),
+        "correlation_id": bundle.get("correlation_id"),
+        "limit": _visible_log_limit(bundle),
+        "counts": _nfo_counts(bundle),
+        "errors": _nfo_errors(bundle),
+    }
+
+
+def _nfo_counts(bundle: dict[str, Any]) -> dict[str, int]:
+    sess = _dict_section(bundle, "session")
+    inventory = _dict_section(bundle, "inventory")
+    return {
+        "chat_messages": len(_list_section(sess, "chat_history")),
+        "session_events": len(_list_section(sess, "events")),
+        "artifacts": len(_list_section(sess, "artifacts")),
+        "inventory_resources": len(_list_section(inventory, "resources")),
+        "rag_documents": len(_list_section(inventory, "rag_documents")),
+        "incidents": len(_list_section(bundle, "incidents")),
+        "incident_feed": len(_list_section(bundle, "incident_feed")),
+        "rag_snapshots": len(_list_section(bundle, "rag_snapshots")),
+        "operational_feed": len(_list_section(bundle, "operational_feed")),
+    }
+
+
+def _nfo_errors(bundle: dict[str, Any]) -> list[str]:
+    errors: list[str] = []
+    for key in ("orchestrator_error", "inventory_error"):
+        if bundle.get(key):
+            errors.append(f"{key}: {bundle[key]}")
+    inventory = _dict_section(bundle, "inventory")
+    for err in inventory.get("errors") or []:
+        errors.append(f"inventory: {err}")
+    return errors
+
+
+def _append_nfo_section(lines: list[str], nfo_package: dict[str, Any]) -> None:
+    if not nfo_package:
+        return
+    lines.append("## NFO")
+    lines.append(
+        f"- package: {nfo_package.get('package')} "
+        f"{nfo_package.get('package_version')}"
+    )
+    lines.append(f"- schema: {nfo_package.get('schema')}")
+    lines.append(f"- service: {nfo_package.get('service')}")
+    lines.append(f"- limit: {nfo_package.get('limit')}")
+    counts = nfo_package.get("counts") or {}
+    if counts:
+        lines.append(
+            "- counts: "
+            + ", ".join(f"{key}={value}" for key, value in counts.items())
+        )
+    for err in nfo_package.get("errors") or []:
+        lines.append(f"- error: {err}")
+    lines.append("")
 
 
 def _append_orchestrator_error(
@@ -954,28 +1116,61 @@ def _append_history_message(lines: list[str], msg: dict[str, Any]) -> None:
 
 def _format_routing_line(routing: dict[str, Any]) -> str:
     route = routing.get("route", "?")
-    conf = int((routing.get("confidence") or 0) * 100)
-    codes = ", ".join(routing.get("reason_codes") or [])
-    handler = routing.get("handler", "")
-    fb = routing.get("fallback_route")
-    ms = routing.get("timing_ms")
-    inner = [f"route: {route}", f"{conf}%", f"handler: {handler}"]
-    if codes:
-        inner.append(f"codes: {codes}")
-    if fb and fb != route:
-        inner.append(f"if_not_chosen: {fb}")
-    if routing.get("nlp2dsl_skipped"):
-        inner.append("nlp2dsl: skipped")
-    elif routing.get("nlp2dsl_invoked"):
-        inner.append("nlp2dsl: invoked")
-    n2 = routing.get("nlp2dsl")
-    if n2:
-        action = n2.get("action") or n2.get("intent") or "?"
-        inner.append(f"nlp2dsl_action: {action}")
-    if ms is not None:
-        inner.append(f"{ms}ms")
-    inner.append(f"mode: {routing.get('router_mode', 'rules')}")
+    inner = _routing_base_parts(routing, route)
+    inner.extend(_routing_optional_parts(routing, route))
     return "(" + " · ".join(inner) + ")"
+
+
+def _routing_base_parts(routing: dict[str, Any], route: str) -> list[str]:
+    confidence = int((routing.get("confidence") or 0) * 100)
+    return [
+        f"route: {route}",
+        f"{confidence}%",
+        f"handler: {routing.get('handler', '')}",
+    ]
+
+
+def _routing_optional_parts(routing: dict[str, Any], route: str) -> list[str]:
+    parts: list[str] = []
+    codes = ", ".join(routing.get("reason_codes") or [])
+    if codes:
+        parts.append(f"codes: {codes}")
+    parts.extend(_routing_fallback_parts(routing, route))
+    parts.extend(_routing_shell_plugin_parts(routing))
+    parts.extend(_routing_nlp2dsl_parts(routing))
+    if routing.get("timing_ms") is not None:
+        parts.append(f"{routing['timing_ms']}ms")
+    parts.append(f"mode: {routing.get('router_mode', 'rules')}")
+    return parts
+
+
+def _routing_fallback_parts(routing: dict[str, Any], route: str) -> list[str]:
+    fallback = routing.get("fallback_route")
+    if fallback and fallback != route:
+        return [f"if_not_chosen: {fallback}"]
+    return []
+
+
+def _routing_shell_plugin_parts(routing: dict[str, Any]) -> list[str]:
+    plugin = routing.get("shell_plugin")
+    if not plugin:
+        return []
+    parts = [f"shell_plugin: {plugin}"]
+    nlp2cmd = routing.get("nlp2cmd")
+    if isinstance(nlp2cmd, dict) and nlp2cmd.get("command"):
+        parts.append(f"cmd: {nlp2cmd['command'][:80]}")
+    return parts
+
+
+def _routing_nlp2dsl_parts(routing: dict[str, Any]) -> list[str]:
+    if routing.get("nlp2dsl_skipped"):
+        return ["nlp2dsl: skipped"]
+    parts = ["nlp2dsl: invoked"] if routing.get("nlp2dsl_invoked") else []
+    nlp2dsl = routing.get("nlp2dsl")
+    if nlp2dsl:
+        action = nlp2dsl.get("action") or nlp2dsl.get("intent") or "?"
+        parts.append(f"nlp2dsl_action: {action}")
+    return parts
 
 
 def _append_routing_trace_section(
@@ -1050,6 +1245,9 @@ def _append_unique_trace_row(
     key, row = item
     if key in seen:
         return
+    if row.get("source") == "chat" and trace:
+        if _routing_fingerprint(trace[-1]) == _routing_fingerprint(row):
+            return
     seen.add(key)
     trace.append(row)
 
@@ -1063,11 +1261,16 @@ def _append_draft_section(lines: list[str], sess: dict[str, Any]) -> None:
         lines.append("")
 
 
-def _append_session_events_section(lines: list[str], events: list[dict[str, Any]]) -> None:
+def _append_session_events_section(
+    lines: list[str],
+    events: list[dict[str, Any]],
+    *,
+    limit: int,
+) -> None:
     if not events:
         return
     lines.append("## Zdarzenia sesji")
-    for ev in events[-30:]:
+    for ev in events[-limit:]:
         extra = _event_extra(ev)
         lines.append(f"- {ev.get('type')}: {ev.get('summary', '')}{extra}")
     lines.append("")
@@ -1124,8 +1327,13 @@ def _append_incidents_section(lines: list[str], incidents: list[dict[str, Any]])
     lines.append("")
 
 
-def _append_rag_snapshots_section(lines: list[str], bundle: dict[str, Any]) -> None:
-    snapshots = _session_rag_snapshots(bundle)
+def _append_rag_snapshots_section(
+    lines: list[str],
+    bundle: dict[str, Any],
+    *,
+    limit: int,
+) -> None:
+    snapshots = _session_rag_snapshots(bundle, limit=limit)
     if not snapshots:
         return
     lines.append("## RAG snapshots (ta sesja)")
@@ -1134,19 +1342,28 @@ def _append_rag_snapshots_section(lines: list[str], bundle: dict[str, Any]) -> N
     lines.append("")
 
 
-def _session_rag_snapshots(bundle: dict[str, Any]) -> list[dict[str, Any]]:
+def _session_rag_snapshots(
+    bundle: dict[str, Any],
+    *,
+    limit: int,
+) -> list[dict[str, Any]]:
     return [
         s
         for s in (bundle.get("rag_snapshots") or [])
         if s.get("correlation_id") == bundle.get("correlation_id")
-    ][:5]
+    ][:limit]
 
 
-def _append_operational_feed_section(lines: list[str], feed: list[dict[str, Any]]) -> None:
+def _append_operational_feed_section(
+    lines: list[str],
+    feed: list[dict[str, Any]],
+    *,
+    limit: int,
+) -> None:
     if not feed:
         return
     lines.append("## Operational feed")
-    for row in feed[:15]:
+    for row in feed[:limit]:
         lines.append(
             f"- {str(row.get('occurred_at', ''))[:19]} "
             f"{row.get('event_type')} — {row.get('summary') or row.get('title', '')}"

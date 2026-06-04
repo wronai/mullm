@@ -16,6 +16,10 @@ def test_list_aplikow_usera_intent_and_scope():
     msg = "list aplikow usera"
     assert is_file_list_intent(msg)
     assert file_list_scope(msg) == "user"
+    _assert_user_file_step(msg)
+
+
+def _assert_user_file_step(msg: str) -> None:
     steps = _plan_steps(msg)
     file_step = next(s for s in steps if s["agent"] == "files_agent")
     assert file_step["list_scope"] == "user"

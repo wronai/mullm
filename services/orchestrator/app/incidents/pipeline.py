@@ -153,37 +153,15 @@ class IncidentPipeline:
         checks = ["openrouter_health", "rag_documents", "rag_chunks"]
         diagnostics = await self._run_rag_diagnostics(query)
 
-        events: list[Any] = [
-            RagRequestFailed(
-                incident_id=incident_id,
-                query=query,
-                error_code=classification["error_code"],
-                message=str(error),
-                context=context or {},
-            ),
-            IncidentDetected(
-                incident_id=incident_id,
-                incident_type="rag",
-                severity=classification["severity"],
-                source="orchestrator.rag",
-                error_code=classification["error_code"],
-                message=str(error),
-                context={**(context or {}), "query": query},
-            ),
-            IncidentClassified(
-                incident_id=incident_id,
-                incident_class=classification["incident_class"],
-                error_code=classification["error_code"],
-                confidence=classification["confidence"],
-                playbook_id=classification["playbook_id"],
-            ),
-            DiagnosticsStarted(incident_id=incident_id, checks=checks),
-            DiagnosticsCompleted(
-                incident_id=incident_id,
-                root_cause=diagnostics["root_cause"],
-                checks=diagnostics["checks"],
-            ),
-        ]
+        events = _rag_failure_events(
+            incident_id,
+            query=query,
+            error=error,
+            classification=classification,
+            diagnostics=diagnostics,
+            checks=checks,
+            context=context,
+        )
 
         remediation = await self._remediate_rag_incident(
             query=query,
@@ -198,16 +176,76 @@ class IncidentPipeline:
             events,
             correlation_id=correlation_id,
         )
-        return {
-            "incident_id": incident_id,
-            "classification": classification,
-            "diagnostics": diagnostics,
-            "remediation": remediation["summary"] if remediation else None,
-            "events": [
-                record.to_message() if hasattr(record, "to_message") else record
-                for record in records
-            ],
-        }
+        return _rag_failure_result(
+            incident_id,
+            classification=classification,
+            diagnostics=diagnostics,
+            remediation=remediation,
+            records=records,
+        )
+
+
+def _rag_failure_events(
+    incident_id: str,
+    *,
+    query: str,
+    error: Exception | str,
+    classification: dict[str, Any],
+    diagnostics: dict[str, Any],
+    checks: list[str],
+    context: dict[str, Any] | None,
+) -> list[Any]:
+    return [
+        RagRequestFailed(
+            incident_id=incident_id,
+            query=query,
+            error_code=classification["error_code"],
+            message=str(error),
+            context=context or {},
+        ),
+        IncidentDetected(
+            incident_id=incident_id,
+            incident_type="rag",
+            severity=classification["severity"],
+            source="orchestrator.rag",
+            error_code=classification["error_code"],
+            message=str(error),
+            context={**(context or {}), "query": query},
+        ),
+        IncidentClassified(
+            incident_id=incident_id,
+            incident_class=classification["incident_class"],
+            error_code=classification["error_code"],
+            confidence=classification["confidence"],
+            playbook_id=classification["playbook_id"],
+        ),
+        DiagnosticsStarted(incident_id=incident_id, checks=checks),
+        DiagnosticsCompleted(
+            incident_id=incident_id,
+            root_cause=diagnostics["root_cause"],
+            checks=diagnostics["checks"],
+        ),
+    ]
+
+
+def _rag_failure_result(
+    incident_id: str,
+    *,
+    classification: dict[str, Any],
+    diagnostics: dict[str, Any],
+    remediation: dict[str, Any] | None,
+    records: list[Any],
+) -> dict[str, Any]:
+    return {
+        "incident_id": incident_id,
+        "classification": classification,
+        "diagnostics": diagnostics,
+        "remediation": remediation["summary"] if remediation else None,
+        "events": [
+            record.to_message() if hasattr(record, "to_message") else record
+            for record in records
+        ],
+    }
 
     async def _run_rag_diagnostics(self, query: str) -> dict[str, Any]:
         checks: dict[str, Any] = {}

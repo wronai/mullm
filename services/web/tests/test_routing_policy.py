@@ -8,7 +8,11 @@ def test_load_default_policy():
     policy = load_policy(reload=True)
     assert "rag_probe" in policy.ingress_order
     assert policy.ingress_order.index("rag_probe") < policy.ingress_order.index("rules")
+    assert "agent_shell" in policy.ingress_order
+    assert policy.ingress_order.index("rules") < policy.ingress_order.index("agent_shell")
+    assert policy.ingress_order.index("agent_shell") < policy.ingress_order.index("nlp2dsl")
     assert policy.agent_for_route("mullm_file_list") == "files_agent"
+    assert policy.agent_for_route("nlp2cmd_shell") == "shell_agent"
 
 
 def test_session_agent_overrides_route():

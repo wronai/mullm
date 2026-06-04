@@ -1,0 +1,22 @@
+# Manifest pluginu nlp2cmd dla Mullm (orchestrator).
+# Implementacja HTTP: services/web/app/agent_plugins/nlp2cmd_plugin.py
+
+id: nlp2cmd
+title: nlp2cmd — NL → polecenie shell
+repo: ../nlp2cmd
+executor_agent_id: shell_agent
+ingress_steps:
+  - agent_shell
+route_kinds:
+  - nlp2cmd_shell
+  - mullm_shell
+backend:
+  env_urls:
+    - NLP2CMD_BACKEND_URL
+    - MULLM_NLP2CMD_BACKEND_URL
+  default_service: http://nlp2cmd:8000
+  health_path: /health
+  query_path: /query
+notes: |
+  Mullm nie wykonuje poleceń — tłumaczy NL i tworzy ticket dla shell-agent (NATS).
+  Jawny prefix run/exec idzie bezpośrednio; NL (np. „sprawdź miejsce na dysku”) → POST /query.

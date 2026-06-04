@@ -303,19 +303,6 @@ sprints:
     model_hints:
       planning: balanced
       implementation: balanced
-  - id: ticket-a40713b1
-    name: Fix magic-numbers issues
-    description: Resolve 2 magic-numbers issues in services/orchestrator/app/api/observability.py
-    task_type: prefactor
-    priority: medium
-    estimate: 1d
-    files:
-    - services/orchestrator/app/api/observability.py
-    rule_id: magic-numbers
-    count: 2
-    model_hints:
-      planning: balanced
-      implementation: balanced
   - id: ticket-436e44e0
     name: Fix unused-imports issues
     description: Resolve 6 unused-imports issues in services/orchestrator/app/application/command_bus.py
@@ -1314,6 +1301,19 @@ sprints:
     - services/web/app/chat.py
     rule_id: string-concat
     count: 4
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-c1d18761
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in services/orchestrator/app/domain/events/agents.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - services/orchestrator/app/domain/events/agents.py
+    rule_id: unused-imports
+    count: 2
     model_hints:
       planning: balanced
       implementation: balanced

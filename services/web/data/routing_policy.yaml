@@ -4,9 +4,11 @@
 version: 1
 
 # Domyślny pipeline (tryb Auto / discuss)
+# Mullm = orchestrator; agent_shell → nlp2cmd (NL→cmd) → shell_agent (NATS)
 ingress_order:
   - rag_probe
   - rules
+  - agent_shell
   - nlp2dsl
   - rag_answer
 
@@ -15,11 +17,23 @@ agents:
   by_route:
     mullm_file_list: files_agent
     mullm_shell: shell_agent
+    nlp2cmd_shell: shell_agent
     nlp2dsl: coordinator
     rag: user
     workroom_hint: coordinator
     unknown: coordinator
   prefer_session_agent: true
+
+# Pluginy zewnętrzne (implementacja: services/web/app/agent_plugins/)
+agent_plugins:
+  - id: nlp2cmd
+    integration: integrations/nlp2cmd
+    ingress_steps: [agent_shell]
+    executor: shell_agent
+  - id: nlp2dsl
+    integration: integrations/nlp2dsl
+    ingress_steps: [nlp2dsl]
+    executor: coordinator
 
 rag_probe:
   enabled: true

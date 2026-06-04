@@ -1,0 +1,17 @@
+# Manifest pluginu nlp2dsl — workflow / DSL (discuss).
+
+id: nlp2dsl
+title: nlp2dsl — workflow DSL
+repo: ../nlp2dsl
+executor_agent_id: coordinator
+ingress_steps:
+  - nlp2dsl
+route_kinds:
+  - nlp2dsl
+  - workroom_hint
+backend:
+  env_urls:
+    - NLP2DSL_BACKEND_URL
+    - MULLM_NLP2DSL_BACKEND_URL
+  default_service: http://nlp2dsl-backend:8000
+  health_path: /docs

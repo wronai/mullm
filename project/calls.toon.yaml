@@ -1,49 +1,49 @@
 # code2llm call graph | /home/tom/github/wronai/mullm
-# generated in 0.20s
-# nodes: 411 | edges: 500 | modules: 52
-# CC̄=2.9
+# generated in 0.37s
+# nodes: 422 | edges: 500 | modules: 57
+# CC̄=2.8
 
 HUBS[20]:
-  services.web.app.static.workspace.toast
-    CC=3  in:23  out:2  total:25
+  services.orchestrator.app.incidents.pipeline._rag_failure_result
+    CC=4  in:1  out:46  total:47
   services.web.app.static.workspace.api
     CC=6  in:21  out:4  total:25
+  services.web.app.static.workspace.toast
+    CC=3  in:23  out:2  total:25
   services.orchestrator.app.api.commands._dispatch
     CC=4  in:14  out:9  total:23
   services.web.app.static.workspace.refreshWorkspace
     CC=8  in:8  out:15  total:23
   services.orchestrator.app.api.rag.search
     CC=3  in:0  out:22  total:22
+  services.orchestrator.app.observability.export.format_logs_text
+    CC=7  in:1  out:19  total:20
+  services.orchestrator.app.application.command_bus.CommandBus._create_task
+    CC=6  in:0  out:20  total:20
+  services.orchestrator.app.observability.rag_diagnostics.RagDiagnostics.run
+    CC=3  in:0  out:20  total:20
   services.orchestrator.app.api.access.upload_resource
     CC=4  in:0  out:19  total:19
+  services.orchestrator.app.observability.export._nfo_counts
+    CC=9  in:2  out:17  total:19
+  services.orchestrator.app.observability.export._append_nfo
+    CC=7  in:1  out:17  total:18
   services.projector.app.main._row_to_dict
     CC=3  in:12  out:5  total:17
-  services.web.app.chat.format_file_list_reply
-    CC=1  in:1  out:16  total:17
   services.web.app.static.workspace.selectTicket
     CC=5  in:6  out:11  total:17
-  services.orchestrator.app.observability.export.format_logs_text
-    CC=6  in:1  out:16  total:17
-  services.web.app.chat.fetch_file_inventory
-    CC=7  in:1  out:15  total:16
-  services.orchestrator.app.incidents.pipeline.IncidentPipeline.handle_rag_failure
-    CC=7  in:0  out:16  total:16
+  services.orchestrator.app.observability.logging.log_event
+    CC=3  in:6  out:10  total:16
   services.web.src.main.App
     CC=6  in:0  out:16  total:16
+  services.orchestrator.app.application.command_bus.CommandBus._register_resource
+    CC=5  in:0  out:16  total:16
+  services.orchestrator.app.observability.rag_pipeline.RagPipeline.ask
+    CC=5  in:0  out:15  total:15
   services.web.app.static.workspace.ensureSession
     CC=2  in:12  out:3  total:15
-  services.orchestrator.app.infrastructure.eventstore.EventStore.append
-    CC=6  in:0  out:15  total:15
   services.web.app.static.app.text
     CC=16  in:0  out:15  total:15
-  services.orchestrator.app.access.uri.parse_uri
-    CC=6  in:6  out:9  total:15
-  services.orchestrator.app.observability.export._append_incidents
-    CC=5  in:1  out:13  total:14
-  services.web.app.static.workspace.renderTasks
-    CC=12  in:6  out:8  total:14
-  services.orchestrator.app.observability.context.observability_context
-    CC=5  in:6  out:8  total:14
 
 MODULES:
   agents.shell-agent.app.executor  [1 funcs]
@@ -74,19 +74,34 @@ MODULES:
     install_plugin  CC=1  out:3
     propose_plugin  CC=1  out:3
     propose_workflow_version  CC=1  out:3
-  services.orchestrator.app.api.observability  [4 funcs]
-    export_logs  CC=2  out:6
-    list_incidents  CC=3  out:7
-    rag_diagnose  CC=1  out:4
-    rag_health  CC=1  out:4
+  services.orchestrator.app.api.queries  [8 funcs]
+    _aggregate_state  CC=2  out:1
+    _event_to_dict  CC=2  out:10
+    _matches_task_filters  CC=5  out:2
+    _task_list_item  CC=3  out:2
+    get_agent  CC=6  out:7
+    get_task  CC=6  out:7
+    get_workflow  CC=6  out:7
+    list_tasks  CC=4  out:8
   services.orchestrator.app.api.rag  [2 funcs]
     ask  CC=1  out:6
     search  CC=3  out:22
-  services.orchestrator.app.application.sagas.approval_gate  [4 funcs]
+  services.orchestrator.app.application.command_bus  [9 funcs]
+    _activate_plugin  CC=1  out:4
+    _activate_workflow_version  CC=3  out:6
+    _approve_request  CC=3  out:6
+    _create_task  CC=6  out:20
+    _record_task_outcome  CC=5  out:5
+    _register_resource  CC=5  out:16
+    _rollback_plugin  CC=1  out:5
+    _rollback_workflow_version  CC=1  out:5
+    _task_outcome_payload  CC=5  out:5
+  services.orchestrator.app.application.sagas.approval_gate  [5 funcs]
     _is_skipped  CC=3  out:3
     _required_approval_id  CC=2  out:2
     _validate_approval_events  CC=5  out:7
     ensure_approval  CC=3  out:6
+    follow_up_after_grant  CC=5  out:3
   services.orchestrator.app.application.sagas.task_routing  [4 funcs]
     _agent_matches  CC=4  out:3
     _agent_route_state  CC=4  out:2
@@ -107,10 +122,15 @@ MODULES:
     _event_timestamp  CC=3  out:5
     _event_type  CC=1  out:1
     _utc_now  CC=1  out:1
-  services.orchestrator.app.incidents.pipeline  [4 funcs]
-    _run_rag_diagnostics  CC=1  out:4
-    handle_rag_failure  CC=7  out:16
-    _rag_root_cause  CC=7  out:12
+  services.orchestrator.app.evolution.policy_engine  [3 funcs]
+    validate_activation_metrics  CC=5  out:8
+    _activation_metrics_row  CC=1  out:1
+    _has_enough_activation_samples  CC=3  out:4
+  services.orchestrator.app.incidents.pipeline  [5 funcs]
+    handle_rag_failure  CC=2  out:9
+    _rag_failure_events  CC=3  out:7
+    _rag_failure_result  CC=4  out:46
+    _rag_root_cause  CC=5  out:7
     classify_rag_error  CC=3  out:5
   services.orchestrator.app.infrastructure.eventstore  [4 funcs]
     _record_from_row  CC=1  out:3
@@ -132,23 +152,40 @@ MODULES:
     new_correlation_id  CC=1  out:2
     new_retrieval_trace_id  CC=1  out:1
     observability_context  CC=5  out:8
-  services.orchestrator.app.observability.export  [17 funcs]
+  services.orchestrator.app.observability.export  [12 funcs]
     _append_incident_feed  CC=4  out:8
     _append_incidents  CC=5  out:13
+    _append_nfo  CC=7  out:17
     _append_rag_health  CC=6  out:13
     _append_rag_snapshots  CC=3  out:5
-    _append_workspace_chat  CC=3  out:4
-    _append_workspace_context  CC=3  out:2
-    _append_workspace_events  CC=2  out:3
     _append_workspace_session  CC=5  out:10
-    _fetch_incident_feed  CC=2  out:2
-    _fetch_incidents  CC=2  out:2
-  services.orchestrator.app.observability.logging  [1 funcs]
-    log_event  CC=3  out:9
+    _build_nfo_package  CC=2  out:8
+    _nfo_counts  CC=9  out:17
+    _nfo_errors  CC=5  out:6
+    _nfo_package_version  CC=1  out:2
+  services.orchestrator.app.observability.incidents  [1 funcs]
+    classify_rag_failure  CC=3  out:5
+  services.orchestrator.app.observability.logging  [2 funcs]
+    _emit_nfo_event  CC=3  out:2
+    log_event  CC=3  out:10
   services.orchestrator.app.observability.middleware  [1 funcs]
     dispatch  CC=3  out:5
-  services.orchestrator.app.rag.chunking  [1 funcs]
-    chunk_text  CC=7  out:9
+  services.orchestrator.app.observability.rag_diagnostics  [5 funcs]
+    run  CC=3  out:20
+    _checks_with_status  CC=3  out:1
+    _log_diagnostics_result  CC=2  out:2
+    _overall_status  CC=3  out:2
+    _primary_incident_code  CC=3  out:2
+  services.orchestrator.app.observability.rag_pipeline  [6 funcs]
+    _empty_result_payload  CC=1  out:3
+    _exception_payload  CC=1  out:6
+    _llm_error_payload  CC=2  out:6
+    _step_recorder  CC=1  out:4
+    ask  CC=5  out:15
+    _result_with_trace  CC=1  out:0
+  services.orchestrator.app.rag.chunking  [2 funcs]
+    _overlapping_chunks  CC=4  out:7
+    chunk_text  CC=4  out:3
   services.orchestrator.app.rag.indexer  [5 funcs]
     ingest_resource  CC=2  out:12
     _chunks_for_body  CC=2  out:2
@@ -194,8 +231,10 @@ MODULES:
     project_agent_fleet  CC=3  out:2
   services.projector.app.projections.approval_requests  [1 funcs]
     project_approval_requests  CC=6  out:9
-  services.projector.app.projections.dispatcher  [2 funcs]
-    _normalize_event  CC=7  out:9
+  services.projector.app.projections.dispatcher  [4 funcs]
+    _event_occurred_at  CC=4  out:6
+    _event_payload  CC=3  out:2
+    _normalize_event  CC=2  out:3
     project_event  CC=1  out:9
   services.projector.app.projections.incidents  [19 funcs]
     _check_payload  CC=3  out:1
@@ -222,7 +261,7 @@ MODULES:
     project_task_board  CC=3  out:2
   services.projector.app.projections.workflow_versions  [1 funcs]
     project_workflow_versions  CC=5  out:6
-  services.web.app.access_matrix  [17 funcs]
+  services.web.app.access_matrix  [18 funcs]
     _apply_state_lists  CC=3  out:1
     _apply_state_matrices  CC=3  out:4
     _default_agents  CC=5  out:7
@@ -231,42 +270,51 @@ MODULES:
     _empty_human_agent  CC=3  out:0
     _load_raw_state  CC=3  out:2
     _matrix_path  CC=2  out:4
-    _merge_bool_matrix  CC=7  out:5
-    _reindex_matrix  CC=3  out:2
-  services.web.app.api.chat_routes  [3 funcs]
+    _merge_bool_matrix  CC=5  out:5
+    _merged_bool_row  CC=3  out:3
+  services.web.app.agent_workroom  [27 funcs]
+    _add_permission  CC=1  out:1
+    _append_workroom_ledger  CC=5  out:6
+    _append_workroom_result  CC=2  out:2
+    _append_workroom_thread  CC=6  out:9
+    _extract_shell  CC=4  out:8
+    _finish_workroom  CC=2  out:2
+    _plan_steps  CC=5  out:10
+    _record_file_list_result  CC=1  out:2
+    _record_shell_result  CC=2  out:3
+    _register_file_list_artifact  CC=2  out:3
+  services.web.app.api.chat_routes  [6 funcs]
+    _form_only_chat_message  CC=2  out:4
+    _form_only_message  CC=3  out:2
+    _update_nlp_conversation  CC=2  out:1
     _upload_one_file  CC=5  out:8
-    chat_message  CC=7  out:10
+    chat_message  CC=3  out:7
     upload_files  CC=3  out:7
   services.web.app.api.router_routes  [1 funcs]
     routing_policy_get  CC=1  out:3
+  services.web.app.api.task_routes  [10 funcs]
+    _archived_ids  CC=2  out:3
+    _assert_confirmable_task  CC=3  out:3
+    _assign_ticket  CC=3  out:3
+    _confirmable_task_and_agent  CC=2  out:5
+    _filter_tickets_view  CC=4  out:2
+    _first_idle_agent_id  CC=5  out:4
+    _task_from_board  CC=5  out:4
+    confirm_ticket  CC=5  out:9
+    get_ticket  CC=4  out:7
+    list_tickets  CC=3  out:6
   services.web.app.api.workroom_routes  [3 funcs]
     _workroom_or_404  CC=2  out:2
     workroom_export  CC=1  out:5
     workroom_get  CC=1  out:3
-  services.web.app.chat  [57 funcs]
-    _answer_from_rag_payload  CC=6  out:3
-    _append  CC=1  out:2
-    _append_file_list_errors  CC=2  out:3
-    _append_file_list_tip  CC=5  out:5
-    _append_rag_rows  CC=5  out:8
-    _append_resource_rows  CC=7  out:12
-    _append_scope_uris  CC=4  out:5
-    _append_session_files  CC=2  out:4
-    _append_uploaded_session_files  CC=3  out:3
-    _append_user_context_only  CC=6  out:4
   services.web.app.conductor  [1 funcs]
     handle_turn  CC=2  out:5
-  services.web.app.nlp2dsl_bridge  [6 funcs]
-    _post_json  CC=4  out:6
-    backend_candidates  CC=4  out:6
-    backend_url  CC=1  out:1
-    chat_message  CC=1  out:1
-    chat_start  CC=1  out:1
-    health  CC=4  out:3
-  services.web.app.resource_areas  [3 funcs]
+  services.web.app.resource_areas  [5 funcs]
     _area_policy_decision  CC=5  out:0
     _matrix_access_decision  CC=3  out:1
     agent_may_access  CC=4  out:5
+    list_areas  CC=2  out:1
+    list_groups  CC=1  out:0
   services.web.app.routing_policy  [1 funcs]
     load_policy  CC=5  out:6
   services.web.app.static.access  [14 funcs]
@@ -299,7 +347,7 @@ MODULES:
     ensureWorkroom  CC=4  out:4
     escapeHtml  CC=1  out:2
     lastState  CC=3  out:2
-  services.web.app.static.workspace  [96 funcs]
+  services.web.app.static.workspace  [98 funcs]
     agentId  CC=2  out:2
     api  CC=6  out:4
     appendMsg  CC=2  out:1
@@ -338,6 +386,9 @@ EDGES:
   services.projector.app.main.rag_quality_board → services.projector.app.main._row_to_dict
   services.projector.app.main.resource_registry → services.projector.app.main._row_to_dict
   services.projector.app.main.workflow_versions → services.projector.app.main._row_to_dict
+  services.projector.app.projections.task_board._handle_task_started → services.projector.app.projections.task_board._update_status
+  services.projector.app.projections.operational_feed.project_operational_feed → services.projector.app.projections.operational_feed._title_for
+  services.projector.app.projections.operational_feed.project_operational_feed → services.projector.app.projections.operational_feed._summary_for
   services.projector.app.projections.dispatcher.project_event → services.projector.app.projections.dispatcher._normalize_event
   services.projector.app.projections.dispatcher.project_event → services.projector.app.projections.operational_feed.project_operational_feed
   services.projector.app.projections.dispatcher.project_event → services.projector.app.projections.task_board.project_task_board
@@ -347,32 +398,29 @@ EDGES:
   services.projector.app.projections.dispatcher.project_event → services.projector.app.projections.plugin_catalog.project_plugin_catalog
   services.projector.app.projections.dispatcher.project_event → services.projector.app.projections.resource_registry.project_resource_registry
   services.projector.app.projections.dispatcher.project_event → services.projector.app.projections.incidents.project_incidents
-  services.web.app.tickets.enrich_task → services.web.app.tickets.status_meta
-  services.web.app.tickets.enrich_task → services.web.app.tickets.ticket_uri
-  services.web.app.tickets.enrich_task → services.web.app.tickets.ticket_web_path
-  services.web.app.nlp2dsl_bridge.backend_url → services.web.app.nlp2dsl_bridge.backend_candidates
-  services.web.app.nlp2dsl_bridge.health → services.web.app.nlp2dsl_bridge.backend_candidates
-  services.web.app.nlp2dsl_bridge.chat_start → services.web.app.nlp2dsl_bridge._post_json
-  services.web.app.nlp2dsl_bridge.chat_message → services.web.app.nlp2dsl_bridge._post_json
-  services.web.app.nlp2dsl_bridge._post_json → services.web.app.nlp2dsl_bridge.backend_candidates
-  services.web.app.static.access.renderAgentResourceMatrix → services.web.app.static.access.escapeHtml
-  services.web.app.static.access.checked → services.web.app.static.access.escapeHtml
-  services.web.app.static.access.renderHumanAgentMatrix → services.web.app.static.access.escapeHtml
-  services.web.app.static.access.renderAll → services.web.app.static.access.renderAgentResourceMatrix
-  services.web.app.static.access.renderAll → services.web.app.static.access.renderHumanAgentMatrix
-  services.web.app.static.access.load → services.web.app.static.access.api
-  services.web.app.static.access.load → services.web.app.static.access.renderAll
-  services.web.app.static.access.save → services.web.app.static.access.api
-  services.web.app.static.access.save → services.web.app.static.access.toast
-  services.web.app.static.access.res → services.web.app.static.access.api
-  services.web.app.static.access.resetAll → services.web.app.static.access.api
-  services.web.app.static.access.resetAll → services.web.app.static.access.renderAll
-  services.web.app.static.access.resetAll → services.web.app.static.access.toast
-  services.web.app.static.access.id → services.web.app.static.access.toast
-  services.web.app.static.access.title → services.web.app.static.access.toast
-  services.web.app.static.workroom.data → services.web.app.static.workroom.api
-  services.web.app.static.workroom.ensureWorkroom → services.web.app.static.workroom.api
-  services.web.app.static.workroom.ensureWorkroom → services.web.app.static.workroom.renderCatalog
-  services.web.app.static.workroom.renderCatalog → services.web.app.static.workroom.escapeHtml
-  services.web.app.static.workroom.loadAreas → services.web.app.static.workroom.api
-  services.web.app.static.workroom.loadAreas → services.web.app.static.workroom.renderCatalog
+  services.projector.app.projections.dispatcher._normalize_event → services.projector.app.projections.dispatcher._event_payload
+  services.projector.app.projections.dispatcher._normalize_event → services.projector.app.projections.dispatcher._event_occurred_at
+  services.projector.app.projections.incidents._handle_rag_request_failed → services.projector.app.projections.incidents._upsert_rag_quality
+  services.projector.app.projections.incidents._handle_rag_request_failed → services.projector.app.projections.incidents._upsert_service_health
+  services.projector.app.projections.incidents._handle_rag_request_failed → services.projector.app.projections.incidents._error_code
+  services.projector.app.projections.incidents._handle_incident_detected → services.projector.app.projections.incidents._error_code
+  services.projector.app.projections.incidents._handle_incident_classified → services.projector.app.projections.incidents._error_code
+  services.projector.app.projections.incidents._handle_diagnostics_started → services.projector.app.projections.incidents._update_incident_status
+  services.projector.app.projections.incidents._handle_diagnostics_completed → services.projector.app.projections.incidents._checks_payload
+  services.projector.app.projections.incidents._handle_diagnostics_completed → services.projector.app.projections.incidents._diagnostics_ok
+  services.projector.app.projections.incidents._handle_diagnostics_completed → services.projector.app.projections.incidents._upsert_service_health
+  services.projector.app.projections.incidents._handle_diagnostics_completed → services.projector.app.projections.incidents._root_cause
+  services.projector.app.projections.incidents._handle_diagnostics_completed → services.projector.app.projections.incidents._error_code
+  services.projector.app.projections.incidents._handle_remediation_started → services.projector.app.projections.incidents._update_incident_status
+  services.projector.app.projections.incidents._handle_remediation_finished → services.projector.app.projections.incidents._update_incident_status
+  services.projector.app.projections.incidents._handle_post_remediation_verification → services.projector.app.projections.incidents._update_incident_status
+  services.projector.app.projections.incidents._handle_post_remediation_verification → services.projector.app.projections.incidents._upsert_service_health
+  services.projector.app.projections.incidents._upsert_rag_quality → services.projector.app.projections.incidents._error_code
+  services.projector.app.projections.incidents._checks_payload → services.projector.app.projections.incidents._raw_checks
+  services.projector.app.projections.incidents._checks_payload → services.projector.app.projections.incidents._checks_list_payload
+  services.projector.app.projections.incidents._checks_list_payload → services.projector.app.projections.incidents._check_payload
+  services.projector.app.projections.incidents._root_cause → services.projector.app.projections.incidents._error_code
+  services.web.app.resource_areas.agent_may_access → services.web.app.resource_areas._matrix_access_decision
+  services.web.app.resource_areas.agent_may_access → services.web.app.resource_areas._area_policy_decision
+  services.web.app.resource_areas._matrix_access_decision → services.web.app.access_matrix.agent_may_access_resource
+  services.web.app.agent_workroom._plan_steps → services.web.app.agent_workroom._extract_shell

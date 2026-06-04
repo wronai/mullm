@@ -67,11 +67,14 @@ async def workspace_chat_export(session_id: str):
 
 
 @router.get("/workspace/logs/export")
-async def workspace_logs_export(session_id: str, limit: int = 30):
+async def workspace_logs_export(
+    session_id: str,
+    limit: int = workspace_service.DEFAULT_LOG_EXPORT_LIMIT,
+):
     """
     Paczka logów do schowka: RAG health, incydenty, historia sesji, feed.
     W UI: przycisk „Kopiuj logi” → navigator.clipboard.writeText(data.text).
     """
-    limit = min(max(limit, 1), 100)
+    limit = workspace_service.clamp_log_export_limit(limit)
     workspace_service.get_or_create(session_id)
     return await workspace_service.export_debug_logs(session_id, limit=limit)

@@ -11,7 +11,15 @@ from app.workspace import (
 def test_register_and_get_artifact():
     session = get_or_create("sess-artifact-1")
     session.artifacts.clear()
-    art = register_artifact(
+    art = _register_user_file_list_artifact(session)
+    assert art["artifact_id"]
+    assert art["title"] == "Lista plików (user)"
+    _assert_single_artifact_summary(session)
+    _assert_artifact_text(session, art["artifact_id"], "hello")
+
+
+def _register_user_file_list_artifact(session):
+    return register_artifact(
         session,
         {
             "kind": "file_list",
@@ -22,14 +30,18 @@ def test_register_and_get_artifact():
         },
         source_message="lista plikow usera",
     )
-    assert art["artifact_id"]
-    assert art["title"] == "Lista plików (user)"
+
+
+def _assert_single_artifact_summary(session) -> None:
     summaries = artifact_summaries(session)
     assert len(summaries) == 1
     assert summaries[0]["has_json"] is True
-    full = get_artifact(session.session_id, art["artifact_id"])
+
+
+def _assert_artifact_text(session, artifact_id: str, expected: str) -> None:
+    full = get_artifact(session.session_id, artifact_id)
     assert full is not None
-    assert full["text"] == "hello"
+    assert full["text"] == expected
 
 
 def test_format_export_text_keeps_core_sections():
@@ -50,9 +62,49 @@ def test_format_export_text_keeps_core_sections():
     )
 
     assert "## Kontekst" in text
+    assert "## NFO" in text
     assert "ABC-1" in text
     assert "## Historia chatu" in text
     assert "## Zdarzenia sesji" in text
+
+
+def test_format_export_text_uses_log_limit_for_verbose_sections():
+    text = _format_export_text(
+        {
+            "generated_at": "2026-06-04T00:00:00+00:00",
+            "correlation_id": "corr-verbose",
+            "log_limit": 2,
+            "session": {
+                "context": {},
+                "chat_history": [],
+                "events": [
+                    {"type": "E1", "summary": "one"},
+                    {"type": "E2", "summary": "two"},
+                    {"type": "E3", "summary": "three"},
+                ],
+            },
+            "rag_snapshots": [
+                {"correlation_id": "corr-verbose", "created_at": "t1", "status": "s1"},
+                {"correlation_id": "corr-verbose", "created_at": "t2", "status": "s2"},
+                {"correlation_id": "corr-verbose", "created_at": "t3", "status": "s3"},
+            ],
+            "operational_feed": [
+                {"occurred_at": "2026-06-04T00:00:01", "event_type": "A", "summary": "a"},
+                {"occurred_at": "2026-06-04T00:00:02", "event_type": "B", "summary": "b"},
+                {"occurred_at": "2026-06-04T00:00:03", "event_type": "C", "summary": "c"},
+            ],
+        }
+    )
+
+    assert "E1: one" not in text
+    assert "E2: two" in text
+    assert "E3: three" in text
+    assert "t1 s1" in text
+    assert "t2 s2" in text
+    assert "t3 s3" not in text
+    assert " A — a" in text
+    assert " B — b" in text
+    assert " C — c" not in text
 
 
 def test_format_chat_export_includes_routing():

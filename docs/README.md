@@ -1,7 +1,7 @@
 <!-- code2docs:start --># mullm
 
-![version](https://img.shields.io/badge/version-0.1.0-blue) ![python](https://img.shields.io/badge/python-%3E%3D3.9-blue) ![coverage](https://img.shields.io/badge/coverage-unknown-lightgrey) ![functions](https://img.shields.io/badge/functions-1069-green)
-> **1069** functions | **139** classes | **166** files | CC̄ = 2.8
+![version](https://img.shields.io/badge/version-0.1.0-blue) ![python](https://img.shields.io/badge/python-%3E%3D3.9-blue) ![coverage](https://img.shields.io/badge/coverage-unknown-lightgrey) ![functions](https://img.shields.io/badge/functions-1141-green)
+> **1141** functions | **143** classes | **178** files | CC̄ = 2.8
 
 > Auto-generated project documentation from source code analysis.
 
@@ -69,13 +69,11 @@ docs = generate_docs("./my-project", config=config)
 mullm/
 ├── requirements-dev
 ├── goal
-├── planfile
 ├── Makefile
 ├── docker-compose
 ├── tree
 ├── pytest
 ├── prefact
-├── CHANGELOG
 ├── project
 ├── README
     ├── observability
@@ -86,6 +84,7 @@ mullm/
     ├── roadmap-90d
     ├── domain
     ├── workspace-conductor
+    ├── e2e-chat-routing
     ├── architecture
     ├── README
     ├── events
@@ -100,13 +99,16 @@ mullm/
                 ├── workflow_versions
                 ├── operational_feed
                 ├── approval_requests
+                ├── dispatcher
                 ├── incidents
                 ├── agent_fleet
                 ├── plugin_catalog
         ├── requirements
+        ├── pytest
         ├── package
         ├── Dockerfile
             ├── api_routes
+            ├── workspace
             ├── routing_policy
             ├── resource_areas
         ├── app/
@@ -114,13 +116,23 @@ mullm/
             ├── agent_workroom
             ├── tickets
             ├── nlp2dsl_bridge
+            ├── chat
+            ├── access_matrix
             ├── main
+            ├── conductor
                 ├── access
                 ├── workroom
                 ├── app
+                ├── protocol
+                ├── registry
+            ├── agent_plugins/
+                ├── nlp2cmd_plugin
+                ├── nlp2dsl_plugin
                 ├── config
                 ├── router_routes
+                ├── agents_routes
             ├── api/
+                ├── task_routes
                 ├── chat_routes
                 ├── models
                 ├── workspace_routes
@@ -198,6 +210,7 @@ mullm/
     ├── 1
     ├── 2
     ├── 3
+    ├── e2e-chat-routing
     ├── test
             ├── toon
             ├── toon
@@ -211,6 +224,8 @@ mullm/
         ├── workflow
         ├── evolution
         ├── access
+        ├── agent_manifest
+        ├── agent_manifest
         ├── mullm_registry
         ├── patch_startup
         ├── requirements
@@ -218,14 +233,11 @@ mullm/
             ├── nats_consumer
             ├── executor
             ├── main
+├── planfile
 ├── TODO
-                ├── dispatcher
-            ├── workspace
-            ├── chat
-            ├── access_matrix
-            ├── conductor
+├── CHANGELOG
+    ├── agent-orchestration
                 ├── workspace
-                ├── task_routes
 ```
 
 ## API Overview
@@ -233,11 +245,18 @@ mullm/
 ### Classes
 
 - **`Database`** — —
+- **`WorkspaceContext`** — —
+- **`WorkspaceSession`** — —
 - **`RagProbeSettings`** — —
 - **`RoutingPolicy`** — —
 - **`RouteDecision`** — Audytowalna decyzja routingu (ingress Mullm BFF).
 - **`LedgerEntry`** — —
 - **`WorkroomSession`** — —
+- **`TurnState`** — —
+- **`ShellTranslation`** — Wynik tłumaczenia NL → polecenie shell (bez wykonania).
+- **`AgentPlugin`** — Plugin łączący Mullm z usługą agenta (HTTP/CLI w sibling repo).
+- **`Nlp2CmdPlugin`** — —
+- **`Nlp2DslPlugin`** — —
 - **`ChatSessionStart`** — —
 - **`ChatMessage`** — —
 - **`TaskDraftRequest`** — —
@@ -368,9 +387,6 @@ mullm/
 - **`ProbeUriCommand`** — —
 - **`ShellAgent`** — —
 - **`ShellResult`** — —
-- **`WorkspaceContext`** — —
-- **`WorkspaceSession`** — —
-- **`TurnState`** — —
 
 ### Functions
 
@@ -393,9 +409,30 @@ mullm/
 - `project_workflow_versions(db, event)` — —
 - `project_operational_feed(db, event)` — —
 - `project_approval_requests(db, event)` — —
+- `project_event(db, event)` — —
 - `project_incidents(db, event)` — —
 - `project_agent_fleet(db, event)` — —
 - `project_plugin_catalog(db, event)` — —
+- `new_session()` — —
+- `get_session(session_id)` — —
+- `get_or_create(session_id)` — —
+- `register_artifact(session, artifact)` — Zapisuje artefakt w sesji (lista + podgląd po prawej w UI).
+- `artifact_summaries(session)` — Metadane do listy (bez dużego json — pełny podgląd po id).
+- `get_artifact(session_id, artifact_id)` — —
+- `workspace_state(session_id)` — —
+- `attach_context(session_id)` — —
+- `build_task_payload(session_id, message)` — Szkic pól zadania (tylko API /tasks/draft) — nie zapisuje sesji.
+- `propose_task_draft(session_id, message)` — Kompatybilność API — zwraca payload bez trzymania szkicu w sesji.
+- `create_task_immediate(session_id)` — Tworzy ticket od razu; domyślnie przypisuje agenta (uruchomienie).
+- `handle_chat_message()` — —
+- `create_task_from_draft(session_id)` — —
+- `create_and_run(session_id)` — —
+- `format_chat_export_text(session)` — Transkrypt czatu do schowka (rozmowa + routing pod odpowiedziami AI).
+- `clamp_log_export_limit(limit)` — —
+- `export_debug_logs(session_id)` — Zbiera logi sesji + orchestrator + feed do kopiowania do schowka.
+- `archive_task(session_id, task_id)` — —
+- `link_ticket(session_id, task_id)` — —
+- `fetch_live_board()` — —
 - `load_policy()` — —
 - `list_areas()` — —
 - `list_groups()` — Grupy logiczne — filtrowanie polityk po labelach.
@@ -421,11 +458,35 @@ mullm/
 - `form_to_prompt(form, values)` — —
 - `primary_action(dsl)` — —
 - `step_config(dsl)` — —
+- `routing_from_response(resp)` — IntentDecision z nlp2dsl (pole routing w ConversationResponse).
+- `intent_routing_policy_flags(routing)` — Mapuje routing nlp2dsl → policy_flags RouteDecision (PR-C / observability).
+- `merge_intent_into_policy_flags(policy_flags, routing)` — —
+- `is_continue_intent(message)` — Krótka komenda kontynuacji (bez nowej intencji DSL).
+- `is_file_list_intent(message)` — —
+- `is_shell_nl_intent(message)` — Naturalny język → shell przez nlp2cmd (nie rejestr plików, nie jawny prefix run).
+- `file_list_scope(message)` — Zakres listy: all | user | system | session | rag.
+- `filter_file_inventory(inventory, list_scope)` — Filtruje rejestr i RAG według zakresu.
+- `fetch_file_inventory()` — —
+- `format_file_list_reply(inventory)` — —
+- `build_file_list_artifact(reply_text, inventory)` — Artefakt do pobrania w UI (Blob) lub ponownego exportu API.
+- `new_session_id()` — —
+- `get_history(session_id)` — —
+- `stamp_last_assistant_routing(session_id, routing)` — Dołącza decyzję routera do ostatniej wiadomości asystenta (badge w UI).
+- `handle_message()` — —
+- `probe_rag()` — Lekkie wyszukiwanie RAG (bez LLM) — krok rag_probe w polityce ingress.
+- `create_task()` — —
+- `default_state()` — —
+- `load_state()` — —
+- `save_state(state)` — —
+- `agent_may_access_resource(agent_id, resource_id)` — —
+- `human_may_use_agent(human_id, agent_id)` — —
+- `diagnose_file_list_command()` — Wyjaśnienie: lista plików ≠ shell, ≠ dysk hosta.
 - `health()` — —
 - `workspace_home(request, task_id)` — —
 - `agent_workroom_page(request)` — —
 - `access_matrix_page(request)` — —
 - `dashboard(request)` — —
+- `handle_turn()` — Pipeline ingress z routing_policy.yaml (rag_probe → rules → agent_shell → nlp2dsl → rag_answer).
 - `state()` — —
 - `toast()` — —
 - `api()` — —
@@ -492,8 +553,25 @@ mullm/
 - `refreshTables()` — —
 - `tasksBody()` — —
 - `tasks()` — —
+- `bootstrap()` — —
+- `list_plugins()` — —
+- `get_plugin(plugin_id)` — —
+- `plugins_for_ingress_step(step)` — —
+- `agents_status()` — Health wszystkich zarejestrowanych pluginów (UI / CLI / smoke).
+- `translate_shell_nl(message)` — —
+- `backend_candidates()` — —
 - `router_decide(message, mode, use_rag)` — Podgląd trasy promptu (debug): reguły lub LLM (PROMPT_ROUTER_MODE).
 - `routing_policy_get(reload)` — Aktualna polityka ingress (YAML + domyślne).
+- `agents_status_get()` — Health pluginów agentów (nlp2cmd, nlp2dsl, …).
+- `create_task(body)` — —
+- `create_task_from_draft(body)` — —
+- `create_and_run_task(body)` — —
+- `list_tickets(session_id, view)` — —
+- `ticket_statuses()` — —
+- `get_ticket(task_id, session_id)` — —
+- `confirm_ticket(task_id, body)` — —
+- `archive_ticket(task_id, body)` — —
+- `link_ticket(task_id, body)` — —
 - `start_chat_session(body)` — —
 - `get_chat_session(session_id)` — —
 - `workspace_state(session_id)` — —
@@ -554,6 +632,7 @@ mullm/
 - `build_uri(adapter, path)` — —
 - `get_adapter(name)` — —
 - `format_logs_text(bundle)` — —
+- `clamp_log_export_limit(limit)` — —
 - `build_orchestrator_bundle()` — —
 - `new_correlation_id()` — —
 - `new_retrieval_trace_id()` — —
@@ -621,45 +700,6 @@ mullm/
 - `upload_resource(request, file, classification)` — Zapisuje plik w localfs (chat/) i rejestruje zasób + RAG ingest.
 - `run_shell_command(command, timeout_seconds)` — —
 - `main()` — —
-- `project_event(db, event)` — —
-- `new_session()` — —
-- `get_session(session_id)` — —
-- `get_or_create(session_id)` — —
-- `register_artifact(session, artifact)` — Zapisuje artefakt w sesji (lista + podgląd po prawej w UI).
-- `artifact_summaries(session)` — Metadane do listy (bez dużego json — pełny podgląd po id).
-- `get_artifact(session_id, artifact_id)` — —
-- `workspace_state(session_id)` — —
-- `attach_context(session_id)` — —
-- `build_task_payload(session_id, message)` — Szkic pól zadania (tylko API /tasks/draft) — nie zapisuje sesji.
-- `propose_task_draft(session_id, message)` — Kompatybilność API — zwraca payload bez trzymania szkicu w sesji.
-- `create_task_immediate(session_id)` — Tworzy ticket od razu; domyślnie przypisuje agenta (uruchomienie).
-- `handle_chat_message()` — —
-- `create_task_from_draft(session_id)` — —
-- `create_and_run(session_id)` — —
-- `format_chat_export_text(session)` — Transkrypt czatu do schowka (rozmowa + routing pod odpowiedziami AI).
-- `export_debug_logs(session_id)` — Zbiera logi sesji + orchestrator + feed do kopiowania do schowka.
-- `archive_task(session_id, task_id)` — —
-- `link_ticket(session_id, task_id)` — —
-- `fetch_live_board()` — —
-- `is_file_list_intent(message)` — —
-- `file_list_scope(message)` — Zakres listy: all | user | system | session | rag.
-- `filter_file_inventory(inventory, list_scope)` — Filtruje rejestr i RAG według zakresu.
-- `fetch_file_inventory()` — —
-- `format_file_list_reply(inventory)` — —
-- `build_file_list_artifact(reply_text, inventory)` — Artefakt do pobrania w UI (Blob) lub ponownego exportu API.
-- `new_session_id()` — —
-- `get_history(session_id)` — —
-- `stamp_last_assistant_routing(session_id, routing)` — Dołącza decyzję routera do ostatniej wiadomości asystenta (badge w UI).
-- `handle_message()` — —
-- `probe_rag()` — Lekkie wyszukiwanie RAG (bez LLM) — krok rag_probe w polityce ingress.
-- `create_task()` — —
-- `default_state()` — —
-- `load_state()` — —
-- `save_state(state)` — —
-- `agent_may_access_resource(agent_id, resource_id)` — —
-- `human_may_use_agent(human_id, agent_id)` — —
-- `diagnose_file_list_command()` — Wyjaśnienie: lista plików ≠ shell, ≠ dysk hosta.
-- `handle_turn()` — Pipeline ingress z routing_policy.yaml (domyślnie: rag_probe → rules → nlp2dsl → rag_answer).
 - `sessionId()` — —
 - `currentDraft()` — —
 - `selectedTaskId()` — —
@@ -807,15 +847,6 @@ mullm/
 - `note()` — —
 - `submitTaskForm()` — —
 - `wait()` — —
-- `create_task(body)` — —
-- `create_task_from_draft(body)` — —
-- `create_and_run_task(body)` — —
-- `list_tickets(session_id, view)` — —
-- `ticket_statuses()` — —
-- `get_ticket(task_id, session_id)` — —
-- `confirm_ticket(task_id, body)` — —
-- `archive_ticket(task_id, body)` — —
-- `link_ticket(task_id, body)` — —
 
 
 ## Project Structure
@@ -845,8 +876,10 @@ mullm/
 📄 `catalog.services`
 📄 `docker-compose`
 📄 `docs.README`
+📄 `docs.agent-orchestration`
 📄 `docs.architecture`
 📄 `docs.domain`
+📄 `docs.e2e-chat-routing`
 📄 `docs.events`
 📄 `docs.multi-agent-workroom`
 📄 `docs.observability`
@@ -856,6 +889,8 @@ mullm/
 📄 `docs.workspace-simple`
 📄 `docs.workspace-ui`
 📄 `goal`
+📄 `integrations.nlp2cmd.agent_manifest`
+📄 `integrations.nlp2dsl.agent_manifest`
 📄 `integrations.nlp2dsl.mullm_registry`
 📄 `integrations.nlp2dsl.patch_startup`
 📄 `planfile`
@@ -863,6 +898,7 @@ mullm/
 📄 `project`
 📄 `pytest`
 📄 `requirements-dev`
+📄 `scripts.e2e-chat-routing`
 📄 `scripts.test`
 📄 `services.orchestrator.Dockerfile`
 📦 `services.orchestrator.app.access`
@@ -893,7 +929,7 @@ mullm/
 📦 `services.orchestrator.app.domain.events`
 📄 `services.orchestrator.app.domain.events.agents` (4 classes)
 📄 `services.orchestrator.app.domain.events.approvals` (5 classes)
-📄 `services.orchestrator.app.domain.events.base` (3 functions, 1 classes)
+📄 `services.orchestrator.app.domain.events.base` (7 functions, 1 classes)
 📄 `services.orchestrator.app.domain.events.incidents` (10 classes)
 📄 `services.orchestrator.app.domain.events.plugins` (5 classes)
 📄 `services.orchestrator.app.domain.events.resources` (5 classes)
@@ -902,11 +938,11 @@ mullm/
 📦 `services.orchestrator.app.domain.value_objects` (2 functions, 11 classes)
 📦 `services.orchestrator.app.evolution`
 📄 `services.orchestrator.app.evolution.catalog` (6 functions, 1 classes)
-📄 `services.orchestrator.app.evolution.evaluation` (7 functions, 1 classes)
+📄 `services.orchestrator.app.evolution.evaluation` (10 functions, 1 classes)
 📄 `services.orchestrator.app.evolution.experiments` (4 functions, 1 classes)
-📄 `services.orchestrator.app.evolution.policy_engine` (8 functions, 2 classes)
+📄 `services.orchestrator.app.evolution.policy_engine` (10 functions, 2 classes)
 📦 `services.orchestrator.app.incidents`
-📄 `services.orchestrator.app.incidents.pipeline` (12 functions, 1 classes)
+📄 `services.orchestrator.app.incidents.pipeline` (10 functions, 1 classes)
 📄 `services.orchestrator.app.infrastructure.eventstore` (9 functions, 2 classes)
 📄 `services.orchestrator.app.infrastructure.eventstore_dual` (5 functions, 1 classes)
 📄 `services.orchestrator.app.infrastructure.eventstore_esdb` (8 functions, 1 classes)
@@ -916,14 +952,14 @@ mullm/
 📄 `services.orchestrator.app.main` (5 functions)
 📦 `services.orchestrator.app.observability`
 📄 `services.orchestrator.app.observability.context` (6 functions)
-📄 `services.orchestrator.app.observability.export` (17 functions)
-📄 `services.orchestrator.app.observability.incidents` (37 functions, 2 classes)
-📄 `services.orchestrator.app.observability.logging` (1 functions)
+📄 `services.orchestrator.app.observability.export` (23 functions)
+📄 `services.orchestrator.app.observability.incidents` (40 functions, 2 classes)
+📄 `services.orchestrator.app.observability.logging` (2 functions)
 📄 `services.orchestrator.app.observability.middleware` (1 functions, 1 classes)
 📄 `services.orchestrator.app.observability.rag_diagnostics` (12 functions, 1 classes)
 📄 `services.orchestrator.app.observability.rag_pipeline` (10 functions, 1 classes)
 📦 `services.orchestrator.app.rag`
-📄 `services.orchestrator.app.rag.chunking` (1 functions)
+📄 `services.orchestrator.app.rag.chunking` (2 functions)
 📄 `services.orchestrator.app.rag.indexer` (8 functions, 1 classes)
 📄 `services.orchestrator.app.rag.openrouter` (9 functions, 1 classes)
 📄 `services.orchestrator.app.rag.retriever` (8 functions, 1 classes)
@@ -948,10 +984,16 @@ mullm/
 📄 `services.web.Dockerfile`
 📦 `services.web.app`
 📄 `services.web.app.access_matrix` (19 functions)
+📦 `services.web.app.agent_plugins`
+📄 `services.web.app.agent_plugins.nlp2cmd_plugin` (4 functions, 1 classes)
+📄 `services.web.app.agent_plugins.nlp2dsl_plugin` (2 functions, 1 classes)
+📄 `services.web.app.agent_plugins.protocol` (2 functions, 2 classes)
+📄 `services.web.app.agent_plugins.registry` (6 functions)
 📄 `services.web.app.agent_workroom` (33 functions, 2 classes)
 📦 `services.web.app.api`
 📄 `services.web.app.api.access_routes` (6 functions)
-📄 `services.web.app.api.chat_routes` (9 functions)
+📄 `services.web.app.api.agents_routes` (1 functions)
+📄 `services.web.app.api.chat_routes` (12 functions)
 📄 `services.web.app.api.config`
 📄 `services.web.app.api.models` (11 classes)
 📄 `services.web.app.api.router_routes` (2 functions)
@@ -959,11 +1001,11 @@ mullm/
 📄 `services.web.app.api.workroom_routes` (5 functions)
 📄 `services.web.app.api.workspace_routes` (5 functions)
 📄 `services.web.app.api_routes`
-📄 `services.web.app.chat` (74 functions)
-📄 `services.web.app.conductor` (42 functions, 1 classes)
+📄 `services.web.app.chat` (76 functions)
+📄 `services.web.app.conductor` (53 functions, 1 classes)
 📄 `services.web.app.main` (5 functions)
-📄 `services.web.app.nlp2dsl_bridge` (9 functions)
-📄 `services.web.app.prompt_router` (23 functions, 1 classes)
+📄 `services.web.app.nlp2dsl_bridge` (12 functions)
+📄 `services.web.app.prompt_router` (25 functions, 1 classes)
 📄 `services.web.app.resource_areas` (5 functions)
 📄 `services.web.app.routing_policy` (11 functions, 2 classes)
 📄 `services.web.app.static.access` (25 functions)
@@ -971,9 +1013,10 @@ mullm/
 📄 `services.web.app.static.workroom` (33 functions)
 📄 `services.web.app.static.workspace` (178 functions)
 📄 `services.web.app.tickets` (4 functions)
-📄 `services.web.app.workspace` (80 functions, 2 classes)
+📄 `services.web.app.workspace` (98 functions, 2 classes)
 📄 `services.web.data.routing_policy`
 📄 `services.web.package`
+📄 `services.web.pytest`
 📄 `services.web.requirements`
 📄 `services.web.src.main` (23 functions)
 📄 `testql-scenarios.generated-api-smoke.testql.toon`

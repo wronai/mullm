@@ -21,6 +21,7 @@ from app import chat as chat_service
 RouteKind = Literal[
     "mullm_file_list",
     "mullm_shell",
+    "nlp2cmd_shell",
     "nlp2dsl",
     "rag",
     "workroom_hint",
@@ -39,6 +40,7 @@ HandlerKind = Literal[
 _LLM_HANDLERS: dict[str, HandlerKind] = {
     "mullm_file_list": "conductor._mullm_file_list_turn",
     "mullm_shell": "workspace.create_task_immediate",
+    "nlp2cmd_shell": "workspace.create_task_immediate",
     "nlp2dsl": "nlp2dsl.workflow.chat",
     "rag": "chat.handle_message.rag",
     "unknown": "none",
@@ -152,17 +154,11 @@ def decide_route_rules(
     if not text:
         return _empty_route_decision(flags)
 
-    routed = (
-        _mode_route_decision(chat_mode, flags)
-        or _file_list_route_decision(text, flags)
-        or _shell_route_decision(text, flags)
-    )
+    routed = _direct_route_decision(chat_mode, text, flags)
     if routed:
         return routed
 
-    if chat_mode == "discuss":
-        return _default_discuss_decision(flags)
-    return _fallback_mode_decision(chat_mode, flags)
+    return _default_route_decision(chat_mode, flags)
 
 
 def _router_flags(
@@ -184,6 +180,29 @@ def _empty_route_decision(flags: dict[str, Any]) -> RouteDecision:
         reason="Pusta wiadomość",
         policy_flags=flags,
     )
+
+
+def _direct_route_decision(
+    chat_mode: str,
+    text: str,
+    flags: dict[str, Any],
+) -> RouteDecision | None:
+    resolvers = (
+        lambda: _mode_route_decision(chat_mode, flags),
+        lambda: _file_list_route_decision(text, flags),
+        lambda: _shell_route_decision(text, flags),
+    )
+    for resolver in resolvers:
+        decision = resolver()
+        if decision:
+            return decision
+    return None
+
+
+def _default_route_decision(chat_mode: str, flags: dict[str, Any]) -> RouteDecision:
+    if chat_mode == "discuss":
+        return _default_discuss_decision(flags)
+    return _fallback_mode_decision(chat_mode, flags)
 
 
 def _mode_route_decision(
@@ -222,6 +241,7 @@ def _mode_route_decision(
     return None
 
 
+# @intract.v1 id:mullm.route.file_list.decide scope:function intent:route:file_list domain:routing forbid:shell validate:return_value meaning:"Router: mullm_file_list nie mullm_shell"
 def _file_list_route_decision(
     text: str,
     flags: dict[str, Any],
@@ -253,6 +273,7 @@ def _file_list_route_decision(
     )
 
 
+# @intract.v1 id:mullm.route.shell_prefix.decide scope:function intent:route:shell_prefix domain:routing validate:return_value meaning:"Jawny prefix run/exec → mullm_shell"
 def _shell_route_decision(
     text: str,
     flags: dict[str, Any],
@@ -362,7 +383,7 @@ def _llm_classifier_payload(model: str, message: str) -> dict[str, Any]:
 def _llm_system_prompt() -> str:
     return (
         "Klasyfikuj intencję użytkownika Mullm. Odpowiedz TYLKO JSON:\n"
-        '{"route":"mullm_file_list|mullm_shell|nlp2dsl|rag|unknown",'
+        '{"route":"mullm_file_list|mullm_shell|nlp2cmd_shell|nlp2dsl|rag|unknown",'
         '"intent":"short_slug","confidence":0.0-1.0,'
         '"list_scope":"all|user|system|session|rag|null",'
         '"reason_codes":["code1"]}'

@@ -1,0 +1,74 @@
+version: intract.v1
+
+# Kontrakty routingu czatu Mullm (regresja: file_list ≠ shell, NL shell → nlp2cmd).
+# Uruchom: python -m intract validate . --manifest intract.yaml
+
+contracts:
+  - id: mullm.intent.file_list.detect
+    scope: function
+    intent: detect:file_list
+    priority: 1
+    domain: routing
+    target:
+      file: services/web/app/chat.py
+      func: is_file_list_intent
+    input: [message]
+    output: [bool]
+    effect: [none]
+    forbid: [shell]
+    validate: [input_presence, return_value, no_forbidden_effect]
+    meaning: "Wykrywa intencję listy plików z rejestru (Access Fabric), nie operacje shell na hoście."
+
+  - id: mullm.intent.shell_nl.detect
+    scope: function
+    intent: detect:shell_nl
+    priority: 1
+    domain: routing
+    target:
+      file: services/web/app/chat.py
+      func: is_shell_nl_intent
+    input: [message]
+    output: [bool]
+    effect: [none]
+    forbid: []
+    validate: [input_presence, return_value]
+    meaning: "NL → shell (nlp2cmd); wyklucza file_list i jawny prefix run/exec."
+
+  - id: mullm.route.file_list.decide
+    scope: function
+    intent: route:file_list
+    priority: 1
+    domain: routing
+    target:
+      file: services/web/app/prompt_router.py
+      func: _file_list_route_decision
+    effect: [none]
+    forbid: [shell]
+    validate: [return_value, no_forbidden_effect]
+    meaning: "Reguły routera: trasa mullm_file_list, nie mullm_shell."
+
+  - id: mullm.route.shell_prefix.decide
+    scope: function
+    intent: route:shell_prefix
+    priority: 1
+    domain: routing
+    target:
+      file: services/web/app/prompt_router.py
+      func: _shell_route_decision
+    effect: [none]
+    forbid: []
+    validate: [return_value, no_forbidden_effect]
+    meaning: "Jawny prefix run/exec → mullm_shell (bez nlp2cmd w routerze)."
+
+  - id: mullm.ingress.agent_shell
+    scope: function
+    intent: orchestrate:agent_shell
+    priority: 1
+    domain: routing
+    target:
+      file: services/web/app/conductor.py
+      func: _agent_shell_step
+    effect: [network]
+    forbid: []
+    validate: []
+    meaning: "Krok ingress: nlp2cmd tłumaczy NL, Mullm zakłada ticket shell_agent (nie wykonuje cmd)."

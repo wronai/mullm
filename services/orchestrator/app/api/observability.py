@@ -11,7 +11,11 @@ from app.observability.context import (
     new_retrieval_trace_id,
     observability_context,
 )
-from app.observability.export import build_orchestrator_bundle
+from app.observability.export import (
+    DEFAULT_LOG_EXPORT_LIMIT,
+    build_orchestrator_bundle,
+    clamp_log_export_limit,
+)
 
 router = APIRouter()
 
@@ -76,10 +80,10 @@ async def list_playbooks():
 async def export_logs(
     request: Request,
     correlation_id: str | None = None,
-    limit: int = 30,
+    limit: int = DEFAULT_LOG_EXPORT_LIMIT,
 ):
     """Paczka diagnostyczna (JSON + pole `text` do schowka)."""
-    limit = min(max(limit, 1), 100)
+    limit = clamp_log_export_limit(limit)
     with observability_context(correlation_id=correlation_id or new_correlation_id()):
         return await build_orchestrator_bundle(
             postgres=request.app.state.postgres,
@@ -90,8 +94,8 @@ async def export_logs(
 
 
 @router.get("/incidents")
-async def list_incidents(request: Request, limit: int = 20):
-    limit = min(max(limit, 1), 100)
+async def list_incidents(request: Request, limit: int = DEFAULT_LOG_EXPORT_LIMIT):
+    limit = clamp_log_export_limit(limit)
     try:
         rows = await request.app.state.postgres.fetch(
             """

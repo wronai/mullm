@@ -13,6 +13,11 @@ from app.observability.context import (
 
 logger = logging.getLogger("mullm.observability")
 
+try:  # Optional in ad-hoc local runs; pinned in service requirements for Docker.
+    import nfo as _nfo
+except Exception:  # pragma: no cover - depends on runtime image extras.
+    _nfo = None
+
 
 def log_event(
     *,
@@ -41,3 +46,14 @@ def log_event(
         logger.warning(line)
     else:
         logger.info(line)
+    _emit_nfo_event(payload)
+
+
+def _emit_nfo_event(payload: dict[str, Any]) -> None:
+    if _nfo is None:
+        return
+    try:
+        _nfo.configure(name="mullm.orchestrator.nfo", propagate_stdlib=True)
+        _nfo.event("mullm.observability", **payload)
+    except Exception:
+        return

@@ -1,18 +1,19 @@
-# mullm | 158f 22201L | python:145,css:5,javascript:4,shell:3,less:1 | 2026-06-04
-# stats: 736 func | 148 cls | 158 mod | CC̄=2.8 | critical:3 | cycles:0
-# alerts[5]: CC test_incident_recorder_publishes_projectable_events=14; CC _format_routing_line=12; CC test_projector_get_routes_are_unique=11; CC test_plugin_api_flow=8; CC test_full_task_lifecycle=8
-# hotspots[5]: lifespan fan=21; upload_resource fan=17; search fan=15; _append_export_sections fan=12; handle_chat_message fan=11
+# mullm | 172f 24003L | python:158,css:5,shell:4,javascript:4,less:1 | 2026-06-04
+# stats: 828 func | 153 cls | 172 mod | CC̄=2.8 | critical:3 | cycles:0
+# alerts[5]: CC test_incident_recorder_publishes_projectable_events=14; CC test_projector_get_routes_are_unique=11; CC test_format_export_text_uses_log_limit_for_verbose_sections=10; CC _nfo_counts=9; CC test_live_nlp2cmd_shell_nl=9
+# hotspots[5]: _rag_failure_result fan=27; lifespan fan=21; upload_resource fan=17; search fan=15; _append_export_sections fan=15
 # evolution: baseline
 # Keys: M=modules, D=details, i=imports, e=exports, c=classes, f=functions, m=methods
-M[158]:
+M[172]:
   agents/shell-agent/app/__init__.py,2
   agents/shell-agent/app/executor.py,49
   agents/shell-agent/app/main.py,27
   agents/shell-agent/app/nats_consumer.py,48
-  app.doql.less,422
+  app.doql.less,454
   integrations/nlp2dsl/mullm_registry.py,33
   integrations/nlp2dsl/patch_startup.py,8
   project.sh,53
+  scripts/e2e-chat-routing.sh,72
   scripts/test.sh,14
   services/orchestrator/app/__init__.py,2
   services/orchestrator/app/access/__init__.py,5
@@ -27,7 +28,7 @@ M[158]:
   services/orchestrator/app/api/catalog.py,42
   services/orchestrator/app/api/commands.py,380
   services/orchestrator/app/api/evolution.py,105
-  services/orchestrator/app/api/observability.py,109
+  services/orchestrator/app/api/observability.py,113
   services/orchestrator/app/api/queries.py,205
   services/orchestrator/app/api/rag.py,143
   services/orchestrator/app/application/__init__.py,2
@@ -60,7 +61,7 @@ M[158]:
   services/orchestrator/app/evolution/experiments.py,77
   services/orchestrator/app/evolution/policy_engine.py,132
   services/orchestrator/app/incidents/__init__.py,4
-  services/orchestrator/app/incidents/pipeline.py,368
+  services/orchestrator/app/incidents/pipeline.py,406
   services/orchestrator/app/infrastructure/__init__.py,2
   services/orchestrator/app/infrastructure/eventstore.py,183
   services/orchestrator/app/infrastructure/eventstore_dual.py,58
@@ -71,9 +72,9 @@ M[158]:
   services/orchestrator/app/main.py,196
   services/orchestrator/app/observability/__init__.py,23
   services/orchestrator/app/observability/context.py,60
-  services/orchestrator/app/observability/export.py,281
+  services/orchestrator/app/observability/export.py,398
   services/orchestrator/app/observability/incidents.py,581
-  services/orchestrator/app/observability/logging.py,44
+  services/orchestrator/app/observability/logging.py,60
   services/orchestrator/app/observability/middleware.py,20
   services/orchestrator/app/observability/rag_diagnostics.py,223
   services/orchestrator/app/observability/rag_pipeline.py,271
@@ -88,7 +89,7 @@ M[158]:
   services/orchestrator/tests/fakes.py,64
   services/orchestrator/tests/test_api.py,90
   services/orchestrator/tests/test_command_bus.py,57
-  services/orchestrator/tests/test_observability.py,121
+  services/orchestrator/tests/test_observability.py,151
   services/orchestrator/tests/test_task_aggregate.py,28
   services/projector/app/__init__.py,2
   services/projector/app/db.py,57
@@ -105,22 +106,28 @@ M[158]:
   services/projector/app/projections/workflow_versions.py,48
   services/web/app/__init__.py,1
   services/web/app/access_matrix.py,249
+  services/web/app/agent_plugins/__init__.py,20
+  services/web/app/agent_plugins/nlp2cmd_plugin.py,93
+  services/web/app/agent_plugins/nlp2dsl_plugin.py,23
+  services/web/app/agent_plugins/protocol.py,49
+  services/web/app/agent_plugins/registry.py,74
   services/web/app/agent_workroom.py,643
   services/web/app/api/__init__.py,2
   services/web/app/api/access_routes.py,47
-  services/web/app/api/chat_routes.py,157
+  services/web/app/api/agents_routes.py,14
+  services/web/app/api/chat_routes.py,169
   services/web/app/api/config.py,17
   services/web/app/api/models.py,81
   services/web/app/api/router_routes.py,33
   services/web/app/api/task_routes.py,186
   services/web/app/api/workroom_routes.py,55
-  services/web/app/api/workspace_routes.py,78
-  services/web/app/api_routes.py,22
-  services/web/app/chat.py,948
-  services/web/app/conductor.py,904
+  services/web/app/api/workspace_routes.py,81
+  services/web/app/api_routes.py,24
+  services/web/app/chat.py,983
+  services/web/app/conductor.py,1179
   services/web/app/main.py,105
-  services/web/app/nlp2dsl_bridge.py,101
-  services/web/app/prompt_router.py,470
+  services/web/app/nlp2dsl_bridge.py,134
+  services/web/app/prompt_router.py,489
   services/web/app/resource_areas.py,172
   services/web/app/routing_policy.py,156
   services/web/app/static/access.css,84
@@ -130,18 +137,25 @@ M[158]:
   services/web/app/static/workroom.css,87
   services/web/app/static/workroom.js,269
   services/web/app/static/workspace.css,779
-  services/web/app/static/workspace.js,1154
+  services/web/app/static/workspace.js,1155
   services/web/app/tickets.py,46
-  services/web/app/workspace.py,1193
+  services/web/app/workspace.py,1410
   services/web/src/styles.css,287
+  services/web/tests/conftest.py,76
   services/web/tests/test_access_matrix.py,38
-  services/web/tests/test_agent_workroom.py,69
+  services/web/tests/test_agent_plugins.py,47
+  services/web/tests/test_agent_workroom.py,73
   services/web/tests/test_api_routes.py,21
-  services/web/tests/test_artifacts.py,139
+  services/web/tests/test_artifacts.py,191
   services/web/tests/test_chat_intent.py,126
-  services/web/tests/test_conductor_ingress.py,45
+  services/web/tests/test_conductor_ingress.py,83
+  services/web/tests/test_continue_intent.py,38
+  services/web/tests/test_e2e_chat_api.py,168
+  services/web/tests/test_e2e_live_stack.py,137
+  services/web/tests/test_nlp2dsl_bridge.py,44
   services/web/tests/test_prompt_router.py,63
-  services/web/tests/test_routing_policy.py,30
+  services/web/tests/test_routing_policy.py,34
+  services/web/tests/test_shell_nl_intent.py,15
   tests/conftest.py,354
   tests/test_access_fabric.py,62
   tests/test_agent_aggregate.py,33
@@ -458,14 +472,16 @@ D:
     _has_enough_activation_samples(row;policies)
   services/orchestrator/app/incidents/__init__.py:
   services/orchestrator/app/incidents/pipeline.py:
-    e: classify_rag_error,_rag_root_cause,_rag_schema_missing,_rag_index_empty,_retriever_empty_result,_openrouter_unconfigured,IncidentPipeline
-    IncidentPipeline: __init__(0),handle_rag_failure(0),_run_rag_diagnostics(1),_openrouter_health_check(0),_rag_document_check(0),_rag_chunk_check(1),_remediate_rag_incident(0),_verify_rag(1),_append_and_publish(2),_with_incident_id(2)
+    e: classify_rag_error,_rag_root_cause,_rag_schema_missing,_rag_index_empty,_retriever_empty_result,_openrouter_unconfigured,_rag_failure_events,_rag_failure_result,IncidentPipeline
+    IncidentPipeline: __init__(0),handle_rag_failure(0)
     classify_rag_error(error)
     _rag_root_cause(checks)
     _rag_schema_missing(checks;combined_errors)
     _rag_index_empty(checks;combined_errors)
     _retriever_empty_result(checks;combined_errors)
     _openrouter_unconfigured(checks;combined_errors)
+    _rag_failure_events(incident_id)
+    _rag_failure_result(incident_id)
   services/orchestrator/app/infrastructure/__init__.py:
   services/orchestrator/app/infrastructure/eventstore.py:
     e: _loads_json,_utc_now,EventRecord,EventStore
@@ -509,8 +525,14 @@ D:
     get_chat_session_id()
     observability_context()
   services/orchestrator/app/observability/export.py:
-    e: format_logs_text,_append_rag_health,_append_incidents,_append_incident_feed,_append_rag_snapshots,_append_workspace_session,_append_workspace_context,_append_workspace_events,_append_workspace_chat,build_orchestrator_bundle,_safe_rag_health,_safe_fetch_incidents,_fetch_incidents,_safe_fetch_incident_feed,_fetch_incident_feed,_safe_fetch_rag_snapshots,_fetch_rag_snapshots
+    e: format_logs_text,clamp_log_export_limit,_nfo_package_version,_build_nfo_package,_nfo_counts,_nfo_errors,_append_nfo,_append_rag_health,_append_incidents,_append_incident_feed,_append_rag_snapshots,_append_workspace_session,_append_workspace_context,_append_workspace_events,_append_workspace_chat,build_orchestrator_bundle,_safe_rag_health,_safe_fetch_incidents,_fetch_incidents,_safe_fetch_incident_feed,_fetch_incident_feed,_safe_fetch_rag_snapshots,_fetch_rag_snapshots
     format_logs_text(bundle)
+    clamp_log_export_limit(limit)
+    _nfo_package_version()
+    _build_nfo_package(bundle)
+    _nfo_counts(bundle)
+    _nfo_errors(bundle)
+    _append_nfo(lines;package)
     _append_rag_health(lines;rag)
     _append_incidents(lines;incidents)
     _append_incident_feed(lines;feed)
@@ -569,8 +591,9 @@ D:
     _incident_class(code)
     _default_playbook(code)
   services/orchestrator/app/observability/logging.py:
-    e: log_event
+    e: log_event,_emit_nfo_event
     log_event()
+    _emit_nfo_event(payload)
   services/orchestrator/app/observability/middleware.py:
     e: CorrelationMiddleware
     CorrelationMiddleware: dispatch(2)
@@ -645,12 +668,13 @@ D:
     test_command_bus_creates_assigns_and_completes_task()
     test_command_bus_registers_agent()
   services/orchestrator/tests/test_observability.py:
-    e: test_classify_llm_unavailable,test_classify_empty_sources,test_classify_grounding,test_classify_backend_500,test_format_logs_text_keeps_observability_sections,test_incident_event_plan_includes_diagnostics_and_remediation,test_event_payload_adds_diagnostics_details
+    e: test_classify_llm_unavailable,test_classify_empty_sources,test_classify_grounding,test_classify_backend_500,test_format_logs_text_keeps_observability_sections,test_build_bundle_uses_expanded_log_limit,test_incident_event_plan_includes_diagnostics_and_remediation,test_event_payload_adds_diagnostics_details
     test_classify_llm_unavailable()
     test_classify_empty_sources()
     test_classify_grounding()
     test_classify_backend_500()
     test_format_logs_text_keeps_observability_sections()
+    test_build_bundle_uses_expanded_log_limit()
     test_incident_event_plan_includes_diagnostics_and_remediation()
     test_event_payload_adds_diagnostics_details()
   services/orchestrator/tests/test_task_aggregate.py:
@@ -765,6 +789,27 @@ D:
     agent_may_access_resource(agent_id;resource_id)
     human_may_use_agent(human_id;agent_id)
     diagnose_file_list_command()
+  services/web/app/agent_plugins/__init__.py:
+  services/web/app/agent_plugins/nlp2cmd_plugin.py:
+    e: backend_candidates,_translation_from_response,Nlp2CmdPlugin
+    Nlp2CmdPlugin: health(0),translate_shell(1)
+    backend_candidates()
+    _translation_from_response(data)
+  services/web/app/agent_plugins/nlp2dsl_plugin.py:
+    e: Nlp2DslPlugin
+    Nlp2DslPlugin: health(0),translate_shell(1)
+  services/web/app/agent_plugins/protocol.py:
+    e: ShellTranslation,AgentPlugin
+    ShellTranslation:  # Wynik tłumaczenia NL → polecenie shell (bez wykonania).
+    AgentPlugin: plugin_id(0),title(0),executor_agent_id(0),ingress_steps(0),route_kinds(0),health(0),translate_shell(1)  # Plugin łączący Mullm z usługą agenta (HTTP/CLI w sibling rep
+  services/web/app/agent_plugins/registry.py:
+    e: bootstrap,list_plugins,get_plugin,plugins_for_ingress_step,agents_status,translate_shell_nl
+    bootstrap()
+    list_plugins()
+    get_plugin(plugin_id)
+    plugins_for_ingress_step(step)
+    agents_status()
+    translate_shell_nl(message)
   services/web/app/agent_workroom.py:
     e: create_workroom,get_workroom,_plan_steps,_build_file_list_for_goal,format_workroom_export,_workroom_export_header,_append_workroom_thread,_append_workroom_ledger,_append_workroom_result,_extract_shell,run_workroom,_reset_workroom,_start_plan,_workspace_scope,_run_workroom_step,_run_analyze_workroom_step,_run_files_workroom_step,_run_shell_workroom_step,_run_summarize_workroom_step,_run_analyze_step,_run_files_step,_add_permission,_record_file_list_result,_register_file_list_artifact,_run_shell_step,_record_shell_result,_run_summarize_step,_finish_workroom,workroom_catalog,LedgerEntry,WorkroomSession
     LedgerEntry: to_dict(0)
@@ -807,12 +852,18 @@ D:
     access_matrix_put(body)
     access_matrix_reset()
     access_diagnose_file_list()
+  services/web/app/api/agents_routes.py:
+    e: agents_status_get
+    agents_status_get()
   services/web/app/api/chat_routes.py:
-    e: start_chat_session,get_chat_session,workspace_state,chat_message,task_draft,context_attach,upload_files,_upload_one_file,board_snapshot
+    e: start_chat_session,get_chat_session,workspace_state,chat_message,_form_only_message,_form_only_chat_message,_update_nlp_conversation,task_draft,context_attach,upload_files,_upload_one_file,board_snapshot
     start_chat_session(body)
     get_chat_session(session_id)
     workspace_state(session_id)
     chat_message(body)
+    _form_only_message(body)
+    _form_only_chat_message(session;body)
+    _update_nlp_conversation(session;outcome)
     task_draft(body)
     context_attach(body)
     upload_files(session_id;files;classification)
@@ -872,10 +923,12 @@ D:
     workspace_logs_export(session_id;limit)
   services/web/app/api_routes.py:
   services/web/app/chat.py:
-    e: _orch,_projector,is_file_list_intent,_has_list_word,_looks_like_misspelled_file_list,_has_polish_file_list_words,_has_english_file_list_words,_has_user_files_phrase,file_list_scope,_system_scope_requested,_user_scope_requested,_rag_scope_requested,_session_scope_requested,_uri_is_user_resource,_uri_is_system_resource,filter_file_inventory,_filtered_resources,_filter_rows_by_scope,_rows_matching_uri,_rows_in_session_scope,_dedupe_rows_by_uri,_row_dedupe_key,fetch_file_inventory,_fetch_inventory_rows,format_file_list_reply,_safe_list,_list_scope_value,_append_session_files,_append_uploaded_session_files,_append_user_context_only,_append_scope_uris,_format_scope_uri,_append_resource_rows,_format_resource_row,_empty_resource_hint,_append_rag_rows,_rag_rows_label,_format_rag_doc_row,_append_file_list_errors,_append_file_list_tip,build_file_list_artifact,new_session_id,get_history,_append,stamp_last_assistant_routing,_format_history,_format_incident,_incident_detail_parts,_incident_message_part,_incident_trace_part,_incident_correlation_part,_incident_fallback_part,handle_message,_file_list_answer,probe_rag,_ask_rag,_rag_headers,_rag_query,_answer_from_rag_payload,_sources_fallback_answer,_source_preview,_rag_backend_fallback,_rag_search_fallback,_rag_unavailable_answer,_rag_diagnostics_hint,_default_chat_reply,_message_response,_response_intent,_attach_inventory_response,_attach_trace_response,create_task,_task_create_payload,_apply_task_agent,_apply_task_shell
+    e: _orch,_projector,is_continue_intent,is_file_list_intent,is_shell_nl_intent,_has_list_word,_looks_like_misspelled_file_list,_has_polish_file_list_words,_has_english_file_list_words,_has_user_files_phrase,file_list_scope,_system_scope_requested,_user_scope_requested,_rag_scope_requested,_session_scope_requested,_uri_is_user_resource,_uri_is_system_resource,filter_file_inventory,_filtered_resources,_filter_rows_by_scope,_rows_matching_uri,_rows_in_session_scope,_dedupe_rows_by_uri,_row_dedupe_key,fetch_file_inventory,_fetch_inventory_rows,format_file_list_reply,_safe_list,_list_scope_value,_append_session_files,_append_uploaded_session_files,_append_user_context_only,_append_scope_uris,_format_scope_uri,_append_resource_rows,_format_resource_row,_empty_resource_hint,_append_rag_rows,_rag_rows_label,_format_rag_doc_row,_append_file_list_errors,_append_file_list_tip,build_file_list_artifact,new_session_id,get_history,_append,stamp_last_assistant_routing,_format_history,_format_incident,_incident_detail_parts,_incident_message_part,_incident_trace_part,_incident_correlation_part,_incident_fallback_part,handle_message,_file_list_answer,probe_rag,_ask_rag,_rag_headers,_rag_query,_answer_from_rag_payload,_sources_fallback_answer,_source_preview,_rag_backend_fallback,_rag_search_fallback,_rag_unavailable_answer,_rag_diagnostics_hint,_default_chat_reply,_message_response,_response_intent,_attach_inventory_response,_attach_trace_response,create_task,_task_create_payload,_apply_task_agent,_apply_task_shell
     _orch()
     _projector()
+    is_continue_intent(message)
     is_file_list_intent(message)
+    is_shell_nl_intent(message)
     _has_list_word(text)
     _looks_like_misspelled_file_list(text)
     _has_polish_file_list_words(text)
@@ -948,9 +1001,9 @@ D:
     _apply_task_agent(payload;agent_id)
     _apply_task_shell(payload;shell_command;wait_for_confirmation;agent_id)
   services/web/app/conductor.py:
-    e: _merge_nlp2dsl_routing,_attach_routing,_enrich_decision,_rag_answer_turn,_execute_rules_route,_execute_file_list_route,_execute_shell_route,_missing_shell_response,_create_shell_task,_shell_route_response,_shell_task_reply,_execute_rag_route,handle_turn,_message_with_form_values,_run_ingress_pipeline,_rag_probe_step,_should_skip_rag_probe,_rag_probe_decision,_rules_step,_should_skip_nlp2dsl_step,_nlp2dsl_step,_rag_answer_step,_rag_pipeline_decision,_fallback_routed_turn,_decide_default_route,_nlp2dsl_turn,_call_nlp2dsl,_nlp_output_base,_in_progress_turn,_ready_turn,_ready_action_payload,_system_file_list_payload,_shell_task_payload,_shell_clarify_payload,_ticket_payload,_task_reply,_closed_turn,_append_turn,_mullm_file_list_turn,_fallback_turn,_local_clarify,_extract_shell,TurnState
+    e: _merge_nlp2dsl_routing,_attach_routing,_enrich_decision,_rag_answer_turn,_execute_rules_route,_execute_file_list_route,_execute_shell_route,_missing_shell_response,_create_shell_task,_apply_nlp2cmd_decision,_shell_route_response,_shell_task_reply,_execute_rag_route,handle_turn,_message_with_form_values,_run_ingress_pipeline,_rag_probe_step,_rag_probe_enabled,_rag_probe_should_answer,_rag_probe_answer,_should_skip_rag_probe,_nlp2dsl_continue_decision,_mullm_continue_clarify_decision,_continue_clarify_reply,_try_continue_turn,_rag_probe_decision,_rules_step,_should_skip_nlp2dsl_step,_nlp2cmd_ingress_decision,_agent_shell_step,_nlp2dsl_step,_rag_answer_step,_rag_pipeline_decision,_fallback_routed_turn,_decide_default_route,_nlp2dsl_turn,_nlp2dsl_status_turn,_call_nlp2dsl,_nlp_output_base,_in_progress_turn,_ready_turn,_ready_action_payload,_system_file_list_payload,_shell_task_payload,_shell_clarify_payload,_ticket_payload,_task_reply,_closed_turn,_append_turn,_mullm_file_list_turn,_fallback_turn,_local_clarify,_extract_shell,TurnState
     TurnState:
-    _merge_nlp2dsl_routing(out;nlp_routing)
+    _merge_nlp2dsl_routing(out;nlp_routing;decision)
     _attach_routing(session_id;out;decision)
     _enrich_decision(decision;session_id)
     _rag_answer_turn()
@@ -959,6 +1012,7 @@ D:
     _execute_shell_route()
     _missing_shell_response(session_id;decision)
     _create_shell_task(session_id)
+    _apply_nlp2cmd_decision(decision;translation)
     _shell_route_response(session_id;message;decision;result)
     _shell_task_reply(result;agent)
     _execute_rag_route()
@@ -966,16 +1020,26 @@ D:
     _message_with_form_values(message;form_values)
     _run_ingress_pipeline(state)
     _rag_probe_step(state)
+    _rag_probe_enabled(state)
+    _rag_probe_should_answer(state;hits)
+    _rag_probe_answer(state)
     _should_skip_rag_probe(state)
+    _nlp2dsl_continue_decision()
+    _mullm_continue_clarify_decision()
+    _continue_clarify_reply(state)
+    _try_continue_turn(state)
     _rag_probe_decision()
     _rules_step(state)
     _should_skip_nlp2dsl_step(state)
+    _nlp2cmd_ingress_decision(translation)
+    _agent_shell_step(state)
     _nlp2dsl_step(state)
     _rag_answer_step(state)
     _rag_pipeline_decision()
     _fallback_routed_turn(state)
     _decide_default_route(state)
     _nlp2dsl_turn()
+    _nlp2dsl_status_turn()
     _call_nlp2dsl(nlp_conversation_id;message)
     _nlp_output_base(cid;status)
     _in_progress_turn(session_id;message;resp;cid;status;assistant)
@@ -1000,7 +1064,7 @@ D:
     access_matrix_page(request)
     dashboard(request)
   services/web/app/nlp2dsl_bridge.py:
-    e: backend_url,backend_candidates,health,chat_start,chat_message,_post_json,form_to_prompt,primary_action,step_config
+    e: backend_url,backend_candidates,health,chat_start,chat_message,_post_json,form_to_prompt,primary_action,step_config,routing_from_response,intent_routing_policy_flags,merge_intent_into_policy_flags
     backend_url()
     backend_candidates()
     health()
@@ -1010,8 +1074,11 @@ D:
     form_to_prompt(form;values)
     primary_action(dsl)
     step_config(dsl)
+    routing_from_response(resp)
+    intent_routing_policy_flags(routing)
+    merge_intent_into_policy_flags(policy_flags;routing)
   services/web/app/prompt_router.py:
-    e: _candidate,_build_decision,_shell_prefix,decide_route_rules,_router_flags,_empty_route_decision,_mode_route_decision,_file_list_route_decision,_shell_route_decision,_default_discuss_decision,_fallback_mode_decision,decide_route_llm,_llm_classifier_data,_llm_classifier_payload,_llm_system_prompt,_normalize_router_model,_extract_llm_json,_llm_decision_from_data,_llm_route,decide_route,_merged_llm_decision,record_route_event,RouteDecision
+    e: _candidate,_build_decision,_shell_prefix,decide_route_rules,_router_flags,_empty_route_decision,_direct_route_decision,_default_route_decision,_mode_route_decision,_file_list_route_decision,_shell_route_decision,_default_discuss_decision,_fallback_mode_decision,decide_route_llm,_llm_classifier_data,_llm_classifier_payload,_llm_system_prompt,_normalize_router_model,_extract_llm_json,_llm_decision_from_data,_llm_route,decide_route,_merged_llm_decision,record_route_event,RouteDecision
     RouteDecision: to_dict(0)  # Audytowalna decyzja routingu (ingress Mullm BFF).
     _candidate(route;handler;intent;confidence;reason_codes)
     _build_decision(chosen)
@@ -1019,6 +1086,8 @@ D:
     decide_route_rules(message)
     _router_flags(chat_mode;use_rag;policy_flags)
     _empty_route_decision(flags)
+    _direct_route_decision(chat_mode;text;flags)
+    _default_route_decision(chat_mode;flags)
     _mode_route_decision(chat_mode;flags)
     _file_list_route_decision(text;flags)
     _shell_route_decision(text;flags)
@@ -1061,7 +1130,7 @@ D:
     status_meta(status)
     enrich_task(row)
   services/web/app/workspace.py:
-    e: _orch,_projector,new_session,get_session,get_or_create,_artifact_title,register_artifact,artifact_summaries,get_artifact,workspace_state,attach_context,_apply_context_scalars,_append_unique,_extract_ticket,_extract_shell_command,build_task_payload,propose_task_draft,create_task_immediate,_resolved_task_agent,handle_chat_message,_dispatch_chat_mode,_create_task_from_message,_task_chat_outcome,_task_result_reply,_search_context_outcome,_conductor_outcome,_record_chat_outcome,_record_task_outcome,_chat_response,create_task_from_draft,create_and_run,format_chat_export_text,_append_chat_export_message,_append_chat_export_trace,_append_chat_export_draft,export_debug_logs,_debug_export_base,_attach_orchestrator_debug_export,_merge_orchestrator_debug_payload,_attach_operational_feed,_filter_operational_feed,_format_export_text,_export_header,_append_export_sections,_list_section,_dict_section,_append_orchestrator_error,_trace_event_row,_trace_message_row,_routing_fingerprint,_append_context_section,_append_context_scalars,_append_context_collections,_append_inventory_section,_append_resource_inventory,_append_rag_inventory,_append_history_section,_append_history_message,_format_routing_line,_append_routing_trace_section,_append_routing_trace_decision,_append_candidate_routes,_format_candidate_route,_collect_routing_trace,_append_unique_trace_row,_append_draft_section,_append_session_events_section,_event_extra,_event_extra_parts,_routing_event_extra,_append_rag_health_section,_append_incidents_section,_append_rag_snapshots_section,_session_rag_snapshots,_append_operational_feed_section,archive_task,link_ticket,fetch_live_board,WorkspaceContext,WorkspaceSession
+    e: _orch,_projector,new_session,get_session,get_or_create,_artifact_title,register_artifact,artifact_summaries,get_artifact,workspace_state,attach_context,_apply_context_scalars,_append_unique,_extract_ticket,_extract_shell_command,build_task_payload,propose_task_draft,create_task_immediate,_resolved_task_agent,handle_chat_message,_attach_ticket_context,_dispatch_chat_mode,_create_task_from_message,_task_chat_outcome,_task_result_reply,_search_context_outcome,_conductor_outcome,_record_chat_outcome,_register_outcome_artifact,_record_file_list_event,_record_rag_trace_event,_record_rag_incident_event,_record_task_outcome,_chat_response,create_task_from_draft,create_and_run,format_chat_export_text,_append_chat_export_message,_append_chat_export_trace,_append_chat_export_draft,clamp_log_export_limit,export_debug_logs,_debug_export_base,_attach_orchestrator_debug_export,_merge_orchestrator_debug_payload,_attach_operational_feed,_filter_operational_feed,_format_export_text,_export_header,_append_export_sections,_list_section,_dict_section,_visible_log_limit,_nfo_package_version,_emit_nfo_event,_build_nfo_package,_nfo_counts,_nfo_errors,_append_nfo_section,_append_orchestrator_error,_trace_event_row,_trace_message_row,_routing_fingerprint,_append_context_section,_append_context_scalars,_append_context_collections,_append_inventory_section,_append_resource_inventory,_append_rag_inventory,_append_history_section,_append_history_message,_format_routing_line,_routing_base_parts,_routing_optional_parts,_routing_fallback_parts,_routing_shell_plugin_parts,_routing_nlp2dsl_parts,_append_routing_trace_section,_append_routing_trace_decision,_append_candidate_routes,_format_candidate_route,_collect_routing_trace,_append_unique_trace_row,_append_draft_section,_append_session_events_section,_event_extra,_event_extra_parts,_routing_event_extra,_append_rag_health_section,_append_incidents_section,_append_rag_snapshots_section,_session_rag_snapshots,_append_operational_feed_section,archive_task,link_ticket,fetch_live_board,WorkspaceContext,WorkspaceSession
     WorkspaceContext: to_dict(0)
     WorkspaceSession: add_event(2)
     _orch()
@@ -1084,6 +1153,7 @@ D:
     create_task_immediate(session_id)
     _resolved_task_agent(session;agent_id;shell_command)
     handle_chat_message()
+    _attach_ticket_context(session;message)
     _dispatch_chat_mode(session)
     _create_task_from_message(session;message)
     _task_chat_outcome(session;task_result;message;wait_for_confirmation)
@@ -1091,6 +1161,10 @@ D:
     _search_context_outcome(session;message;scope_files;scope_uris)
     _conductor_outcome(session)
     _record_chat_outcome(session;message)
+    _register_outcome_artifact(session;message;outcome)
+    _record_file_list_event(session;outcome)
+    _record_rag_trace_event(session;outcome)
+    _record_rag_incident_event(session;outcome)
     _record_task_outcome(session;task_result)
     _chat_response(session;outcome;task_result)
     create_task_from_draft(session_id)
@@ -1099,6 +1173,7 @@ D:
     _append_chat_export_message(lines;msg)
     _append_chat_export_trace(lines;trace)
     _append_chat_export_draft(lines;draft)
+    clamp_log_export_limit(limit)
     export_debug_logs(session_id)
     _debug_export_base(session)
     _attach_orchestrator_debug_export(client;bundle)
@@ -1110,6 +1185,13 @@ D:
     _append_export_sections(lines;bundle;sess)
     _list_section(payload;key)
     _dict_section(payload;key)
+    _visible_log_limit(bundle)
+    _nfo_package_version()
+    _emit_nfo_event(name)
+    _build_nfo_package(bundle)
+    _nfo_counts(bundle)
+    _nfo_errors(bundle)
+    _append_nfo_section(lines;nfo_package)
     _append_orchestrator_error(lines;bundle)
     _trace_event_row(ev;index)
     _trace_message_row(msg;assistant_index)
@@ -1123,6 +1205,11 @@ D:
     _append_history_section(lines;history)
     _append_history_message(lines;msg)
     _format_routing_line(routing)
+    _routing_base_parts(routing;route)
+    _routing_optional_parts(routing;route)
+    _routing_fallback_parts(routing;route)
+    _routing_shell_plugin_parts(routing)
+    _routing_nlp2dsl_parts(routing)
     _append_routing_trace_section(lines;history;events)
     _append_routing_trace_decision(lines;index;row)
     _append_candidate_routes(lines;candidates)
@@ -1142,16 +1229,30 @@ D:
     archive_task(session_id;task_id)
     link_ticket(session_id;task_id)
     fetch_live_board()
+  services/web/tests/conftest.py:
+    e: fake_file_inventory,patch_file_inventory,patch_nlp2dsl_down,patch_nlp2cmd_translate,patch_shell_task
+    fake_file_inventory()
+    patch_file_inventory(monkeypatch;fake_file_inventory)
+    patch_nlp2dsl_down(monkeypatch)
+    patch_nlp2cmd_translate(monkeypatch)
+    patch_shell_task(monkeypatch)
   services/web/tests/test_access_matrix.py:
     e: matrix_file,test_default_all_checked,test_save_and_deny,test_diagnose_file_list_no_shell
     matrix_file(monkeypatch)
     test_default_all_checked(matrix_file)
     test_save_and_deny(matrix_file)
     test_diagnose_file_list_no_shell()
+  services/web/tests/test_agent_plugins.py:
+    e: test_registry_lists_builtin_plugins,test_translation_from_response,test_translate_shell_nl_mocked,test_nlp2cmd_plugin_metadata
+    test_registry_lists_builtin_plugins()
+    test_translation_from_response()
+    test_translate_shell_nl_mocked(monkeypatch)
+    test_nlp2cmd_plugin_metadata()
   services/web/tests/test_agent_workroom.py:
-    e: test_plan_includes_files_for_lista_plikow,test_list_aplikow_usera_intent_and_scope,test_workroom_export_contains_goal,test_files_agent_may_list_rag,test_mail_agent_denied_rag,test_groups_nonempty,test_workroom_session_dict,test_run_workroom_file_list_step
+    e: test_plan_includes_files_for_lista_plikow,test_list_aplikow_usera_intent_and_scope,_assert_user_file_step,test_workroom_export_contains_goal,test_files_agent_may_list_rag,test_mail_agent_denied_rag,test_groups_nonempty,test_workroom_session_dict,test_run_workroom_file_list_step
     test_plan_includes_files_for_lista_plikow()
     test_list_aplikow_usera_intent_and_scope()
+    _assert_user_file_step(msg)
     test_workroom_export_contains_goal()
     test_files_agent_may_list_rag()
     test_mail_agent_denied_rag()
@@ -1162,9 +1263,13 @@ D:
     e: test_api_router_keeps_public_workspace_paths
     test_api_router_keeps_public_workspace_paths(path)
   services/web/tests/test_artifacts.py:
-    e: test_register_and_get_artifact,test_format_export_text_keeps_core_sections,test_format_chat_export_includes_routing,test_format_export_includes_routing_trace,test_format_routing_line_nlp2dsl_skipped
+    e: test_register_and_get_artifact,_register_user_file_list_artifact,_assert_single_artifact_summary,_assert_artifact_text,test_format_export_text_keeps_core_sections,test_format_export_text_uses_log_limit_for_verbose_sections,test_format_chat_export_includes_routing,test_format_export_includes_routing_trace,test_format_routing_line_nlp2dsl_skipped
     test_register_and_get_artifact()
+    _register_user_file_list_artifact(session)
+    _assert_single_artifact_summary(session)
+    _assert_artifact_text(session;artifact_id;expected)
     test_format_export_text_keeps_core_sections()
+    test_format_export_text_uses_log_limit_for_verbose_sections()
     test_format_chat_export_includes_routing()
     test_format_export_includes_routing_trace()
     test_format_routing_line_nlp2dsl_skipped()
@@ -1181,8 +1286,34 @@ D:
     test_dedupe_rag_documents_by_uri()
     test_handle_message_file_list_builds_artifact(monkeypatch)
   services/web/tests/test_conductor_ingress.py:
-    e: test_file_list_pipeline_skips_nlp2dsl
+    e: test_file_list_pipeline_skips_nlp2dsl,test_agent_shell_uses_nlp2cmd_not_nlp2dsl
     test_file_list_pipeline_skips_nlp2dsl(monkeypatch)
+    test_agent_shell_uses_nlp2cmd_not_nlp2dsl(monkeypatch;patch_nlp2cmd_translate;patch_nlp2dsl_down)
+  services/web/tests/test_continue_intent.py:
+    e: test_is_continue_intent,test_continue_without_nlp_session_clarifies
+    test_is_continue_intent()
+    test_continue_without_nlp_session_clarifies(monkeypatch)
+  services/web/tests/test_e2e_chat_api.py:
+    e: api_client,_start_session,_chat,TestE2EChatRoutingApi
+    TestE2EChatRoutingApi: test_file_list_full_api_path(3),test_file_list_does_not_use_shell_for_home_directory(3),test_router_file_list_is_not_shell_decide(1),test_router_run_ls_home_is_shell(1),test_continue_clarify_not_unknown(3),test_router_decide_dry_run_file_list(1),test_routing_policy_endpoint(1),test_agents_status_endpoint(1),test_shell_nl_uses_nlp2cmd_plugin(4)  # Scenariusze z exportu workspace (file list, kontynuuj).
+    api_client()
+    _start_session(client)
+    _chat(client;session_id;message)
+  services/web/tests/test_e2e_live_stack.py:
+    e: http,test_live_health,test_live_file_list_chat,test_live_file_list_not_shell_route,test_live_shell_route_for_run_ls_home,test_live_router_decide,test_live_agents_status_lists_plugins,test_live_nlp2cmd_shell_nl
+    http()
+    test_live_health(http)
+    test_live_file_list_chat(http)
+    test_live_file_list_not_shell_route(http)
+    test_live_shell_route_for_run_ls_home(http)
+    test_live_router_decide(http)
+    test_live_agents_status_lists_plugins(http)
+    test_live_nlp2cmd_shell_nl(http)
+  services/web/tests/test_nlp2dsl_bridge.py:
+    e: test_routing_from_response,test_intent_routing_policy_flags,test_merge_intent_into_policy_flags
+    test_routing_from_response()
+    test_intent_routing_policy_flags()
+    test_merge_intent_into_policy_flags()
   services/web/tests/test_prompt_router.py:
     e: test_file_list_routes,test_shell_route,test_discuss_defaults_nlp2dsl,test_search_context_rag,test_route_decision_to_dict,test_decide_route_sets_timing
     test_file_list_routes(msg;scope)
@@ -1197,6 +1328,11 @@ D:
     test_session_agent_overrides_route()
     test_mode_override_rag_only()
     test_policy_to_dict()
+  services/web/tests/test_shell_nl_intent.py:
+    e: test_file_list_not_shell_nl,test_shell_nl_disk_intent,test_run_prefix_not_shell_nl
+    test_file_list_not_shell_nl()
+    test_shell_nl_disk_intent()
+    test_run_prefix_not_shell_nl()
   tests/conftest.py:
     e: fake_postgres,fake_bus,event_store,catalog,command_bus,sample_command_id,orchestrator_app,api_client,FakeRow,InMemoryPostgres,FakeMessageBus
     FakeRow: __getitem__(1),get(2),keys(0)

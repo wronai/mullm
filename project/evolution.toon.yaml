@@ -1,14 +1,14 @@
-# code2llm/evolution | 1045 func | 85f | 2026-06-04
-# generated in 0.00s
+# code2llm/evolution | 1141 func | 90f | 2026-06-04
+# generated in 0.01s
 
 NEXT[4] (ranked by impact):
-  [1] !! SPLIT           services/web/app/static/workspace.js
-      WHY: 1129L, 0 classes, max CC=14
-      EFFORT: ~4h  IMPACT: 15806
+  [1] !! SPLIT           services/web/app/workspace.py
+      WHY: 1409L, 2 classes, max CC=7
+      EFFORT: ~4h  IMPACT: 9863
 
-  [2] !! SPLIT           services/web/app/workspace.py
-      WHY: 1166L, 2 classes, max CC=7
-      EFFORT: ~4h  IMPACT: 8162
+  [2] !! SPLIT           services/web/app/conductor.py
+      WHY: 1178L, 1 classes, max CC=6
+      EFFORT: ~4h  IMPACT: 7068
 
   [3] !  SPLIT-FUNC      text  CC=16  fan=15
       WHY: CC=16 exceeds 15
@@ -20,12 +20,12 @@ NEXT[4] (ranked by impact):
 
 
 RISKS[3]:
+  ⚠ Splitting services/web/app/workspace.py may break 98 import paths
   ⚠ Splitting planfile.yaml may break 0 import paths
-  ⚠ Splitting services/web/app/workspace.py may break 79 import paths
-  ⚠ Splitting services/web/app/static/workspace.js may break 139 import paths
+  ⚠ Splitting services/web/app/conductor.py may break 53 import paths
 
 METRICS-TARGET:
-  CC̄:          2.9 → ≤2.0
+  CC̄:          2.8 → ≤2.0
   max-CC:      16 → ≤8
   god-modules: 10 → 0
   high-CC(≥15): 1 → ≤0
@@ -56,4 +56,4 @@ PATTERNS (language parser shared logic):
     - Standardized FunctionInfo/ClassInfo models
 
 HISTORY:
-  prev CC̄=3.6 → now CC̄=2.9
+  prev CC̄=2.9 → now CC̄=2.8

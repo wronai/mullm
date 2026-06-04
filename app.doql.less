@@ -322,7 +322,7 @@ interface[type="api"] {
 
 workflow[name="up"] {
   trigger: manual;
-  step-1: run cmd=$(COMPOSE) $(PROFILE_ARGS) up -d;
+  step-1: run cmd=$(COMPOSE) $(PROFILE_ARGS) $(NLP2CMD_PROFILE_ARGS) up -d;
   step-2: run cmd=if [ "$(NLP2DSL)" = "1" ]; then \;
   step-3: run cmd=$(MAKE) --no-print-directory nlp2dsl-up; \;
   step-4: run cmd=fi;
@@ -333,7 +333,7 @@ workflow[name="down"] {
   step-1: run cmd=if [ "$(NLP2DSL)" = "1" ]; then \;
   step-2: run cmd=$(MAKE) --no-print-directory nlp2dsl-down; \;
   step-3: run cmd=fi;
-  step-4: run cmd=$(COMPOSE) $(PROFILE_ARGS) down;
+  step-4: run cmd=$(COMPOSE) $(PROFILE_ARGS) $(NLP2CMD_PROFILE_ARGS) down;
 }
 
 workflow[name="restart"] {
@@ -362,16 +362,38 @@ workflow[name="test"] {
   step-1: run cmd=pytest -q;
 }
 
+workflow[name="test-web"] {
+  trigger: manual;
+  step-1: run cmd=pip install -q -r requirements-dev.txt -r services/web/requirements.txt;
+  step-2: run cmd=pytest -c services/web/pytest.ini services/web/tests -q;
+}
+
+workflow[name="test-e2e-live"] {
+  trigger: manual;
+  step-1: run cmd=pip install -q -r requirements-dev.txt -r services/web/requirements.txt;
+  step-2: run cmd=MULLM_E2E=1 pytest -c services/web/pytest.ini services/web/tests/test_e2e_live_stack.py -v;
+}
+
+workflow[name="mullm-cli"] {
+  trigger: manual;
+  step-1: run cmd=printf "Dodaj do PATH:\n  export PATH=\"$(CURDIR)/scripts:$$PATH\"\n";
+  step-2: run cmd=printf "Potem: mullm chat send \"lista plikow usera\"\n";
+}
+
 workflow[name="smoke"] {
   trigger: manual;
   step-1: run cmd=curl -fsS http://127.0.0.1:3003/health;
-  step-2: run cmd=curl -fsS http://127.0.0.1:8001/health;
-  step-3: run cmd=curl -fsS http://127.0.0.1:8002/health;
-  step-4: run cmd=if [ "$(NLP2DSL)" = "1" ] && [ -f "$(NLP2DSL_DIR)/docker-compose.yml" ]; then \;
-  step-5: run cmd=curl -fsS -o /dev/null -w 'nlp2dsl backend: %{http_code}\n' http://127.0.0.1:$(NLP2DSL_BACKEND_HOST_PORT)/docs && \;
-  step-6: run cmd=curl -fsS -o /dev/null -w 'nlp2dsl nlp: %{http_code}\n' http://127.0.0.1:$(NLP2DSL_NLP_HOST_PORT)/docs && \;
-  step-7: run cmd=curl -fsS -o /dev/null -w 'nlp2dsl worker: %{http_code}\n' http://127.0.0.1:$(NLP2DSL_WORKER_HOST_PORT)/health; \;
-  step-8: run cmd=fi;
+  step-2: run cmd=curl -fsS http://127.0.0.1:3003/api/agents/status;
+  step-3: run cmd=curl -fsS http://127.0.0.1:8001/health;
+  step-4: run cmd=curl -fsS http://127.0.0.1:8002/health;
+  step-5: run cmd=if [ "$(NLP2DSL)" = "1" ] && [ -f "$(NLP2DSL_DIR)/docker-compose.yml" ]; then \;
+  step-6: run cmd=curl -fsS -o /dev/null -w 'nlp2dsl backend: %{http_code}\n' http://127.0.0.1:$(NLP2DSL_BACKEND_HOST_PORT)/docs && \;
+  step-7: run cmd=curl -fsS -o /dev/null -w 'nlp2dsl nlp: %{http_code}\n' http://127.0.0.1:$(NLP2DSL_NLP_HOST_PORT)/docs && \;
+  step-8: run cmd=curl -fsS -o /dev/null -w 'nlp2dsl worker: %{http_code}\n' http://127.0.0.1:$(NLP2DSL_WORKER_HOST_PORT)/health; \;
+  step-9: run cmd=fi;
+  step-10: run cmd=if [ "$(NLP2CMD)" = "1" ]; then \;
+  step-11: run cmd=curl -fsS -o /dev/null -w 'nlp2cmd: %{http_code}\n' http://127.0.0.1:$${MULLM_NLP2CMD_HOST_PORT:-8020}/health; \;
+  step-12: run cmd=fi;
 }
 
 workflow[name="ensure-env"] {
@@ -408,6 +430,16 @@ workflow[name="nlp2dsl-down"] {
   step-3: run cmd=else \;
   step-4: run cmd=echo "Skipping nlp2dsl: $(NLP2DSL_DIR)/docker-compose.yml not found"; \;
   step-5: run cmd=fi;
+}
+
+workflow[name="nlp2cmd-up"] {
+  trigger: manual;
+  step-1: run cmd=$(COMPOSE) --profile nlp2cmd up -d nlp2cmd;
+}
+
+workflow[name="nlp2cmd-down"] {
+  trigger: manual;
+  step-1: run cmd=$(COMPOSE) --profile nlp2cmd stop nlp2cmd;
 }
 
 deploy {

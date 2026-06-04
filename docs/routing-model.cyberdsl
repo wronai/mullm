@@ -1,0 +1,44 @@
+# Mullm ingress — model cybernetyczny (CyberDSL)
+# Wizualizacja: cyberdsl parse + mermaid (nie wpływa na runtime).
+
+model:
+  name = "mullm_chat_ingress"
+  steps = 5
+
+globals:
+  nlp2dsl_up = 1.0
+  nlp2cmd_up = 1.0
+
+nodes:
+  user:source | state={active:1}
+  rag_probe:step | param=enabled
+  rules:step | param=fast_path
+  agent_shell:step | param=nlp2cmd
+  nlp2dsl:step | param=workflow
+  rag_answer:step | param=fallback
+  files_agent:executor | state={idle:1}
+  shell_agent:executor | state={idle:1}
+  coordinator:executor | state={idle:1}
+
+edges:
+  user->rag_probe:flow | weight=1.0
+  rag_probe->rules:flow | weight=0.9
+  rules->agent_shell:flow | weight=0.7
+  agent_shell->shell_agent:delegate | weight=0.85
+  rules->files_agent:file_list | weight=0.92
+  rules->shell_agent:run_prefix | weight=0.88
+  agent_shell->nlp2dsl:if_miss | weight=0.3
+  rules->nlp2dsl:discuss | weight=0.6
+  nlp2dsl->coordinator:workflow | weight=0.75
+  nlp2dsl->rag_answer:if_down | weight=0.4
+  rag_probe->rag_answer:hit | weight=0.5
+
+rules:
+  rules.file_list => files_agent
+  rules.run_prefix => shell_agent
+  agent_shell.shell_nl => shell_agent
+  nlp2dsl.ready => coordinator
+
+observables:
+  route_kind = rules.output
+  nlp2dsl_skipped = agent_shell.success + rules.file_list
