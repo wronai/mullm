@@ -12,8 +12,11 @@
     <span class="tag">Chat prowadzi rozmowę · nlp2dsl</span>
     <span class="spacer"></span>
     <a href="/workroom" class="btn ghost btn-sm" title="Multi-agent workroom">◇ Agenci</a>
+    <a href="/access" class="btn ghost btn-sm" title="Macierze dostępu">⊞ ACL</a>
     <button type="button" class="btn ghost btn-sm" id="btn-toggle-tickets" title="Tickety">◎</button>
-    <button type="button" class="btn ghost btn-sm" id="btn-copy-chat">Chat</button>
+    <button type="button" class="btn ghost btn-sm" id="btn-copy-chat" title="Pełny transkrypt sesji">⎘ Cały chat</button>
+    <button type="button" class="btn ghost btn-sm" id="btn-copy-chat-view" title="Zawartość widocznego okna czatu">⎘ Widok</button>
+    <button type="button" class="btn ghost btn-sm" id="btn-copy-logs" title="Logi sesji + RAG health">⎘ Logi</button>
     <button type="button" class="btn btn-sm" id="btn-refresh">↻</button>
   </header>
 
@@ -30,6 +33,13 @@
     </aside>
 
     <main class="chat-main">
+      <div class="chat-panel-head">
+        <span class="chat-panel-title">Czat</span>
+        <span class="chat-panel-actions">
+          <button type="button" class="btn ghost btn-sm" id="btn-copy-chat-inline" title="Transkrypt z serwera">Cały chat</button>
+          <button type="button" class="btn ghost btn-sm" id="btn-copy-chat-view-inline" title="To co widać w oknie">Widok okna</button>
+        </span>
+      </div>
       <div id="chat-messages" class="chat-messages"></div>
 
       <div id="clarify-panel" class="clarify-panel" hidden>
@@ -57,6 +67,27 @@
         </div>
       </div>
     </main>
+
+    <aside class="rail-artifacts" id="rail-artifacts">
+      <div class="panel-head artifact-head">
+        <span>Artefakty</span>
+        <button type="button" class="btn ghost btn-sm" id="btn-artifacts-refresh" title="Odśwież listę">↻</button>
+      </div>
+      <ul id="artifact-list" class="artifact-list">
+        <li class="artifact-empty muted">Brak artefaktów — np. „lista plików usera”</li>
+      </ul>
+      <section class="artifact-preview" id="artifact-preview">
+        <div class="artifact-preview-toolbar">
+          <span id="artifact-preview-title" class="artifact-preview-title">Podgląd</span>
+          <div class="artifact-preview-actions">
+            <button type="button" class="btn ghost btn-sm" id="artifact-tab-text" disabled>Tekst</button>
+            <button type="button" class="btn ghost btn-sm" id="artifact-tab-json" disabled>JSON</button>
+            <button type="button" class="btn ghost btn-sm" id="artifact-download" disabled>⬇</button>
+          </div>
+        </div>
+        <pre id="artifact-preview-body" class="artifact-preview-body muted">Wybierz artefakt z listy lub wyślij polecenie generujące wynik.</pre>
+      </section>
+    </aside>
 
     <aside class="rail-ticket" id="ticket-panel">
       <div id="ticket-detail" class="ticket-detail empty">

@@ -126,11 +126,87 @@
       .join("");
   }
 
+  let lastState = null;
+
   function renderState(data) {
+    lastState = data;
     renderThread(data.agent_thread);
     renderLedger(data.ledger);
     const sum = $("result-summary");
     if (sum) sum.textContent = data.result_summary || "—";
+  }
+
+  async function copyText(text, label) {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast(`Skopiowano ${label} (${text.length} znaków)`, true);
+    } catch {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed";
+      ta.style.left = "-9999px";
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+      toast(`Skopiowano ${label} (fallback)`, true);
+    }
+  }
+
+  function buildLedgerExport(state) {
+    const lines = [
+      "# Mullm — workroom (ledger + odpowiedź)",
+      `workroom_id: ${state.workroom_id || workroomId}`,
+      `goal: ${state.goal || "—"}`,
+      "",
+      "## Ledger",
+    ];
+    (state.ledger || []).forEach((e) => {
+      lines.push(`[${e.kind}] ${e.agent_id} (${e.status}): ${e.summary || ""}`);
+      if (e.detail) lines.push(e.detail);
+    });
+    lines.push("", "## Odpowiedź", state.result_summary || "—");
+    return lines.join("\n").trim() + "\n";
+  }
+
+  function buildFallbackExport() {
+    const lines = ["# Mullm — workroom (z DOM)", ""];
+    $("agent-thread")?.querySelectorAll(".agent-bubble").forEach((b) => {
+      const who = b.querySelector(".who")?.textContent?.trim() || "?";
+      const text = b.textContent?.replace(who, "").trim() || "";
+      lines.push(`### ${who}`, text, "");
+    });
+    lines.push("## Ledger");
+    $("ledger")?.querySelectorAll(".ledger-row").forEach((r) => {
+      lines.push(r.textContent?.trim() || "");
+    });
+    lines.push("", "## Odpowiedź", $("result-summary")?.textContent || "—");
+    return lines.join("\n").trim() + "\n";
+  }
+
+  async function copyWorkroomAll() {
+    await ensureWorkroom();
+    try {
+      const data = await api(`/api/agent-workroom/${workroomId}/export`);
+      await copyText(data.text || "", "workroom");
+    } catch {
+      await copyText(buildFallbackExport(), "workroom (DOM)");
+    }
+  }
+
+  async function copyWorkroomLogs() {
+    await ensureWorkroom();
+    try {
+      const data = await api(`/api/agent-workroom/${workroomId}/export`);
+      const state = lastState || (await api(`/api/agent-workroom/${workroomId}`));
+      await copyText(buildLedgerExport(state), "logi workroom");
+    } catch {
+      if (lastState) {
+        await copyText(buildLedgerExport(lastState), "logi workroom");
+      } else {
+        await copyText(buildFallbackExport(), "logi (DOM)");
+      }
+    }
   }
 
   async function runAgents() {
@@ -181,6 +257,12 @@
     }
   });
   $("btn-refresh")?.addEventListener("click", () => refresh().catch((e) => toast(e.message, false)));
+  $("btn-copy-all")?.addEventListener("click", () =>
+    copyWorkroomAll().catch((e) => toast(e.message, false))
+  );
+  $("btn-copy-ledger")?.addEventListener("click", () =>
+    copyWorkroomLogs().catch((e) => toast(e.message, false))
+  );
 
   refresh().catch((e) => toast(e.message, false));
 })();

@@ -6,7 +6,7 @@ project_file('agents/shell-agent/app/__init__.py', 2, 'python').
 project_file('agents/shell-agent/app/executor.py', 49, 'python').
 project_file('agents/shell-agent/app/main.py', 27, 'python').
 project_file('agents/shell-agent/app/nats_consumer.py', 48, 'python').
-project_file('app.doql.less', 305, 'less').
+project_file('app.doql.less', 395, 'less').
 project_file('integrations/nlp2dsl/mullm_registry.py', 33, 'python').
 project_file('integrations/nlp2dsl/patch_startup.py', 8, 'python').
 project_file('project.sh', 53, 'shell').
@@ -41,7 +41,7 @@ project_file('services/orchestrator/app/domain/aggregates/plugin.py', 98, 'pytho
 project_file('services/orchestrator/app/domain/aggregates/resource.py', 101, 'python').
 project_file('services/orchestrator/app/domain/aggregates/task.py', 232, 'python').
 project_file('services/orchestrator/app/domain/aggregates/workflow.py', 145, 'python').
-project_file('services/orchestrator/app/domain/events/__init__.py', 1046, 'python').
+project_file('services/orchestrator/app/domain/events/__init__.py', 812, 'python').
 project_file('services/orchestrator/app/domain/events/incidents.py', 255, 'python').
 project_file('services/orchestrator/app/domain/value_objects/__init__.py', 86, 'python').
 project_file('services/orchestrator/app/evolution/__init__.py', 13, 'python').
@@ -87,31 +87,36 @@ project_file('services/projector/app/projections/__init__.py', 4, 'python').
 project_file('services/projector/app/projections/agent_fleet.py', 82, 'python').
 project_file('services/projector/app/projections/approval_requests.py', 80, 'python').
 project_file('services/projector/app/projections/dispatcher.py', 42, 'python').
-project_file('services/projector/app/projections/incidents.py', 295, 'python').
+project_file('services/projector/app/projections/incidents.py', 321, 'python').
 project_file('services/projector/app/projections/operational_feed.py', 70, 'python').
 project_file('services/projector/app/projections/plugin_catalog.py', 43, 'python').
 project_file('services/projector/app/projections/resource_registry.py', 119, 'python').
 project_file('services/projector/app/projections/task_board.py', 116, 'python').
 project_file('services/projector/app/projections/workflow_versions.py', 48, 'python').
 project_file('services/web/app/__init__.py', 1, 'python').
+project_file('services/web/app/access_matrix.py', 206, 'python').
 project_file('services/web/app/agent_workroom.py', 355, 'python').
-project_file('services/web/app/api_routes.py', 444, 'python').
-project_file('services/web/app/chat.py', 355, 'python').
-project_file('services/web/app/conductor.py', 284, 'python').
-project_file('services/web/app/main.py', 100, 'python').
+project_file('services/web/app/api_routes.py', 529, 'python').
+project_file('services/web/app/chat.py', 665, 'python').
+project_file('services/web/app/conductor.py', 463, 'python').
+project_file('services/web/app/main.py', 105, 'python').
 project_file('services/web/app/nlp2dsl_bridge.py', 101, 'python').
-project_file('services/web/app/resource_areas.py', 145, 'python').
+project_file('services/web/app/resource_areas.py', 158, 'python').
+project_file('services/web/app/static/access.css', 84, 'css').
+project_file('services/web/app/static/access.js', 158, 'javascript').
 project_file('services/web/app/static/app.css', 200, 'css').
 project_file('services/web/app/static/app.js', 194, 'javascript').
 project_file('services/web/app/static/workroom.css', 87, 'css').
 project_file('services/web/app/static/workroom.js', 187, 'javascript').
-project_file('services/web/app/static/workspace.css', 537, 'css').
-project_file('services/web/app/static/workspace.js', 670, 'javascript').
+project_file('services/web/app/static/workspace.css', 656, 'css').
+project_file('services/web/app/static/workspace.js', 843, 'javascript').
 project_file('services/web/app/tickets.py', 46, 'python').
-project_file('services/web/app/workspace.py', 605, 'python').
+project_file('services/web/app/workspace.py', 681, 'python').
 project_file('services/web/src/styles.css', 287, 'css').
+project_file('services/web/tests/test_access_matrix.py', 38, 'python').
 project_file('services/web/tests/test_agent_workroom.py', 30, 'python').
-project_file('services/web/tests/test_chat_intent.py', 32, 'python').
+project_file('services/web/tests/test_artifacts.py', 31, 'python').
+project_file('services/web/tests/test_chat_intent.py', 111, 'python').
 project_file('tests/conftest.py', 354, 'python').
 project_file('tests/test_access_fabric.py', 62, 'python').
 project_file('tests/test_agent_aggregate.py', 33, 'python').
@@ -278,7 +283,15 @@ python_function('services/projector/app/projections/agent_fleet.py', 'project_ag
 python_function('services/projector/app/projections/approval_requests.py', 'project_approval_requests', 2, 6, 2).
 python_function('services/projector/app/projections/dispatcher.py', 'project_event', 2, 1, 9).
 python_function('services/projector/app/projections/dispatcher.py', '_normalize_event', 1, 7, 5).
-python_function('services/projector/app/projections/incidents.py', 'project_incidents', 2, 23, 10).
+python_function('services/projector/app/projections/incidents.py', 'project_incidents', 2, 3, 2).
+python_function('services/projector/app/projections/incidents.py', '_handle_rag_request_failed', 2, 2, 4).
+python_function('services/projector/app/projections/incidents.py', '_handle_incident_detected', 2, 6, 4).
+python_function('services/projector/app/projections/incidents.py', '_handle_incident_classified', 2, 1, 3).
+python_function('services/projector/app/projections/incidents.py', '_handle_diagnostics_started', 2, 1, 2).
+python_function('services/projector/app/projections/incidents.py', '_handle_diagnostics_completed', 2, 4, 8).
+python_function('services/projector/app/projections/incidents.py', '_handle_remediation_started', 2, 1, 3).
+python_function('services/projector/app/projections/incidents.py', '_handle_remediation_finished', 2, 2, 4).
+python_function('services/projector/app/projections/incidents.py', '_handle_post_remediation_verification', 2, 4, 3).
 python_function('services/projector/app/projections/incidents.py', '_upsert_rag_quality', 3, 1, 3).
 python_function('services/projector/app/projections/incidents.py', '_upsert_service_health', 1, 1, 2).
 python_function('services/projector/app/projections/incidents.py', '_update_incident_status', 4, 1, 1).
@@ -294,6 +307,19 @@ python_function('services/projector/app/projections/resource_registry.py', 'proj
 python_function('services/projector/app/projections/task_board.py', 'project_task_board', 2, 9, 4).
 python_function('services/projector/app/projections/task_board.py', '_update_status', 5, 1, 1).
 python_function('services/projector/app/projections/workflow_versions.py', 'project_workflow_versions', 2, 5, 4).
+python_function('services/web/app/access_matrix.py', '_matrix_path', 0, 2, 3).
+python_function('services/web/app/access_matrix.py', '_default_resources', 0, 3, 2).
+python_function('services/web/app/access_matrix.py', '_default_agents', 0, 5, 5).
+python_function('services/web/app/access_matrix.py', '_empty_agent_resource', 2, 3, 0).
+python_function('services/web/app/access_matrix.py', '_empty_human_agent', 2, 3, 0).
+python_function('services/web/app/access_matrix.py', 'default_state', 0, 1, 5).
+python_function('services/web/app/access_matrix.py', 'load_state', 0, 8, 9).
+python_function('services/web/app/access_matrix.py', '_merge_bool_matrix', 2, 7, 3).
+python_function('services/web/app/access_matrix.py', '_reindex_state', 1, 12, 7).
+python_function('services/web/app/access_matrix.py', 'save_state', 1, 1, 6).
+python_function('services/web/app/access_matrix.py', 'agent_may_access_resource', 2, 4, 3).
+python_function('services/web/app/access_matrix.py', 'human_may_use_agent', 2, 4, 3).
+python_function('services/web/app/access_matrix.py', 'diagnose_file_list_command', 0, 1, 0).
 python_function('services/web/app/agent_workroom.py', 'create_workroom', 0, 1, 2).
 python_function('services/web/app/agent_workroom.py', 'get_workroom', 1, 1, 1).
 python_function('services/web/app/agent_workroom.py', '_plan_steps', 1, 4, 4).
@@ -317,6 +343,9 @@ python_function('services/web/app/api_routes.py', 'confirm_ticket', 2, 19, 11).
 python_function('services/web/app/api_routes.py', 'archive_ticket', 2, 1, 2).
 python_function('services/web/app/api_routes.py', 'link_ticket', 2, 1, 2).
 python_function('services/web/app/api_routes.py', 'ticket_statuses', 0, 1, 1).
+python_function('services/web/app/api_routes.py', 'workspace_list_artifacts', 1, 1, 3).
+python_function('services/web/app/api_routes.py', 'workspace_get_artifact', 2, 2, 3).
+python_function('services/web/app/api_routes.py', 'workspace_file_list_export', 3, 2, 9).
 python_function('services/web/app/api_routes.py', 'workspace_chat_export', 1, 7, 7).
 python_function('services/web/app/api_routes.py', 'workspace_logs_export', 2, 1, 5).
 python_function('services/web/app/api_routes.py', 'workroom_start', 1, 2, 5).
@@ -324,28 +353,70 @@ python_function('services/web/app/api_routes.py', 'workroom_get', 1, 2, 4).
 python_function('services/web/app/api_routes.py', 'workroom_run', 2, 2, 4).
 python_function('services/web/app/api_routes.py', 'api_resource_areas', 0, 1, 3).
 python_function('services/web/app/api_routes.py', 'api_role_scopes', 0, 1, 1).
+python_function('services/web/app/api_routes.py', 'access_matrix_get', 0, 1, 2).
+python_function('services/web/app/api_routes.py', 'access_matrix_put', 1, 1, 5).
+python_function('services/web/app/api_routes.py', 'access_matrix_reset', 0, 1, 3).
+python_function('services/web/app/api_routes.py', 'access_diagnose_file_list', 0, 1, 2).
 python_function('services/web/app/chat.py', '_orch', 0, 2, 1).
 python_function('services/web/app/chat.py', '_projector', 0, 1, 1).
 python_function('services/web/app/chat.py', 'is_file_list_intent', 1, 7, 4).
+python_function('services/web/app/chat.py', 'file_list_scope', 1, 7, 2).
+python_function('services/web/app/chat.py', '_uri_is_user_resource', 1, 6, 2).
+python_function('services/web/app/chat.py', '_uri_is_system_resource', 1, 5, 3).
+python_function('services/web/app/chat.py', 'filter_file_inventory', 2, 29, 4).
 python_function('services/web/app/chat.py', '_dedupe_rows_by_uri', 1, 8, 7).
 python_function('services/web/app/chat.py', 'fetch_file_inventory', 0, 7, 7).
-python_function('services/web/app/chat.py', 'format_file_list_reply', 1, 22, 5).
+python_function('services/web/app/chat.py', 'format_file_list_reply', 1, 8, 7).
+python_function('services/web/app/chat.py', '_append_session_files', 4, 7, 3).
+python_function('services/web/app/chat.py', '_format_scope_uri', 1, 2, 1).
+python_function('services/web/app/chat.py', '_append_resource_rows', 3, 7, 5).
+python_function('services/web/app/chat.py', '_empty_resource_hint', 1, 2, 0).
+python_function('services/web/app/chat.py', '_append_rag_rows', 3, 9, 4).
+python_function('services/web/app/chat.py', '_append_file_list_errors', 2, 2, 2).
+python_function('services/web/app/chat.py', '_append_file_list_tip', 4, 5, 1).
+python_function('services/web/app/chat.py', 'build_file_list_artifact', 2, 1, 2).
 python_function('services/web/app/chat.py', 'new_session_id', 0, 1, 2).
 python_function('services/web/app/chat.py', 'get_history', 1, 1, 2).
 python_function('services/web/app/chat.py', '_append', 3, 1, 2).
 python_function('services/web/app/chat.py', '_format_history', 1, 3, 3).
 python_function('services/web/app/chat.py', '_format_incident', 1, 15, 3).
-python_function('services/web/app/chat.py', 'handle_message', 0, 33, 14).
+python_function('services/web/app/chat.py', 'handle_message', 0, 5, 7).
+python_function('services/web/app/chat.py', '_file_list_answer', 1, 2, 5).
+python_function('services/web/app/chat.py', '_ask_rag', 0, 5, 9).
+python_function('services/web/app/chat.py', '_rag_headers', 1, 1, 0).
+python_function('services/web/app/chat.py', '_rag_query', 2, 1, 1).
+python_function('services/web/app/chat.py', '_answer_from_rag_payload', 2, 6, 3).
+python_function('services/web/app/chat.py', '_sources_fallback_answer', 2, 4, 3).
+python_function('services/web/app/chat.py', '_source_preview', 1, 2, 1).
+python_function('services/web/app/chat.py', '_rag_backend_fallback', 1, 2, 2).
+python_function('services/web/app/chat.py', '_rag_search_fallback', 2, 5, 5).
+python_function('services/web/app/chat.py', '_rag_unavailable_answer', 3, 1, 1).
+python_function('services/web/app/chat.py', '_rag_diagnostics_hint', 2, 5, 3).
+python_function('services/web/app/chat.py', '_default_chat_reply', 0, 1, 0).
+python_function('services/web/app/chat.py', '_message_response', 0, 7, 3).
 python_function('services/web/app/chat.py', 'create_task', 0, 7, 5).
 python_function('services/web/app/conductor.py', 'handle_turn', 0, 7, 7).
-python_function('services/web/app/conductor.py', '_nlp2dsl_turn', 0, 23, 12).
-python_function('services/web/app/conductor.py', '_mullm_file_list_turn', 0, 1, 4).
+python_function('services/web/app/conductor.py', '_nlp2dsl_turn', 0, 7, 6).
+python_function('services/web/app/conductor.py', '_call_nlp2dsl', 2, 2, 2).
+python_function('services/web/app/conductor.py', '_nlp_output_base', 2, 1, 0).
+python_function('services/web/app/conductor.py', '_in_progress_turn', 6, 3, 3).
+python_function('services/web/app/conductor.py', '_ready_turn', 0, 1, 7).
+python_function('services/web/app/conductor.py', '_ready_action_payload', 1, 4, 3).
+python_function('services/web/app/conductor.py', '_system_file_list_payload', 4, 1, 5).
+python_function('services/web/app/conductor.py', '_shell_task_payload', 5, 4, 5).
+python_function('services/web/app/conductor.py', '_shell_clarify_payload', 1, 1, 0).
+python_function('services/web/app/conductor.py', '_ticket_payload', 4, 3, 3).
+python_function('services/web/app/conductor.py', '_task_reply', 1, 3, 1).
+python_function('services/web/app/conductor.py', '_closed_turn', 5, 2, 2).
+python_function('services/web/app/conductor.py', '_append_turn', 3, 3, 2).
+python_function('services/web/app/conductor.py', '_mullm_file_list_turn', 0, 1, 7).
 python_function('services/web/app/conductor.py', '_fallback_turn', 0, 4, 5).
 python_function('services/web/app/conductor.py', '_local_clarify', 1, 3, 3).
 python_function('services/web/app/conductor.py', '_extract_shell', 1, 3, 4).
 python_function('services/web/app/main.py', 'health', 0, 1, 1).
 python_function('services/web/app/main.py', 'workspace_home', 2, 1, 2).
 python_function('services/web/app/main.py', 'agent_workroom_page', 1, 1, 2).
+python_function('services/web/app/main.py', 'access_matrix_page', 1, 1, 2).
 python_function('services/web/app/main.py', 'dashboard', 1, 1, 5).
 python_function('services/web/app/nlp2dsl_bridge.py', 'backend_url', 0, 1, 1).
 python_function('services/web/app/nlp2dsl_bridge.py', 'backend_candidates', 0, 4, 5).
@@ -358,7 +429,7 @@ python_function('services/web/app/nlp2dsl_bridge.py', 'primary_action', 1, 4, 1)
 python_function('services/web/app/nlp2dsl_bridge.py', 'step_config', 1, 5, 1).
 python_function('services/web/app/resource_areas.py', 'list_areas', 0, 2, 1).
 python_function('services/web/app/resource_areas.py', 'list_groups', 0, 1, 0).
-python_function('services/web/app/resource_areas.py', 'agent_may_access', 3, 7, 1).
+python_function('services/web/app/resource_areas.py', 'agent_may_access', 3, 9, 2).
 python_function('services/web/app/tickets.py', 'ticket_uri', 1, 1, 0).
 python_function('services/web/app/tickets.py', 'ticket_web_path', 1, 1, 0).
 python_function('services/web/app/tickets.py', 'status_meta', 1, 3, 2).
@@ -368,14 +439,18 @@ python_function('services/web/app/workspace.py', '_projector', 0, 1, 1).
 python_function('services/web/app/workspace.py', 'new_session', 0, 1, 5).
 python_function('services/web/app/workspace.py', 'get_session', 1, 1, 1).
 python_function('services/web/app/workspace.py', 'get_or_create', 1, 3, 5).
-python_function('services/web/app/workspace.py', 'workspace_state', 1, 1, 3).
+python_function('services/web/app/workspace.py', '_artifact_title', 1, 6, 1).
+python_function('services/web/app/workspace.py', 'register_artifact', 2, 5, 9).
+python_function('services/web/app/workspace.py', 'artifact_summaries', 1, 2, 3).
+python_function('services/web/app/workspace.py', 'get_artifact', 2, 4, 2).
+python_function('services/web/app/workspace.py', 'workspace_state', 1, 1, 4).
 python_function('services/web/app/workspace.py', 'attach_context', 1, 12, 4).
 python_function('services/web/app/workspace.py', '_extract_ticket', 1, 2, 2).
 python_function('services/web/app/workspace.py', '_extract_shell_command', 1, 4, 4).
 python_function('services/web/app/workspace.py', 'build_task_payload', 2, 4, 5).
 python_function('services/web/app/workspace.py', 'propose_task_draft', 2, 1, 1).
 python_function('services/web/app/workspace.py', 'create_task_immediate', 1, 3, 5).
-python_function('services/web/app/workspace.py', 'handle_chat_message', 0, 21, 15).
+python_function('services/web/app/workspace.py', 'handle_chat_message', 0, 22, 17).
 python_function('services/web/app/workspace.py', 'create_task_from_draft', 1, 4, 3).
 python_function('services/web/app/workspace.py', 'create_and_run', 1, 5, 4).
 python_function('services/web/app/workspace.py', 'export_debug_logs', 1, 15, 13).
@@ -383,14 +458,24 @@ python_function('services/web/app/workspace.py', '_format_export_text', 1, 47, 8
 python_function('services/web/app/workspace.py', 'archive_task', 2, 2, 3).
 python_function('services/web/app/workspace.py', 'link_ticket', 2, 3, 3).
 python_function('services/web/app/workspace.py', 'fetch_live_board', 0, 1, 5).
+python_function('services/web/tests/test_access_matrix.py', 'matrix_file', 1, 1, 4).
+python_function('services/web/tests/test_access_matrix.py', 'test_default_all_checked', 1, 3, 1).
+python_function('services/web/tests/test_access_matrix.py', 'test_save_and_deny', 1, 3, 3).
+python_function('services/web/tests/test_access_matrix.py', 'test_diagnose_file_list_no_shell', 0, 3, 1).
 python_function('services/web/tests/test_agent_workroom.py', 'test_plan_includes_files_for_lista_plikow', 0, 3, 1).
 python_function('services/web/tests/test_agent_workroom.py', 'test_files_agent_may_list_rag', 0, 2, 1).
 python_function('services/web/tests/test_agent_workroom.py', 'test_mail_agent_denied_rag', 0, 2, 1).
 python_function('services/web/tests/test_agent_workroom.py', 'test_groups_nonempty', 0, 2, 2).
 python_function('services/web/tests/test_agent_workroom.py', 'test_workroom_session_dict', 0, 3, 2).
+python_function('services/web/tests/test_artifacts.py', 'test_register_and_get_artifact', 0, 7, 6).
 python_function('services/web/tests/test_chat_intent.py', 'test_file_list_intent_pl', 0, 5, 1).
 python_function('services/web/tests/test_chat_intent.py', 'test_format_file_list', 0, 4, 1).
+python_function('services/web/tests/test_chat_intent.py', 'test_file_list_scope_usera', 0, 4, 1).
+python_function('services/web/tests/test_chat_intent.py', 'test_filter_user_files', 0, 3, 3).
+python_function('services/web/tests/test_chat_intent.py', 'test_file_list_artifact', 0, 5, 2).
+python_function('services/web/tests/test_chat_intent.py', 'test_format_user_scope_title', 0, 3, 1).
 python_function('services/web/tests/test_chat_intent.py', 'test_dedupe_rag_documents_by_uri', 0, 2, 2).
+python_function('services/web/tests/test_chat_intent.py', 'test_handle_message_file_list_builds_artifact', 1, 4, 2).
 python_function('tests/conftest.py', 'fake_postgres', 0, 1, 1).
 python_function('tests/conftest.py', 'fake_bus', 0, 1, 1).
 python_function('tests/conftest.py', 'event_store', 1, 1, 1).
@@ -720,36 +805,6 @@ python_method('TransferFailed', 'data', 0, 1, 1).
 python_class('services/orchestrator/app/domain/events/__init__.py', 'ApprovalExpired').
 python_method('ApprovalExpired', 'aggregate_id', 0, 1, 1).
 python_method('ApprovalExpired', 'data', 0, 1, 1).
-python_class('services/orchestrator/app/domain/events/__init__.py', 'RagRequestFailed').
-python_method('RagRequestFailed', 'aggregate_id', 0, 1, 0).
-python_method('RagRequestFailed', 'data', 0, 1, 0).
-python_class('services/orchestrator/app/domain/events/__init__.py', 'IncidentDetected').
-python_method('IncidentDetected', 'aggregate_id', 0, 1, 0).
-python_method('IncidentDetected', 'data', 0, 1, 0).
-python_class('services/orchestrator/app/domain/events/__init__.py', 'IncidentClassified').
-python_method('IncidentClassified', 'aggregate_id', 0, 1, 0).
-python_method('IncidentClassified', 'data', 0, 1, 0).
-python_class('services/orchestrator/app/domain/events/__init__.py', 'DiagnosticsStarted').
-python_method('DiagnosticsStarted', 'aggregate_id', 0, 1, 0).
-python_method('DiagnosticsStarted', 'data', 0, 1, 0).
-python_class('services/orchestrator/app/domain/events/__init__.py', 'DiagnosticsCompleted').
-python_method('DiagnosticsCompleted', 'aggregate_id', 0, 1, 0).
-python_method('DiagnosticsCompleted', 'data', 0, 1, 0).
-python_class('services/orchestrator/app/domain/events/__init__.py', 'RemediationStarted').
-python_method('RemediationStarted', 'aggregate_id', 0, 1, 0).
-python_method('RemediationStarted', 'data', 0, 1, 0).
-python_class('services/orchestrator/app/domain/events/__init__.py', 'RemediationSucceeded').
-python_method('RemediationSucceeded', 'aggregate_id', 0, 1, 0).
-python_method('RemediationSucceeded', 'data', 0, 1, 0).
-python_class('services/orchestrator/app/domain/events/__init__.py', 'RemediationFailed').
-python_method('RemediationFailed', 'aggregate_id', 0, 1, 0).
-python_method('RemediationFailed', 'data', 0, 1, 0).
-python_class('services/orchestrator/app/domain/events/__init__.py', 'PostRemediationVerificationPassed').
-python_method('PostRemediationVerificationPassed', 'aggregate_id', 0, 1, 0).
-python_method('PostRemediationVerificationPassed', 'data', 0, 1, 0).
-python_class('services/orchestrator/app/domain/events/__init__.py', 'PostRemediationVerificationFailed').
-python_method('PostRemediationVerificationFailed', 'aggregate_id', 0, 1, 0).
-python_method('PostRemediationVerificationFailed', 'data', 0, 1, 0).
 python_class('services/orchestrator/app/domain/events/incidents.py', 'RagRequestFailed').
 python_method('RagRequestFailed', 'aggregate_id', 0, 1, 0).
 python_method('RagRequestFailed', 'data', 0, 1, 0).
@@ -947,6 +1002,7 @@ python_class('services/web/app/api_routes.py', 'ContextAttachBody').
 python_class('services/web/app/api_routes.py', 'SessionRef').
 python_class('services/web/app/api_routes.py', 'WorkroomStart').
 python_class('services/web/app/api_routes.py', 'WorkroomMessage').
+python_class('services/web/app/api_routes.py', 'AccessMatrixBody').
 python_class('services/web/app/workspace.py', 'WorkspaceContext').
 python_method('WorkspaceContext', 'to_dict', 0, 1, 0).
 python_class('services/web/app/workspace.py', 'WorkspaceSession').
@@ -981,6 +1037,21 @@ project_dependency('fastapi==0.104.1', 'requirements-dev.txt').
 project_dependency('starlette==0.27.0', 'requirements-dev.txt').
 
 % ── Makefile Targets ─────────────────────────────────────
+makefile_target('SHELL', '').
+makefile_target('PROFILE_ARGS', '').
+makefile_target('help', '').
+makefile_target('up', '').
+makefile_target('down', '').
+makefile_target('restart', '').
+makefile_target('build', '').
+makefile_target('logs', '').
+makefile_target('ps', '').
+makefile_target('test', '').
+makefile_target('smoke', '').
+makefile_target('ensure-env', '').
+makefile_target('ensure-nlp2dsl-env', '').
+makefile_target('nlp2dsl-up', '').
+makefile_target('nlp2dsl-down', '').
 
 % ── Taskfile Tasks ───────────────────────────────────────
 
@@ -1052,6 +1123,54 @@ sumd_declared_file('project/map.toon.yaml', 'analysis').
 sumd_declared_file('project/logic.pl', 'analysis').
 sumd_declared_file('project/calls.toon.yaml', 'analysis').
 sumd_interface('api', '').
+sumd_workflow('up', 'manual').
+sumd_workflow_step('up', 1, '$(COMPOSE) $(PROFILE_ARGS) up -d').
+sumd_workflow_step('up', 2, 'if [ "$(NLP2DSL)" = "1" ]').
+sumd_workflow_step('up', 3, '$(MAKE) --no-print-directory nlp2dsl-up').
+sumd_workflow_step('up', 4, 'fi').
+sumd_workflow('down', 'manual').
+sumd_workflow_step('down', 1, 'if [ "$(NLP2DSL)" = "1" ]').
+sumd_workflow_step('down', 2, '$(MAKE) --no-print-directory nlp2dsl-down').
+sumd_workflow_step('down', 3, 'fi').
+sumd_workflow_step('down', 4, '$(COMPOSE) $(PROFILE_ARGS) down').
+sumd_workflow('restart', 'manual').
+sumd_workflow('build', 'manual').
+sumd_workflow_step('build', 1, '$(COMPOSE) $(PROFILE_ARGS) build').
+sumd_workflow('logs', 'manual').
+sumd_workflow_step('logs', 1, '$(COMPOSE) $(PROFILE_ARGS) logs -f --tail=200').
+sumd_workflow('ps', 'manual').
+sumd_workflow_step('ps', 1, '$(COMPOSE) $(PROFILE_ARGS) ps').
+sumd_workflow('test', 'manual').
+sumd_workflow_step('test', 1, 'pytest -q').
+sumd_workflow('smoke', 'manual').
+sumd_workflow_step('smoke', 1, 'curl -fsS http://127.0.0.1:3003/health').
+sumd_workflow_step('smoke', 2, 'curl -fsS http://127.0.0.1:8001/health').
+sumd_workflow_step('smoke', 3, 'curl -fsS http://127.0.0.1:8002/health').
+sumd_workflow_step('smoke', 4, 'if [ "$(NLP2DSL)" = "1" ] && [ -f "$(NLP2DSL_DIR)/docker-compose.yml" ]').
+sumd_workflow('ensure-env', 'manual').
+sumd_workflow_step('ensure-env', 1, 'if [ ! -f .env ] && [ -f .env.example ]').
+sumd_workflow_step('ensure-env', 2, 'cp .env.example .env').
+sumd_workflow_step('ensure-env', 3, 'echo "Created .env from .env.example"').
+sumd_workflow_step('ensure-env', 4, 'fi').
+sumd_workflow('ensure-nlp2dsl-env', 'manual').
+sumd_workflow_step('ensure-nlp2dsl-env', 1, 'if [ -f "$(NLP2DSL_DIR)/docker-compose.yml" ]').
+sumd_workflow_step('ensure-nlp2dsl-env', 2, 'if [ ! -f "$(NLP2DSL_DIR)/.env" ] && [ -f "$(NLP2DSL_DIR)/.env.example" ]').
+sumd_workflow_step('ensure-nlp2dsl-env', 3, 'cp "$(NLP2DSL_DIR)/.env.example" "$(NLP2DSL_DIR)/.env"').
+sumd_workflow_step('ensure-nlp2dsl-env', 4, 'echo "Created $(NLP2DSL_DIR)/.env from .env.example"').
+sumd_workflow_step('ensure-nlp2dsl-env', 5, 'fi').
+sumd_workflow_step('ensure-nlp2dsl-env', 6, 'fi').
+sumd_workflow('nlp2dsl-up', 'manual').
+sumd_workflow_step('nlp2dsl-up', 1, 'if [ -f "$(NLP2DSL_DIR)/docker-compose.yml" ]').
+sumd_workflow_step('nlp2dsl-up', 2, 'cd "$(NLP2DSL_DIR)" && $(COMPOSE) up -d').
+sumd_workflow_step('nlp2dsl-up', 3, 'else \').
+sumd_workflow_step('nlp2dsl-up', 4, 'echo "Skipping nlp2dsl: $(NLP2DSL_DIR)/docker-compose.yml not found"').
+sumd_workflow_step('nlp2dsl-up', 5, 'fi').
+sumd_workflow('nlp2dsl-down', 'manual').
+sumd_workflow_step('nlp2dsl-down', 1, 'if [ -f "$(NLP2DSL_DIR)/docker-compose.yml" ]').
+sumd_workflow_step('nlp2dsl-down', 2, 'cd "$(NLP2DSL_DIR)" && $(COMPOSE) down').
+sumd_workflow_step('nlp2dsl-down', 3, 'else \').
+sumd_workflow_step('nlp2dsl-down', 4, 'echo "Skipping nlp2dsl: $(NLP2DSL_DIR)/docker-compose.yml not found"').
+sumd_workflow_step('nlp2dsl-down', 5, 'fi').
 sumd_deploy_target('docker_compose').
 sumd_deploy_compose_file('docker-compose.yml').
 

@@ -111,6 +111,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.6] - 2026-06-04
+
+### Docs
+- Update SUMD.md
+- Update SUMR.md
+- Update TODO.md
+- Update docs/README.md
+- Update docs/multi-agent-workroom.md
+- Update project/README.md
+- Update project/context.md
+
+### Other
+- Update .env.example
+- Update Makefile
+- Update app.doql.less
+- Update project/analysis.toon.yaml
+- Update project/calls.mmd
+- Update project/calls.png
+- Update project/calls.toon.yaml
+- Update project/calls.yaml
+- Update project/compact_flow.mmd
+- Update project/compact_flow.png
+- ... and 41 more files
+
 ## [0.0.5] - 2026-06-04
 
 ### Docs

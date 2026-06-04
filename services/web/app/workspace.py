@@ -59,6 +59,7 @@ class WorkspaceSession:
     context: WorkspaceContext = field(default_factory=WorkspaceContext)
     draft: dict[str, Any] | None = None
     events: list[dict[str, Any]] = field(default_factory=list)
+    artifacts: list[dict[str, Any]] = field(default_factory=list)
     nlp2dsl_conversation_id: str | None = None
 
     def add_event(self, event_type: str, summary: str, **extra: Any) -> None:
@@ -107,6 +108,71 @@ def get_or_create(session_id: str | None) -> WorkspaceSession:
     return new_session()
 
 
+def _artifact_title(artifact: dict[str, Any]) -> str:
+    kind = artifact.get("kind") or "artifact"
+    if kind == "file_list":
+        scope = artifact.get("list_scope") or "all"
+        return f"Lista plików ({scope})"
+    return artifact.get("filename") or artifact.get("title") or kind
+
+
+def register_artifact(
+    session: WorkspaceSession,
+    artifact: dict[str, Any],
+    *,
+    source_message: str = "",
+) -> dict[str, Any]:
+    """Zapisuje artefakt w sesji (lista + podgląd po prawej w UI)."""
+    entry = {
+        **artifact,
+        "artifact_id": artifact.get("artifact_id") or str(uuid.uuid4()),
+        "created_at": artifact.get("created_at")
+        or datetime.now(timezone.utc).isoformat(),
+        "title": _artifact_title(artifact),
+        "source_message": (source_message or "")[:200],
+    }
+    session.artifacts.append(entry)
+    if len(session.artifacts) > 50:
+        session.artifacts = session.artifacts[-50:]
+    session.add_event(
+        "ArtifactCreated",
+        entry["title"],
+        artifact_id=entry["artifact_id"],
+        kind=entry.get("kind"),
+    )
+    return entry
+
+
+def artifact_summaries(session: WorkspaceSession) -> list[dict[str, Any]]:
+    """Metadane do listy (bez dużego json — pełny podgląd po id)."""
+    out: list[dict[str, Any]] = []
+    for a in session.artifacts:
+        out.append(
+            {
+                "artifact_id": a.get("artifact_id"),
+                "title": a.get("title"),
+                "kind": a.get("kind"),
+                "filename": a.get("filename"),
+                "list_scope": a.get("list_scope"),
+                "mime": a.get("mime"),
+                "created_at": a.get("created_at"),
+                "source_message": a.get("source_message"),
+                "has_json": bool(a.get("json")),
+            }
+        )
+    return out
+
+
+def get_artifact(session_id: str, artifact_id: str) -> dict[str, Any] | None:
+    session = get_session(session_id)
+    if not session:
+        return None
+    for a in session.artifacts:
+        if a.get("artifact_id") == artifact_id:
+            return a
+    return None
+
+
 def workspace_state(session_id: str) -> dict[str, Any]:
     session = get_or_create(session_id)
     return {
@@ -115,6 +181,7 @@ def workspace_state(session_id: str) -> dict[str, Any]:
         "draft": session.draft,
         "events": session.events,
         "history": chat_service.get_history(session.session_id),
+        "artifacts": artifact_summaries(session),
     }
 
 
@@ -299,6 +366,14 @@ async def handle_chat_message(
         return outcome
 
     session.add_event("ChatMessageAdded", message[:120] or "(formularz)", mode=mode)
+    if outcome.get("artifact"):
+        registered = register_artifact(
+            session,
+            outcome["artifact"],
+            source_message=message,
+        )
+        outcome["artifact"] = registered
+
     if outcome.get("intent") == "file_list":
         session.add_event("FileListReturned", "Lista plików z rejestru + RAG")
     if outcome.get("retrieval_trace_id"):
@@ -331,6 +406,7 @@ async def handle_chat_message(
         "task": task_result or outcome.get("task"),
         "context": session.context.to_dict(),
         "events": session.events,
+        "artifacts": artifact_summaries(session),
     }
 
 

@@ -1,6 +1,6 @@
 # code2llm call graph | /home/tom/github/wronai/mullm
-# generated in 0.14s
-# nodes: 264 | edges: 324 | modules: 52
+# generated in 0.18s
+# nodes: 340 | edges: 423 | modules: 54
 # CC̄=3.6
 
 HUBS[20]:
@@ -11,39 +11,39 @@ HUBS[20]:
   services.web.app.agent_workroom.run_workroom
     CC=22  in:0  out:45  total:45
   services.web.app.workspace.handle_chat_message
-    CC=21  in:0  out:40  total:40
-  services.web.app.conductor._nlp2dsl_turn
-    CC=23  in:1  out:35  total:36
-  services.web.app.chat.format_file_list_reply
-    CC=22  in:1  out:35  total:36
+    CC=22  in:0  out:43  total:43
   services.orchestrator.app.observability.rag_pipeline.RagPipeline.ask
     CC=10  in:0  out:36  total:36
-  services.web.app.chat.handle_message
-    CC=33  in:0  out:35  total:35
   services.orchestrator.app.observability.incidents._event_payload
     CC=19  in:1  out:28  total:29
   services.web.app.workspace.export_debug_logs
     CC=15  in:0  out:26  total:26
   services.web.app.static.workspace.api
-    CC=6  in:20  out:4  total:24
+    CC=6  in:21  out:4  total:25
   services.orchestrator.app.observability.incidents.IncidentRecorder.record
     CC=16  in:0  out:23  total:23
   services.orchestrator.app.observability.rag_diagnostics.RagDiagnostics.run
     CC=12  in:0  out:23  total:23
   services.orchestrator.app.api.commands._dispatch
     CC=4  in:14  out:9  total:23
-  services.orchestrator.app.rag.indexer.RagIndexer.ingest_resource
-    CC=13  in:0  out:22  total:22
+  services.web.app.static.workspace.refreshWorkspace
+    CC=8  in:8  out:14  total:22
   services.orchestrator.app.api.rag.search
     CC=3  in:0  out:22  total:22
-  services.web.app.static.workspace.refreshWorkspace
-    CC=7  in:8  out:13  total:21
+  services.orchestrator.app.rag.indexer.RagIndexer.ingest_resource
+    CC=13  in:0  out:22  total:22
+  services.web.app.static.workspace.sendChat
+    CC=26  in:0  out:21  total:21
   services.orchestrator.app.application.command_bus.CommandBus._create_task
     CC=6  in:0  out:20  total:20
-  services.web.app.static.workspace.sendChat
-    CC=23  in:0  out:19  total:19
   services.orchestrator.app.api.access.upload_resource
     CC=4  in:0  out:19  total:19
+  services.web.app.static.workspace.formValues
+    CC=21  in:0  out:19  total:19
+  services.web.app.static.workspace.selectTicket
+    CC=5  in:7  out:11  total:18
+  services.orchestrator.app.observability.export.build_orchestrator_bundle
+    CC=11  in:1  out:17  total:18
 
 MODULES:
   agents.shell-agent.app.executor  [1 funcs]
@@ -210,6 +210,17 @@ MODULES:
     project_task_board  CC=9  out:15
   services.projector.app.projections.workflow_versions  [1 funcs]
     project_workflow_versions  CC=5  out:6
+  services.web.app.access_matrix  [12 funcs]
+    _default_agents  CC=5  out:7
+    _default_resources  CC=3  out:2
+    _empty_agent_resource  CC=3  out:0
+    _empty_human_agent  CC=3  out:0
+    _matrix_path  CC=2  out:4
+    _merge_bool_matrix  CC=7  out:5
+    _reindex_state  CC=12  out:16
+    agent_may_access_resource  CC=4  out:6
+    default_state  CC=1  out:5
+    human_may_use_agent  CC=4  out:6
   services.web.app.agent_workroom  [5 funcs]
     _extract_shell  CC=4  out:8
     _plan_steps  CC=4  out:7
@@ -220,24 +231,28 @@ MODULES:
     chat_message  CC=6  out:10
     get_ticket  CC=5  out:9
     list_tickets  CC=10  out:7
-  services.web.app.chat  [10 funcs]
+  services.web.app.chat  [36 funcs]
+    _answer_from_rag_payload  CC=6  out:3
     _append  CC=1  out:2
+    _append_file_list_errors  CC=2  out:3
+    _append_file_list_tip  CC=5  out:5
+    _append_rag_rows  CC=9  out:11
+    _append_resource_rows  CC=7  out:12
+    _append_session_files  CC=7  out:9
+    _ask_rag  CC=5  out:9
     _dedupe_rows_by_uri  CC=8  out:10
-    _format_history  CC=3  out:3
-    _orch  CC=2  out:2
-    create_task  CC=7  out:8
-    fetch_file_inventory  CC=7  out:15
-    format_file_list_reply  CC=22  out:35
-    get_history  CC=1  out:2
-    handle_message  CC=33  out:35
-    is_file_list_intent  CC=7  out:5
-  services.web.app.conductor  [6 funcs]
+    _default_chat_reply  CC=1  out:0
+  services.web.app.conductor  [18 funcs]
+    _append_turn  CC=3  out:4
+    _call_nlp2dsl  CC=2  out:2
+    _closed_turn  CC=2  out:2
     _extract_shell  CC=3  out:5
     _fallback_turn  CC=4  out:7
+    _in_progress_turn  CC=3  out:4
     _local_clarify  CC=3  out:3
-    _mullm_file_list_turn  CC=1  out:5
-    _nlp2dsl_turn  CC=23  out:35
-    handle_turn  CC=7  out:8
+    _mullm_file_list_turn  CC=1  out:8
+    _nlp2dsl_turn  CC=7  out:8
+    _nlp_output_base  CC=1  out:0
   services.web.app.nlp2dsl_bridge  [6 funcs]
     _post_json  CC=4  out:6
     backend_candidates  CC=4  out:6
@@ -245,9 +260,21 @@ MODULES:
     chat_message  CC=1  out:1
     chat_start  CC=1  out:1
     health  CC=4  out:3
-  services.web.app.resource_areas  [2 funcs]
+  services.web.app.resource_areas  [3 funcs]
+    agent_may_access  CC=9  out:4
     list_areas  CC=2  out:1
     list_groups  CC=1  out:0
+  services.web.app.static.access  [13 funcs]
+    api  CC=5  out:3
+    checked  CC=2  out:1
+    escapeHtml  CC=1  out:2
+    id  CC=2  out:2
+    load  CC=3  out:4
+    renderAgentResourceMatrix  CC=11  out:4
+    renderAll  CC=1  out:2
+    renderHumanAgentMatrix  CC=11  out:4
+    res  CC=1  out:1
+    resetAll  CC=1  out:3
   services.web.app.static.app  [7 funcs]
     appendMessage  CC=2  out:2
     ensureSession  CC=3  out:4
@@ -267,33 +294,33 @@ MODULES:
     renderLedger  CC=7  out:3
     renderState  CC=3  out:2
     renderThread  CC=7  out:3
-  services.web.app.static.workspace  [50 funcs]
+  services.web.app.static.workspace  [57 funcs]
     api  CC=6  out:4
     appendMsg  CC=1  out:1
     appendMsgTo  CC=6  out:2
     archiveTicket  CC=2  out:5
+    cacheArtifactFull  CC=3  out:1
+    clearArtifactPreview  CC=8  out:3
     collectClarifyValues  CC=4  out:4
     color  CC=1  out:1
     confirmTicket  CC=1  out:6
     copyChatToClipboard  CC=10  out:11
-    copyLogsToClipboard  CC=2  out:5
-    copyText  CC=2  out:7
   services.web.app.tickets  [4 funcs]
     enrich_task  CC=4  out:6
     status_meta  CC=3  out:2
     ticket_uri  CC=1  out:0
     ticket_web_path  CC=1  out:0
-  services.web.app.workspace  [17 funcs]
+  services.web.app.workspace  [22 funcs]
+    _artifact_title  CC=6  out:4
     _extract_shell_command  CC=4  out:8
     _extract_ticket  CC=2  out:2
     _format_export_text  CC=47  out:97
     archive_task  CC=2  out:3
+    artifact_summaries  CC=2  out:11
     attach_context  CC=12  out:7
     build_task_payload  CC=4  out:7
     create_and_run  CC=5  out:9
     create_task_from_draft  CC=4  out:5
-    create_task_immediate  CC=3  out:7
-    export_debug_logs  CC=15  out:26
   services.web.src.main  [2 funcs]
     createTask  CC=4  out:9
     refresh  CC=7  out:8
@@ -323,29 +350,29 @@ EDGES:
   services.projector.app.projections.dispatcher.project_event → services.projector.app.projections.plugin_catalog.project_plugin_catalog
   services.projector.app.projections.dispatcher.project_event → services.projector.app.projections.resource_registry.project_resource_registry
   services.projector.app.projections.dispatcher.project_event → services.projector.app.projections.incidents.project_incidents
-  services.web.app.api_routes.chat_message → services.web.app.conductor.handle_turn
-  services.web.app.api_routes.list_tickets → services.web.app.tickets.enrich_task
-  services.web.app.api_routes.get_ticket → services.web.app.tickets.enrich_task
-  services.web.app.workspace.get_or_create → services.web.app.workspace.new_session
-  services.web.app.workspace.workspace_state → services.web.app.workspace.get_or_create
-  services.web.app.workspace.attach_context → services.web.app.workspace.get_or_create
-  services.web.app.workspace.build_task_payload → services.web.app.workspace.get_or_create
-  services.web.app.workspace.build_task_payload → services.web.app.workspace._extract_shell_command
-  services.web.app.workspace.build_task_payload → services.web.app.workspace._extract_ticket
-  services.web.app.workspace.propose_task_draft → services.web.app.workspace.build_task_payload
-  services.web.app.workspace.create_task_immediate → services.web.app.workspace.get_or_create
-  services.web.app.workspace.create_task_immediate → services.web.app.workspace.link_ticket
-  services.web.app.workspace.handle_chat_message → services.web.app.workspace.get_or_create
-  services.web.app.workspace.handle_chat_message → services.web.app.workspace._extract_ticket
-  services.web.app.workspace.handle_chat_message → services.web.app.workspace.attach_context
-  services.web.app.workspace.handle_chat_message → services.web.app.workspace._extract_shell_command
-  services.web.app.workspace.handle_chat_message → services.web.app.workspace.build_task_payload
-  services.web.app.workspace.create_task_from_draft → services.web.app.workspace.create_task_immediate
-  services.web.app.workspace.create_task_from_draft → services.web.app.workspace.get_or_create
-  services.web.app.workspace.create_and_run → services.web.app.workspace.create_task_immediate
-  services.web.app.workspace.create_and_run → services.web.app.workspace.get_or_create
-  services.web.app.workspace.export_debug_logs → services.web.app.workspace.get_or_create
-  services.web.app.workspace.export_debug_logs → services.web.app.workspace._format_export_text
-  services.web.app.workspace.archive_task → services.web.app.workspace.get_or_create
-  services.web.app.workspace.link_ticket → services.web.app.workspace.get_or_create
-  services.web.app.workspace.fetch_live_board → services.web.app.static.workspace.items
+  services.projector.app.projections.incidents._handle_rag_request_failed → services.projector.app.projections.incidents._upsert_rag_quality
+  services.projector.app.projections.incidents._handle_rag_request_failed → services.projector.app.projections.incidents._upsert_service_health
+  services.projector.app.projections.incidents._handle_rag_request_failed → services.projector.app.projections.incidents._error_code
+  services.projector.app.projections.incidents._handle_incident_detected → services.projector.app.projections.incidents._error_code
+  services.projector.app.projections.incidents._handle_incident_classified → services.projector.app.projections.incidents._error_code
+  services.projector.app.projections.incidents._handle_diagnostics_started → services.projector.app.projections.incidents._update_incident_status
+  services.projector.app.projections.incidents._handle_diagnostics_completed → services.projector.app.projections.incidents._checks_payload
+  services.projector.app.projections.incidents._handle_diagnostics_completed → services.projector.app.projections.incidents._diagnostics_ok
+  services.projector.app.projections.incidents._handle_diagnostics_completed → services.projector.app.projections.incidents._upsert_service_health
+  services.projector.app.projections.incidents._handle_diagnostics_completed → services.projector.app.projections.incidents._root_cause
+  services.projector.app.projections.incidents._handle_diagnostics_completed → services.projector.app.projections.incidents._error_code
+  services.projector.app.projections.incidents._handle_remediation_started → services.projector.app.projections.incidents._update_incident_status
+  services.projector.app.projections.incidents._handle_remediation_finished → services.projector.app.projections.incidents._update_incident_status
+  services.projector.app.projections.incidents._handle_post_remediation_verification → services.projector.app.projections.incidents._update_incident_status
+  services.projector.app.projections.incidents._handle_post_remediation_verification → services.projector.app.projections.incidents._upsert_service_health
+  services.projector.app.projections.incidents._upsert_rag_quality → services.projector.app.projections.incidents._error_code
+  services.projector.app.projections.incidents._root_cause → services.projector.app.projections.incidents._error_code
+  services.web.app.agent_workroom._plan_steps → services.web.app.agent_workroom._extract_shell
+  services.web.app.agent_workroom.run_workroom → services.web.app.agent_workroom.get_workroom
+  services.web.app.agent_workroom.run_workroom → services.web.app.agent_workroom._plan_steps
+  services.web.app.agent_workroom.workroom_catalog → services.web.app.resource_areas.list_areas
+  services.web.app.agent_workroom.workroom_catalog → services.web.app.resource_areas.list_groups
+  services.web.app.tickets.enrich_task → services.web.app.tickets.status_meta
+  services.web.app.tickets.enrich_task → services.web.app.tickets.ticket_uri
+  services.web.app.tickets.enrich_task → services.web.app.tickets.ticket_web_path
+  services.web.app.nlp2dsl_bridge.backend_url → services.web.app.nlp2dsl_bridge.backend_candidates

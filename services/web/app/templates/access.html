@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mullm — Dostęp (ACL)</title>
+  <link rel="stylesheet" href="/static/workspace.css" />
+  <link rel="stylesheet" href="/static/access.css" />
+</head>
+<body class="access-page">
+  <header class="topbar topbar-min">
+    <h1><a href="/" class="brand-link">Mullm</a></h1>
+    <span class="tag">Macierze dostępu</span>
+    <span class="spacer"></span>
+    <a href="/" class="btn ghost btn-sm">← Chat</a>
+    <button type="button" class="btn ghost btn-sm" id="btn-reset">Domyślnie: wszystkie ✓</button>
+    <button type="button" class="btn btn-sm" id="btn-save">Zapisz</button>
+  </header>
+
+  <main class="access-main">
+    <section class="access-panel">
+      <h2>Agenci × zasoby</h2>
+      <p class="muted small">
+        Wiersze: zasoby (pierwsza kolumna). Kolumny: agenci. Zaznaczenie = agent może korzystać z obszaru.
+      </p>
+      <div class="matrix-wrap" id="wrap-agent-resource"></div>
+    </section>
+
+    <section class="access-panel">
+      <h2>Human × agenci</h2>
+      <p class="muted small">
+        Wiersze: agenci. Kolumny: użytkownicy human na różnych komputerach. Zaznaczenie = human może wywołać agenta.
+      </p>
+      <div class="access-human-toolbar">
+        <input type="text" id="new-human-id" placeholder="id np. human@serwer2" />
+        <input type="text" id="new-human-title" placeholder="Etykieta" />
+        <button type="button" class="btn ghost btn-sm" id="btn-add-human">+ Human</button>
+      </div>
+      <div class="matrix-wrap" id="wrap-human-agent"></div>
+    </section>
+
+    <section class="access-panel diag">
+      <h2>Diagnoza: „lista plikow usera”</h2>
+      <pre id="diag-file-list" class="diag-pre muted">Ładowanie…</pre>
+    </section>
+  </main>
+
+  <div id="toast" class="toast-bar"></div>
+  <script src="/static/access.js"></script>
+</body>
+</html>

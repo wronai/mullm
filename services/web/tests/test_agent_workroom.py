@@ -1,4 +1,5 @@
-from app.agent_workroom import _plan_steps, create_workroom
+from app.agent_workroom import _plan_steps, create_workroom, format_workroom_export
+from app.chat import file_list_scope, is_file_list_intent
 from app.resource_areas import agent_may_access, list_groups
 
 
@@ -6,6 +7,25 @@ def test_plan_includes_files_for_lista_plikow():
     steps = _plan_steps("lista plikow")
     agents = [s["agent"] for s in steps]
     assert "files_agent" in agents
+
+
+def test_list_aplikow_usera_intent_and_scope():
+    msg = "list aplikow usera"
+    assert is_file_list_intent(msg)
+    assert file_list_scope(msg) == "user"
+    steps = _plan_steps(msg)
+    file_step = next(s for s in steps if s["agent"] == "files_agent")
+    assert file_step["list_scope"] == "user"
+    assert "użytkownika" in file_step["label"].lower()
+
+
+def test_workroom_export_contains_goal():
+    s = create_workroom()
+    s.goal = "list aplikow usera"
+    s.agent_say("files_agent", "Files", "Pliki użytkownika")
+    text = format_workroom_export(s)
+    assert "list aplikow usera" in text
+    assert "Pliki użytkownika" in text
 
 
 def test_files_agent_may_list_rag():

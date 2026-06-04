@@ -6,6 +6,10 @@
   let ticketView = "active";
   let cachedTasks = [];
   let pendingClarify = null;
+  let artifactSummaries = [];
+  const artifactFullCache = new Map();
+  let selectedArtifactId = null;
+  let artifactPreviewTab = "text";
 
   const $ = (id) => document.getElementById(id);
 
@@ -61,6 +65,7 @@
     currentDraft = state.draft || null;
     renderSessionEvents(state.events);
     renderChat(state.history);
+    syncArtifacts(state.artifacts || [], null);
     await loadTickets();
     renderTasks(filterTasks(cachedTasks));
     renderFileChips(state.board?.resources || [], state.context);
@@ -289,7 +294,14 @@
         : item.incident
           ? `Incydent: ${item.incident}`
           : "";
-      appendMsgTo(box, item.role, formatChatContent(item.content), meta, false);
+      appendMsgTo(
+        box,
+        item.role,
+        formatChatContent(item.content),
+        meta,
+        false,
+        item.content || ""
+      );
     });
     if (!items.length) {
       appendMsgTo(
@@ -305,13 +317,192 @@
 
   function appendMsg(role, content, meta) {
     const box = $("chat-messages");
-    appendMsgTo(box, role, content, meta, true);
+    appendMsgTo(box, role, content, meta, true, content || "");
   }
 
-  function appendMsgTo(box, role, content, meta, scroll) {
+  function cacheArtifactFull(art) {
+    if (art?.artifact_id) artifactFullCache.set(art.artifact_id, art);
+  }
+
+  function syncArtifacts(summaries, newestFull) {
+    artifactSummaries = summaries || [];
+    if (newestFull) cacheArtifactFull(newestFull);
+    renderArtifactList();
+    if (newestFull?.artifact_id) {
+      selectArtifact(newestFull.artifact_id, { auto: true });
+      return;
+    }
+    if (
+      selectedArtifactId &&
+      artifactSummaries.some((a) => a.artifact_id === selectedArtifactId)
+    ) {
+      selectArtifact(selectedArtifactId, { auto: false });
+      return;
+    }
+    if (artifactSummaries.length) {
+      selectArtifact(artifactSummaries[artifactSummaries.length - 1].artifact_id, {
+        auto: false,
+      });
+    } else {
+      clearArtifactPreview();
+    }
+  }
+
+  function clearArtifactPreview() {
+    selectedArtifactId = null;
+    const title = $("artifact-preview-title");
+    const body = $("artifact-preview-body");
+    if (title) title.textContent = "Podgląd";
+    if (body) {
+      body.textContent =
+        "Wybierz artefakt z listy lub wyślij polecenie generujące wynik.";
+      body.classList.add("muted");
+    }
+    $("artifact-tab-text")?.setAttribute("disabled", "disabled");
+    $("artifact-tab-json")?.setAttribute("disabled", "disabled");
+    $("artifact-download")?.setAttribute("disabled", "disabled");
+    $("artifact-tab-text")?.classList.remove("active");
+    $("artifact-tab-json")?.classList.remove("active");
+  }
+
+  function renderArtifactList() {
+    const list = $("artifact-list");
+    if (!list) return;
+    if (!artifactSummaries.length) {
+      list.innerHTML =
+        '<li class="artifact-empty muted">Brak artefaktów — np. „lista plików usera”</li>';
+      return;
+    }
+    list.innerHTML = artifactSummaries
+      .map((a) => {
+        const active = a.artifact_id === selectedArtifactId ? " active" : "";
+        const when = a.created_at ? new Date(a.created_at).toLocaleString() : "";
+        return `<li class="artifact-item${active}" data-id="${escapeHtml(a.artifact_id)}">
+          <span class="art-title">${escapeHtml(a.title || a.filename || a.kind || "?")}</span>
+          <span class="art-meta">${escapeHtml(a.kind || "")}${a.list_scope ? " · " + escapeHtml(a.list_scope) : ""}${when ? " · " + escapeHtml(when) : ""}</span>
+        </li>`;
+      })
+      .join("");
+    list.querySelectorAll(".artifact-item").forEach((el) => {
+      el.addEventListener("click", () => {
+        selectArtifact(el.dataset.id, { auto: false }).catch((e) => toast(e.message, false));
+      });
+    });
+  }
+
+  async function selectArtifact(id, { auto = false } = {}) {
+    if (!id) return;
+    selectedArtifactId = id;
+    renderArtifactList();
+    const body = $("artifact-preview-body");
+    if (body && auto) {
+      body.textContent = "Ładowanie podglądu…";
+      body.classList.remove("muted");
+    }
+    let art = artifactFullCache.get(id);
+    if (!art?.text && !art?.json) {
+      await ensureSession();
+      art = await api(
+        `/api/workspace/artifacts/${encodeURIComponent(id)}?session_id=${encodeURIComponent(sessionId)}`
+      );
+      cacheArtifactFull(art);
+    }
+    showArtifactPreview(art);
+    if (auto && $("rail-artifacts")) {
+      $("rail-artifacts").scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+  }
+
+  function showArtifactPreview(art) {
+    if (!art) return;
+    const title = $("artifact-preview-title");
+    const body = $("artifact-preview-body");
+    const tabText = $("artifact-tab-text");
+    const tabJson = $("artifact-tab-json");
+    const dl = $("artifact-download");
+    if (title) title.textContent = art.title || art.filename || art.kind || "Artefakt";
+    const hasText = Boolean(art.text);
+    const hasJson = Boolean(art.json);
+    if (tabText) {
+      tabText.disabled = !hasText;
+      tabText.classList.toggle("active", artifactPreviewTab === "text" && hasText);
+    }
+    if (tabJson) {
+      tabJson.disabled = !hasJson;
+      tabJson.classList.toggle("active", artifactPreviewTab === "json" && hasJson);
+    }
+    if (dl) dl.disabled = !hasText && !hasJson;
+    if (!hasText && hasJson) artifactPreviewTab = "json";
+    if (hasText && artifactPreviewTab !== "json") artifactPreviewTab = "text";
+    if (body) {
+      body.classList.remove("muted");
+      if (artifactPreviewTab === "json" && hasJson) {
+        body.textContent = JSON.stringify(art.json, null, 2);
+      } else if (hasText) {
+        body.textContent = art.text;
+      } else {
+        body.textContent = "(brak treści podglądu)";
+        body.classList.add("muted");
+      }
+    }
+    if (dl) {
+      dl.onclick = () => downloadArtifact(art);
+    }
+  }
+
+  function downloadArtifact(art) {
+    if (!art) return;
+    let blob;
+    let name = art.filename || "mullm-artifact.txt";
+    if (artifactPreviewTab === "json" && art.json) {
+      blob = new Blob([JSON.stringify(art.json, null, 2)], { type: "application/json" });
+      name = name.replace(/\.txt$/i, ".json");
+    } else {
+      blob = new Blob([art.text || ""], {
+        type: art.mime || "text/plain;charset=utf-8",
+      });
+    }
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = name;
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
+    toast("Pobrano " + name, true);
+  }
+
+  function msgRoleLabel(role) {
+    if (role === "user") return "Ty";
+    if (role === "assistant") return "AI";
+    return role;
+  }
+
+  function appendMsgTo(box, role, content, meta, scroll, rawContent) {
     const div = document.createElement("div");
     div.className =
       "msg " + (role === "user" ? "user" : role === "system" ? "system" : "assistant");
+    const raw = String(rawContent ?? content ?? "");
+
+    if (role === "user" || role === "assistant") {
+      const head = document.createElement("div");
+      head.className = "msg-head";
+      const label = document.createElement("span");
+      label.className = "msg-role";
+      label.textContent = msgRoleLabel(role);
+      const copyBtn = document.createElement("button");
+      copyBtn.type = "button";
+      copyBtn.className = "btn ghost btn-sm msg-copy";
+      copyBtn.title = `Kopiuj wiadomość (${msgRoleLabel(role)})`;
+      copyBtn.textContent = "⎘";
+      copyBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        copyText(raw, msgRoleLabel(role)).catch((err) => toast(err.message, false));
+      });
+      head.appendChild(label);
+      head.appendChild(copyBtn);
+      div.appendChild(head);
+    }
+
     const body = document.createElement("div");
     body.className = "msg-body";
     body.textContent = content || "";
@@ -435,6 +626,11 @@
       });
       lastHistoryLen = -1;
       renderChat(data.history);
+      if (data.artifact) cacheArtifactFull(data.artifact);
+      syncArtifacts(data.artifacts || [], data.artifact || null);
+      if (data.intent === "file_list" && data.artifact?.list_scope) {
+        toast(`Lista plików · zakres: ${data.artifact.list_scope}`, true);
+      }
       renderClarify(data.clarify);
       if (!data.clarify) pendingClarify = null;
       renderContext(data.context);
@@ -550,26 +746,36 @@
     }
   }
 
+  function buildChatTextFromDom() {
+    const box = $("chat-messages");
+    const lines = ["# Mullm — okno czatu", ""];
+    if (sessionId) lines.push(`session_id: ${sessionId}`, "");
+    box?.querySelectorAll(".msg").forEach((msg) => {
+      let role = "assistant";
+      if (msg.classList.contains("user")) role = "user";
+      if (msg.classList.contains("system")) role = "system";
+      const body = msg.querySelector(".msg-body")?.textContent?.trim() || "";
+      if (!body) return;
+      const label = role === "user" ? "Ty" : role === "assistant" ? "AI" : role;
+      lines.push(`## ${label}`, body, "");
+    });
+    return lines.join("\n").trim() + "\n";
+  }
+
   async function copyChatToClipboard() {
     await ensureSession();
     try {
       const data = await api(
         `/api/workspace/chat/export?session_id=${encodeURIComponent(sessionId)}`
       );
-      await copyText(data.text || "", "chat");
+      await copyText(data.text || "", "cały chat");
     } catch {
-      const box = $("chat-messages");
-      const lines = ["# Mullm — transkrypt chatu", ""];
-      box?.querySelectorAll(".msg").forEach((msg) => {
-        let role = "assistant";
-        if (msg.classList.contains("user")) role = "user";
-        if (msg.classList.contains("system")) role = "system";
-        const body = msg.querySelector(".msg-body")?.textContent?.trim() || "";
-        if (!body) return;
-        lines.push(`## ${role}`, body, "");
-      });
-      await copyText(lines.join("\n"), "chat");
+      await copyText(buildChatTextFromDom(), "cały chat (widok)");
     }
+  }
+
+  async function copyChatViewToClipboard() {
+    await copyText(buildChatTextFromDom(), "widok czatu");
   }
 
   async function copyLogsToClipboard() {
@@ -580,10 +786,36 @@
     await copyText(data.text || JSON.stringify(data, null, 2), "logi");
   }
 
-  $("btn-copy-chat")?.addEventListener("click", () =>
-    copyChatToClipboard().catch((e) => toast(e.message, false))
+  function bindCopyChatButtons() {
+    const handlerFull = () => copyChatToClipboard().catch((e) => toast(e.message, false));
+    const handlerView = () => copyChatViewToClipboard().catch((e) => toast(e.message, false));
+    ["btn-copy-chat", "btn-copy-chat-inline"].forEach((id) => {
+      $(id)?.addEventListener("click", handlerFull);
+    });
+    ["btn-copy-chat-view", "btn-copy-chat-view-inline"].forEach((id) => {
+      $(id)?.addEventListener("click", handlerView);
+    });
+  }
+  bindCopyChatButtons();
+  $("btn-copy-logs")?.addEventListener("click", () =>
+    copyLogsToClipboard().catch((e) => toast(e.message, false))
   );
   $("btn-refresh")?.addEventListener("click", () => refreshWorkspace().catch((e) => toast(e.message, false)));
+  $("btn-artifacts-refresh")?.addEventListener("click", () =>
+    refreshWorkspace().catch((e) => toast(e.message, false))
+  );
+  $("artifact-tab-text")?.addEventListener("click", () => {
+    if ($("artifact-tab-text")?.disabled) return;
+    artifactPreviewTab = "text";
+    const art = selectedArtifactId && artifactFullCache.get(selectedArtifactId);
+    if (art) showArtifactPreview(art);
+  });
+  $("artifact-tab-json")?.addEventListener("click", () => {
+    if ($("artifact-tab-json")?.disabled) return;
+    artifactPreviewTab = "json";
+    const art = selectedArtifactId && artifactFullCache.get(selectedArtifactId);
+    if (art) showArtifactPreview(art);
+  });
 
   $("btn-save-note")?.addEventListener("click", async () => {
     const note = ($("ctx-note")?.value || "").trim();

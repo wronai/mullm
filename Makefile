@@ -4,6 +4,9 @@ COMPOSE ?= docker compose
 PROFILES ?= core rag
 NLP2DSL ?= 1
 NLP2DSL_DIR ?= ../nlp2dsl
+NLP2DSL_BACKEND_HOST_PORT ?= 8010
+NLP2DSL_NLP_HOST_PORT ?= 8012
+NLP2DSL_WORKER_HOST_PORT ?= 8004
 
 PROFILE_ARGS := $(foreach profile,$(PROFILES),--profile $(profile))
 
@@ -24,6 +27,7 @@ help:
 	@printf "\nOptions:\n"
 	@printf "  PROFILES=\"core rag\"  Compose profiles for Mullm\n"
 	@printf "  NLP2DSL=0             Do not manage ../nlp2dsl\n"
+	@printf "  NLP2DSL_*_HOST_PORT   Override nlp2dsl smoke ports\n"
 
 up: ensure-env
 	$(COMPOSE) $(PROFILE_ARGS) up -d
@@ -56,8 +60,9 @@ smoke:
 	curl -fsS http://127.0.0.1:8001/health
 	curl -fsS http://127.0.0.1:8002/health
 	@if [ "$(NLP2DSL)" = "1" ] && [ -f "$(NLP2DSL_DIR)/docker-compose.yml" ]; then \
-		curl -fsS -o /dev/null -w 'nlp2dsl backend: %{http_code}\n' http://127.0.0.1:8010/docs; \
-		curl -fsS -o /dev/null -w 'nlp2dsl nlp: %{http_code}\n' http://127.0.0.1:8012/docs; \
+		curl -fsS -o /dev/null -w 'nlp2dsl backend: %{http_code}\n' http://127.0.0.1:$(NLP2DSL_BACKEND_HOST_PORT)/docs && \
+		curl -fsS -o /dev/null -w 'nlp2dsl nlp: %{http_code}\n' http://127.0.0.1:$(NLP2DSL_NLP_HOST_PORT)/docs && \
+		curl -fsS -o /dev/null -w 'nlp2dsl worker: %{http_code}\n' http://127.0.0.1:$(NLP2DSL_WORKER_HOST_PORT)/health; \
 	fi
 
 ensure-env:

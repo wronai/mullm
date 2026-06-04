@@ -127,7 +127,20 @@ def list_groups() -> list[dict[str, Any]]:
 
 
 def agent_may_access(role_id: str, area_id: str, action: str = "read") -> dict[str, Any]:
-    """Decyzja MVP: allow | deny | approval."""
+    """Decyzja MVP: allow | deny | approval (+ macierz z /access)."""
+    try:
+        from app.access_matrix import agent_may_access_resource
+
+        if not agent_may_access_resource(role_id, area_id):
+            return {
+                "decision": "deny",
+                "reason": "matrix_agent_resource",
+                "area_id": area_id,
+                "action": action,
+            }
+    except Exception:
+        pass
+
     areas = DEFAULT_ROLE_SCOPES.get(role_id, [])
     meta = AREA_CATALOG.get(area_id)
     if not meta:

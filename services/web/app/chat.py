@@ -2,16 +2,34 @@ from __future__ import annotations
 
 import re
 import uuid
+from datetime import datetime, timezone
 from typing import Any
 
 import httpx
 
 _FILE_LIST_INTENT = re.compile(
     r"(lista\s+plik|jakie\s+pliki|poka[zż]\s+plik|wykaz\s+plik|"
-    r"list\s+files|show\s+files|dost[eę]pne\s+plik|"
-    r"co\s+jest\s+w\s+indeks|pliki\s+w\s+scope|zasoby\s+w\s+systemie)",
+    r"list\s+files|show\s+files|list\s+user\s+files|lista\s+user\s+files|"
+    r"user\s+files|lista\s+plik[oó]w\s+usera|"
+    r"dost[eę]pne\s+plik|co\s+jest\s+w\s+indeks|pliki\s+w\s+scope|zasoby\s+w\s+systemie)",
     re.IGNORECASE,
 )
+
+_FILE_LIST_TITLES = {
+    "all": "Zarejestrowane pliki i zasoby",
+    "user": "Pliki użytkownika (wgrane, localfs)",
+    "system": "Zasoby systemowe i kontekst (tickety, …)",
+    "session": "Pliki w scope tej sesji",
+    "rag": "Dokumenty w indeksie RAG",
+}
+
+_RESOURCE_LABELS = {
+    "user": "Rejestr — pliki użytkownika (Access Fabric)",
+    "system": "Rejestr — zasoby systemowe",
+    "session": "Rejestr — dopasowane do sesji",
+    "rag": "Rejestr",
+    "all": "Rejestr zasobów (Access Fabric)",
+}
 
 ORCHESTRATOR_URL = None  # set from main
 
@@ -43,6 +61,25 @@ def is_file_list_intent(message: str) -> bool:
         return True
     if "plik" in lowered and any(w in lowered for w in ("lista", "list", "wykaz", "poka")):
         return True
+    # literówki: „list aplikow usera” (aplikow ⊃ plik)
+    if re.search(r"\baplik", lowered) and any(
+        w in lowered for w in ("lista", "list", "wykaz", "poka")
+    ):
+        return True
+    # literówki: „lista pikow usera” (brak „l” w plikow)
+    if re.search(r"\bpik[o0]?w", lowered) and any(
+        w in lowered for w in ("lista", "list", "wykaz", "poka")
+    ):
+        return True
+    # EN: „lista user files”, „list my files”, „show user files”
+    if re.search(r"\b(files?|file)\b", lowered) and any(
+        w in lowered for w in ("lista", "list", "show", "wykaz", "poka")
+    ):
+        return True
+    if re.search(r"\buser\s+files?\b", lowered) or re.search(
+        r"\bfiles?\s+user\b", lowered
+    ):
+        return True
     return False
 
 
@@ -55,7 +92,8 @@ def file_list_scope(message: str) -> str:
     if re.search(r"\b(systemu|systemow[eay]?|systemowe|system\b)", lowered):
         return "system"
     if re.search(
-        r"\b(usera|użytkownika|uzytkownika|użytkownik|user\b|moje\s+plik|wgrane|upload)",
+        r"\b(usera|użytkownika|uzytkownika|użytkownik|user\b|user\s+files?|files?\s+user|"
+        r"moje\s+plik|wgrane|upload)",
         lowered,
     ):
         return "user"
@@ -172,89 +210,149 @@ def format_file_list_reply(
     scope_uris = scope_uris or []
     list_scope = list_scope or inventory.get("list_scope") or "all"
 
-    titles = {
-        "all": "Zarejestrowane pliki i zasoby",
-        "user": "Pliki użytkownika (wgrane, localfs)",
-        "system": "Zasoby systemowe i kontekst (tickety, …)",
-        "session": "Pliki w scope tej sesji",
-        "rag": "Dokumenty w indeksie RAG",
-    }
-    lines = [titles.get(list_scope, titles["all"]), ""]
-
-    if list_scope in ("all", "session", "user"):
-        lines.append("Wgrane w tej sesji (chat):")
-        if scope_files:
-            for name in scope_files:
-                lines.append(f"  • {name}")
-        else:
-            lines.append("  • (brak — użyj 📎 Załącz plik)")
-        if list_scope == "all":
-            lines.append("")
-            lines.append("URI powiązane z sesją (kontekst, nie zawsze plik):")
-            if scope_uris:
-                for uri in scope_uris:
-                    tag = "plik" if _uri_is_user_resource(uri) else "kontekst"
-                    lines.append(f"  • {uri} ({tag})")
-            else:
-                lines.append("  • —")
-        lines.append("")
-
+    lines = [_FILE_LIST_TITLES.get(list_scope, _FILE_LIST_TITLES["all"]), ""]
+    _append_session_files(lines, list_scope, scope_files, scope_uris)
     resources = inventory.get("resources") or []
-    reg_label = {
-        "user": "Rejestr — pliki użytkownika (Access Fabric)",
-        "system": "Rejestr — zasoby systemowe",
-        "session": "Rejestr — dopasowane do sesji",
-        "rag": "Rejestr",
-        "all": "Rejestr zasobów (Access Fabric)",
-    }.get(list_scope, "Rejestr zasobów (Access Fabric)")
-    lines.append(f"{reg_label}: {len(resources)}")
-    if resources:
-        for i, row in enumerate(resources, 1):
-            name = row.get("name") or row.get("resource_id", "?")[:8]
-            uri = row.get("uri") or "—"
-            status = row.get("status") or "?"
-            cls = row.get("classification") or ""
-            lines.append(f"  {i}. {name} | {uri} | status={status} | {cls}")
-    else:
-        if list_scope == "user":
-            lines.append(
-                "  (brak w rejestrze — wgraj plik przez 📎; "
-                "pliki użytkownika to zwykle mullm://localfs/…)"
-            )
-        else:
-            lines.append("  (pusto — wgraj plik na dole workspace)")
-
+    _append_resource_rows(lines, list_scope, resources)
     rag_docs = inventory.get("rag_documents") or []
-    if list_scope != "user" or rag_docs:
+    _append_rag_rows(lines, list_scope, rag_docs)
+    _append_file_list_errors(lines, inventory.get("errors") or [])
+    _append_file_list_tip(lines, list_scope, resources, scope_files)
+    return "\n".join(lines)
+
+
+def _append_session_files(
+    lines: list[str],
+    list_scope: str,
+    scope_files: list[str],
+    scope_uris: list[str],
+) -> None:
+    if list_scope not in ("all", "session", "user"):
+        return
+    lines.append("Wgrane w tej sesji (chat):")
+    lines.extend(f"  • {name}" for name in scope_files)
+    if not scope_files:
+        lines.append("  • (brak — użyj 📎 Załącz plik)")
+    if list_scope == "user":
+        ctx_only = [u for u in scope_uris if not _uri_is_user_resource(u)]
+        if ctx_only:
+            lines.append("")
+            lines.append("Powiązany kontekst (nie plik użytkownika):")
+            for uri in ctx_only:
+                lines.append(f"  • {uri}")
+    if list_scope == "all":
         lines.append("")
-        rag_label = "Indeks RAG" if list_scope != "rag" else "Indeks RAG (tylko)"
-        lines.append(f"{rag_label}: {len(rag_docs)} dokument(ów)")
-    if rag_docs:
-        for i, doc in enumerate(rag_docs, 1):
-            name = doc.get("name") or doc.get("resource_id", "?")[:8]
-            uri = doc.get("uri") or "—"
-            status = doc.get("status") or "?"
-            chunks = doc.get("chunk_count", "?")
-            lines.append(f"  {i}. {name} | {uri} | RAG={status} | chunków={chunks}")
-    else:
+        lines.append("URI powiązane z sesją (kontekst, nie zawsze plik):")
+        lines.extend(_format_scope_uri(uri) for uri in scope_uris)
+        if not scope_uris:
+            lines.append("  • —")
+    lines.append("")
+
+
+def _format_scope_uri(uri: str) -> str:
+    tag = "plik" if _uri_is_user_resource(uri) else "kontekst"
+    return f"  • {uri} ({tag})"
+
+
+def _append_resource_rows(
+    lines: list[str],
+    list_scope: str,
+    resources: list[dict[str, Any]],
+) -> None:
+    label = _RESOURCE_LABELS.get(list_scope, _RESOURCE_LABELS["all"])
+    lines.append(f"{label}: {len(resources)}")
+    if not resources:
+        lines.append(_empty_resource_hint(list_scope))
+        return
+    for i, row in enumerate(resources, 1):
+        name = row.get("name") or row.get("resource_id", "?")[:8]
+        uri = row.get("uri") or "—"
+        status = row.get("status") or "?"
+        cls = row.get("classification") or ""
+        lines.append(f"  {i}. {name} | {uri} | status={status} | {cls}")
+
+
+def _empty_resource_hint(list_scope: str) -> str:
+    if list_scope == "user":
+        return (
+            "  (brak w rejestrze — wgraj plik przez 📎; "
+            "pliki użytkownika to zwykle mullm://localfs/…)"
+        )
+    return "  (pusto — wgraj plik na dole workspace)"
+
+
+def _append_rag_rows(
+    lines: list[str],
+    list_scope: str,
+    rag_docs: list[dict[str, Any]],
+) -> None:
+    if list_scope == "user" and not rag_docs:
+        return
+    lines.append("")
+    rag_label = "Indeks RAG" if list_scope != "rag" else "Indeks RAG (tylko)"
+    lines.append(f"{rag_label}: {len(rag_docs)} dokument(ów)")
+    if not rag_docs:
         lines.append("  (pusto)")
+        return
+    for i, doc in enumerate(rag_docs, 1):
+        name = doc.get("name") or doc.get("resource_id", "?")[:8]
+        uri = doc.get("uri") or "—"
+        status = doc.get("status") or "?"
+        chunks = doc.get("chunk_count", "?")
+        lines.append(f"  {i}. {name} | {uri} | RAG={status} | chunków={chunks}")
 
-    errs = inventory.get("errors") or []
-    if errs:
+
+def _append_file_list_errors(lines: list[str], errors: list[str]) -> None:
+    if errors:
         lines.append("")
-        lines.append("Uwagi: " + "; ".join(errs))
+        lines.append("Uwagi: " + "; ".join(errors))
 
+
+def _append_file_list_tip(
+    lines: list[str],
+    list_scope: str,
+    resources: list[dict[str, Any]],
+    scope_files: list[str],
+) -> None:
     lines.append("")
     if list_scope == "user" and not resources and not scope_files:
         lines.append(
             "Tip: aby dodać plik użytkownika — 📎 w czacie lub skopiuj do "
             "volume Access Fabric (localfs)."
         )
-    else:
         lines.append(
-            "Tip: treść pliku — tryb „RAG” w czacie + konkretne pytanie o fragmencie."
+            "ℹ Źródło listy: rejestr Mullm (Access Fabric + RAG), nie dysk hosta. "
+            "Shell agent nie jest używany — do ls na hoście użyj trybu Shell / run …"
         )
-    return "\n".join(lines)
+        return
+    if list_scope == "user":
+        lines.append(
+            "ℹ Lista z rejestru Mullm (nie shell). Shell agent = osobne tickety, nie ta komenda."
+        )
+        return
+    lines.append(
+        "Tip: treść pliku — tryb „RAG” w czacie + konkretne pytanie o fragmencie."
+    )
+
+
+def build_file_list_artifact(
+    reply_text: str,
+    inventory: dict[str, Any],
+    *,
+    session_id: str,
+    list_scope: str,
+) -> dict[str, Any]:
+    """Artefakt do pobrania w UI (Blob) lub ponownego exportu API."""
+    ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    filename = f"mullm-pliki-{list_scope}-{session_id[:8]}-{ts}.txt"
+    return {
+        "kind": "file_list",
+        "list_scope": list_scope,
+        "filename": filename,
+        "mime": "text/plain; charset=utf-8",
+        "text": reply_text,
+        "json": inventory,
+    }
 
 
 _sessions: dict[str, list[dict[str, Any]]] = {}
@@ -315,112 +413,225 @@ async def handle_message(
 
     _append(session_id, "user", message)
     sources: list[dict[str, Any]] = []
-    answer: str | None = None
     last_payload: dict[str, Any] | None = None
-    inventory: dict[str, Any] | None = None
+    inventory, answer, use_rag = await _file_list_answer(
+        message,
+        use_rag=use_rag,
+        scope_files=scope_files,
+        scope_uris=scope_uris,
+    )
 
-    if is_file_list_intent(message):
-        scope_kind = file_list_scope(message)
-        inventory = filter_file_inventory(
-            await fetch_file_inventory(),
-            scope_kind,
-            scope_files=scope_files,
-            scope_uris=scope_uris,
-        )
-        answer = format_file_list_reply(
-            inventory,
-            scope_files=scope_files,
-            scope_uris=scope_uris,
-            list_scope=scope_kind,
-        )
-        use_rag = False
+    if use_rag:
+        rag = await _ask_rag(session_id=session_id, message=message)
+        answer = rag["answer"]
+        sources = rag["sources"]
+        last_payload = rag.get("payload")
 
-    async with httpx.AsyncClient(timeout=90.0) as client:
-        if use_rag:
-            history_block = _format_history(session_id)
-            query = (
-                f"Kontekst rozmowy:\n{history_block}\n\n"
-                f"Aktualne pytanie użytkownika: {message}"
-            )
-            incident_note: str | None = None
-            correlation_id = session_id
-            headers = {
-                "X-Correlation-ID": correlation_id,
-                "X-Chat-Session-ID": session_id,
-            }
-            try:
-                resp = await client.post(
-                    f"{_orch()}/api/rag/ask",
-                    json={"query": query, "limit": 6, "chat_session_id": session_id},
-                    headers=headers,
-                )
-                if resp.status_code == 200:
-                    payload = resp.json()
-                    last_payload = payload
-                    answer = payload.get("answer")
-                    sources = payload.get("sources") or []
-                    incident_note = _format_incident(payload)
-                    if incident_note and answer:
-                        answer = f"[{incident_note}]\n\n{answer}"
-                    elif incident_note and not answer:
-                        answer = f"[{incident_note}]"
-                    if not answer and sources:
-                        previews = [
-                            f"- {s.get('name') or s.get('uri')}: {s.get('content_preview', '')[:200]}"
-                            for s in sources[:4]
-                        ]
-                        err = payload.get("llm_error") or payload.get("reason")
-                        answer = (
-                            (f"Uwaga: {err}\n\n" if err else "")
-                            + "Znalezione fragmenty:\n"
-                            + "\n".join(previews)
-                        )
-                elif resp.status_code >= 500:
-                    # fallback: samo wyszukiwanie bez LLM
-                    search_resp = await client.post(
-                        f"{_orch()}/api/rag/search",
-                        json={"query": message, "limit": 6},
-                    )
-                    if search_resp.status_code == 200:
-                        sources = search_resp.json().get("items") or []
-                        if sources:
-                            answer = "Wyszukiwanie (bez LLM):\n" + "\n".join(
-                                f"- {s.get('content_preview', '')[:200]}"
-                                for s in sources[:4]
-                            )
-                    if not answer:
-                        diag = await client.get(
-                            f"{_orch()}/api/observability/health/rag",
-                            headers=headers,
-                        )
-                        hint = ""
-                        if diag.status_code == 200:
-                            d = diag.json()
-                            code = d.get("primary_incident_code")
-                            recs = d.get("recommendations") or []
-                            hint = f" {code}" if code else ""
-                            if recs:
-                                hint += f" — {recs[0]}"
-                        answer = (
-                            f"RAG_BACKEND_UNAVAILABLE ({resp.status_code}){hint}. "
-                            f"trace={headers['X-Correlation-ID'][:12]}… "
-                            "Użyj formularza zadań."
-                        )
-                else:
-                    answer = (
-                        f"RAG niedostępny ({resp.status_code}). "
-                        f"correlation={correlation_id[:12]}…"
-                    )
-            except httpx.HTTPError as exc:
-                answer = f"Nie udało się połączyć z orchestratorem: {exc}"
-
-        if not answer:
-            answer = (
-                "Otrzymałem wiadomość. Mogę pomóc w kontekście z plików po uploadzie "
-                "lub utworzyć zadanie agenta (shell) z formularza po prawej."
-            )
+    answer = answer or _default_chat_reply()
 
     _append(session_id, "assistant", answer, sources=sources)
+    return _message_response(
+        session_id=session_id,
+        answer=answer,
+        sources=sources,
+        inventory=inventory,
+        use_rag=use_rag,
+        last_payload=last_payload,
+    )
+
+
+async def _file_list_answer(
+    message: str,
+    *,
+    use_rag: bool,
+    scope_files: list[str] | None,
+    scope_uris: list[str] | None,
+) -> tuple[dict[str, Any] | None, str | None, bool]:
+    if not is_file_list_intent(message):
+        return None, None, use_rag
+    scope_kind = file_list_scope(message)
+    inventory = filter_file_inventory(
+        await fetch_file_inventory(),
+        scope_kind,
+        scope_files=scope_files,
+        scope_uris=scope_uris,
+    )
+    answer = format_file_list_reply(
+        inventory,
+        scope_files=scope_files,
+        scope_uris=scope_uris,
+        list_scope=scope_kind,
+    )
+    return inventory, answer, False
+
+
+async def _ask_rag(*, session_id: str, message: str) -> dict[str, Any]:
+    headers = _rag_headers(session_id)
+    query = _rag_query(session_id, message)
+    async with httpx.AsyncClient(timeout=90.0) as client:
+        try:
+            resp = await client.post(
+                f"{_orch()}/api/rag/ask",
+                json={"query": query, "limit": 6, "chat_session_id": session_id},
+                headers=headers,
+            )
+            if resp.status_code == 200:
+                payload = resp.json()
+                sources = payload.get("sources") or []
+                return {
+                    "answer": _answer_from_rag_payload(payload, sources),
+                    "sources": sources,
+                    "payload": payload,
+                }
+            if resp.status_code >= 500:
+                return await _rag_backend_fallback(
+                    client,
+                    message=message,
+                    headers=headers,
+                    status_code=resp.status_code,
+                )
+            return {
+                "answer": (
+                    f"RAG niedostępny ({resp.status_code}). "
+                    f"correlation={session_id[:12]}…"
+                ),
+                "sources": [],
+                "payload": None,
+            }
+        except httpx.HTTPError as exc:
+            return {
+                "answer": f"Nie udało się połączyć z orchestratorem: {exc}",
+                "sources": [],
+                "payload": None,
+            }
+
+
+def _rag_headers(session_id: str) -> dict[str, str]:
+    return {
+        "X-Correlation-ID": session_id,
+        "X-Chat-Session-ID": session_id,
+    }
+
+
+def _rag_query(session_id: str, message: str) -> str:
+    history_block = _format_history(session_id)
+    return (
+        f"Kontekst rozmowy:\n{history_block}\n\n"
+        f"Aktualne pytanie użytkownika: {message}"
+    )
+
+
+def _answer_from_rag_payload(
+    payload: dict[str, Any],
+    sources: list[dict[str, Any]],
+) -> str | None:
+    answer = payload.get("answer")
+    incident_note = _format_incident(payload)
+    if incident_note and answer:
+        return f"[{incident_note}]\n\n{answer}"
+    if incident_note:
+        return f"[{incident_note}]"
+    if sources and not answer:
+        return _sources_fallback_answer(payload, sources)
+    return answer
+
+
+def _sources_fallback_answer(
+    payload: dict[str, Any],
+    sources: list[dict[str, Any]],
+) -> str:
+    err = payload.get("llm_error") or payload.get("reason")
+    prefix = f"Uwaga: {err}\n\n" if err else ""
+    return prefix + "Znalezione fragmenty:\n" + "\n".join(
+        _source_preview(source) for source in sources[:4]
+    )
+
+
+def _source_preview(source: dict[str, Any]) -> str:
+    label = source.get("name") or source.get("uri")
+    return f"- {label}: {source.get('content_preview', '')[:200]}"
+
+
+async def _rag_backend_fallback(
+    client: httpx.AsyncClient,
+    *,
+    message: str,
+    headers: dict[str, str],
+    status_code: int,
+) -> dict[str, Any]:
+    search = await _rag_search_fallback(client, message)
+    if search["answer"]:
+        return search
+    return {
+        "answer": await _rag_unavailable_answer(client, headers, status_code),
+        "sources": [],
+        "payload": None,
+    }
+
+
+async def _rag_search_fallback(
+    client: httpx.AsyncClient,
+    message: str,
+) -> dict[str, Any]:
+    search_resp = await client.post(
+        f"{_orch()}/api/rag/search",
+        json={"query": message, "limit": 6},
+    )
+    if search_resp.status_code != 200:
+        return {"answer": None, "sources": [], "payload": None}
+    sources = search_resp.json().get("items") or []
+    if not sources:
+        return {"answer": None, "sources": [], "payload": None}
+    answer = "Wyszukiwanie (bez LLM):\n" + "\n".join(
+        f"- {s.get('content_preview', '')[:200]}" for s in sources[:4]
+    )
+    return {"answer": answer, "sources": sources, "payload": None}
+
+
+async def _rag_unavailable_answer(
+    client: httpx.AsyncClient,
+    headers: dict[str, str],
+    status_code: int,
+) -> str:
+    hint = await _rag_diagnostics_hint(client, headers)
+    return (
+        f"RAG_BACKEND_UNAVAILABLE ({status_code}){hint}. "
+        f"trace={headers['X-Correlation-ID'][:12]}… "
+        "Użyj formularza zadań."
+    )
+
+
+async def _rag_diagnostics_hint(
+    client: httpx.AsyncClient,
+    headers: dict[str, str],
+) -> str:
+    diag = await client.get(f"{_orch()}/api/observability/health/rag", headers=headers)
+    if diag.status_code != 200:
+        return ""
+    data = diag.json()
+    hint = f" {data.get('primary_incident_code')}" if data.get("primary_incident_code") else ""
+    recs = data.get("recommendations") or []
+    if recs:
+        hint += f" — {recs[0]}"
+    return hint
+
+
+def _default_chat_reply() -> str:
+    return (
+        "Otrzymałem wiadomość. Mogę pomóc w kontekście z plików po uploadzie "
+        "lub utworzyć zadanie agenta (shell) z formularza po prawej."
+    )
+
+
+def _message_response(
+    *,
+    session_id: str,
+    answer: str,
+    sources: list[dict[str, Any]],
+    inventory: dict[str, Any] | None,
+    use_rag: bool,
+    last_payload: dict[str, Any] | None,
+) -> dict[str, Any]:
     out: dict[str, Any] = {
         "session_id": session_id,
         "reply": answer,
@@ -431,6 +642,12 @@ async def handle_message(
     }
     if inventory:
         out["inventory"] = inventory
+        out["artifact"] = build_file_list_artifact(
+            answer or "",
+            inventory,
+            session_id=session_id,
+            list_scope=inventory.get("list_scope") or "all",
+        )
     if last_payload:
         out["incident"] = last_payload.get("incident")
         out["retrieval_trace_id"] = last_payload.get("retrieval_trace_id")

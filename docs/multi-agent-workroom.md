@@ -68,6 +68,18 @@ COMPOSE_PROFILES=core,web,nlp2dsl
 
 Intencja `lista plików` jest obsługiwana **przed** nlp2dsl (`conductor._mullm_file_list_turn`), żeby uniknąć odpowiedzi „Nie rozpoznałem intencji”.
 
+| Komenda | Zakres | Źródło danych |
+|---------|--------|----------------|
+| `lista plikow` | all | Access Fabric + RAG + URI sesji |
+| `lista plikow usera` | user | tylko `mullm://localfs/…`, upload, `file://` |
+| `list aplikow usera` | user | jak wyżej (literówka „aplikow”) |
+
+**Nie używa shell agenta** — to rejestr Mullm (projector + orchestrator), nie `ls` na hoście. Shell: tryb **Shell** lub `run ls -la` w czacie głównym.
+
+Workroom (`/workroom`) używa tego samego filtra w kroku `files_agent`.
+
+UI: `/` — artefakt po prawej, **⎘** na wiadomościach, **Cały chat** / **Logi** w nagłówku. Macierze ACL: `/access`.
+
 ## Roadmap (skrót)
 
 1. Event store + projections dla workroom

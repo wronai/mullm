@@ -102,8 +102,6 @@ flowchart TD
         services__projector__app__projections__approval_requests__project_approval_requests["project_approval_requests"]
         services__projector__app__projections__dispatcher__project_event["project_event"]
         services__projector__app__projections__dispatcher___normalize_event["_normalize_event"]
-        services__projector__app__projections__agent_fleet__project_agent_fleet("project_agent_fleet CC=8")
-        services__projector__app__projections__plugin_catalog__project_plugin_catalog["project_plugin_catalog"]
         services__projector__app__projections__incidents__project_incidents["project_incidents"]
         services__projector__app__projections__incidents___handle_rag_request_failed["_handle_rag_request_failed"]
         services__projector__app__projections__incidents___handle_incident_detected["_handle_incident_detected"]
@@ -120,57 +118,10 @@ flowchart TD
         services__projector__app__projections__incidents___checks_payload("_checks_payload CC=10")
         services__projector__app__projections__incidents___root_cause["_root_cause"]
         services__projector__app__projections__incidents___diagnostics_ok["_diagnostics_ok"]
+        services__projector__app__projections__agent_fleet__project_agent_fleet("project_agent_fleet CC=8")
+        services__projector__app__projections__plugin_catalog__project_plugin_catalog["project_plugin_catalog"]
     end
     subgraph services__web
-        services__web__app__api_routes__start_chat_session["start_chat_session"]
-        services__web__app__api_routes__get_chat_session["get_chat_session"]
-        services__web__app__api_routes__workspace_state["workspace_state"]
-        services__web__app__api_routes__chat_message["chat_message"]
-        services__web__app__api_routes__task_draft["task_draft"]
-        services__web__app__api_routes__create_task["create_task"]
-        services__web__app__api_routes__create_task_from_draft["create_task_from_draft"]
-        services__web__app__api_routes__create_and_run_task["create_and_run_task"]
-        services__web__app__api_routes__context_attach["context_attach"]
-        services__web__app__api_routes__upload_files["upload_files"]
-        services__web__app__api_routes__board_snapshot["board_snapshot"]
-        services__web__app__api_routes__list_tickets("list_tickets CC=10")
-        services__web__app__api_routes__get_ticket["get_ticket"]
-        services__web__app__api_routes__confirm_ticket{{confirm_ticket CC=19}}
-        services__web__app__api_routes__archive_ticket["archive_ticket"]
-        services__web__app__api_routes__link_ticket["link_ticket"]
-        services__web__app__api_routes__ticket_statuses["ticket_statuses"]
-        services__web__app__api_routes__workspace_chat_export["workspace_chat_export"]
-        services__web__app__api_routes__workspace_logs_export["workspace_logs_export"]
-        services__web__app__api_routes__workroom_start["workroom_start"]
-        services__web__app__api_routes__workroom_get["workroom_get"]
-        services__web__app__api_routes__workroom_run["workroom_run"]
-        services__web__app__api_routes__api_resource_areas["api_resource_areas"]
-        services__web__app__api_routes__api_role_scopes["api_role_scopes"]
-        services__web__app__workspace___orch["_orch"]
-        services__web__app__workspace___projector["_projector"]
-        services__web__app__workspace__WorkspaceContext__to_dict["to_dict"]
-        services__web__app__workspace__WorkspaceSession__add_event["add_event"]
-        services__web__app__workspace__new_session["new_session"]
-        services__web__app__workspace__get_session["get_session"]
-        services__web__app__workspace__get_or_create["get_or_create"]
-        services__web__app__workspace__workspace_state["workspace_state"]
-        services__web__app__workspace__attach_context("attach_context CC=12")
-        services__web__app__workspace___extract_ticket["_extract_ticket"]
-        services__web__app__workspace___extract_shell_command["_extract_shell_command"]
-        services__web__app__workspace__build_task_payload["build_task_payload"]
-        services__web__app__workspace__propose_task_draft["propose_task_draft"]
-        services__web__app__workspace__create_task_immediate["create_task_immediate"]
-        services__web__app__workspace__handle_chat_message{{handle_chat_message CC=21}}
-        services__web__app__workspace__create_task_from_draft["create_task_from_draft"]
-        services__web__app__workspace__create_and_run["create_and_run"]
-        services__web__app__workspace__export_debug_logs{{export_debug_logs CC=15}}
-        services__web__app__workspace___format_export_text{{_format_export_text CC=47}}
-        services__web__app__workspace__archive_task["archive_task"]
-        services__web__app__workspace__link_ticket["link_ticket"]
-        services__web__app__workspace__fetch_live_board["fetch_live_board"]
-        services__web__app__resource_areas__list_areas["list_areas"]
-        services__web__app__resource_areas__list_groups["list_groups"]
-        services__web__app__resource_areas__agent_may_access["agent_may_access"]
         services__web__app__agent_workroom__LedgerEntry__to_dict["to_dict"]
         services__web__app__agent_workroom__WorkroomSession__add_ledger["add_ledger"]
         services__web__app__agent_workroom__WorkroomSession__agent_say["agent_say"]
@@ -182,6 +133,55 @@ flowchart TD
         services__web__app__agent_workroom__run_workroom{{run_workroom CC=22}}
         services__web__app__agent_workroom__workroom_catalog["workroom_catalog"]
         services__web__app__tickets__ticket_uri["ticket_uri"]
+        services__web__app__tickets__ticket_web_path["ticket_web_path"]
+        services__web__app__tickets__status_meta["status_meta"]
+        services__web__app__tickets__enrich_task["enrich_task"]
+        services__web__app__nlp2dsl_bridge__backend_url["backend_url"]
+        services__web__app__nlp2dsl_bridge__backend_candidates["backend_candidates"]
+        services__web__app__nlp2dsl_bridge__health["health"]
+        services__web__app__nlp2dsl_bridge__chat_start["chat_start"]
+        services__web__app__nlp2dsl_bridge__chat_message["chat_message"]
+        services__web__app__nlp2dsl_bridge___post_json["_post_json"]
+        services__web__app__nlp2dsl_bridge__form_to_prompt["form_to_prompt"]
+        services__web__app__nlp2dsl_bridge__primary_action["primary_action"]
+        services__web__app__nlp2dsl_bridge__step_config["step_config"]
+        services__web__app__static__workroom__workroomId["workroomId"]
+        services__web__app__static__workroom__userSessionId["userSessionId"]
+        services__web__app__static__workroom__toast["toast"]
+        services__web__app__static__workroom__api["api"]
+        services__web__app__static__workroom__r["r"]
+        services__web__app__static__workroom__data["data"]
+        services__web__app__static__workroom__escapeHtml["escapeHtml"]
+        services__web__app__static__workroom__ensureWorkroom["ensureWorkroom"]
+        services__web__app__static__workroom__renderCatalog("renderCatalog CC=11")
+        services__web__app__static__workroom__loadAreas["loadAreas"]
+        services__web__app__static__workroom__renderThread["renderThread"]
+        services__web__app__static__workroom__st["st"]
+        services__web__app__static__workroom__renderLedger["renderLedger"]
+        services__web__app__static__workroom__renderState["renderState"]
+        services__web__app__static__workroom__runAgents["runAgents"]
+        services__web__app__static__workroom__text["text"]
+        services__web__app__static__workroom__refresh["refresh"]
+        services__web__app__static__app__sessionId["sessionId"]
+        services__web__app__static__app__toast["toast"]
+        services__web__app__static__app__appendMessage["appendMessage"]
+        services__web__app__static__app__div["div"]
+        services__web__app__static__app__m["m"]
+        services__web__app__static__app__renderHistory["renderHistory"]
+        services__web__app__static__app__ensureSession["ensureSession"]
+        services__web__app__static__app__r["r"]
+        services__web__app__static__app__data["data"]
+        services__web__app__static__app__uploadFiles("uploadFiles CC=8")
+        services__web__app__static__app__files["files"]
+        services__web__app__static__app__fd["fd"]
+        services__web__app__static__app__text{{text CC=16}}
+        services__web__app__static__app__uploaded["uploaded"]
+        services__web__app__static__app__rowTask["rowTask"]
+        services__web__app__static__app__escapeHtml["escapeHtml"]
+        services__web__app__static__app__refreshTables["refreshTables"]
+        services__web__app__static__app__tasksBody["tasksBody"]
+        services__web__app__static__app__tasks["tasks"]
+        services__web__src__main__ORCHESTRATOR_URL{{ORCHESTRATOR_URL CC=15}}
     end
     services__projector__app__main__lifespan --> services__projector__app__projections__dispatcher__project_event
     services__projector__app__main__operational_feed --> services__projector__app__main___row_to_dict
@@ -208,33 +208,23 @@ flowchart TD
     services__projector__app__projections__dispatcher__project_event --> services__projector__app__projections__plugin_catalog__project_plugin_catalog
     services__projector__app__projections__dispatcher__project_event --> services__projector__app__projections__resource_registry__project_resource_registry
     services__projector__app__projections__dispatcher__project_event --> services__projector__app__projections__incidents__project_incidents
-    services__web__app__api_routes__chat_message --> services__web__app__conductor__handle_turn
-    services__web__app__api_routes__list_tickets --> services__web__app__tickets__enrich_task
-    services__web__app__api_routes__get_ticket --> services__web__app__tickets__enrich_task
-    services__web__app__workspace__get_or_create --> services__web__app__workspace__new_session
-    services__web__app__workspace__workspace_state --> services__web__app__workspace__get_or_create
-    services__web__app__workspace__attach_context --> services__web__app__workspace__get_or_create
-    services__web__app__workspace__build_task_payload --> services__web__app__workspace__get_or_create
-    services__web__app__workspace__build_task_payload --> services__web__app__workspace___extract_shell_command
-    services__web__app__workspace__build_task_payload --> services__web__app__workspace___extract_ticket
-    services__web__app__workspace__propose_task_draft --> services__web__app__workspace__build_task_payload
-    services__web__app__workspace__create_task_immediate --> services__web__app__workspace__get_or_create
-    services__web__app__workspace__create_task_immediate --> services__web__app__workspace__link_ticket
-    services__web__app__workspace__handle_chat_message --> services__web__app__workspace__get_or_create
-    services__web__app__workspace__handle_chat_message --> services__web__app__workspace___extract_ticket
-    services__web__app__workspace__handle_chat_message --> services__web__app__workspace__attach_context
-    services__web__app__workspace__handle_chat_message --> services__web__app__workspace___extract_shell_command
-    services__web__app__workspace__handle_chat_message --> services__web__app__workspace__build_task_payload
-    services__web__app__workspace__create_task_from_draft --> services__web__app__workspace__create_task_immediate
-    services__web__app__workspace__create_task_from_draft --> services__web__app__workspace__get_or_create
-    services__web__app__workspace__create_and_run --> services__web__app__workspace__create_task_immediate
-    services__web__app__workspace__create_and_run --> services__web__app__workspace__get_or_create
-    services__web__app__workspace__export_debug_logs --> services__web__app__workspace__get_or_create
-    services__web__app__workspace__export_debug_logs --> services__web__app__workspace___format_export_text
-    services__web__app__workspace__archive_task --> services__web__app__workspace__get_or_create
-    services__web__app__workspace__link_ticket --> services__web__app__workspace__get_or_create
-    services__web__app__workspace__fetch_live_board --> services__web__app__static__workspace__items
-    services__web__app__workspace__fetch_live_board --> services__web__app__workspace___projector
+    services__projector__app__projections__incidents___handle_rag_request_failed --> services__projector__app__projections__incidents___upsert_rag_quality
+    services__projector__app__projections__incidents___handle_rag_request_failed --> services__projector__app__projections__incidents___upsert_service_health
+    services__projector__app__projections__incidents___handle_rag_request_failed --> services__projector__app__projections__incidents___error_code
+    services__projector__app__projections__incidents___handle_incident_detected --> services__projector__app__projections__incidents___error_code
+    services__projector__app__projections__incidents___handle_incident_classified --> services__projector__app__projections__incidents___error_code
+    services__projector__app__projections__incidents___handle_diagnostics_started --> services__projector__app__projections__incidents___update_incident_status
+    services__projector__app__projections__incidents___handle_diagnostics_completed --> services__projector__app__projections__incidents___checks_payload
+    services__projector__app__projections__incidents___handle_diagnostics_completed --> services__projector__app__projections__incidents___diagnostics_ok
+    services__projector__app__projections__incidents___handle_diagnostics_completed --> services__projector__app__projections__incidents___upsert_service_health
+    services__projector__app__projections__incidents___handle_diagnostics_completed --> services__projector__app__projections__incidents___root_cause
+    services__projector__app__projections__incidents___handle_diagnostics_completed --> services__projector__app__projections__incidents___error_code
+    services__projector__app__projections__incidents___handle_remediation_started --> services__projector__app__projections__incidents___update_incident_status
+    services__projector__app__projections__incidents___handle_remediation_finished --> services__projector__app__projections__incidents___update_incident_status
+    services__projector__app__projections__incidents___handle_post_remediation_verification --> services__projector__app__projections__incidents___update_incident_status
+    services__projector__app__projections__incidents___handle_post_remediation_verification --> services__projector__app__projections__incidents___upsert_service_health
+    services__projector__app__projections__incidents___upsert_rag_quality --> services__projector__app__projections__incidents___error_code
+    services__projector__app__projections__incidents___root_cause --> services__projector__app__projections__incidents___error_code
     services__web__app__agent_workroom___plan_steps --> services__web__app__agent_workroom___extract_shell
     services__web__app__agent_workroom__run_workroom --> services__web__app__agent_workroom__get_workroom
     services__web__app__agent_workroom__run_workroom --> services__web__app__agent_workroom___plan_steps
@@ -248,141 +238,6 @@ flowchart TD
     services__web__app__nlp2dsl_bridge__chat_start --> services__web__app__nlp2dsl_bridge___post_json
     services__web__app__nlp2dsl_bridge__chat_message --> services__web__app__nlp2dsl_bridge___post_json
     services__web__app__nlp2dsl_bridge___post_json --> services__web__app__nlp2dsl_bridge__backend_candidates
-    services__web__app__chat___dedupe_rows_by_uri --> services__web__app__static__workspace__id
-    services__web__app__chat__fetch_file_inventory --> services__web__app__chat___dedupe_rows_by_uri
-    services__web__app__chat__fetch_file_inventory --> services__web__app__chat___projector
-    services__web__app__chat__fetch_file_inventory --> services__web__app__chat___orch
-    services__web__app__chat___format_history --> services__web__app__chat__get_history
-    services__web__app__chat__handle_message --> services__web__app__chat___append
-    services__web__app__chat__handle_message --> services__web__app__chat__is_file_list_intent
-    services__web__app__chat__handle_message --> services__web__app__chat__format_file_list_reply
-    services__web__app__chat__handle_message --> services__web__app__chat__get_history
-    services__web__app__chat__handle_message --> services__web__app__chat__fetch_file_inventory
-    services__web__app__chat__handle_message --> services__web__app__chat___format_history
-    services__web__app__chat__create_task --> services__web__app__chat___orch
-    services__web__app__conductor__handle_turn --> services__web__app__conductor___fallback_turn
-    services__web__app__conductor__handle_turn --> services__web__app__conductor___mullm_file_list_turn
-    services__web__app__conductor__handle_turn --> services__web__app__conductor___nlp2dsl_turn
-    services__web__app__conductor___fallback_turn --> services__web__app__conductor___local_clarify
-    services__web__app__conductor___local_clarify --> services__web__app__conductor___extract_shell
-    services__web__app__static__workspace__ensureSession --> services__web__app__static__workspace__api
-    services__web__app__static__workspace__loadTickets --> services__web__app__static__workspace__api
-    services__web__app__static__workspace__refreshWorkspace --> services__web__app__static__workspace__ensureSession
-    services__web__app__static__workspace__refreshWorkspace --> services__web__app__static__workspace__api
-    services__web__app__static__workspace__refreshWorkspace --> services__web__app__static__workspace__renderContext
-    services__web__app__static__workspace__refreshWorkspace --> services__web__app__static__workspace__renderSessionEvents
-    services__web__app__static__workspace__refreshWorkspace --> services__web__app__static__workspace__renderChat
-    services__web__app__static__workspace__refreshWorkspace --> services__web__app__static__workspace__loadTickets
-    services__web__app__static__workspace__refreshWorkspace --> services__web__app__static__workspace__renderTasks
-    services__web__app__static__workspace__refreshWorkspace --> services__web__app__static__workspace__filterTasks
-    services__web__app__static__workspace__refreshWorkspace --> services__web__app__static__workspace__renderFileChips
-    services__web__app__static__workspace__refreshWorkspace --> services__web__app__static__workspace__renderTicketDetail
-    services__web__app__static__workspace__refreshWorkspace --> services__web__app__static__workspace__loadTicketDetail
-    services__web__app__static__workspace__state --> services__web__app__static__workspace__api
-    services__web__app__static__workspace__t --> services__web__app__static__workspace__renderTicketDetail
-    services__web__app__static__workspace__t --> services__web__app__static__workspace__api
-    services__web__app__static__workspace__t --> services__web__app__static__workspace__loadTicketDetail
-    services__web__app__static__workspace__t --> services__web__app__static__workspace__toast
-    services__web__app__static__workspace__loadTicketDetail --> services__web__app__static__workspace__api
-    services__web__app__static__workspace__loadTicketDetail --> services__web__app__static__workspace__renderTicketDetail
-    services__web__app__static__workspace__selectTicket --> services__web__app__static__workspace__ticketWebUrl
-    services__web__app__static__workspace__selectTicket --> services__web__app__static__workspace__renderTasks
-    services__web__app__static__workspace__selectTicket --> services__web__app__static__workspace__filterTasks
-    services__web__app__static__workspace__selectTicket --> services__web__app__static__workspace__renderTicketDetail
-    services__web__app__static__workspace__selectTicket --> services__web__app__static__workspace__api
-    services__web__app__static__workspace__selectTicket --> services__web__app__static__workspace__loadTicketDetail
-    services__web__app__static__workspace__selectTicket --> services__web__app__static__workspace__toast
-    services__web__app__static__workspace__renderTicketDetail --> services__web__app__static__workspace__escapeHtml
-    services__web__app__static__workspace__renderTicketDetail --> services__web__app__static__workspace__ticketWebUrl
-    services__web__app__static__workspace__renderTicketDetail --> services__web__app__static__workspace__ticketUri
-    services__web__app__static__workspace__renderTicketDetail --> services__web__app__static__workspace__copyText
-    services__web__app__static__workspace__renderTicketDetail --> services__web__app__static__workspace__confirmTicket
-    services__web__app__static__workspace__renderTicketDetail --> services__web__app__static__workspace__toast
-    services__web__app__static__workspace__renderTicketDetail --> services__web__app__static__workspace__archiveTicket
-    services__web__app__static__workspace__color --> services__web__app__static__workspace__escapeHtml
-    services__web__app__static__workspace__confirmTicket --> services__web__app__static__workspace__ensureSession
-    services__web__app__static__workspace__confirmTicket --> services__web__app__static__workspace__api
-    services__web__app__static__workspace__confirmTicket --> services__web__app__static__workspace__toast
-    services__web__app__static__workspace__confirmTicket --> services__web__app__static__workspace__refreshWorkspace
-    services__web__app__static__workspace__archiveTicket --> services__web__app__static__workspace__api
-    services__web__app__static__workspace__archiveTicket --> services__web__app__static__workspace__toast
-    services__web__app__static__workspace__archiveTicket --> services__web__app__static__workspace__refreshWorkspace
-    services__web__app__static__workspace__initRouting --> services__web__app__static__workspace__selectTicket
-    services__web__app__static__workspace__initRouting --> services__web__app__static__workspace__renderTicketDetail
-    services__web__app__static__workspace__initRouting --> services__web__app__static__workspace__renderTasks
-    services__web__app__static__workspace__initRouting --> services__web__app__static__workspace__filterTasks
-    services__web__app__static__workspace__deep --> services__web__app__static__workspace__selectTicket
-    services__web__app__static__workspace__deep --> services__web__app__static__workspace__renderTicketDetail
-    services__web__app__static__workspace__deep --> services__web__app__static__workspace__renderTasks
-    services__web__app__static__workspace__deep --> services__web__app__static__workspace__filterTasks
-    services__web__app__static__workspace__id --> services__web__app__static__workspace__selectTicket
-    services__web__app__static__workspace__id --> services__web__app__static__workspace__renderTicketDetail
-    services__web__app__static__workspace__id --> services__web__app__static__workspace__renderTasks
-    services__web__app__static__workspace__id --> services__web__app__static__workspace__filterTasks
-    services__web__app__static__workspace__m2 --> services__web__app__static__workspace__renderTicketDetail
-    services__web__app__static__workspace__m2 --> services__web__app__static__workspace__renderTasks
-    services__web__app__static__workspace__m2 --> services__web__app__static__workspace__filterTasks
-    services__web__app__static__workspace__renderContext --> services__web__app__static__workspace__escapeHtml
-    services__web__app__static__workspace__names --> services__web__app__static__workspace__escapeHtml
-    services__web__app__static__workspace__renderClarify --> services__web__app__static__workspace__escapeHtml
-    services__web__app__static__workspace__fields --> services__web__app__static__workspace__escapeHtml
-    services__web__app__static__workspace__req --> services__web__app__static__workspace__escapeHtml
-    services__web__app__static__workspace__renderSessionEvents --> services__web__app__static__workspace__escapeHtml
-    services__web__app__static__workspace__renderChat --> services__web__app__static__workspace__appendMsgTo
-    services__web__app__static__workspace__renderChat --> services__web__app__static__workspace__formatChatContent
-    services__web__app__static__workspace__items --> services__web__app__static__workspace__toast
-    services__web__app__static__workspace__appendMsg --> services__web__app__static__workspace__appendMsgTo
-    services__web__app__static__workspace__renderTasks --> services__web__app__static__workspace__escapeHtml
-    services__web__app__static__workspace__renderTasks --> services__web__app__static__workspace__selectTicket
-    services__web__app__static__workspace__renderFileChips --> services__web__app__static__workspace__escapeHtml
-    services__web__app__static__workspace__saveContextFromForm --> services__web__app__static__workspace__ensureSession
-    services__web__app__static__workspace__saveContextFromForm --> services__web__app__static__workspace__api
-    services__web__app__static__workspace__saveContextFromForm --> services__web__app__static__workspace__refreshWorkspace
-    services__web__app__static__workspace__saveContextFromForm --> services__web__app__static__workspace__toast
-    services__web__app__static__workspace__syncContextNote --> services__web__app__static__workspace__ensureSession
-    services__web__app__static__workspace__syncContextNote --> services__web__app__static__workspace__api
-    services__web__app__static__workspace__uploadFiles --> services__web__app__static__workspace__ensureSession
-    services__web__app__static__workspace__uploadFiles --> services__web__app__static__workspace__api
-    services__web__app__static__workspace__uploadFiles --> services__web__app__static__workspace__refreshWorkspace
-    services__web__app__static__workspace__sendChat --> services__web__app__static__workspace__collectClarifyValues
-    services__web__app__static__workspace__sendChat --> services__web__app__static__workspace__ensureSession
-    services__web__app__static__workspace__sendChat --> services__web__app__static__workspace__uploadFiles
-    services__web__app__static__workspace__sendChat --> services__web__app__static__workspace__appendMsg
-    services__web__app__static__workspace__sendChat --> services__web__app__static__workspace__api
-    services__web__app__static__workspace__sendChat --> services__web__app__static__workspace__renderChat
-    services__web__app__static__workspace__sendChat --> services__web__app__static__workspace__renderClarify
-    services__web__app__static__workspace__sendChat --> services__web__app__static__workspace__renderContext
-    services__web__app__static__workspace__sendChat --> services__web__app__static__workspace__renderSessionEvents
-    services__web__app__static__workspace__formValues --> services__web__app__static__workspace__ensureSession
-    services__web__app__static__workspace__formValues --> services__web__app__static__workspace__uploadFiles
-    services__web__app__static__workspace__formValues --> services__web__app__static__workspace__appendMsg
-    services__web__app__static__workspace__formValues --> services__web__app__static__workspace__api
-    services__web__app__static__workspace__formValues --> services__web__app__static__workspace__renderChat
-    services__web__app__static__workspace__formValues --> services__web__app__static__workspace__renderClarify
-    services__web__app__static__workspace__formValues --> services__web__app__static__workspace__renderContext
-    services__web__app__static__workspace__formValues --> services__web__app__static__workspace__renderSessionEvents
-    services__web__app__static__workspace__formValues --> services__web__app__static__workspace__toast
-    services__web__app__static__workspace__text --> services__web__app__static__workspace__api
-    services__web__app__static__workspace__text --> services__web__app__static__workspace__renderDraft
-    services__web__app__static__workspace__createFromDraft --> services__web__app__static__workspace__ensureSession
-    services__web__app__static__workspace__createFromDraft --> services__web__app__static__workspace__api
-    services__web__app__static__workspace__createFromDraft --> services__web__app__static__workspace__renderDraft
-    services__web__app__static__workspace__createFromDraft --> services__web__app__static__workspace__toast
-    services__web__app__static__workspace__createFromDraft --> services__web__app__static__workspace__refreshWorkspace
-    services__web__app__static__workspace__createFromDraft --> services__web__app__static__workspace__selectTicket
-    services__web__app__static__workspace__drafted --> services__web__app__static__workspace__api
-    services__web__app__static__workspace__copyText --> services__web__app__static__workspace__toast
-    services__web__app__static__workspace__ta --> services__web__app__static__workspace__toast
-    services__web__app__static__workspace__copyChatToClipboard --> services__web__app__static__workspace__ensureSession
-    services__web__app__static__workspace__copyChatToClipboard --> services__web__app__static__workspace__api
-    services__web__app__static__workspace__copyChatToClipboard --> services__web__app__static__workspace__copyText
-    services__web__app__static__workspace__copyLogsToClipboard --> services__web__app__static__workspace__ensureSession
-    services__web__app__static__workspace__copyLogsToClipboard --> services__web__app__static__workspace__api
-    services__web__app__static__workspace__copyLogsToClipboard --> services__web__app__static__workspace__copyText
-    services__web__app__static__workspace__submitTaskForm --> services__web__app__static__workspace__ensureSession
-    services__web__app__static__workspace__submitTaskForm --> services__web__app__static__workspace__api
-    services__web__app__static__workspace__submitTaskForm --> services__web__app__static__workspace__toast
-    services__web__app__static__workspace__submitTaskForm --> services__web__app__static__workspace__refreshWorkspace
     services__web__app__static__workroom__data --> services__web__app__static__workroom__api
     services__web__app__static__workroom__ensureWorkroom --> services__web__app__static__workroom__api
     services__web__app__static__workroom__ensureWorkroom --> services__web__app__static__workroom__renderCatalog
@@ -448,7 +303,7 @@ flowchart TD
     services__orchestrator__app__access__transport__TransportService__copy --> services__orchestrator__app__access__uri__parse_uri
     services__orchestrator__app__access__transport__TransportService__copy --> services__orchestrator__app__access__adapters__get_adapter
     services__orchestrator__app__domain__aggregates__agent__Agent__heartbeat --> services__orchestrator__app__infrastructure__eventstore___utc_now
-    services__orchestrator__app__domain__aggregates__task___event_data --> services__web__app__static__workspace__data
+    services__orchestrator__app__domain__aggregates__task___event_data --> services__web__app__static__workroom__data
     services__orchestrator__app__domain__aggregates__task___event_timestamp --> services__orchestrator__app__domain__aggregates__task___utc_now
     services__orchestrator__app__domain__aggregates__task__Task____init__ --> services__orchestrator__app__infrastructure__eventstore___utc_now
     services__orchestrator__app__domain__aggregates__task__Task__assign_to_agent --> services__orchestrator__app__infrastructure__eventstore___utc_now
@@ -518,25 +373,271 @@ flowchart TD
     services__orchestrator__app__api__access__upload_resource --> services__orchestrator__app__access__uri__build_uri
     services__orchestrator__app__api__access__upload_resource --> services__orchestrator__app__api__access___safe_filename
     agents__shell_agent__app__nats_consumer__ShellAgent__handle_message --> agents__shell_agent__app__executor__run_shell_command
-    services__projector__app__projections__incidents___handle_rag_request_failed --> services__projector__app__projections__incidents___upsert_rag_quality
-    services__projector__app__projections__incidents___handle_rag_request_failed --> services__projector__app__projections__incidents___upsert_service_health
-    services__projector__app__projections__incidents___handle_rag_request_failed --> services__projector__app__projections__incidents___error_code
-    services__projector__app__projections__incidents___handle_incident_detected --> services__projector__app__projections__incidents___error_code
-    services__projector__app__projections__incidents___handle_incident_classified --> services__projector__app__projections__incidents___error_code
-    services__projector__app__projections__incidents___handle_diagnostics_started --> services__projector__app__projections__incidents___update_incident_status
-    services__projector__app__projections__incidents___handle_diagnostics_completed --> services__projector__app__projections__incidents___checks_payload
-    services__projector__app__projections__incidents___handle_diagnostics_completed --> services__projector__app__projections__incidents___diagnostics_ok
-    services__projector__app__projections__incidents___handle_diagnostics_completed --> services__projector__app__projections__incidents___upsert_service_health
-    services__projector__app__projections__incidents___handle_diagnostics_completed --> services__projector__app__projections__incidents___root_cause
-    services__projector__app__projections__incidents___handle_diagnostics_completed --> services__projector__app__projections__incidents___error_code
-    services__projector__app__projections__incidents___handle_remediation_started --> services__projector__app__projections__incidents___update_incident_status
-    services__projector__app__projections__incidents___handle_remediation_finished --> services__projector__app__projections__incidents___update_incident_status
-    services__projector__app__projections__incidents___handle_post_remediation_verification --> services__projector__app__projections__incidents___update_incident_status
-    services__projector__app__projections__incidents___handle_post_remediation_verification --> services__projector__app__projections__incidents___upsert_service_health
-    services__projector__app__projections__incidents___upsert_rag_quality --> services__projector__app__projections__incidents___error_code
-    services__projector__app__projections__incidents___root_cause --> services__projector__app__projections__incidents___error_code
+    services__web__app__api_routes__chat_message --> services__web__app__conductor__handle_turn
+    services__web__app__api_routes__list_tickets --> services__web__app__tickets__enrich_task
+    services__web__app__api_routes__get_ticket --> services__web__app__tickets__enrich_task
+    services__web__app__workspace__get_or_create --> services__web__app__workspace__new_session
+    services__web__app__workspace__register_artifact --> services__web__app__workspace___artifact_title
+    services__web__app__workspace__get_artifact --> services__web__app__workspace__get_session
+    services__web__app__workspace__workspace_state --> services__web__app__workspace__get_or_create
+    services__web__app__workspace__workspace_state --> services__web__app__workspace__artifact_summaries
+    services__web__app__workspace__attach_context --> services__web__app__workspace__get_or_create
+    services__web__app__workspace__build_task_payload --> services__web__app__workspace__get_or_create
+    services__web__app__workspace__build_task_payload --> services__web__app__workspace___extract_shell_command
+    services__web__app__workspace__build_task_payload --> services__web__app__workspace___extract_ticket
+    services__web__app__workspace__propose_task_draft --> services__web__app__workspace__build_task_payload
+    services__web__app__workspace__create_task_immediate --> services__web__app__workspace__get_or_create
+    services__web__app__workspace__create_task_immediate --> services__web__app__workspace__link_ticket
+    services__web__app__workspace__handle_chat_message --> services__web__app__workspace__get_or_create
+    services__web__app__workspace__handle_chat_message --> services__web__app__workspace___extract_ticket
+    services__web__app__workspace__handle_chat_message --> services__web__app__workspace__attach_context
+    services__web__app__workspace__handle_chat_message --> services__web__app__workspace___extract_shell_command
+    services__web__app__workspace__handle_chat_message --> services__web__app__workspace__build_task_payload
+    services__web__app__workspace__handle_chat_message --> services__web__app__workspace__register_artifact
+    services__web__app__workspace__create_task_from_draft --> services__web__app__workspace__create_task_immediate
+    services__web__app__workspace__create_task_from_draft --> services__web__app__workspace__get_or_create
+    services__web__app__workspace__create_and_run --> services__web__app__workspace__create_task_immediate
+    services__web__app__workspace__create_and_run --> services__web__app__workspace__get_or_create
+    services__web__app__workspace__export_debug_logs --> services__web__app__workspace__get_or_create
+    services__web__app__workspace__export_debug_logs --> services__web__app__workspace___format_export_text
+    services__web__app__workspace__archive_task --> services__web__app__workspace__get_or_create
+    services__web__app__workspace__link_ticket --> services__web__app__workspace__get_or_create
+    services__web__app__workspace__fetch_live_board --> services__web__app__static__workspace__items
+    services__web__app__workspace__fetch_live_board --> services__web__app__workspace___projector
+    services__web__app__resource_areas__agent_may_access --> services__web__app__access_matrix__agent_may_access_resource
+    services__web__app__chat___uri_is_system_resource --> services__web__app__chat___uri_is_user_resource
+    services__web__app__chat__filter_file_inventory --> services__web__app__chat___uri_is_user_resource
+    services__web__app__chat__filter_file_inventory --> services__web__app__chat___uri_is_system_resource
+    services__web__app__chat___dedupe_rows_by_uri --> services__web__app__static__access__id
+    services__web__app__chat__fetch_file_inventory --> services__web__app__chat___dedupe_rows_by_uri
+    services__web__app__chat__fetch_file_inventory --> services__web__app__chat___projector
+    services__web__app__chat__fetch_file_inventory --> services__web__app__chat___orch
+    services__web__app__chat__format_file_list_reply --> services__web__app__chat___append_session_files
+    services__web__app__chat__format_file_list_reply --> services__web__app__chat___append_resource_rows
+    services__web__app__chat__format_file_list_reply --> services__web__app__chat___append_rag_rows
+    services__web__app__chat__format_file_list_reply --> services__web__app__chat___append_file_list_errors
+    services__web__app__chat__format_file_list_reply --> services__web__app__chat___append_file_list_tip
+    services__web__app__chat___append_session_files --> services__web__app__chat___format_scope_uri
+    services__web__app__chat___format_scope_uri --> services__web__app__chat___uri_is_user_resource
+    services__web__app__chat___append_resource_rows --> services__web__app__chat___empty_resource_hint
+    services__web__app__chat___format_history --> services__web__app__chat__get_history
+    services__web__app__chat__handle_message --> services__web__app__chat___append
+    services__web__app__chat__handle_message --> services__web__app__chat___message_response
+    services__web__app__chat__handle_message --> services__web__app__chat___file_list_answer
+    services__web__app__chat__handle_message --> services__web__app__chat___default_chat_reply
+    services__web__app__chat__handle_message --> services__web__app__chat___ask_rag
+    services__web__app__chat___file_list_answer --> services__web__app__chat__file_list_scope
+    services__web__app__chat___file_list_answer --> services__web__app__chat__filter_file_inventory
+    services__web__app__chat___file_list_answer --> services__web__app__chat__format_file_list_reply
+    services__web__app__chat___file_list_answer --> services__web__app__chat__is_file_list_intent
+    services__web__app__chat___file_list_answer --> services__web__app__chat__fetch_file_inventory
+    services__web__app__chat___ask_rag --> services__web__app__chat___rag_headers
+    services__web__app__chat___ask_rag --> services__web__app__chat___rag_query
+    services__web__app__chat___ask_rag --> services__web__app__chat___answer_from_rag_payload
+    services__web__app__chat___ask_rag --> services__web__app__chat___rag_backend_fallback
+    services__web__app__chat___ask_rag --> services__web__app__chat___orch
+    services__web__app__chat___rag_query --> services__web__app__chat___format_history
+    services__web__app__chat___answer_from_rag_payload --> services__web__app__chat___format_incident
+    services__web__app__chat___answer_from_rag_payload --> services__web__app__chat___sources_fallback_answer
+    services__web__app__chat___sources_fallback_answer --> services__web__app__chat___source_preview
+    services__web__app__chat___rag_backend_fallback --> services__web__app__chat___rag_search_fallback
+    services__web__app__chat___rag_backend_fallback --> services__web__app__chat___rag_unavailable_answer
+    services__web__app__chat___rag_search_fallback --> services__web__app__chat___orch
+    services__web__app__chat___rag_unavailable_answer --> services__web__app__chat___rag_diagnostics_hint
+    services__web__app__chat___rag_diagnostics_hint --> services__web__app__chat___orch
+    services__web__app__chat___message_response --> services__web__app__chat__get_history
+    services__web__app__chat___message_response --> services__web__app__chat__build_file_list_artifact
+    services__web__app__chat__create_task --> services__web__app__chat___orch
+    services__web__app__access_matrix__default_state --> services__web__app__access_matrix___default_resources
+    services__web__app__access_matrix__default_state --> services__web__app__access_matrix___default_agents
+    services__web__app__access_matrix__default_state --> services__web__app__access_matrix___empty_agent_resource
+    services__web__app__access_matrix__default_state --> services__web__app__access_matrix___empty_human_agent
+    services__web__app__access_matrix__load_state --> services__web__app__access_matrix___matrix_path
+    services__web__app__access_matrix__load_state --> services__web__app__access_matrix__default_state
+    services__web__app__access_matrix__load_state --> services__web__app__access_matrix___reindex_state
+    services__web__app__access_matrix__load_state --> services__web__app__access_matrix___merge_bool_matrix
+    services__web__app__access_matrix___reindex_state --> services__web__app__access_matrix___default_resources
+    services__web__app__access_matrix___reindex_state --> services__web__app__access_matrix___default_agents
+    services__web__app__access_matrix__save_state --> services__web__app__access_matrix___reindex_state
+    services__web__app__access_matrix__save_state --> services__web__app__access_matrix___matrix_path
+    services__web__app__access_matrix__agent_may_access_resource --> services__web__app__access_matrix__load_state
+    services__web__app__access_matrix__human_may_use_agent --> services__web__app__access_matrix__load_state
+    services__web__app__conductor__handle_turn --> services__web__app__conductor___fallback_turn
+    services__web__app__conductor__handle_turn --> services__web__app__conductor___mullm_file_list_turn
+    services__web__app__conductor__handle_turn --> services__web__app__conductor___nlp2dsl_turn
+    services__web__app__conductor___nlp2dsl_turn --> services__web__app__conductor___closed_turn
+    services__web__app__conductor___nlp2dsl_turn --> services__web__app__conductor___in_progress_turn
+    services__web__app__conductor___nlp2dsl_turn --> services__web__app__conductor___call_nlp2dsl
+    services__web__app__conductor___nlp2dsl_turn --> services__web__app__conductor___ready_turn
+    services__web__app__conductor___nlp2dsl_turn --> services__web__app__conductor___fallback_turn
+    services__web__app__conductor___in_progress_turn --> services__web__app__conductor___nlp_output_base
+    services__web__app__conductor___in_progress_turn --> services__web__app__conductor___append_turn
+    services__web__app__conductor___ready_turn --> services__web__app__conductor___nlp_output_base
+    services__web__app__conductor___ready_turn --> services__web__app__conductor___append_turn
+    services__web__app__conductor___ready_turn --> services__web__app__conductor___ready_action_payload
+    services__web__app__conductor___ready_action_payload --> services__web__app__conductor___system_file_list_payload
+    services__web__app__conductor___ready_action_payload --> services__web__app__conductor___shell_task_payload
+    services__web__app__conductor___ready_action_payload --> services__web__app__conductor___ticket_payload
+    services__web__app__conductor___shell_task_payload --> services__web__app__conductor___extract_shell
+    services__web__app__conductor___shell_task_payload --> services__web__app__conductor___shell_clarify_payload
+    services__web__app__conductor___shell_task_payload --> services__web__app__conductor___task_reply
+    services__web__app__conductor___ticket_payload --> services__web__app__conductor___task_reply
+    services__web__app__conductor___closed_turn --> services__web__app__conductor___nlp_output_base
+    services__web__app__conductor___closed_turn --> services__web__app__conductor___append_turn
+    services__web__app__conductor___fallback_turn --> services__web__app__conductor___local_clarify
+    services__web__app__conductor___local_clarify --> services__web__app__conductor___extract_shell
+    services__web__app__static__access__renderAgentResourceMatrix --> services__web__app__static__access__escapeHtml
+    services__web__app__static__access__checked --> services__web__app__static__access__escapeHtml
+    services__web__app__static__access__renderHumanAgentMatrix --> services__web__app__static__access__escapeHtml
+    services__web__app__static__access__renderAll --> services__web__app__static__access__renderAgentResourceMatrix
+    services__web__app__static__access__renderAll --> services__web__app__static__access__renderHumanAgentMatrix
+    services__web__app__static__access__load --> services__web__app__static__access__api
+    services__web__app__static__access__load --> services__web__app__static__access__renderAll
+    services__web__app__static__access__save --> services__web__app__static__access__api
+    services__web__app__static__access__save --> services__web__app__static__access__toast
+    services__web__app__static__access__res --> services__web__app__static__access__api
+    services__web__app__static__access__resetAll --> services__web__app__static__access__api
+    services__web__app__static__access__resetAll --> services__web__app__static__access__renderAll
+    services__web__app__static__access__resetAll --> services__web__app__static__access__toast
+    services__web__app__static__access__id --> services__web__app__static__access__toast
+    services__web__app__static__access__title --> services__web__app__static__access__toast
+    services__web__app__static__workspace__ensureSession --> services__web__app__static__workspace__api
+    services__web__app__static__workspace__loadTickets --> services__web__app__static__workspace__api
+    services__web__app__static__workspace__refreshWorkspace --> services__web__app__static__workspace__ensureSession
+    services__web__app__static__workspace__refreshWorkspace --> services__web__app__static__workspace__api
+    services__web__app__static__workspace__refreshWorkspace --> services__web__app__static__workspace__renderContext
+    services__web__app__static__workspace__refreshWorkspace --> services__web__app__static__workspace__renderSessionEvents
+    services__web__app__static__workspace__refreshWorkspace --> services__web__app__static__workspace__renderChat
+    services__web__app__static__workspace__refreshWorkspace --> services__web__app__static__workspace__syncArtifacts
+    services__web__app__static__workspace__refreshWorkspace --> services__web__app__static__workspace__loadTickets
+    services__web__app__static__workspace__refreshWorkspace --> services__web__app__static__workspace__renderTasks
+    services__web__app__static__workspace__refreshWorkspace --> services__web__app__static__workspace__filterTasks
+    services__web__app__static__workspace__refreshWorkspace --> services__web__app__static__workspace__renderFileChips
+    services__web__app__static__workspace__refreshWorkspace --> services__web__app__static__workspace__renderTicketDetail
+    services__web__app__static__workspace__refreshWorkspace --> services__web__app__static__workspace__loadTicketDetail
+    services__web__app__static__workspace__state --> services__web__app__static__workspace__api
+    services__web__app__static__workspace__t --> services__web__app__static__workspace__renderTicketDetail
+    services__web__app__static__workspace__t --> services__web__app__static__workspace__api
+    services__web__app__static__workspace__t --> services__web__app__static__workspace__loadTicketDetail
+    services__web__app__static__workspace__t --> services__web__app__static__workspace__toast
+    services__web__app__static__workspace__loadTicketDetail --> services__web__app__static__workspace__api
+    services__web__app__static__workspace__loadTicketDetail --> services__web__app__static__workspace__renderTicketDetail
+    services__web__app__static__workspace__selectTicket --> services__web__app__static__workspace__ticketWebUrl
+    services__web__app__static__workspace__selectTicket --> services__web__app__static__workspace__renderTasks
+    services__web__app__static__workspace__selectTicket --> services__web__app__static__workspace__filterTasks
+    services__web__app__static__workspace__selectTicket --> services__web__app__static__workspace__renderTicketDetail
+    services__web__app__static__workspace__selectTicket --> services__web__app__static__workspace__api
+    services__web__app__static__workspace__selectTicket --> services__web__app__static__workspace__loadTicketDetail
+    services__web__app__static__workspace__selectTicket --> services__web__app__static__workspace__toast
+    services__web__app__static__workspace__renderTicketDetail --> services__web__app__static__workspace__escapeHtml
+    services__web__app__static__workspace__renderTicketDetail --> services__web__app__static__workspace__ticketWebUrl
+    services__web__app__static__workspace__renderTicketDetail --> services__web__app__static__workspace__ticketUri
+    services__web__app__static__workspace__renderTicketDetail --> services__web__app__static__workspace__copyText
+    services__web__app__static__workspace__renderTicketDetail --> services__web__app__static__workspace__confirmTicket
+    services__web__app__static__workspace__renderTicketDetail --> services__web__app__static__workspace__toast
+    services__web__app__static__workspace__renderTicketDetail --> services__web__app__static__workspace__archiveTicket
+    services__web__app__static__workspace__color --> services__web__app__static__workspace__escapeHtml
+    services__web__app__static__workspace__confirmTicket --> services__web__app__static__workspace__ensureSession
+    services__web__app__static__workspace__confirmTicket --> services__web__app__static__workspace__api
+    services__web__app__static__workspace__confirmTicket --> services__web__app__static__workspace__toast
+    services__web__app__static__workspace__confirmTicket --> services__web__app__static__workspace__refreshWorkspace
+    services__web__app__static__workspace__archiveTicket --> services__web__app__static__workspace__api
+    services__web__app__static__workspace__archiveTicket --> services__web__app__static__workspace__toast
+    services__web__app__static__workspace__archiveTicket --> services__web__app__static__workspace__refreshWorkspace
+    services__web__app__static__workspace__initRouting --> services__web__app__static__workspace__selectTicket
+    services__web__app__static__workspace__initRouting --> services__web__app__static__workspace__renderTicketDetail
+    services__web__app__static__workspace__initRouting --> services__web__app__static__workspace__renderTasks
+    services__web__app__static__workspace__initRouting --> services__web__app__static__workspace__filterTasks
+    services__web__app__static__workspace__deep --> services__web__app__static__workspace__selectTicket
+    services__web__app__static__workspace__deep --> services__web__app__static__workspace__renderTicketDetail
+    services__web__app__static__workspace__deep --> services__web__app__static__workspace__renderTasks
+    services__web__app__static__workspace__deep --> services__web__app__static__workspace__filterTasks
+    services__web__app__static__workspace__id --> services__web__app__static__workspace__selectTicket
+    services__web__app__static__workspace__id --> services__web__app__static__workspace__renderTicketDetail
+    services__web__app__static__workspace__id --> services__web__app__static__workspace__renderTasks
+    services__web__app__static__workspace__id --> services__web__app__static__workspace__filterTasks
+    services__web__app__static__workspace__m2 --> services__web__app__static__workspace__renderTicketDetail
+    services__web__app__static__workspace__m2 --> services__web__app__static__workspace__renderTasks
+    services__web__app__static__workspace__m2 --> services__web__app__static__workspace__filterTasks
+    services__web__app__static__workspace__renderContext --> services__web__app__static__workspace__escapeHtml
+    services__web__app__static__workspace__names --> services__web__app__static__workspace__escapeHtml
+    services__web__app__static__workspace__renderClarify --> services__web__app__static__workspace__escapeHtml
+    services__web__app__static__workspace__fields --> services__web__app__static__workspace__escapeHtml
+    services__web__app__static__workspace__req --> services__web__app__static__workspace__escapeHtml
+    services__web__app__static__workspace__renderSessionEvents --> services__web__app__static__workspace__escapeHtml
+    services__web__app__static__workspace__renderChat --> services__web__app__static__workspace__appendMsgTo
+    services__web__app__static__workspace__renderChat --> services__web__app__static__workspace__formatChatContent
+    services__web__app__static__workspace__items --> services__web__app__static__workspace__toast
+    services__web__app__static__workspace__appendMsg --> services__web__app__static__workspace__appendMsgTo
+    services__web__app__static__workspace__syncArtifacts --> services__web__app__static__workspace__cacheArtifactFull
+    services__web__app__static__workspace__syncArtifacts --> services__web__app__static__workspace__renderArtifactList
+    services__web__app__static__workspace__syncArtifacts --> services__web__app__static__workspace__selectArtifact
+    services__web__app__static__workspace__syncArtifacts --> services__web__app__static__workspace__clearArtifactPreview
+    services__web__app__static__workspace__renderArtifactList --> services__web__app__static__workspace__escapeHtml
+    services__web__app__static__workspace__renderArtifactList --> services__web__app__static__workspace__selectArtifact
+    services__web__app__static__workspace__renderArtifactList --> services__web__app__static__workspace__toast
+    services__web__app__static__workspace__when --> services__web__app__static__workspace__escapeHtml
+    services__web__app__static__workspace__selectArtifact --> services__web__app__static__workspace__renderArtifactList
+    services__web__app__static__workspace__selectArtifact --> services__web__app__static__workspace__ensureSession
+    services__web__app__static__workspace__selectArtifact --> services__web__app__static__workspace__api
+    services__web__app__static__workspace__selectArtifact --> services__web__app__static__workspace__cacheArtifactFull
+    services__web__app__static__workspace__selectArtifact --> services__web__app__static__workspace__showArtifactPreview
+    services__web__app__static__workspace__showArtifactPreview --> services__web__app__static__workspace__downloadArtifact
+    services__web__app__static__workspace__downloadArtifact --> services__web__app__static__workspace__toast
+    services__web__app__static__workspace__renderTasks --> services__web__app__static__workspace__escapeHtml
+    services__web__app__static__workspace__renderTasks --> services__web__app__static__workspace__selectTicket
+    services__web__app__static__workspace__renderFileChips --> services__web__app__static__workspace__escapeHtml
+    services__web__app__static__workspace__saveContextFromForm --> services__web__app__static__workspace__ensureSession
+    services__web__app__static__workspace__saveContextFromForm --> services__web__app__static__workspace__api
+    services__web__app__static__workspace__saveContextFromForm --> services__web__app__static__workspace__refreshWorkspace
+    services__web__app__static__workspace__saveContextFromForm --> services__web__app__static__workspace__toast
+    services__web__app__static__workspace__syncContextNote --> services__web__app__static__workspace__ensureSession
+    services__web__app__static__workspace__syncContextNote --> services__web__app__static__workspace__api
+    services__web__app__static__workspace__uploadFiles --> services__web__app__static__workspace__ensureSession
+    services__web__app__static__workspace__uploadFiles --> services__web__app__static__workspace__api
+    services__web__app__static__workspace__uploadFiles --> services__web__app__static__workspace__refreshWorkspace
+    services__web__app__static__workspace__sendChat --> services__web__app__static__workspace__collectClarifyValues
+    services__web__app__static__workspace__sendChat --> services__web__app__static__workspace__ensureSession
+    services__web__app__static__workspace__sendChat --> services__web__app__static__workspace__uploadFiles
+    services__web__app__static__workspace__sendChat --> services__web__app__static__workspace__appendMsg
+    services__web__app__static__workspace__sendChat --> services__web__app__static__workspace__api
+    services__web__app__static__workspace__sendChat --> services__web__app__static__workspace__renderChat
+    services__web__app__static__workspace__sendChat --> services__web__app__static__workspace__cacheArtifactFull
+    services__web__app__static__workspace__sendChat --> services__web__app__static__workspace__syncArtifacts
+    services__web__app__static__workspace__sendChat --> services__web__app__static__workspace__renderClarify
+    services__web__app__static__workspace__formValues --> services__web__app__static__workspace__ensureSession
+    services__web__app__static__workspace__formValues --> services__web__app__static__workspace__uploadFiles
+    services__web__app__static__workspace__formValues --> services__web__app__static__workspace__appendMsg
+    services__web__app__static__workspace__formValues --> services__web__app__static__workspace__api
+    services__web__app__static__workspace__formValues --> services__web__app__static__workspace__renderChat
+    services__web__app__static__workspace__formValues --> services__web__app__static__workspace__cacheArtifactFull
+    services__web__app__static__workspace__formValues --> services__web__app__static__workspace__syncArtifacts
+    services__web__app__static__workspace__formValues --> services__web__app__static__workspace__renderClarify
+    services__web__app__static__workspace__formValues --> services__web__app__static__workspace__renderContext
+    services__web__app__static__workspace__formValues --> services__web__app__static__workspace__renderSessionEvents
+    services__web__app__static__workspace__text --> services__web__app__static__workspace__api
+    services__web__app__static__workspace__text --> services__web__app__static__workspace__renderDraft
+    services__web__app__static__workspace__createFromDraft --> services__web__app__static__workspace__ensureSession
+    services__web__app__static__workspace__createFromDraft --> services__web__app__static__workspace__api
+    services__web__app__static__workspace__createFromDraft --> services__web__app__static__workspace__renderDraft
+    services__web__app__static__workspace__createFromDraft --> services__web__app__static__workspace__toast
+    services__web__app__static__workspace__createFromDraft --> services__web__app__static__workspace__refreshWorkspace
+    services__web__app__static__workspace__createFromDraft --> services__web__app__static__workspace__selectTicket
+    services__web__app__static__workspace__drafted --> services__web__app__static__workspace__api
+    services__web__app__static__workspace__copyText --> services__web__app__static__workspace__toast
+    services__web__app__static__workspace__ta --> services__web__app__static__workspace__toast
+    services__web__app__static__workspace__copyChatToClipboard --> services__web__app__static__workspace__ensureSession
+    services__web__app__static__workspace__copyChatToClipboard --> services__web__app__static__workspace__api
+    services__web__app__static__workspace__copyChatToClipboard --> services__web__app__static__workspace__copyText
+    services__web__app__static__workspace__copyLogsToClipboard --> services__web__app__static__workspace__ensureSession
+    services__web__app__static__workspace__copyLogsToClipboard --> services__web__app__static__workspace__api
+    services__web__app__static__workspace__copyLogsToClipboard --> services__web__app__static__workspace__copyText
+    services__web__app__static__workspace__submitTaskForm --> services__web__app__static__workspace__ensureSession
+    services__web__app__static__workspace__submitTaskForm --> services__web__app__static__workspace__api
+    services__web__app__static__workspace__submitTaskForm --> services__web__app__static__workspace__toast
+    services__web__app__static__workspace__submitTaskForm --> services__web__app__static__workspace__refreshWorkspace
 
     classDef highCC fill:#ff6b6b,stroke:#c92a2a,color:#fff
     classDef medCC fill:#ffd43b,stroke:#f08c00,color:#000
-    class services__web__app__api_routes__confirm_ticket,services__web__app__workspace__handle_chat_message,services__web__app__workspace__export_debug_logs,services__web__app__workspace___format_export_text,services__web__app__agent_workroom__run_workroom,services__web__app__chat__format_file_list_reply,services__web__app__chat___format_incident,services__web__app__chat__handle_message,services__web__app__conductor___nlp2dsl_turn,services__web__app__static__workspace__renderTicketDetail,services__web__app__static__workspace__renderContext,services__web__app__static__workspace__sendChat,services__web__app__static__workspace__formValues,services__web__app__static__workspace__createFromDraft,services__web__app__static__app__text,services__web__src__main__ORCHESTRATOR_URL,services__web__src__main__PROJECTOR_URL,services__web__src__main__App,services__orchestrator__app__application__command_bus__CommandBus__handle,services__orchestrator__app__observability__export__format_logs_text,services__orchestrator__app__observability__incidents__classify_rag_failure,services__orchestrator__app__observability__incidents__IncidentRecorder__record,services__orchestrator__app__observability__incidents___event_payload highCC
-    class services__projector__app__projections__resource_registry__project_resource_registry,services__projector__app__projections__task_board__project_task_board,services__projector__app__projections__operational_feed___title_for,services__projector__app__projections__agent_fleet__project_agent_fleet,services__web__app__api_routes__list_tickets,services__web__app__workspace__attach_context,services__web__app__chat___dedupe_rows_by_uri,services__web__app__static__workspace__filterTasks,services__web__app__static__workspace__renderClarify,services__web__app__static__workspace__renderChat,services__web__app__static__workspace__renderTasks,services__web__app__static__workspace__renderFileChips,services__web__app__static__workspace__saveContextFromForm,services__web__app__static__workspace__openTicketDialogFromDraft,services__web__app__static__workspace__copyChatToClipboard,services__web__app__static__workroom__renderCatalog,services__web__app__static__app__uploadFiles,services__orchestrator__app__infrastructure__eventstore_factory__build_event_store,services__orchestrator__app__rag__retriever__RagRetriever__ask,services__orchestrator__app__rag__store___cosine,services__orchestrator__app__rag__store__RagStore__search,services__orchestrator__app__rag__store__RagStore___keyword_fallback,services__orchestrator__app__rag__openrouter__OpenRouterClient__chat,services__orchestrator__app__rag__indexer__RagIndexer__ingest_resource,services__orchestrator__app__incidents__pipeline__classify_rag_error,services__orchestrator__app__incidents__pipeline__IncidentPipeline___run_rag_diagnostics,services__orchestrator__app__application__command_bus__CommandBus___record_task_outcome,services__orchestrator__app__application__sagas__task_routing__pick_idle_agent,services__orchestrator__app__application__sagas__approval_gate__ensure_approval,services__orchestrator__app__evolution__policy_engine__PolicyEngine__validate_command medCC
+    class services__web__app__agent_workroom__run_workroom,services__web__app__static__app__text,services__web__src__main__ORCHESTRATOR_URL,services__web__src__main__PROJECTOR_URL,services__web__src__main__App,services__orchestrator__app__application__command_bus__CommandBus__handle,services__orchestrator__app__observability__export__format_logs_text,services__orchestrator__app__observability__incidents__classify_rag_failure,services__orchestrator__app__observability__incidents__IncidentRecorder__record,services__orchestrator__app__observability__incidents___event_payload,services__web__app__api_routes__confirm_ticket,services__web__app__workspace__handle_chat_message,services__web__app__workspace__export_debug_logs,services__web__app__workspace___format_export_text,services__web__app__chat__filter_file_inventory,services__web__app__chat___format_incident,services__web__app__static__workspace__renderTicketDetail,services__web__app__static__workspace__renderContext,services__web__app__static__workspace__showArtifactPreview,services__web__app__static__workspace__sendChat,services__web__app__static__workspace__formValues,services__web__app__static__workspace__createFromDraft highCC
+    class services__projector__app__projections__resource_registry__project_resource_registry,services__projector__app__projections__task_board__project_task_board,services__projector__app__projections__operational_feed___title_for,services__projector__app__projections__incidents___checks_payload,services__projector__app__projections__agent_fleet__project_agent_fleet,services__web__app__static__workroom__renderCatalog,services__web__app__static__app__uploadFiles,services__orchestrator__app__infrastructure__eventstore_factory__build_event_store,services__orchestrator__app__rag__retriever__RagRetriever__ask,services__orchestrator__app__rag__store___cosine,services__orchestrator__app__rag__store__RagStore__search,services__orchestrator__app__rag__store__RagStore___keyword_fallback,services__orchestrator__app__rag__openrouter__OpenRouterClient__chat,services__orchestrator__app__rag__indexer__RagIndexer__ingest_resource,services__orchestrator__app__incidents__pipeline__classify_rag_error,services__orchestrator__app__incidents__pipeline__IncidentPipeline___run_rag_diagnostics,services__orchestrator__app__application__command_bus__CommandBus___record_task_outcome,services__orchestrator__app__application__sagas__task_routing__pick_idle_agent,services__orchestrator__app__application__sagas__approval_gate__ensure_approval,services__orchestrator__app__evolution__policy_engine__PolicyEngine__validate_command,services__orchestrator__app__evolution__evaluation__EvaluationEngine___upsert_metrics,services__orchestrator__app__domain__aggregates__task__Task__apply,services__orchestrator__app__observability__export__build_orchestrator_bundle,services__orchestrator__app__observability__rag_pipeline__RagPipeline__ask,services__orchestrator__app__observability__rag_diagnostics__RagDiagnostics__run,services__orchestrator__app__observability__incidents___checks_payload,services__orchestrator__app__observability__incidents___event_status,services__orchestrator__app__api__queries__list_tasks,services__web__app__api_routes__list_tickets,services__web__app__workspace__attach_context medCC

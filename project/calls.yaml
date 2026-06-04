@@ -1,115 +1,24 @@
 project: /home/tom/github/wronai/mullm
 generated_from: code2llm call graph analysis
 stats:
-  total_nodes: 264
-  total_edges: 324
-  modules_count: 52
+  total_nodes: 340
+  total_edges: 423
+  modules_count: 54
 nodes:
-  services.web.app.static.workspace.createFromDraft:
-    name: createFromDraft
+  services.web.app.static.workspace.ticketUri:
+    name: ticketUri
     module: services.web.app.static.workspace
-    line: 457
-    cyclomatic_complexity: 15
-    calls_out: 9
-    calls_in: 0
-  services.orchestrator.app.config.Settings.model_post_init:
-    name: model_post_init
-    module: services.orchestrator.app.config
-    line: 49
+    line: 19
     cyclomatic_complexity: 1
-    calls_out: 2
-    calls_in: 0
-  services.web.app.agent_workroom.workroom_catalog:
-    name: workroom_catalog
-    module: services.web.app.agent_workroom
-    line: 343
-    cyclomatic_complexity: 1
-    calls_out: 2
-    calls_in: 0
-  services.projector.app.projections.incidents._diagnostics_ok:
-    name: _diagnostics_ok
-    module: services.projector.app.projections.incidents
-    line: 296
-    cyclomatic_complexity: 6
-    calls_out: 4
+    calls_out: 0
     calls_in: 1
-  services.projector.app.projections.operational_feed._title_for:
-    name: _title_for
-    module: services.projector.app.projections.operational_feed
-    line: 40
-    cyclomatic_complexity: 11
-    calls_out: 8
-    calls_in: 1
-  services.web.app.static.workspace.uploadFiles:
-    name: uploadFiles
-    module: services.web.app.static.workspace
-    line: 400
-    cyclomatic_complexity: 5
+  services.orchestrator.app.application.sagas.task_routing.pick_idle_agent:
+    name: pick_idle_agent
+    module: services.orchestrator.app.application.sagas.task_routing
+    line: 6
+    cyclomatic_complexity: 10
     calls_out: 5
-    calls_in: 2
-  services.orchestrator.app.domain.aggregates.task.Task.fail:
-    name: fail
-    module: services.orchestrator.app.domain.aggregates.task
-    line: 149
-    cyclomatic_complexity: 2
-    calls_out: 4
-    calls_in: 0
-  services.projector.app.projections.operational_feed.project_operational_feed:
-    name: project_operational_feed
-    module: services.projector.app.projections.operational_feed
-    line: 7
-    cyclomatic_complexity: 3
-    calls_out: 10
     calls_in: 1
-  services.web.app.nlp2dsl_bridge.health:
-    name: health
-    module: services.web.app.nlp2dsl_bridge
-    line: 39
-    cyclomatic_complexity: 4
-    calls_out: 3
-    calls_in: 0
-  services.web.app.static.workspace.escapeHtml:
-    name: escapeHtml
-    module: services.web.app.static.workspace
-    line: 367
-    cyclomatic_complexity: 1
-    calls_out: 2
-    calls_in: 10
-  services.orchestrator.app.rag.openrouter.OpenRouterClient.__init__:
-    name: __init__
-    module: services.orchestrator.app.rag.openrouter
-    line: 24
-    cyclomatic_complexity: 2
-    calls_out: 3
-    calls_in: 0
-  services.orchestrator.app.domain.aggregates.task.Task.apply:
-    name: apply
-    module: services.orchestrator.app.domain.aggregates.task
-    line: 164
-    cyclomatic_complexity: 11
-    calls_out: 18
-    calls_in: 0
-  services.web.app.static.workspace.ensureSession:
-    name: ensureSession
-    module: services.web.app.static.workspace
-    line: 37
-    cyclomatic_complexity: 2
-    calls_out: 3
-    calls_in: 11
-  services.web.app.resource_areas.list_areas:
-    name: list_areas
-    module: services.web.app.resource_areas
-    line: 101
-    cyclomatic_complexity: 2
-    calls_out: 1
-    calls_in: 1
-  services.web.app.nlp2dsl_bridge.chat_start:
-    name: chat_start
-    module: services.web.app.nlp2dsl_bridge
-    line: 51
-    cyclomatic_complexity: 1
-    calls_out: 1
-    calls_in: 0
   agents.shell-agent.app.nats_consumer.ShellAgent.handle_message:
     name: handle_message
     module: agents.shell-agent.app.nats_consumer
@@ -117,118 +26,6 @@ nodes:
     cyclomatic_complexity: 4
     calls_out: 8
     calls_in: 0
-  services.projector.app.projections.incidents._update_incident_status:
-    name: _update_incident_status
-    module: services.projector.app.projections.incidents
-    line: 249
-    cyclomatic_complexity: 1
-    calls_out: 1
-    calls_in: 4
-  services.projector.app.projections.incidents._handle_diagnostics_started:
-    name: _handle_diagnostics_started
-    module: services.projector.app.projections.incidents
-    line: 89
-    cyclomatic_complexity: 1
-    calls_out: 2
-    calls_in: 0
-  services.web.app.nlp2dsl_bridge._post_json:
-    name: _post_json
-    module: services.web.app.nlp2dsl_bridge
-    line: 62
-    cyclomatic_complexity: 4
-    calls_out: 6
-    calls_in: 2
-  services.web.app.static.workspace.text:
-    name: text
-    module: services.web.app.static.workspace
-    line: 460
-    cyclomatic_complexity: 3
-    calls_out: 3
-    calls_in: 0
-  services.orchestrator.app.access.adapters.get_adapter:
-    name: get_adapter
-    module: services.orchestrator.app.access.adapters
-    line: 8
-    cyclomatic_complexity: 2
-    calls_out: 5
-    calls_in: 3
-  services.orchestrator.app.observability.context.get_retrieval_trace_id:
-    name: get_retrieval_trace_id
-    module: services.orchestrator.app.observability.context
-    line: 31
-    cyclomatic_complexity: 1
-    calls_out: 1
-    calls_in: 4
-  services.orchestrator.app.access.uri.build_uri:
-    name: build_uri
-    module: services.orchestrator.app.access.uri
-    line: 40
-    cyclomatic_complexity: 2
-    calls_out: 1
-    calls_in: 2
-  services.web.app.conductor._local_clarify:
-    name: _local_clarify
-    module: services.web.app.conductor
-    line: 256
-    cyclomatic_complexity: 3
-    calls_out: 3
-    calls_in: 1
-  services.orchestrator.app.rag.openrouter.normalize_openrouter_model:
-    name: normalize_openrouter_model
-    module: services.orchestrator.app.rag.openrouter
-    line: 13
-    cyclomatic_complexity: 3
-    calls_out: 3
-    calls_in: 4
-  services.orchestrator.app.access.transport.TransportService.probe:
-    name: probe
-    module: services.orchestrator.app.access.transport
-    line: 25
-    cyclomatic_complexity: 1
-    calls_out: 4
-    calls_in: 0
-  services.orchestrator.app.observability.context.observability_context:
-    name: observability_context
-    module: services.orchestrator.app.observability.context
-    line: 40
-    cyclomatic_complexity: 5
-    calls_out: 8
-    calls_in: 6
-  services.orchestrator.app.api.commands.approve_request:
-    name: approve_request
-    module: services.orchestrator.app.api.commands
-    line: 320
-    cyclomatic_complexity: 2
-    calls_out: 2
-    calls_in: 0
-  services.orchestrator.app.infrastructure.eventstore._loads_json:
-    name: _loads_json
-    module: services.orchestrator.app.infrastructure.eventstore
-    line: 40
-    cyclomatic_complexity: 3
-    calls_out: 3
-    calls_in: 2
-  services.orchestrator.app.api.commands.activate_workflow_version:
-    name: activate_workflow_version
-    module: services.orchestrator.app.api.commands
-    line: 280
-    cyclomatic_complexity: 1
-    calls_out: 3
-    calls_in: 0
-  services.web.app.static.workroom.data:
-    name: data
-    module: services.web.app.static.workroom
-    line: 166
-    cyclomatic_complexity: 1
-    calls_out: 1
-    calls_in: 0
-  services.projector.app.projections.task_board._update_status:
-    name: _update_status
-    module: services.projector.app.projections.task_board
-    line: 102
-    cyclomatic_complexity: 1
-    calls_out: 1
-    calls_in: 1
   services.web.app.tickets.enrich_task:
     name: enrich_task
     module: services.web.app.tickets
@@ -236,111 +33,13 @@ nodes:
     cyclomatic_complexity: 4
     calls_out: 6
     calls_in: 2
-  services.web.app.static.workspace.filterTasks:
-    name: filterTasks
-    module: services.web.app.static.workspace
-    line: 75
-    cyclomatic_complexity: 9
-    calls_out: 4
-    calls_in: 6
-  services.web.app.static.workspace.renderClarify:
-    name: renderClarify
-    module: services.web.app.static.workspace
-    line: 216
-    cyclomatic_complexity: 13
-    calls_out: 4
-    calls_in: 2
-  services.web.app.static.workspace.loadTickets:
-    name: loadTickets
-    module: services.web.app.static.workspace
-    line: 49
-    cyclomatic_complexity: 2
-    calls_out: 2
-    calls_in: 1
-  services.web.app.static.workspace.req:
-    name: req
-    module: services.web.app.static.workspace
-    line: 232
-    cyclomatic_complexity: 2
-    calls_out: 3
-    calls_in: 0
-  services.orchestrator.app.domain.aggregates.task.Task.__init__:
-    name: __init__
-    module: services.orchestrator.app.domain.aggregates.task
-    line: 33
-    cyclomatic_complexity: 4
-    calls_out: 5
-    calls_in: 0
-  services.web.app.static.workroom.runAgents:
-    name: runAgents
-    module: services.web.app.static.workroom
-    line: 136
-    cyclomatic_complexity: 6
-    calls_out: 6
-    calls_in: 0
-  services.orchestrator.app.access.transport.TransportService.copy:
-    name: copy
-    module: services.orchestrator.app.access.transport
-    line: 37
-    cyclomatic_complexity: 4
-    calls_out: 10
-    calls_in: 0
-  services.web.app.static.workspace.ticketWebUrl:
-    name: ticketWebUrl
-    module: services.web.app.static.workspace
-    line: 12
-    cyclomatic_complexity: 1
-    calls_out: 0
-    calls_in: 2
-  services.web.app.workspace.link_ticket:
-    name: link_ticket
+  services.web.app.workspace.get_session:
+    name: get_session
     module: services.web.app.workspace
-    line: 577
-    cyclomatic_complexity: 3
-    calls_out: 3
-    calls_in: 2
-  services.orchestrator.app.application.command_bus.CommandBus._rollback_workflow_version:
-    name: _rollback_workflow_version
-    module: services.orchestrator.app.application.command_bus
-    line: 465
+    line: 90
     cyclomatic_complexity: 1
-    calls_out: 5
-    calls_in: 0
-  services.web.app.static.app.rowTask:
-    name: rowTask
-    module: services.web.app.static.app
-    line: 150
-    cyclomatic_complexity: 6
-    calls_out: 2
-    calls_in: 0
-  services.orchestrator.app.application.sagas.approval_gate.ensure_approval:
-    name: ensure_approval
-    module: services.orchestrator.app.application.sagas.approval_gate
-    line: 49
-    cyclomatic_complexity: 8
-    calls_out: 13
-    calls_in: 4
-  services.orchestrator.app.infrastructure.eventstore_esdb._parse_esdb_uri:
-    name: _parse_esdb_uri
-    module: services.orchestrator.app.infrastructure.eventstore_esdb
-    line: 16
-    cyclomatic_complexity: 4
-    calls_out: 6
+    calls_out: 1
     calls_in: 1
-  services.orchestrator.app.domain.aggregates.task.Task.start:
-    name: start
-    module: services.orchestrator.app.domain.aggregates.task
-    line: 117
-    cyclomatic_complexity: 3
-    calls_out: 5
-    calls_in: 0
-  services.orchestrator.app.observability.incidents.IncidentRecorder.record:
-    name: record
-    module: services.orchestrator.app.observability.incidents
-    line: 57
-    cyclomatic_complexity: 16
-    calls_out: 23
-    calls_in: 0
   services.projector.app.main.service_health:
     name: service_health
     module: services.projector.app.main
@@ -348,166 +47,103 @@ nodes:
     cyclomatic_complexity: 2
     calls_out: 3
     calls_in: 0
-  services.projector.app.main.rag_documents:
-    name: rag_documents
-    module: services.projector.app.main
-    line: 210
-    cyclomatic_complexity: 2
-    calls_out: 3
-    calls_in: 0
-  services.orchestrator.app.domain.aggregates.task.Task.complete:
-    name: complete
-    module: services.orchestrator.app.domain.aggregates.task
-    line: 133
-    cyclomatic_complexity: 2
-    calls_out: 4
-    calls_in: 0
-  services.web.app.chat._format_history:
-    name: _format_history
-    module: services.web.app.chat
-    line: 161
-    cyclomatic_complexity: 3
-    calls_out: 3
-    calls_in: 1
-  services.web.app.static.app.ensureSession:
-    name: ensureSession
-    module: services.web.app.static.app
-    line: 51
-    cyclomatic_complexity: 3
-    calls_out: 4
-    calls_in: 1
-  services.web.app.workspace._format_export_text:
-    name: _format_export_text
-    module: services.web.app.workspace
-    line: 452
-    cyclomatic_complexity: 47
-    calls_out: 97
-    calls_in: 1
-  services.projector.app.main.resource_registry:
-    name: resource_registry
-    module: services.projector.app.main
-    line: 300
-    cyclomatic_complexity: 2
-    calls_out: 3
-    calls_in: 0
-  services.orchestrator.app.application.command_bus.CommandBus._activate_workflow_version:
-    name: _activate_workflow_version
-    module: services.orchestrator.app.application.command_bus
-    line: 439
-    cyclomatic_complexity: 3
-    calls_out: 6
-    calls_in: 0
-  services.web.app.static.workspace.drafted:
-    name: drafted
-    module: services.web.app.static.workspace
-    line: 462
+  services.web.app.static.access.renderAll:
+    name: renderAll
+    module: services.web.app.static.access
+    line: 87
     cyclomatic_complexity: 1
     calls_out: 2
-    calls_in: 0
-  services.web.app.static.workspace.renderTasks:
-    name: renderTasks
-    module: services.web.app.static.workspace
-    line: 329
-    cyclomatic_complexity: 12
-    calls_out: 8
-    calls_in: 6
-  services.orchestrator.app.api.commands.expire_approval:
-    name: expire_approval
-    module: services.orchestrator.app.api.commands
-    line: 346
-    cyclomatic_complexity: 1
-    calls_out: 2
-    calls_in: 0
-  services.web.app.static.app.escapeHtml:
-    name: escapeHtml
-    module: services.web.app.static.app
-    line: 160
-    cyclomatic_complexity: 1
-    calls_out: 2
-    calls_in: 1
-  services.projector.app.projections.task_board.project_task_board:
-    name: project_task_board
-    module: services.projector.app.projections.task_board
-    line: 7
-    cyclomatic_complexity: 9
-    calls_out: 15
-    calls_in: 1
-  services.web.app.static.workspace.data:
-    name: data
-    module: services.web.app.static.workspace
-    line: 577
+    calls_in: 2
+  services.web.app.nlp2dsl_bridge.chat_message:
+    name: chat_message
+    module: services.web.app.nlp2dsl_bridge
+    line: 55
     cyclomatic_complexity: 1
     calls_out: 1
-    calls_in: 1
-  services.orchestrator.app.api.commands.propose_workflow_version:
-    name: propose_workflow_version
-    module: services.orchestrator.app.api.commands
-    line: 265
+    calls_in: 0
+  services.orchestrator.app.domain.aggregates.agent.Agent.heartbeat:
+    name: heartbeat
+    module: services.orchestrator.app.domain.aggregates.agent
+    line: 56
     cyclomatic_complexity: 1
     calls_out: 3
     calls_in: 0
-  services.web.app.static.app.text:
-    name: text
-    module: services.web.app.static.app
-    line: 73
-    cyclomatic_complexity: 16
-    calls_out: 15
-    calls_in: 0
-  services.orchestrator.app.api.commands.approve_workflow_version:
-    name: approve_workflow_version
+  services.orchestrator.app.api.commands.create_approval:
+    name: create_approval
     module: services.orchestrator.app.api.commands
-    line: 275
+    line: 315
     cyclomatic_complexity: 1
     calls_out: 3
     calls_in: 0
-  services.web.app.static.workspace.renderContext:
-    name: renderContext
+  services.web.app.static.workspace.selectTicket:
+    name: selectTicket
     module: services.web.app.static.workspace
-    line: 192
-    cyclomatic_complexity: 16
+    line: 99
+    cyclomatic_complexity: 5
+    calls_out: 11
+    calls_in: 7
+  services.web.app.conductor._ready_action_payload:
+    name: _ready_action_payload
+    module: services.web.app.conductor
+    line: 171
+    cyclomatic_complexity: 4
+    calls_out: 3
+    calls_in: 1
+  services.web.app.chat.file_list_scope:
+    name: file_list_scope
+    module: services.web.app.chat
+    line: 66
+    cyclomatic_complexity: 7
+    calls_out: 5
+    calls_in: 1
+  services.web.app.workspace.create_task_immediate:
+    name: create_task_immediate
+    module: services.web.app.workspace
+    line: 262
+    cyclomatic_complexity: 3
+    calls_out: 7
+    calls_in: 3
+  services.web.app.static.access.res:
+    name: res
+    module: services.web.app.static.access
+    line: 128
+    cyclomatic_complexity: 1
+    calls_out: 1
+    calls_in: 0
+  services.orchestrator.app.observability.context.get_correlation_id:
+    name: get_correlation_id
+    module: services.orchestrator.app.observability.context
+    line: 27
+    cyclomatic_complexity: 1
+    calls_out: 1
+    calls_in: 9
+  services.web.app.static.workspace.color:
+    name: color
+    module: services.web.app.static.workspace
+    line: 494
+    cyclomatic_complexity: 1
+    calls_out: 1
+    calls_in: 0
+  services.web.app.static.workspace.loadTicketDetail:
+    name: loadTicketDetail
+    module: services.web.app.static.workspace
+    line: 91
+    cyclomatic_complexity: 1
     calls_out: 3
     calls_in: 3
-  services.web.app.workspace.build_task_payload:
-    name: build_task_payload
-    module: services.web.app.workspace
-    line: 170
-    cyclomatic_complexity: 4
-    calls_out: 7
-    calls_in: 2
-  services.orchestrator.app.rag.chunking.chunk_text:
-    name: chunk_text
-    module: services.orchestrator.app.rag.chunking
-    line: 4
-    cyclomatic_complexity: 7
-    calls_out: 9
-    calls_in: 1
-  services.orchestrator.app.observability.rag_diagnostics.RagDiagnostics.run:
-    name: run
-    module: services.orchestrator.app.observability.rag_diagnostics
-    line: 20
-    cyclomatic_complexity: 12
-    calls_out: 23
-    calls_in: 0
-  services.projector.app.projections.incidents._handle_incident_classified:
-    name: _handle_incident_classified
-    module: services.projector.app.projections.incidents
-    line: 68
-    cyclomatic_complexity: 1
-    calls_out: 5
-    calls_in: 0
-  services.projector.app.projections.incidents._upsert_rag_quality:
-    name: _upsert_rag_quality
-    module: services.projector.app.projections.incidents
-    line: 193
-    cyclomatic_complexity: 1
+  services.web.app.static.access.load:
+    name: load
+    module: services.web.app.static.access
+    line: 92
+    cyclomatic_complexity: 3
     calls_out: 4
-    calls_in: 1
-  services.web.app.workspace.create_task_from_draft:
-    name: create_task_from_draft
-    module: services.web.app.workspace
-    line: 337
-    cyclomatic_complexity: 4
-    calls_out: 5
+    calls_in: 0
+  services.web.app.api_routes.list_tickets:
+    name: list_tickets
+    module: services.web.app.api_routes
+    line: 258
+    cyclomatic_complexity: 10
+    calls_out: 7
     calls_in: 0
   services.orchestrator.app.api.observability.rag_health:
     name: rag_health
@@ -516,216 +152,55 @@ nodes:
     cyclomatic_complexity: 1
     calls_out: 4
     calls_in: 0
-  services.orchestrator.app.infrastructure.eventstore.EventStore._record_from_row:
-    name: _record_from_row
-    module: services.orchestrator.app.infrastructure.eventstore
-    line: 169
-    cyclomatic_complexity: 1
-    calls_out: 3
-    calls_in: 0
-  services.orchestrator.app.application.command_bus.CommandBus._create_task:
-    name: _create_task
-    module: services.orchestrator.app.application.command_bus
-    line: 150
-    cyclomatic_complexity: 6
-    calls_out: 20
-    calls_in: 0
-  services.web.app.static.workspace.sendChat:
-    name: sendChat
+  services.web.app.static.workspace.escapeHtml:
+    name: escapeHtml
     module: services.web.app.static.workspace
-    line: 411
-    cyclomatic_complexity: 23
-    calls_out: 19
-    calls_in: 0
-  services.orchestrator.app.observability.context.new_retrieval_trace_id:
-    name: new_retrieval_trace_id
-    module: services.orchestrator.app.observability.context
-    line: 23
+    line: 523
     cyclomatic_complexity: 1
-    calls_out: 1
-    calls_in: 5
-  services.projector.app.projections.incidents._handle_remediation_finished:
-    name: _handle_remediation_finished
-    module: services.projector.app.projections.incidents
-    line: 155
+    calls_out: 2
+    calls_in: 12
+  services.web.app.conductor._closed_turn:
+    name: _closed_turn
+    module: services.web.app.conductor
+    line: 331
     cyclomatic_complexity: 2
+    calls_out: 2
+    calls_in: 1
+  services.orchestrator.app.api.queries.get_agent:
+    name: get_agent
+    module: services.orchestrator.app.api.queries
+    line: 52
+    cyclomatic_complexity: 6
     calls_out: 7
     calls_in: 0
-  services.orchestrator.app.application.sagas.approval_gate.follow_up_after_grant:
-    name: follow_up_after_grant
-    module: services.orchestrator.app.application.sagas.approval_gate
-    line: 93
-    cyclomatic_complexity: 5
-    calls_out: 3
-    calls_in: 1
-  services.orchestrator.app.application.sagas.task_routing.maybe_auto_assign:
-    name: maybe_auto_assign
-    module: services.orchestrator.app.application.sagas.task_routing
-    line: 29
-    cyclomatic_complexity: 5
-    calls_out: 6
-    calls_in: 1
-  services.projector.app.projections.resource_registry.project_resource_registry:
-    name: project_resource_registry
-    module: services.projector.app.projections.resource_registry
-    line: 7
-    cyclomatic_complexity: 8
-    calls_out: 15
-    calls_in: 1
-  services.web.app.static.workroom.renderLedger:
-    name: renderLedger
-    module: services.web.app.static.workroom
-    line: 107
-    cyclomatic_complexity: 7
-    calls_out: 3
-    calls_in: 1
-  services.web.app.static.workspace.fields:
-    name: fields
+  services.web.app.static.workspace.renderSessionEvents:
+    name: renderSessionEvents
     module: services.web.app.static.workspace
-    line: 229
-    cyclomatic_complexity: 6
-    calls_out: 3
-    calls_in: 0
-  services.web.app.chat._append:
-    name: _append
-    module: services.web.app.chat
-    line: 157
-    cyclomatic_complexity: 1
-    calls_out: 2
-    calls_in: 2
-  services.web.app.static.workroom.api:
-    name: api
-    module: services.web.app.static.workroom
-    line: 17
+    line: 261
     cyclomatic_complexity: 5
-    calls_out: 3
-    calls_in: 6
-  services.projector.app.main.plugin_catalog:
-    name: plugin_catalog
-    module: services.projector.app.main
-    line: 181
-    cyclomatic_complexity: 3
+    calls_out: 5
+    calls_in: 3
+  services.projector.app.projections.incidents._handle_post_remediation_verification:
+    name: _handle_post_remediation_verification
+    module: services.projector.app.projections.incidents
+    line: 177
+    cyclomatic_complexity: 4
     calls_out: 4
     calls_in: 0
-  services.web.app.conductor.handle_turn:
-    name: handle_turn
-    module: services.web.app.conductor
-    line: 10
-    cyclomatic_complexity: 7
-    calls_out: 8
-    calls_in: 2
-  services.web.app.static.workspace.t:
-    name: t
-    module: services.web.app.static.workspace
-    line: 100
-    cyclomatic_complexity: 4
-    calls_out: 6
+  services.orchestrator.app.api.commands.rollback_workflow_version:
+    name: rollback_workflow_version
+    module: services.orchestrator.app.api.commands
+    line: 285
+    cyclomatic_complexity: 1
+    calls_out: 3
     calls_in: 0
-  services.web.app.static.workspace.submitTaskForm:
-    name: submitTaskForm
-    module: services.web.app.static.workspace
-    line: 604
-    cyclomatic_complexity: 7
-    calls_out: 9
-    calls_in: 0
-  services.orchestrator.app.infrastructure.eventstore.EventStore.append:
-    name: append
+  services.orchestrator.app.infrastructure.eventstore._loads_json:
+    name: _loads_json
     module: services.orchestrator.app.infrastructure.eventstore
-    line: 56
-    cyclomatic_complexity: 6
-    calls_out: 15
-    calls_in: 0
-  services.orchestrator.app.observability.incidents._incident_class:
-    name: _incident_class
-    module: services.orchestrator.app.observability.incidents
-    line: 303
-    cyclomatic_complexity: 4
-    calls_out: 0
-    calls_in: 1
-  services.orchestrator.app.api.access.register_resource:
-    name: register_resource
-    module: services.orchestrator.app.api.access
-    line: 33
-    cyclomatic_complexity: 2
-    calls_out: 6
-    calls_in: 0
-  services.orchestrator.app.rag.store._cosine:
-    name: _cosine
-    module: services.orchestrator.app.rag.store
-    line: 11
-    cyclomatic_complexity: 9
-    calls_out: 8
-    calls_in: 1
-  services.web.app.static.app.renderHistory:
-    name: renderHistory
-    module: services.web.app.static.app
-    line: 39
-    cyclomatic_complexity: 7
-    calls_out: 2
-    calls_in: 2
-  services.web.app.tickets.ticket_uri:
-    name: ticket_uri
-    module: services.web.app.tickets
-    line: 17
-    cyclomatic_complexity: 1
-    calls_out: 0
-    calls_in: 1
-  services.web.app.static.workspace.renderDraft:
-    name: renderDraft
-    module: services.web.app.static.workspace
-    line: 212
-    cyclomatic_complexity: 1
-    calls_out: 0
-    calls_in: 2
-  services.orchestrator.app.domain.aggregates.agent.Agent.heartbeat:
-    name: heartbeat
-    module: services.orchestrator.app.domain.aggregates.agent
-    line: 56
-    cyclomatic_complexity: 1
-    calls_out: 3
-    calls_in: 0
-  services.web.app.tickets.status_meta:
-    name: status_meta
-    module: services.web.app.tickets
-    line: 25
+    line: 40
     cyclomatic_complexity: 3
-    calls_out: 2
-    calls_in: 1
-  services.orchestrator.app.domain.aggregates.task._utc_now:
-    name: _utc_now
-    module: services.orchestrator.app.domain.aggregates.task
-    line: 13
-    cyclomatic_complexity: 1
-    calls_out: 1
-    calls_in: 1
-  services.web.app.static.workspace.formatChatContent:
-    name: formatChatContent
-    module: services.web.app.static.workspace
-    line: 272
-    cyclomatic_complexity: 2
     calls_out: 3
-    calls_in: 1
-  services.web.app.workspace.export_debug_logs:
-    name: export_debug_logs
-    module: services.web.app.workspace
-    line: 388
-    cyclomatic_complexity: 15
-    calls_out: 26
-    calls_in: 0
-  services.web.app.static.workspace.renderFileChips:
-    name: renderFileChips
-    module: services.web.app.static.workspace
-    line: 352
-    cyclomatic_complexity: 10
-    calls_out: 6
-    calls_in: 1
-  services.web.app.nlp2dsl_bridge.chat_message:
-    name: chat_message
-    module: services.web.app.nlp2dsl_bridge
-    line: 55
-    cyclomatic_complexity: 1
-    calls_out: 1
-    calls_in: 0
+    calls_in: 2
   services.projector.app.main.remediation_history:
     name: remediation_history
     module: services.projector.app.main
@@ -733,20 +208,34 @@ nodes:
     cyclomatic_complexity: 2
     calls_out: 3
     calls_in: 0
-  services.web.app.conductor._nlp2dsl_turn:
-    name: _nlp2dsl_turn
+  services.web.app.conductor._shell_clarify_payload:
+    name: _shell_clarify_payload
     module: services.web.app.conductor
-    line: 56
-    cyclomatic_complexity: 23
-    calls_out: 35
+    line: 270
+    cyclomatic_complexity: 1
+    calls_out: 0
     calls_in: 1
-  services.orchestrator.app.domain.aggregates.task.Task.assign_to_agent:
-    name: assign_to_agent
-    module: services.orchestrator.app.domain.aggregates.task
-    line: 103
-    cyclomatic_complexity: 2
-    calls_out: 4
+  services.orchestrator.app.rag.chunking.chunk_text:
+    name: chunk_text
+    module: services.orchestrator.app.rag.chunking
+    line: 4
+    cyclomatic_complexity: 7
+    calls_out: 9
+    calls_in: 1
+  services.web.app.static.workspace.submitTaskForm:
+    name: submitTaskForm
+    module: services.web.app.static.workspace
+    line: 777
+    cyclomatic_complexity: 7
+    calls_out: 9
     calls_in: 0
+  services.web.app.static.workroom.renderCatalog:
+    name: renderCatalog
+    module: services.web.app.static.workroom
+    line: 51
+    cyclomatic_complexity: 11
+    calls_out: 4
+    calls_in: 2
   services.web.src.main.createTask:
     name: createTask
     module: services.web.src.main
@@ -754,12 +243,579 @@ nodes:
     cyclomatic_complexity: 4
     calls_out: 9
     calls_in: 0
-  services.web.app.chat.fetch_file_inventory:
-    name: fetch_file_inventory
-    module: services.web.app.chat
-    line: 63
-    cyclomatic_complexity: 7
+  services.web.app.tickets.ticket_uri:
+    name: ticket_uri
+    module: services.web.app.tickets
+    line: 17
+    cyclomatic_complexity: 1
+    calls_out: 0
+    calls_in: 1
+  services.web.app.workspace.new_session:
+    name: new_session
+    module: services.web.app.workspace
+    line: 80
+    cyclomatic_complexity: 1
+    calls_out: 5
+    calls_in: 1
+  services.web.app.workspace.handle_chat_message:
+    name: handle_chat_message
+    module: services.web.app.workspace
+    line: 293
+    cyclomatic_complexity: 22
+    calls_out: 43
+    calls_in: 0
+  services.projector.app.projections.resource_registry.project_resource_registry:
+    name: project_resource_registry
+    module: services.projector.app.projections.resource_registry
+    line: 7
+    cyclomatic_complexity: 8
     calls_out: 15
+    calls_in: 1
+  services.web.app.agent_workroom.workroom_catalog:
+    name: workroom_catalog
+    module: services.web.app.agent_workroom
+    line: 343
+    cyclomatic_complexity: 1
+    calls_out: 2
+    calls_in: 0
+  services.web.app.static.access.escapeHtml:
+    name: escapeHtml
+    module: services.web.app.static.access
+    line: 20
+    cyclomatic_complexity: 1
+    calls_out: 2
+    calls_in: 3
+  services.orchestrator.app.observability.logging.log_event:
+    name: log_event
+    module: services.orchestrator.app.observability.logging
+    line: 17
+    cyclomatic_complexity: 3
+    calls_out: 9
+    calls_in: 4
+  services.web.app.agent_workroom._extract_shell:
+    name: _extract_shell
+    module: services.web.app.agent_workroom
+    line: 148
+    cyclomatic_complexity: 4
+    calls_out: 8
+    calls_in: 2
+  services.web.app.static.workspace.state:
+    name: state
+    module: services.web.app.static.workspace
+    line: 63
+    cyclomatic_complexity: 1
+    calls_out: 2
+    calls_in: 0
+  services.projector.app.main.approval_requests:
+    name: approval_requests
+    module: services.projector.app.main
+    line: 152
+    cyclomatic_complexity: 3
+    calls_out: 4
+    calls_in: 0
+  services.orchestrator.app.domain.aggregates.task.Task.start:
+    name: start
+    module: services.orchestrator.app.domain.aggregates.task
+    line: 117
+    cyclomatic_complexity: 3
+    calls_out: 5
+    calls_in: 0
+  services.web.app.static.workspace.when:
+    name: when
+    module: services.web.app.static.workspace
+    line: 372
+    cyclomatic_complexity: 1
+    calls_out: 1
+    calls_in: 0
+  services.web.app.static.workspace.loadTickets:
+    name: loadTickets
+    module: services.web.app.static.workspace
+    line: 53
+    cyclomatic_complexity: 2
+    calls_out: 2
+    calls_in: 1
+  services.orchestrator.app.observability.export.build_orchestrator_bundle:
+    name: build_orchestrator_bundle
+    module: services.orchestrator.app.observability.export
+    line: 82
+    cyclomatic_complexity: 11
+    calls_out: 17
+    calls_in: 1
+  services.web.app.static.workspace.refreshWorkspace:
+    name: refreshWorkspace
+    module: services.web.app.static.workspace
+    line: 61
+    cyclomatic_complexity: 8
+    calls_out: 14
+    calls_in: 8
+  services.web.app.agent_workroom.run_workroom:
+    name: run_workroom
+    module: services.web.app.agent_workroom
+    line: 157
+    cyclomatic_complexity: 22
+    calls_out: 45
+    calls_in: 0
+  services.web.app.conductor._system_file_list_payload:
+    name: _system_file_list_payload
+    module: services.web.app.conductor
+    line: 205
+    cyclomatic_complexity: 1
+    calls_out: 5
+    calls_in: 1
+  services.web.app.access_matrix.default_state:
+    name: default_state
+    module: services.web.app.access_matrix
+    line: 75
+    cyclomatic_complexity: 1
+    calls_out: 5
+    calls_in: 3
+  services.web.app.nlp2dsl_bridge.backend_candidates:
+    name: backend_candidates
+    module: services.web.app.nlp2dsl_bridge
+    line: 19
+    cyclomatic_complexity: 4
+    calls_out: 6
+    calls_in: 3
+  services.web.app.nlp2dsl_bridge.chat_start:
+    name: chat_start
+    module: services.web.app.nlp2dsl_bridge
+    line: 51
+    cyclomatic_complexity: 1
+    calls_out: 1
+    calls_in: 0
+  services.web.app.chat._rag_headers:
+    name: _rag_headers
+    module: services.web.app.chat
+    line: 481
+    cyclomatic_complexity: 1
+    calls_out: 0
+    calls_in: 1
+  services.web.app.static.app.appendMessage:
+    name: appendMessage
+    module: services.web.app.static.app
+    line: 25
+    cyclomatic_complexity: 2
+    calls_out: 2
+    calls_in: 2
+  services.projector.app.projections.agent_fleet.project_agent_fleet:
+    name: project_agent_fleet
+    module: services.projector.app.projections.agent_fleet
+    line: 7
+    cyclomatic_complexity: 8
+    calls_out: 11
+    calls_in: 1
+  services.web.app.tickets.status_meta:
+    name: status_meta
+    module: services.web.app.tickets
+    line: 25
+    cyclomatic_complexity: 3
+    calls_out: 2
+    calls_in: 1
+  services.web.app.chat._sources_fallback_answer:
+    name: _sources_fallback_answer
+    module: services.web.app.chat
+    line: 511
+    cyclomatic_complexity: 4
+    calls_out: 4
+    calls_in: 1
+  services.orchestrator.app.application.command_bus.CommandBus._activate_plugin:
+    name: _activate_plugin
+    module: services.orchestrator.app.application.command_bus
+    line: 592
+    cyclomatic_complexity: 1
+    calls_out: 4
+    calls_in: 0
+  services.web.app.access_matrix.save_state:
+    name: save_state
+    module: services.web.app.access_matrix
+    line: 156
+    cyclomatic_complexity: 1
+    calls_out: 6
+    calls_in: 0
+  services.web.app.chat._append:
+    name: _append
+    module: services.web.app.chat
+    line: 341
+    cyclomatic_complexity: 1
+    calls_out: 2
+    calls_in: 2
+  services.orchestrator.app.rag.store._chunk_hit:
+    name: _chunk_hit
+    module: services.orchestrator.app.rag.store
+    line: 228
+    cyclomatic_complexity: 2
+    calls_out: 5
+    calls_in: 3
+  services.web.app.static.workroom.toast:
+    name: toast
+    module: services.web.app.static.workroom
+    line: 9
+    cyclomatic_complexity: 3
+    calls_out: 2
+    calls_in: 2
+  services.web.app.static.workspace.initRouting:
+    name: initRouting
+    module: services.web.app.static.workspace
+    line: 181
+    cyclomatic_complexity: 6
+    calls_out: 8
+    calls_in: 0
+  services.web.app.static.workspace.copyChatToClipboard:
+    name: copyChatToClipboard
+    module: services.web.app.static.workspace
+    line: 711
+    cyclomatic_complexity: 10
+    calls_out: 11
+    calls_in: 0
+  services.web.app.static.workspace.clearArtifactPreview:
+    name: clearArtifactPreview
+    module: services.web.app.static.workspace
+    line: 344
+    cyclomatic_complexity: 8
+    calls_out: 3
+    calls_in: 1
+  services.orchestrator.app.application.command_bus.CommandBus._create_task:
+    name: _create_task
+    module: services.orchestrator.app.application.command_bus
+    line: 150
+    cyclomatic_complexity: 6
+    calls_out: 20
+    calls_in: 0
+  services.web.app.static.app.escapeHtml:
+    name: escapeHtml
+    module: services.web.app.static.app
+    line: 160
+    cyclomatic_complexity: 1
+    calls_out: 2
+    calls_in: 1
+  services.orchestrator.app.api.observability.export_logs:
+    name: export_logs
+    module: services.orchestrator.app.api.observability
+    line: 76
+    cyclomatic_complexity: 2
+    calls_out: 6
+    calls_in: 0
+  services.web.app.conductor._ticket_payload:
+    name: _ticket_payload
+    module: services.web.app.conductor
+    line: 291
+    cyclomatic_complexity: 3
+    calls_out: 5
+    calls_in: 1
+  services.web.app.static.workspace.renderFileChips:
+    name: renderFileChips
+    module: services.web.app.static.workspace
+    line: 508
+    cyclomatic_complexity: 10
+    calls_out: 6
+    calls_in: 1
+  services.orchestrator.app.observability.rag_pipeline.RagPipeline.ask:
+    name: ask
+    module: services.orchestrator.app.observability.rag_pipeline
+    line: 23
+    cyclomatic_complexity: 10
+    calls_out: 36
+    calls_in: 0
+  services.web.app.access_matrix.load_state:
+    name: load_state
+    module: services.web.app.access_matrix
+    line: 89
+    cyclomatic_complexity: 8
+    calls_out: 15
+    calls_in: 2
+  services.orchestrator.app.api.commands.propose_plugin:
+    name: propose_plugin
+    module: services.orchestrator.app.api.commands
+    line: 290
+    cyclomatic_complexity: 1
+    calls_out: 3
+    calls_in: 0
+  services.web.app.static.workspace.toast:
+    name: toast
+    module: services.web.app.static.workspace
+    line: 23
+    cyclomatic_complexity: 3
+    calls_out: 2
+    calls_in: 15
+  services.web.app.static.workroom.runAgents:
+    name: runAgents
+    module: services.web.app.static.workroom
+    line: 136
+    cyclomatic_complexity: 6
+    calls_out: 6
+    calls_in: 0
+  services.orchestrator.app.rag.store._row_dict:
+    name: _row_dict
+    module: services.orchestrator.app.rag.store
+    line: 220
+    cyclomatic_complexity: 4
+    calls_out: 5
+    calls_in: 5
+  services.web.app.chat._orch:
+    name: _orch
+    module: services.web.app.chat
+    line: 36
+    cyclomatic_complexity: 2
+    calls_out: 2
+    calls_in: 5
+  services.web.app.chat.filter_file_inventory:
+    name: filter_file_inventory
+    module: services.web.app.chat
+    line: 106
+    cyclomatic_complexity: 29
+    calls_out: 16
+    calls_in: 1
+  services.orchestrator.app.observability.middleware.CorrelationMiddleware.dispatch:
+    name: dispatch
+    module: services.orchestrator.app.observability.middleware
+    line: 10
+    cyclomatic_complexity: 3
+    calls_out: 5
+    calls_in: 0
+  services.orchestrator.app.access.adapters.get_adapter:
+    name: get_adapter
+    module: services.orchestrator.app.access.adapters
+    line: 8
+    cyclomatic_complexity: 2
+    calls_out: 5
+    calls_in: 3
+  services.web.app.access_matrix.agent_may_access_resource:
+    name: agent_may_access_resource
+    module: services.web.app.access_matrix
+    line: 175
+    cyclomatic_complexity: 4
+    calls_out: 6
+    calls_in: 1
+  services.orchestrator.app.application.sagas.approval_gate.follow_up_after_grant:
+    name: follow_up_after_grant
+    module: services.orchestrator.app.application.sagas.approval_gate
+    line: 93
+    cyclomatic_complexity: 5
+    calls_out: 3
+    calls_in: 1
+  services.web.app.access_matrix.human_may_use_agent:
+    name: human_may_use_agent
+    module: services.web.app.access_matrix
+    line: 184
+    cyclomatic_complexity: 4
+    calls_out: 6
+    calls_in: 0
+  services.projector.app.projections.incidents._handle_incident_classified:
+    name: _handle_incident_classified
+    module: services.projector.app.projections.incidents
+    line: 68
+    cyclomatic_complexity: 1
+    calls_out: 5
+    calls_in: 0
+  services.orchestrator.app.infrastructure.eventstore_esdb.EsdbEventStore.__init__:
+    name: __init__
+    module: services.orchestrator.app.infrastructure.eventstore_esdb
+    line: 30
+    cyclomatic_complexity: 1
+    calls_out: 1
+    calls_in: 0
+  services.orchestrator.app.api.commands.rollback_plugin:
+    name: rollback_plugin
+    module: services.orchestrator.app.api.commands
+    line: 310
+    cyclomatic_complexity: 1
+    calls_out: 3
+    calls_in: 0
+  services.projector.app.main.incident_feed:
+    name: incident_feed
+    module: services.projector.app.main
+    line: 226
+    cyclomatic_complexity: 3
+    calls_out: 4
+    calls_in: 0
+  services.projector.app.projections.task_board.project_task_board:
+    name: project_task_board
+    module: services.projector.app.projections.task_board
+    line: 7
+    cyclomatic_complexity: 9
+    calls_out: 15
+    calls_in: 1
+  services.web.app.static.workspace.filterTasks:
+    name: filterTasks
+    module: services.web.app.static.workspace
+    line: 80
+    cyclomatic_complexity: 9
+    calls_out: 4
+    calls_in: 6
+  services.web.app.static.access.api:
+    name: api
+    module: services.web.app.static.access
+    line: 13
+    cyclomatic_complexity: 5
+    calls_out: 3
+    calls_in: 4
+  services.projector.app.main.rag_quality_board:
+    name: rag_quality_board
+    module: services.projector.app.main
+    line: 285
+    cyclomatic_complexity: 2
+    calls_out: 3
+    calls_in: 0
+  services.web.app.chat._append_file_list_errors:
+    name: _append_file_list_errors
+    module: services.web.app.chat
+    line: 277
+    cyclomatic_complexity: 2
+    calls_out: 3
+    calls_in: 1
+  services.orchestrator.app.application.command_bus.CommandBus._rollback_plugin:
+    name: _rollback_plugin
+    module: services.orchestrator.app.application.command_bus
+    line: 606
+    cyclomatic_complexity: 1
+    calls_out: 5
+    calls_in: 0
+  services.web.app.static.workspace.drafted:
+    name: drafted
+    module: services.web.app.static.workspace
+    line: 620
+    cyclomatic_complexity: 1
+    calls_out: 2
+    calls_in: 0
+  services.web.app.chat._append_resource_rows:
+    name: _append_resource_rows
+    module: services.web.app.chat
+    line: 229
+    cyclomatic_complexity: 7
+    calls_out: 12
+    calls_in: 1
+  services.web.app.static.workspace.renderClarify:
+    name: renderClarify
+    module: services.web.app.static.workspace
+    line: 221
+    cyclomatic_complexity: 13
+    calls_out: 4
+    calls_in: 2
+  services.web.app.access_matrix._default_resources:
+    name: _default_resources
+    module: services.web.app.access_matrix
+    line: 40
+    cyclomatic_complexity: 3
+    calls_out: 2
+    calls_in: 2
+  services.web.app.workspace.artifact_summaries:
+    name: artifact_summaries
+    module: services.web.app.workspace
+    line: 146
+    cyclomatic_complexity: 2
+    calls_out: 11
+    calls_in: 2
+  services.orchestrator.app.domain.aggregates.task._event_data:
+    name: _event_data
+    module: services.orchestrator.app.domain.aggregates.task
+    line: 17
+    cyclomatic_complexity: 2
+    calls_out: 3
+    calls_in: 1
+  services.web.app.workspace.build_task_payload:
+    name: build_task_payload
+    module: services.web.app.workspace
+    line: 237
+    cyclomatic_complexity: 4
+    calls_out: 7
+    calls_in: 2
+  services.orchestrator.app.api.commands.validate_plugin:
+    name: validate_plugin
+    module: services.orchestrator.app.api.commands
+    line: 295
+    cyclomatic_complexity: 1
+    calls_out: 3
+    calls_in: 0
+  services.orchestrator.app.infrastructure.eventstore_esdb._parse_esdb_uri:
+    name: _parse_esdb_uri
+    module: services.orchestrator.app.infrastructure.eventstore_esdb
+    line: 16
+    cyclomatic_complexity: 4
+    calls_out: 6
+    calls_in: 1
+  services.projector.app.main.rag_documents:
+    name: rag_documents
+    module: services.projector.app.main
+    line: 210
+    cyclomatic_complexity: 2
+    calls_out: 3
+    calls_in: 0
+  services.orchestrator.app.domain.aggregates.task.Task.assign_to_agent:
+    name: assign_to_agent
+    module: services.orchestrator.app.domain.aggregates.task
+    line: 103
+    cyclomatic_complexity: 2
+    calls_out: 4
+    calls_in: 0
+  services.web.app.static.workspace.deep:
+    name: deep
+    module: services.web.app.static.workspace
+    line: 182
+    cyclomatic_complexity: 2
+    calls_out: 6
+    calls_in: 0
+  services.projector.app.projections.incidents._root_cause:
+    name: _root_cause
+    module: services.projector.app.projections.incidents
+    line: 289
+    cyclomatic_complexity: 4
+    calls_out: 5
+    calls_in: 1
+  services.orchestrator.app.observability.context.new_correlation_id:
+    name: new_correlation_id
+    module: services.orchestrator.app.observability.context
+    line: 19
+    cyclomatic_complexity: 1
+    calls_out: 2
+    calls_in: 2
+  services.orchestrator.app.domain.aggregates.task.Task.__init__:
+    name: __init__
+    module: services.orchestrator.app.domain.aggregates.task
+    line: 33
+    cyclomatic_complexity: 4
+    calls_out: 5
+    calls_in: 0
+  services.orchestrator.app.domain.aggregates.task.Task.complete:
+    name: complete
+    module: services.orchestrator.app.domain.aggregates.task
+    line: 133
+    cyclomatic_complexity: 2
+    calls_out: 4
+    calls_in: 0
+  services.web.app.static.workspace.id:
+    name: id
+    module: services.web.app.static.workspace
+    line: 184
+    cyclomatic_complexity: 2
+    calls_out: 6
+    calls_in: 0
+  services.orchestrator.app.api.rag.search:
+    name: search
+    module: services.orchestrator.app.api.rag
+    line: 43
+    cyclomatic_complexity: 3
+    calls_out: 22
+    calls_in: 0
+  services.projector.app.projections.incidents._update_incident_status:
+    name: _update_incident_status
+    module: services.projector.app.projections.incidents
+    line: 249
+    cyclomatic_complexity: 1
+    calls_out: 1
+    calls_in: 4
+  services.orchestrator.app.observability.context.observability_context:
+    name: observability_context
+    module: services.orchestrator.app.observability.context
+    line: 40
+    cyclomatic_complexity: 5
+    calls_out: 8
+    calls_in: 6
+  services.projector.app.projections.incidents._upsert_rag_quality:
+    name: _upsert_rag_quality
+    module: services.projector.app.projections.incidents
+    line: 193
+    cyclomatic_complexity: 1
+    calls_out: 4
     calls_in: 1
   services.projector.app.projections.incidents._handle_rag_request_failed:
     name: _handle_rag_request_failed
@@ -768,20 +824,265 @@ nodes:
     cyclomatic_complexity: 2
     calls_out: 6
     calls_in: 0
-  services.web.app.static.workspace.deep:
-    name: deep
+  services.orchestrator.app.application.sagas.approval_gate.ensure_approval:
+    name: ensure_approval
+    module: services.orchestrator.app.application.sagas.approval_gate
+    line: 49
+    cyclomatic_complexity: 8
+    calls_out: 13
+    calls_in: 4
+  services.web.app.static.workspace.m2:
+    name: m2
     module: services.web.app.static.workspace
-    line: 177
+    line: 187
+    cyclomatic_complexity: 1
+    calls_out: 3
+    calls_in: 0
+  services.web.app.chat.build_file_list_artifact:
+    name: build_file_list_artifact
+    module: services.web.app.chat
+    line: 310
+    cyclomatic_complexity: 1
+    calls_out: 2
+    calls_in: 1
+  services.web.app.static.workspace.showArtifactPreview:
+    name: showArtifactPreview
+    module: services.web.app.static.workspace
+    line: 409
+    cyclomatic_complexity: 21
+    calls_out: 6
+    calls_in: 1
+  services.web.app.conductor._fallback_turn:
+    name: _fallback_turn
+    module: services.web.app.conductor
+    line: 401
+    cyclomatic_complexity: 4
+    calls_out: 7
+    calls_in: 2
+  services.web.app.static.workspace.copyLogsToClipboard:
+    name: copyLogsToClipboard
+    module: services.web.app.static.workspace
+    line: 733
     cyclomatic_complexity: 2
+    calls_out: 5
+    calls_in: 0
+  services.projector.app.projections.operational_feed._title_for:
+    name: _title_for
+    module: services.projector.app.projections.operational_feed
+    line: 40
+    cyclomatic_complexity: 11
+    calls_out: 8
+    calls_in: 1
+  services.orchestrator.app.api.commands.activate_plugin:
+    name: activate_plugin
+    module: services.orchestrator.app.api.commands
+    line: 305
+    cyclomatic_complexity: 1
+    calls_out: 3
+    calls_in: 0
+  services.web.app.workspace.attach_context:
+    name: attach_context
+    module: services.web.app.workspace
+    line: 188
+    cyclomatic_complexity: 12
+    calls_out: 7
+    calls_in: 1
+  services.web.app.static.access.title:
+    name: title
+    module: services.web.app.static.access
+    line: 138
+    cyclomatic_complexity: 2
+    calls_out: 2
+    calls_in: 0
+  services.projector.app.main.operational_feed:
+    name: operational_feed
+    module: services.projector.app.main
+    line: 77
+    cyclomatic_complexity: 2
+    calls_out: 3
+    calls_in: 0
+  services.projector.app.projections.incidents._handle_remediation_started:
+    name: _handle_remediation_started
+    module: services.projector.app.projections.incidents
+    line: 130
+    cyclomatic_complexity: 1
     calls_out: 6
     calls_in: 0
-  services.web.app.resource_areas.list_groups:
-    name: list_groups
-    module: services.web.app.resource_areas
-    line: 105
+  services.web.app.static.workspace.ta:
+    name: ta
+    module: services.web.app.static.workspace
+    line: 699
     cyclomatic_complexity: 1
+    calls_out: 1
+    calls_in: 0
+  services.projector.app.projections.incidents._diagnostics_ok:
+    name: _diagnostics_ok
+    module: services.projector.app.projections.incidents
+    line: 296
+    cyclomatic_complexity: 6
+    calls_out: 4
+    calls_in: 1
+  services.web.app.api_routes.chat_message:
+    name: chat_message
+    module: services.web.app.api_routes
+    line: 110
+    cyclomatic_complexity: 6
+    calls_out: 10
+    calls_in: 0
+  services.web.app.static.app.ensureSession:
+    name: ensureSession
+    module: services.web.app.static.app
+    line: 51
+    cyclomatic_complexity: 3
+    calls_out: 4
+    calls_in: 1
+  services.projector.app.main.resource_registry:
+    name: resource_registry
+    module: services.projector.app.main
+    line: 300
+    cyclomatic_complexity: 2
+    calls_out: 3
+    calls_in: 0
+  services.web.app.access_matrix._merge_bool_matrix:
+    name: _merge_bool_matrix
+    module: services.web.app.access_matrix
+    line: 112
+    cyclomatic_complexity: 7
+    calls_out: 5
+    calls_in: 2
+  services.web.app.access_matrix._empty_human_agent:
+    name: _empty_human_agent
+    module: services.web.app.access_matrix
+    line: 69
+    cyclomatic_complexity: 3
     calls_out: 0
     calls_in: 1
+  services.web.app.static.access.renderAgentResourceMatrix:
+    name: renderAgentResourceMatrix
+    module: services.web.app.static.access
+    line: 27
+    cyclomatic_complexity: 11
+    calls_out: 4
+    calls_in: 1
+  services.web.app.static.workspace.ensureSession:
+    name: ensureSession
+    module: services.web.app.static.workspace
+    line: 41
+    cyclomatic_complexity: 2
+    calls_out: 3
+    calls_in: 12
+  services.projector.app.projections.incidents._handle_remediation_finished:
+    name: _handle_remediation_finished
+    module: services.projector.app.projections.incidents
+    line: 155
+    cyclomatic_complexity: 2
+    calls_out: 7
+    calls_in: 0
+  services.web.app.static.workspace.selectArtifact:
+    name: selectArtifact
+    module: services.web.app.static.workspace
+    line: 386
+    cyclomatic_complexity: 9
+    calls_out: 9
+    calls_in: 2
+  services.web.app.chat._format_history:
+    name: _format_history
+    module: services.web.app.chat
+    line: 345
+    cyclomatic_complexity: 3
+    calls_out: 3
+    calls_in: 1
+  services.orchestrator.app.observability.context.new_retrieval_trace_id:
+    name: new_retrieval_trace_id
+    module: services.orchestrator.app.observability.context
+    line: 23
+    cyclomatic_complexity: 1
+    calls_out: 1
+    calls_in: 5
+  services.web.app.conductor._call_nlp2dsl:
+    name: _call_nlp2dsl
+    module: services.web.app.conductor
+    line: 99
+    cyclomatic_complexity: 2
+    calls_out: 2
+    calls_in: 1
+  services.web.app.static.app.renderHistory:
+    name: renderHistory
+    module: services.web.app.static.app
+    line: 39
+    cyclomatic_complexity: 7
+    calls_out: 2
+    calls_in: 2
+  services.orchestrator.app.rag.store.RagStore.search:
+    name: search
+    module: services.orchestrator.app.rag.store
+    line: 126
+    cyclomatic_complexity: 10
+    calls_out: 13
+    calls_in: 0
+  services.orchestrator.app.application.command_bus.CommandBus._approve_request:
+    name: _approve_request
+    module: services.orchestrator.app.application.command_bus
+    line: 638
+    cyclomatic_complexity: 3
+    calls_out: 6
+    calls_in: 0
+  services.web.app.static.workspace.t:
+    name: t
+    module: services.web.app.static.workspace
+    line: 105
+    cyclomatic_complexity: 4
+    calls_out: 6
+    calls_in: 0
+  services.projector.app.projections.workflow_versions.project_workflow_versions:
+    name: project_workflow_versions
+    module: services.projector.app.projections.workflow_versions
+    line: 7
+    cyclomatic_complexity: 5
+    calls_out: 6
+    calls_in: 1
+  services.web.app.static.workspace.names:
+    name: names
+    module: services.web.app.static.workspace
+    line: 211
+    cyclomatic_complexity: 2
+    calls_out: 3
+    calls_in: 0
+  services.web.app.static.workspace.renderArtifactList:
+    name: renderArtifactList
+    module: services.web.app.static.workspace
+    line: 361
+    cyclomatic_complexity: 11
+    calls_out: 10
+    calls_in: 2
+  services.web.app.static.workroom.refresh:
+    name: refresh
+    module: services.web.app.static.workroom
+    line: 159
+    cyclomatic_complexity: 6
+    calls_out: 5
+    calls_in: 0
+  services.web.app.static.workspace.createFromDraft:
+    name: createFromDraft
+    module: services.web.app.static.workspace
+    line: 615
+    cyclomatic_complexity: 15
+    calls_out: 9
+    calls_in: 0
+  services.orchestrator.app.domain.aggregates.task._event_timestamp:
+    name: _event_timestamp
+    module: services.orchestrator.app.domain.aggregates.task
+    line: 22
+    cyclomatic_complexity: 3
+    calls_out: 5
+    calls_in: 1
+  services.web.app.static.workspace.cacheArtifactFull:
+    name: cacheArtifactFull
+    module: services.web.app.static.workspace
+    line: 316
+    cyclomatic_complexity: 3
+    calls_out: 1
+    calls_in: 4
   services.projector.app.projections.plugin_catalog.project_plugin_catalog:
     name: project_plugin_catalog
     module: services.projector.app.projections.plugin_catalog
@@ -789,19 +1090,110 @@ nodes:
     cyclomatic_complexity: 5
     calls_out: 6
     calls_in: 1
-  services.web.app.static.workspace.copyLogsToClipboard:
-    name: copyLogsToClipboard
-    module: services.web.app.static.workspace
-    line: 575
-    cyclomatic_complexity: 2
-    calls_out: 5
+  services.orchestrator.app.application.command_bus.CommandBus._register_resource:
+    name: _register_resource
+    module: services.orchestrator.app.application.command_bus
+    line: 832
+    cyclomatic_complexity: 5
+    calls_out: 16
     calls_in: 0
+  services.web.app.static.workspace.appendMsgTo:
+    name: appendMsgTo
+    module: services.web.app.static.workspace
+    line: 467
+    cyclomatic_complexity: 6
+    calls_out: 2
+    calls_in: 2
   services.web.app.workspace.workspace_state:
     name: workspace_state
     module: services.web.app.workspace
-    line: 110
+    line: 176
+    cyclomatic_complexity: 1
+    calls_out: 4
+    calls_in: 0
+  services.web.app.nlp2dsl_bridge.backend_url:
+    name: backend_url
+    module: services.web.app.nlp2dsl_bridge
+    line: 15
+    cyclomatic_complexity: 1
+    calls_out: 1
+    calls_in: 0
+  services.web.app.chat.handle_message:
+    name: handle_message
+    module: services.web.app.chat
+    line: 374
+    cyclomatic_complexity: 5
+    calls_out: 8
+    calls_in: 0
+  services.projector.app.projections.dispatcher._normalize_event:
+    name: _normalize_event
+    module: services.projector.app.projections.dispatcher
+    line: 28
+    cyclomatic_complexity: 7
+    calls_out: 9
+    calls_in: 1
+  services.orchestrator.app.infrastructure.eventstore.EventStore._record_from_row:
+    name: _record_from_row
+    module: services.orchestrator.app.infrastructure.eventstore
+    line: 169
     cyclomatic_complexity: 1
     calls_out: 3
+    calls_in: 0
+  services.web.app.static.workspace.downloadArtifact:
+    name: downloadArtifact
+    module: services.web.app.static.workspace
+    line: 446
+    cyclomatic_complexity: 7
+    calls_out: 9
+    calls_in: 1
+  services.web.app.static.workspace.formatChatContent:
+    name: formatChatContent
+    module: services.web.app.static.workspace
+    line: 277
+    cyclomatic_complexity: 2
+    calls_out: 3
+    calls_in: 1
+  services.web.app.workspace.fetch_live_board:
+    name: fetch_live_board
+    module: services.web.app.workspace
+    line: 663
+    cyclomatic_complexity: 1
+    calls_out: 11
+    calls_in: 0
+  services.web.app.chat._source_preview:
+    name: _source_preview
+    module: services.web.app.chat
+    line: 522
+    cyclomatic_complexity: 2
+    calls_out: 3
+    calls_in: 1
+  services.web.app.static.access.resetAll:
+    name: resetAll
+    module: services.web.app.static.access
+    line: 127
+    cyclomatic_complexity: 1
+    calls_out: 3
+    calls_in: 0
+  services.orchestrator.app.access.transport.TransportService.probe:
+    name: probe
+    module: services.orchestrator.app.access.transport
+    line: 25
+    cyclomatic_complexity: 1
+    calls_out: 4
+    calls_in: 0
+  services.web.app.static.app.rowTask:
+    name: rowTask
+    module: services.web.app.static.app
+    line: 150
+    cyclomatic_complexity: 6
+    calls_out: 2
+    calls_in: 0
+  services.orchestrator.app.rag.indexer.RagIndexer.ingest_resource:
+    name: ingest_resource
+    module: services.orchestrator.app.rag.indexer
+    line: 26
+    cyclomatic_complexity: 13
+    calls_out: 22
     calls_in: 0
   services.orchestrator.app.rag.store._parse_embedding:
     name: _parse_embedding
@@ -810,24 +1202,206 @@ nodes:
     cyclomatic_complexity: 5
     calls_out: 6
     calls_in: 1
-  services.orchestrator.app.observability.logging.log_event:
-    name: log_event
-    module: services.orchestrator.app.observability.logging
-    line: 17
-    cyclomatic_complexity: 3
-    calls_out: 9
-    calls_in: 4
-  services.orchestrator.app.api.commands._dispatch:
-    name: _dispatch
-    module: services.orchestrator.app.api.commands
-    line: 354
+  services.orchestrator.app.api.access.upload_resource:
+    name: upload_resource
+    module: services.orchestrator.app.api.access
+    line: 102
+    cyclomatic_complexity: 4
+    calls_out: 19
+    calls_in: 0
+  services.web.app.static.workspace.renderChat:
+    name: renderChat
+    module: services.web.app.static.workspace
+    line: 284
+    cyclomatic_complexity: 9
+    calls_out: 5
+    calls_in: 3
+  services.projector.app.projections.incidents._handle_diagnostics_completed:
+    name: _handle_diagnostics_completed
+    module: services.projector.app.projections.incidents
+    line: 99
     cyclomatic_complexity: 4
     calls_out: 9
-    calls_in: 14
-  services.orchestrator.app.api.commands.validate_plugin:
-    name: validate_plugin
+    calls_in: 0
+  services.web.app.chat.is_file_list_intent:
+    name: is_file_list_intent
+    module: services.web.app.chat
+    line: 53
+    cyclomatic_complexity: 7
+    calls_out: 5
+    calls_in: 1
+  services.orchestrator.app.access.transport.TransportService.copy:
+    name: copy
+    module: services.orchestrator.app.access.transport
+    line: 37
+    cyclomatic_complexity: 4
+    calls_out: 10
+    calls_in: 0
+  services.web.app.workspace._artifact_title:
+    name: _artifact_title
+    module: services.web.app.workspace
+    line: 111
+    cyclomatic_complexity: 6
+    calls_out: 4
+    calls_in: 1
+  services.orchestrator.app.domain.aggregates.task.Task.fail:
+    name: fail
+    module: services.orchestrator.app.domain.aggregates.task
+    line: 149
+    cyclomatic_complexity: 2
+    calls_out: 4
+    calls_in: 0
+  services.orchestrator.app.config.Settings.model_post_init:
+    name: model_post_init
+    module: services.orchestrator.app.config
+    line: 49
+    cyclomatic_complexity: 1
+    calls_out: 2
+    calls_in: 0
+  services.orchestrator.app.application.sagas.approval_gate._is_skipped:
+    name: _is_skipped
+    module: services.orchestrator.app.application.sagas.approval_gate
+    line: 42
+    cyclomatic_complexity: 3
+    calls_out: 3
+    calls_in: 1
+  services.projector.app.projections.incidents._upsert_service_health:
+    name: _upsert_service_health
+    module: services.projector.app.projections.incidents
+    line: 215
+    cyclomatic_complexity: 1
+    calls_out: 2
+    calls_in: 3
+  services.orchestrator.app.access.uri.build_uri:
+    name: build_uri
+    module: services.orchestrator.app.access.uri
+    line: 40
+    cyclomatic_complexity: 2
+    calls_out: 1
+    calls_in: 2
+  services.projector.app.main.task_board:
+    name: task_board
+    module: services.projector.app.main
+    line: 94
+    cyclomatic_complexity: 3
+    calls_out: 4
+    calls_in: 0
+  services.orchestrator.app.api.queries._event_to_dict:
+    name: _event_to_dict
+    module: services.orchestrator.app.api.queries
+    line: 168
+    cyclomatic_complexity: 2
+    calls_out: 10
+    calls_in: 3
+  services.web.app.resource_areas.list_areas:
+    name: list_areas
+    module: services.web.app.resource_areas
+    line: 101
+    cyclomatic_complexity: 2
+    calls_out: 1
+    calls_in: 1
+  services.orchestrator.app.infrastructure.eventstore._utc_now:
+    name: _utc_now
+    module: services.orchestrator.app.infrastructure.eventstore
+    line: 48
+    cyclomatic_complexity: 1
+    calls_out: 1
+    calls_in: 9
+  services.web.app.static.app.uploadFiles:
+    name: uploadFiles
+    module: services.web.app.static.app
+    line: 61
+    cyclomatic_complexity: 8
+    calls_out: 5
+    calls_in: 1
+  services.web.app.chat._file_list_answer:
+    name: _file_list_answer
+    module: services.web.app.chat
+    line: 415
+    cyclomatic_complexity: 2
+    calls_out: 5
+    calls_in: 1
+  services.web.app.chat.fetch_file_inventory:
+    name: fetch_file_inventory
+    module: services.web.app.chat
+    line: 155
+    cyclomatic_complexity: 7
+    calls_out: 15
+    calls_in: 1
+  services.orchestrator.app.application.command_bus.CommandBus._rollback_workflow_version:
+    name: _rollback_workflow_version
+    module: services.orchestrator.app.application.command_bus
+    line: 465
+    cyclomatic_complexity: 1
+    calls_out: 5
+    calls_in: 0
+  services.web.app.workspace.create_and_run:
+    name: create_and_run
+    module: services.web.app.workspace
+    line: 435
+    cyclomatic_complexity: 5
+    calls_out: 9
+    calls_in: 0
+  services.projector.app.projections.dispatcher.project_event:
+    name: project_event
+    module: services.projector.app.projections.dispatcher
+    line: 16
+    cyclomatic_complexity: 1
+    calls_out: 9
+    calls_in: 1
+  services.web.app.resource_areas.agent_may_access:
+    name: agent_may_access
+    module: services.web.app.resource_areas
+    line: 129
+    cyclomatic_complexity: 9
+    calls_out: 4
+    calls_in: 2
+  services.web.app.access_matrix._reindex_state:
+    name: _reindex_state
+    module: services.web.app.access_matrix
+    line: 124
+    cyclomatic_complexity: 12
+    calls_out: 16
+    calls_in: 2
+  services.web.app.static.workspace.api:
+    name: api
+    module: services.web.app.static.workspace
+    line: 31
+    cyclomatic_complexity: 6
+    calls_out: 4
+    calls_in: 21
+  services.web.app.static.workspace.req:
+    name: req
+    module: services.web.app.static.workspace
+    line: 237
+    cyclomatic_complexity: 2
+    calls_out: 3
+    calls_in: 0
+  services.orchestrator.app.api.commands.approve_request:
+    name: approve_request
     module: services.orchestrator.app.api.commands
-    line: 295
+    line: 320
+    cyclomatic_complexity: 2
+    calls_out: 2
+    calls_in: 0
+  services.web.app.nlp2dsl_bridge.health:
+    name: health
+    module: services.web.app.nlp2dsl_bridge
+    line: 39
+    cyclomatic_complexity: 4
+    calls_out: 3
+    calls_in: 0
+  services.web.app.workspace.create_task_from_draft:
+    name: create_task_from_draft
+    module: services.web.app.workspace
+    line: 413
+    cyclomatic_complexity: 4
+    calls_out: 5
+    calls_in: 0
+  services.orchestrator.app.api.commands.activate_workflow_version:
+    name: activate_workflow_version
+    module: services.orchestrator.app.api.commands
+    line: 280
     cyclomatic_complexity: 1
     calls_out: 3
     calls_in: 0
@@ -838,34 +1412,34 @@ nodes:
     cyclomatic_complexity: 1
     calls_out: 0
     calls_in: 1
-  services.orchestrator.app.rag.store._row_dict:
-    name: _row_dict
-    module: services.orchestrator.app.rag.store
-    line: 220
-    cyclomatic_complexity: 4
-    calls_out: 5
-    calls_in: 5
-  services.web.src.main.refresh:
-    name: refresh
-    module: services.web.src.main
-    line: 26
-    cyclomatic_complexity: 7
-    calls_out: 8
-    calls_in: 4
-  services.projector.app.main.operational_feed:
-    name: operational_feed
-    module: services.projector.app.main
-    line: 77
-    cyclomatic_complexity: 2
-    calls_out: 3
+  services.orchestrator.app.observability.incidents.IncidentRecorder.record:
+    name: record
+    module: services.orchestrator.app.observability.incidents
+    line: 57
+    cyclomatic_complexity: 16
+    calls_out: 23
     calls_in: 0
-  services.web.app.static.workspace.renderChat:
-    name: renderChat
+  services.orchestrator.app.observability.rag_diagnostics.RagDiagnostics.run:
+    name: run
+    module: services.orchestrator.app.observability.rag_diagnostics
+    line: 20
+    cyclomatic_complexity: 12
+    calls_out: 23
+    calls_in: 0
+  services.web.app.static.workspace.copyText:
+    name: copyText
     module: services.web.app.static.workspace
-    line: 279
-    cyclomatic_complexity: 9
-    calls_out: 5
+    line: 694
+    cyclomatic_complexity: 2
+    calls_out: 7
     calls_in: 3
+  services.web.app.chat._uri_is_user_resource:
+    name: _uri_is_user_resource
+    module: services.web.app.chat
+    line: 86
+    cyclomatic_complexity: 6
+    calls_out: 3
+    calls_in: 5
   services.projector.app.projections.incidents._handle_incident_detected:
     name: _handle_incident_detected
     module: services.projector.app.projections.incidents
@@ -873,636 +1447,41 @@ nodes:
     cyclomatic_complexity: 6
     calls_out: 12
     calls_in: 0
-  services.web.app.agent_workroom.run_workroom:
-    name: run_workroom
-    module: services.web.app.agent_workroom
-    line: 157
-    cyclomatic_complexity: 22
-    calls_out: 45
-    calls_in: 0
-  services.web.app.static.workspace.loadTicketDetail:
-    name: loadTicketDetail
-    module: services.web.app.static.workspace
-    line: 86
-    cyclomatic_complexity: 1
-    calls_out: 3
-    calls_in: 3
-  services.web.app.chat.handle_message:
-    name: handle_message
-    module: services.web.app.chat
-    line: 190
-    cyclomatic_complexity: 33
-    calls_out: 35
-    calls_in: 0
-  services.web.app.static.workspace.renderTicketDetail:
-    name: renderTicketDetail
-    module: services.web.app.static.workspace
-    line: 113
-    cyclomatic_complexity: 24
-    calls_out: 9
-    calls_in: 8
-  services.orchestrator.app.api.commands.rollback_plugin:
-    name: rollback_plugin
-    module: services.orchestrator.app.api.commands
-    line: 310
-    cyclomatic_complexity: 1
-    calls_out: 3
-    calls_in: 0
-  services.orchestrator.app.rag.indexer.RagIndexer.ingest_resource:
-    name: ingest_resource
-    module: services.orchestrator.app.rag.indexer
-    line: 26
-    cyclomatic_complexity: 13
-    calls_out: 22
-    calls_in: 0
-  services.projector.app.projections.incidents._handle_diagnostics_completed:
-    name: _handle_diagnostics_completed
-    module: services.projector.app.projections.incidents
-    line: 99
-    cyclomatic_complexity: 4
-    calls_out: 9
-    calls_in: 0
-  services.projector.app.projections.operational_feed._summary_for:
-    name: _summary_for
-    module: services.projector.app.projections.operational_feed
-    line: 60
-    cyclomatic_complexity: 6
-    calls_out: 6
-    calls_in: 1
-  services.web.app.static.workspace.appendMsgTo:
-    name: appendMsgTo
-    module: services.web.app.static.workspace
-    line: 311
-    cyclomatic_complexity: 6
-    calls_out: 2
-    calls_in: 2
-  services.web.app.workspace.new_session:
-    name: new_session
-    module: services.web.app.workspace
-    line: 79
-    cyclomatic_complexity: 1
-    calls_out: 5
-    calls_in: 1
-  services.orchestrator.app.api.commands.install_plugin:
-    name: install_plugin
-    module: services.orchestrator.app.api.commands
-    line: 300
-    cyclomatic_complexity: 1
-    calls_out: 3
-    calls_in: 0
-  services.projector.app.projections.incidents._error_code:
-    name: _error_code
-    module: services.projector.app.projections.incidents
-    line: 262
-    cyclomatic_complexity: 4
-    calls_out: 3
-    calls_in: 6
-  services.projector.app.projections.incidents._handle_post_remediation_verification:
-    name: _handle_post_remediation_verification
-    module: services.projector.app.projections.incidents
-    line: 177
-    cyclomatic_complexity: 4
+  services.projector.app.main.plugin_catalog:
+    name: plugin_catalog
+    module: services.projector.app.main
+    line: 181
+    cyclomatic_complexity: 3
     calls_out: 4
     calls_in: 0
-  services.orchestrator.app.access.uri.parse_uri:
-    name: parse_uri
-    module: services.orchestrator.app.access.uri
-    line: 25
-    cyclomatic_complexity: 6
-    calls_out: 9
-    calls_in: 6
-  services.web.app.chat.get_history:
-    name: get_history
+  services.web.app.chat._uri_is_system_resource:
+    name: _uri_is_system_resource
     module: services.web.app.chat
-    line: 153
-    cyclomatic_complexity: 1
-    calls_out: 2
-    calls_in: 2
-  services.web.app.static.workspace.items:
-    name: items
-    module: services.web.app.static.workspace
-    line: 637
-    cyclomatic_complexity: 1
-    calls_out: 3
-    calls_in: 6
-  services.orchestrator.app.api.observability.export_logs:
-    name: export_logs
-    module: services.orchestrator.app.api.observability
-    line: 76
-    cyclomatic_complexity: 2
-    calls_out: 6
-    calls_in: 0
-  services.web.app.workspace.propose_task_draft:
-    name: propose_task_draft
-    module: services.web.app.workspace
-    line: 190
-    cyclomatic_complexity: 1
-    calls_out: 1
-    calls_in: 0
-  services.orchestrator.app.domain.aggregates.task._event_type:
-    name: _event_type
-    module: services.orchestrator.app.domain.aggregates.task
-    line: 9
-    cyclomatic_complexity: 1
-    calls_out: 1
-    calls_in: 1
-  services.web.app.workspace.fetch_live_board:
-    name: fetch_live_board
-    module: services.web.app.workspace
-    line: 587
-    cyclomatic_complexity: 1
-    calls_out: 11
-    calls_in: 0
-  services.web.app.static.workspace.api:
-    name: api
-    module: services.web.app.static.workspace
-    line: 27
-    cyclomatic_complexity: 6
+    line: 97
+    cyclomatic_complexity: 5
     calls_out: 4
-    calls_in: 20
-  services.web.app.static.workspace.archiveTicket:
-    name: archiveTicket
-    module: services.web.app.static.workspace
+    calls_in: 2
+  services.orchestrator.app.rag.openrouter.normalize_openrouter_model:
+    name: normalize_openrouter_model
+    module: services.orchestrator.app.rag.openrouter
+    line: 13
+    cyclomatic_complexity: 3
+    calls_out: 3
+    calls_in: 4
+  services.web.app.static.workroom.data:
+    name: data
+    module: services.web.app.static.workroom
     line: 166
-    cyclomatic_complexity: 2
-    calls_out: 5
-    calls_in: 1
-  services.orchestrator.app.api.rag.search:
-    name: search
-    module: services.orchestrator.app.api.rag
-    line: 43
-    cyclomatic_complexity: 3
-    calls_out: 22
-    calls_in: 0
-  services.orchestrator.app.application.sagas.task_routing.pick_idle_agent:
-    name: pick_idle_agent
-    module: services.orchestrator.app.application.sagas.task_routing
-    line: 6
-    cyclomatic_complexity: 10
-    calls_out: 5
-    calls_in: 1
-  services.web.app.static.workspace.names:
-    name: names
-    module: services.web.app.static.workspace
-    line: 206
-    cyclomatic_complexity: 2
-    calls_out: 3
-    calls_in: 0
-  agents.shell-agent.app.executor.run_shell_command:
-    name: run_shell_command
-    module: agents.shell-agent.app.executor
-    line: 27
-    cyclomatic_complexity: 4
-    calls_out: 3
-    calls_in: 1
-  services.orchestrator.app.api.commands.validate_workflow_version:
-    name: validate_workflow_version
-    module: services.orchestrator.app.api.commands
-    line: 270
-    cyclomatic_complexity: 1
-    calls_out: 3
-    calls_in: 0
-  services.web.app.api_routes.chat_message:
-    name: chat_message
-    module: services.web.app.api_routes
-    line: 109
-    cyclomatic_complexity: 6
-    calls_out: 10
-    calls_in: 0
-  services.projector.app.projections.approval_requests.project_approval_requests:
-    name: project_approval_requests
-    module: services.projector.app.projections.approval_requests
-    line: 6
-    cyclomatic_complexity: 6
-    calls_out: 9
-    calls_in: 1
-  services.orchestrator.app.observability.context.new_correlation_id:
-    name: new_correlation_id
-    module: services.orchestrator.app.observability.context
-    line: 19
-    cyclomatic_complexity: 1
-    calls_out: 2
-    calls_in: 2
-  services.web.app.api_routes.list_tickets:
-    name: list_tickets
-    module: services.web.app.api_routes
-    line: 257
-    cyclomatic_complexity: 10
-    calls_out: 7
-    calls_in: 0
-  services.web.app.workspace.archive_task:
-    name: archive_task
-    module: services.web.app.workspace
-    line: 569
-    cyclomatic_complexity: 2
-    calls_out: 3
-    calls_in: 0
-  services.web.app.static.workroom.refresh:
-    name: refresh
-    module: services.web.app.static.workroom
-    line: 159
-    cyclomatic_complexity: 6
-    calls_out: 5
-    calls_in: 0
-  services.web.app.static.workspace.initRouting:
-    name: initRouting
-    module: services.web.app.static.workspace
-    line: 176
-    cyclomatic_complexity: 6
-    calls_out: 8
-    calls_in: 0
-  services.projector.app.main._row_to_dict:
-    name: _row_to_dict
-    module: services.projector.app.main
-    line: 329
-    cyclomatic_complexity: 3
-    calls_out: 5
-    calls_in: 12
-  services.web.app.static.workroom.text:
-    name: text
-    module: services.web.app.static.workroom
-    line: 137
-    cyclomatic_complexity: 3
-    calls_out: 5
-    calls_in: 0
-  services.orchestrator.app.rag.store._chunk_hit:
-    name: _chunk_hit
-    module: services.orchestrator.app.rag.store
-    line: 228
-    cyclomatic_complexity: 2
-    calls_out: 5
-    calls_in: 3
-  services.orchestrator.app.rag.store.RagStore._keyword_fallback:
-    name: _keyword_fallback
-    module: services.orchestrator.app.rag.store
-    line: 183
-    cyclomatic_complexity: 10
-    calls_out: 12
-    calls_in: 0
-  services.orchestrator.app.api.queries.get_task:
-    name: get_task
-    module: services.orchestrator.app.api.queries
-    line: 29
-    cyclomatic_complexity: 6
-    calls_out: 7
-    calls_in: 0
-  services.orchestrator.app.api.access.upload_resource:
-    name: upload_resource
-    module: services.orchestrator.app.api.access
-    line: 102
-    cyclomatic_complexity: 4
-    calls_out: 19
-    calls_in: 0
-  services.projector.app.projections.dispatcher.project_event:
-    name: project_event
-    module: services.projector.app.projections.dispatcher
-    line: 16
-    cyclomatic_complexity: 1
-    calls_out: 9
-    calls_in: 1
-  services.web.app.static.workroom.renderState:
-    name: renderState
-    module: services.web.app.static.workroom
-    line: 129
-    cyclomatic_complexity: 3
-    calls_out: 2
-    calls_in: 3
-  services.projector.app.projections.agent_fleet.project_agent_fleet:
-    name: project_agent_fleet
-    module: services.projector.app.projections.agent_fleet
-    line: 7
-    cyclomatic_complexity: 8
-    calls_out: 11
-    calls_in: 1
-  services.orchestrator.app.infrastructure.eventstore._utc_now:
-    name: _utc_now
-    module: services.orchestrator.app.infrastructure.eventstore
-    line: 48
     cyclomatic_complexity: 1
     calls_out: 1
-    calls_in: 9
-  services.web.app.static.workspace.saveContextFromForm:
-    name: saveContextFromForm
+    calls_in: 1
+  services.web.app.static.workspace.confirmTicket:
+    name: confirmTicket
     module: services.web.app.static.workspace
-    line: 374
-    cyclomatic_complexity: 9
-    calls_out: 5
-    calls_in: 0
-  services.orchestrator.app.observability.export.format_logs_text:
-    name: format_logs_text
-    module: services.orchestrator.app.observability.export
-    line: 8
-    cyclomatic_complexity: 29
-    calls_out: 66
-    calls_in: 1
-  services.projector.app.main.task_board:
-    name: task_board
-    module: services.projector.app.main
-    line: 94
-    cyclomatic_complexity: 3
-    calls_out: 4
-    calls_in: 0
-  services.orchestrator.app.api.queries.get_agent:
-    name: get_agent
-    module: services.orchestrator.app.api.queries
-    line: 52
-    cyclomatic_complexity: 6
-    calls_out: 7
-    calls_in: 0
-  services.projector.app.projections.incidents._root_cause:
-    name: _root_cause
-    module: services.projector.app.projections.incidents
-    line: 289
-    cyclomatic_complexity: 4
-    calls_out: 5
-    calls_in: 1
-  services.web.app.static.workspace.syncContextNote:
-    name: syncContextNote
-    module: services.web.app.static.workspace
-    line: 391
-    cyclomatic_complexity: 1
-    calls_out: 3
-    calls_in: 0
-  services.web.app.static.workspace.copyText:
-    name: copyText
-    module: services.web.app.static.workspace
-    line: 536
-    cyclomatic_complexity: 2
-    calls_out: 7
-    calls_in: 3
-  services.web.app.static.workroom.toast:
-    name: toast
-    module: services.web.app.static.workroom
-    line: 9
-    cyclomatic_complexity: 3
-    calls_out: 2
-    calls_in: 2
-  services.orchestrator.app.infrastructure.eventstore_esdb.EsdbEventStore.__init__:
-    name: __init__
-    module: services.orchestrator.app.infrastructure.eventstore_esdb
-    line: 30
-    cyclomatic_complexity: 1
-    calls_out: 1
-    calls_in: 0
-  services.orchestrator.app.observability.incidents.IncidentRecorder._persist:
-    name: _persist
-    module: services.orchestrator.app.observability.incidents
-    line: 132
-    cyclomatic_complexity: 2
-    calls_out: 4
-    calls_in: 0
-  services.projector.app.projections.dispatcher._normalize_event:
-    name: _normalize_event
-    module: services.projector.app.projections.dispatcher
-    line: 28
-    cyclomatic_complexity: 7
-    calls_out: 9
-    calls_in: 1
-  services.web.app.workspace.get_or_create:
-    name: get_or_create
-    module: services.web.app.workspace
-    line: 93
-    cyclomatic_complexity: 3
-    calls_out: 5
-    calls_in: 11
-  services.projector.app.projections.workflow_versions.project_workflow_versions:
-    name: project_workflow_versions
-    module: services.projector.app.projections.workflow_versions
-    line: 7
-    cyclomatic_complexity: 5
-    calls_out: 6
-    calls_in: 1
-  services.orchestrator.app.incidents.pipeline.classify_rag_error:
-    name: classify_rag_error
-    module: services.orchestrator.app.incidents.pipeline
-    line: 24
-    cyclomatic_complexity: 11
-    calls_out: 2
-    calls_in: 1
-  services.web.app.chat.format_file_list_reply:
-    name: format_file_list_reply
-    module: services.web.app.chat
-    line: 89
-    cyclomatic_complexity: 22
-    calls_out: 35
-    calls_in: 1
-  services.projector.app.projections.incidents._upsert_service_health:
-    name: _upsert_service_health
-    module: services.projector.app.projections.incidents
-    line: 215
-    cyclomatic_complexity: 1
-    calls_out: 2
-    calls_in: 3
-  services.orchestrator.app.observability.incidents.IncidentRecorder._publish_event:
-    name: _publish_event
-    module: services.orchestrator.app.observability.incidents
-    line: 165
-    cyclomatic_complexity: 3
-    calls_out: 6
-    calls_in: 0
-  services.web.app.workspace._extract_ticket:
-    name: _extract_ticket
-    module: services.web.app.workspace
-    line: 155
-    cyclomatic_complexity: 2
-    calls_out: 2
-    calls_in: 2
-  services.web.app.workspace.create_and_run:
-    name: create_and_run
-    module: services.web.app.workspace
-    line: 359
-    cyclomatic_complexity: 5
-    calls_out: 9
-    calls_in: 0
-  services.web.app.api_routes.get_ticket:
-    name: get_ticket
-    module: services.web.app.api_routes
-    line: 272
-    cyclomatic_complexity: 5
-    calls_out: 9
-    calls_in: 0
-  services.web.app.static.workroom.loadAreas:
-    name: loadAreas
-    module: services.web.app.static.workroom
-    line: 83
-    cyclomatic_complexity: 2
-    calls_out: 2
-    calls_in: 1
-  services.orchestrator.app.api.queries._event_to_dict:
-    name: _event_to_dict
-    module: services.orchestrator.app.api.queries
-    line: 168
-    cyclomatic_complexity: 2
-    calls_out: 10
-    calls_in: 3
-  services.projector.app.main.approval_requests:
-    name: approval_requests
-    module: services.projector.app.main
-    line: 152
-    cyclomatic_complexity: 3
-    calls_out: 4
-    calls_in: 0
-  services.web.app.workspace._extract_shell_command:
-    name: _extract_shell_command
-    module: services.web.app.workspace
     line: 160
-    cyclomatic_complexity: 4
-    calls_out: 8
-    calls_in: 2
-  services.web.app.static.workroom.ensureWorkroom:
-    name: ensureWorkroom
-    module: services.web.app.static.workroom
-    line: 31
-    cyclomatic_complexity: 4
-    calls_out: 4
-    calls_in: 3
-  services.orchestrator.app.application.command_bus.CommandBus._activate_plugin:
-    name: _activate_plugin
-    module: services.orchestrator.app.application.command_bus
-    line: 592
-    cyclomatic_complexity: 1
-    calls_out: 4
-    calls_in: 0
-  services.projector.app.projections.incidents._checks_payload:
-    name: _checks_payload
-    module: services.projector.app.projections.incidents
-    line: 271
-    cyclomatic_complexity: 10
-    calls_out: 11
-    calls_in: 1
-  services.web.app.conductor._mullm_file_list_turn:
-    name: _mullm_file_list_turn
-    module: services.web.app.conductor
-    line: 198
-    cyclomatic_complexity: 1
-    calls_out: 5
-    calls_in: 1
-  services.web.app.static.workspace.selectTicket:
-    name: selectTicket
-    module: services.web.app.static.workspace
-    line: 94
-    cyclomatic_complexity: 5
-    calls_out: 11
-    calls_in: 7
-  services.orchestrator.app.api.commands.create_approval:
-    name: create_approval
-    module: services.orchestrator.app.api.commands
-    line: 315
-    cyclomatic_complexity: 1
-    calls_out: 3
-    calls_in: 0
-  services.orchestrator.app.rag.store.RagStore.search:
-    name: search
-    module: services.orchestrator.app.rag.store
-    line: 126
-    cyclomatic_complexity: 10
-    calls_out: 13
-    calls_in: 0
-  services.projector.app.projections.incidents._handle_remediation_started:
-    name: _handle_remediation_started
-    module: services.projector.app.projections.incidents
-    line: 130
     cyclomatic_complexity: 1
     calls_out: 6
-    calls_in: 0
-  services.orchestrator.app.api.commands.propose_plugin:
-    name: propose_plugin
-    module: services.orchestrator.app.api.commands
-    line: 290
-    cyclomatic_complexity: 1
-    calls_out: 3
-    calls_in: 0
-  services.orchestrator.app.api.commands.activate_plugin:
-    name: activate_plugin
-    module: services.orchestrator.app.api.commands
-    line: 305
-    cyclomatic_complexity: 1
-    calls_out: 3
-    calls_in: 0
-  services.web.app.agent_workroom._plan_steps:
-    name: _plan_steps
-    module: services.web.app.agent_workroom
-    line: 105
-    cyclomatic_complexity: 4
-    calls_out: 7
     calls_in: 1
-  services.web.app.nlp2dsl_bridge.backend_candidates:
-    name: backend_candidates
-    module: services.web.app.nlp2dsl_bridge
-    line: 19
-    cyclomatic_complexity: 4
-    calls_out: 6
-    calls_in: 3
-  services.orchestrator.app.domain.aggregates.task._event_timestamp:
-    name: _event_timestamp
-    module: services.orchestrator.app.domain.aggregates.task
-    line: 22
-    cyclomatic_complexity: 3
-    calls_out: 5
-    calls_in: 1
-  services.web.app.chat._dedupe_rows_by_uri:
-    name: _dedupe_rows_by_uri
-    module: services.web.app.chat
-    line: 49
-    cyclomatic_complexity: 8
-    calls_out: 10
-    calls_in: 2
-  services.web.app.chat._orch:
-    name: _orch
-    module: services.web.app.chat
-    line: 19
-    cyclomatic_complexity: 2
-    calls_out: 2
-    calls_in: 5
-  services.web.app.agent_workroom._extract_shell:
-    name: _extract_shell
-    module: services.web.app.agent_workroom
-    line: 148
-    cyclomatic_complexity: 4
-    calls_out: 8
-    calls_in: 2
-  services.web.app.static.app.appendMessage:
-    name: appendMessage
-    module: services.web.app.static.app
-    line: 25
-    cyclomatic_complexity: 2
-    calls_out: 2
-    calls_in: 2
-  services.orchestrator.app.api.commands.reject_request:
-    name: reject_request
-    module: services.orchestrator.app.api.commands
-    line: 333
-    cyclomatic_complexity: 3
-    calls_out: 2
-    calls_in: 0
-  services.web.app.static.workspace.formValues:
-    name: formValues
-    module: services.web.app.static.workspace
-    line: 412
-    cyclomatic_complexity: 18
-    calls_out: 17
-    calls_in: 0
-  services.orchestrator.app.api.queries.get_workflow:
-    name: get_workflow
-    module: services.orchestrator.app.api.queries
-    line: 75
-    cyclomatic_complexity: 6
-    calls_out: 7
-    calls_in: 0
-  services.web.app.static.workspace.ta:
-    name: ta
-    module: services.web.app.static.workspace
-    line: 541
-    cyclomatic_complexity: 1
-    calls_out: 1
-    calls_in: 0
-  services.web.app.nlp2dsl_bridge.backend_url:
-    name: backend_url
-    module: services.web.app.nlp2dsl_bridge
-    line: 15
-    cyclomatic_complexity: 1
-    calls_out: 1
-    calls_in: 0
   services.orchestrator.app.rag.store.RagStore.list_documents:
     name: list_documents
     module: services.orchestrator.app.rag.store
@@ -1510,6 +1489,377 @@ nodes:
     cyclomatic_complexity: 2
     calls_out: 2
     calls_in: 0
+  services.web.app.chat._message_response:
+    name: _message_response
+    module: services.web.app.chat
+    line: 598
+    cyclomatic_complexity: 7
+    calls_out: 6
+    calls_in: 1
+  services.web.app.static.workroom.st:
+    name: st
+    module: services.web.app.static.workroom
+    line: 97
+    cyclomatic_complexity: 1
+    calls_out: 1
+    calls_in: 0
+  services.web.app.conductor._nlp_output_base:
+    name: _nlp_output_base
+    module: services.web.app.conductor
+    line: 108
+    cyclomatic_complexity: 1
+    calls_out: 0
+    calls_in: 3
+  services.web.app.static.workspace.text:
+    name: text
+    module: services.web.app.static.workspace
+    line: 618
+    cyclomatic_complexity: 3
+    calls_out: 3
+    calls_in: 0
+  services.web.app.resource_areas.list_groups:
+    name: list_groups
+    module: services.web.app.resource_areas
+    line: 105
+    cyclomatic_complexity: 1
+    calls_out: 0
+    calls_in: 1
+  services.web.src.main.refresh:
+    name: refresh
+    module: services.web.src.main
+    line: 26
+    cyclomatic_complexity: 7
+    calls_out: 8
+    calls_in: 4
+  services.web.app.conductor._mullm_file_list_turn:
+    name: _mullm_file_list_turn
+    module: services.web.app.conductor
+    line: 362
+    cyclomatic_complexity: 1
+    calls_out: 8
+    calls_in: 1
+  services.web.app.chat._rag_search_fallback:
+    name: _rag_search_fallback
+    module: services.web.app.chat
+    line: 544
+    cyclomatic_complexity: 5
+    calls_out: 6
+    calls_in: 1
+  services.projector.app.projections.incidents._checks_payload:
+    name: _checks_payload
+    module: services.projector.app.projections.incidents
+    line: 271
+    cyclomatic_complexity: 10
+    calls_out: 11
+    calls_in: 1
+  services.web.app.chat.format_file_list_reply:
+    name: format_file_list_reply
+    module: services.web.app.chat
+    line: 181
+    cyclomatic_complexity: 8
+    calls_out: 11
+    calls_in: 1
+  services.orchestrator.app.observability.export.format_logs_text:
+    name: format_logs_text
+    module: services.orchestrator.app.observability.export
+    line: 8
+    cyclomatic_complexity: 29
+    calls_out: 66
+    calls_in: 1
+  services.orchestrator.app.api.queries.get_task:
+    name: get_task
+    module: services.orchestrator.app.api.queries
+    line: 29
+    cyclomatic_complexity: 6
+    calls_out: 7
+    calls_in: 0
+  services.web.app.static.access.toast:
+    name: toast
+    module: services.web.app.static.access
+    line: 5
+    cyclomatic_complexity: 3
+    calls_out: 2
+    calls_in: 4
+  services.web.app.conductor._nlp2dsl_turn:
+    name: _nlp2dsl_turn
+    module: services.web.app.conductor
+    line: 56
+    cyclomatic_complexity: 7
+    calls_out: 8
+    calls_in: 1
+  services.web.app.workspace.link_ticket:
+    name: link_ticket
+    module: services.web.app.workspace
+    line: 653
+    cyclomatic_complexity: 3
+    calls_out: 3
+    calls_in: 2
+  services.orchestrator.app.rag.openrouter.OpenRouterClient.__init__:
+    name: __init__
+    module: services.orchestrator.app.rag.openrouter
+    line: 24
+    cyclomatic_complexity: 2
+    calls_out: 3
+    calls_in: 0
+  services.web.app.chat._append_rag_rows:
+    name: _append_rag_rows
+    module: services.web.app.chat
+    line: 256
+    cyclomatic_complexity: 9
+    calls_out: 11
+    calls_in: 1
+  services.orchestrator.app.observability.incidents.IncidentRecorder._publish_event:
+    name: _publish_event
+    module: services.orchestrator.app.observability.incidents
+    line: 165
+    cyclomatic_complexity: 3
+    calls_out: 6
+    calls_in: 0
+  services.web.app.static.access.renderHumanAgentMatrix:
+    name: renderHumanAgentMatrix
+    module: services.web.app.static.access
+    line: 57
+    cyclomatic_complexity: 11
+    calls_out: 4
+    calls_in: 1
+  services.orchestrator.app.access.transport.TransportService.fetch:
+    name: fetch
+    module: services.orchestrator.app.access.transport
+    line: 31
+    cyclomatic_complexity: 1
+    calls_out: 4
+    calls_in: 0
+  services.web.app.access_matrix._matrix_path:
+    name: _matrix_path
+    module: services.web.app.access_matrix
+    line: 33
+    cyclomatic_complexity: 2
+    calls_out: 4
+    calls_in: 2
+  services.web.app.chat.create_task:
+    name: create_task
+    module: services.web.app.chat
+    line: 630
+    cyclomatic_complexity: 7
+    calls_out: 8
+    calls_in: 0
+  services.web.app.static.workspace.renderTicketDetail:
+    name: renderTicketDetail
+    module: services.web.app.static.workspace
+    line: 118
+    cyclomatic_complexity: 24
+    calls_out: 9
+    calls_in: 8
+  services.web.app.static.workspace.collectClarifyValues:
+    name: collectClarifyValues
+    module: services.web.app.static.workspace
+    line: 250
+    cyclomatic_complexity: 4
+    calls_out: 4
+    calls_in: 1
+  services.orchestrator.app.observability.incidents._default_playbook:
+    name: _default_playbook
+    module: services.orchestrator.app.observability.incidents
+    line: 325
+    cyclomatic_complexity: 1
+    calls_out: 1
+    calls_in: 1
+  services.web.app.chat._ask_rag:
+    name: _ask_rag
+    module: services.web.app.chat
+    line: 440
+    cyclomatic_complexity: 5
+    calls_out: 9
+    calls_in: 1
+  services.orchestrator.app.access.uri.parse_uri:
+    name: parse_uri
+    module: services.orchestrator.app.access.uri
+    line: 25
+    cyclomatic_complexity: 6
+    calls_out: 9
+    calls_in: 6
+  services.web.app.static.access.save:
+    name: save
+    module: services.web.app.static.access
+    line: 117
+    cyclomatic_complexity: 2
+    calls_out: 3
+    calls_in: 0
+  services.web.app.conductor._shell_task_payload:
+    name: _shell_task_payload
+    module: services.web.app.conductor
+    line: 238
+    cyclomatic_complexity: 4
+    calls_out: 7
+    calls_in: 1
+  services.web.app.static.workspace.archiveTicket:
+    name: archiveTicket
+    module: services.web.app.static.workspace
+    line: 171
+    cyclomatic_complexity: 2
+    calls_out: 5
+    calls_in: 1
+  services.web.app.static.workspace.uploadFiles:
+    name: uploadFiles
+    module: services.web.app.static.workspace
+    line: 556
+    cyclomatic_complexity: 5
+    calls_out: 5
+    calls_in: 2
+  services.web.app.chat._format_scope_uri:
+    name: _format_scope_uri
+    module: services.web.app.chat
+    line: 224
+    cyclomatic_complexity: 2
+    calls_out: 1
+    calls_in: 1
+  services.web.app.chat._rag_backend_fallback:
+    name: _rag_backend_fallback
+    module: services.web.app.chat
+    line: 527
+    cyclomatic_complexity: 2
+    calls_out: 2
+    calls_in: 1
+  services.orchestrator.app.application.command_bus.CommandBus._activate_workflow_version:
+    name: _activate_workflow_version
+    module: services.orchestrator.app.application.command_bus
+    line: 439
+    cyclomatic_complexity: 3
+    calls_out: 6
+    calls_in: 0
+  services.web.app.chat._append_session_files:
+    name: _append_session_files
+    module: services.web.app.chat
+    line: 203
+    cyclomatic_complexity: 7
+    calls_out: 9
+    calls_in: 1
+  services.web.app.static.workspace.syncArtifacts:
+    name: syncArtifacts
+    module: services.web.app.static.workspace
+    line: 320
+    cyclomatic_complexity: 8
+    calls_out: 5
+    calls_in: 3
+  services.web.app.workspace.get_or_create:
+    name: get_or_create
+    module: services.web.app.workspace
+    line: 94
+    cyclomatic_complexity: 3
+    calls_out: 5
+    calls_in: 11
+  services.web.app.access_matrix._default_agents:
+    name: _default_agents
+    module: services.web.app.access_matrix
+    line: 47
+    cyclomatic_complexity: 5
+    calls_out: 7
+    calls_in: 2
+  services.projector.app.projections.operational_feed._summary_for:
+    name: _summary_for
+    module: services.projector.app.projections.operational_feed
+    line: 60
+    cyclomatic_complexity: 6
+    calls_out: 6
+    calls_in: 1
+  services.orchestrator.app.api.commands.reject_request:
+    name: reject_request
+    module: services.orchestrator.app.api.commands
+    line: 333
+    cyclomatic_complexity: 3
+    calls_out: 2
+    calls_in: 0
+  services.orchestrator.app.infrastructure.eventstore.EventStore.append:
+    name: append
+    module: services.orchestrator.app.infrastructure.eventstore
+    line: 56
+    cyclomatic_complexity: 6
+    calls_out: 15
+    calls_in: 0
+  services.web.app.static.workroom.renderState:
+    name: renderState
+    module: services.web.app.static.workroom
+    line: 129
+    cyclomatic_complexity: 3
+    calls_out: 2
+    calls_in: 3
+  services.orchestrator.app.observability.incidents._event_payload:
+    name: _event_payload
+    module: services.orchestrator.app.observability.incidents
+    line: 187
+    cyclomatic_complexity: 19
+    calls_out: 28
+    calls_in: 1
+  services.orchestrator.app.api.access.build_resource_uri:
+    name: build_resource_uri
+    module: services.orchestrator.app.api.access
+    line: 91
+    cyclomatic_complexity: 1
+    calls_out: 2
+    calls_in: 0
+  services.web.app.chat._empty_resource_hint:
+    name: _empty_resource_hint
+    module: services.web.app.chat
+    line: 247
+    cyclomatic_complexity: 2
+    calls_out: 0
+    calls_in: 1
+  services.web.app.static.workspace.renderTasks:
+    name: renderTasks
+    module: services.web.app.static.workspace
+    line: 485
+    cyclomatic_complexity: 12
+    calls_out: 8
+    calls_in: 6
+  services.web.app.static.workroom.api:
+    name: api
+    module: services.web.app.static.workroom
+    line: 17
+    cyclomatic_complexity: 5
+    calls_out: 3
+    calls_in: 6
+  services.orchestrator.app.api.commands.approve_workflow_version:
+    name: approve_workflow_version
+    module: services.orchestrator.app.api.commands
+    line: 275
+    cyclomatic_complexity: 1
+    calls_out: 3
+    calls_in: 0
+  services.web.app.conductor._in_progress_turn:
+    name: _in_progress_turn
+    module: services.web.app.conductor
+    line: 117
+    cyclomatic_complexity: 3
+    calls_out: 4
+    calls_in: 1
+  services.web.app.chat._rag_query:
+    name: _rag_query
+    module: services.web.app.chat
+    line: 488
+    cyclomatic_complexity: 1
+    calls_out: 1
+    calls_in: 1
+  services.web.app.api_routes.get_ticket:
+    name: get_ticket
+    module: services.web.app.api_routes
+    line: 273
+    cyclomatic_complexity: 5
+    calls_out: 9
+    calls_in: 0
+  services.orchestrator.app.api.observability.list_incidents:
+    name: list_incidents
+    module: services.orchestrator.app.api.observability
+    line: 93
+    cyclomatic_complexity: 3
+    calls_out: 7
+    calls_in: 0
+  services.web.app.conductor._local_clarify:
+    name: _local_clarify
+    module: services.web.app.conductor
+    line: 435
+    cyclomatic_complexity: 3
+    calls_out: 3
+    calls_in: 1
   services.web.app.agent_workroom.get_workroom:
     name: get_workroom
     module: services.web.app.agent_workroom
@@ -1517,6 +1867,48 @@ nodes:
     cyclomatic_complexity: 1
     calls_out: 1
     calls_in: 1
+  services.projector.app.main.agent_fleet:
+    name: agent_fleet
+    module: services.projector.app.main
+    line: 123
+    cyclomatic_complexity: 3
+    calls_out: 4
+    calls_in: 0
+  services.web.app.static.workroom.text:
+    name: text
+    module: services.web.app.static.workroom
+    line: 137
+    cyclomatic_complexity: 3
+    calls_out: 5
+    calls_in: 0
+  services.orchestrator.app.api.commands._dispatch:
+    name: _dispatch
+    module: services.orchestrator.app.api.commands
+    line: 354
+    cyclomatic_complexity: 4
+    calls_out: 9
+    calls_in: 14
+  services.web.app.workspace.register_artifact:
+    name: register_artifact
+    module: services.web.app.workspace
+    line: 119
+    cyclomatic_complexity: 5
+    calls_out: 11
+    calls_in: 1
+  services.web.app.conductor._append_turn:
+    name: _append_turn
+    module: services.web.app.conductor
+    line: 344
+    cyclomatic_complexity: 3
+    calls_out: 4
+    calls_in: 3
+  services.web.app.static.workspace.saveContextFromForm:
+    name: saveContextFromForm
+    module: services.web.app.static.workspace
+    line: 530
+    cyclomatic_complexity: 9
+    calls_out: 5
+    calls_in: 0
   services.orchestrator.app.incidents.pipeline.IncidentPipeline.handle_rag_failure:
     name: handle_rag_failure
     module: services.orchestrator.app.incidents.pipeline
@@ -1524,53 +1916,53 @@ nodes:
     cyclomatic_complexity: 7
     calls_out: 16
     calls_in: 0
-  services.projector.app.projections.incidents.project_incidents:
-    name: project_incidents
-    module: services.projector.app.projections.incidents
-    line: 7
-    cyclomatic_complexity: 3
-    calls_out: 2
-    calls_in: 1
-  services.web.app.chat.is_file_list_intent:
-    name: is_file_list_intent
-    module: services.web.app.chat
-    line: 36
-    cyclomatic_complexity: 7
-    calls_out: 5
-    calls_in: 1
-  services.web.app.chat.create_task:
-    name: create_task
-    module: services.web.app.chat
-    line: 320
-    cyclomatic_complexity: 7
-    calls_out: 8
-    calls_in: 0
-  services.web.app.workspace.create_task_immediate:
-    name: create_task_immediate
+  services.web.app.workspace.get_artifact:
+    name: get_artifact
     module: services.web.app.workspace
-    line: 195
-    cyclomatic_complexity: 3
-    calls_out: 7
-    calls_in: 3
-  services.web.app.static.app.uploadFiles:
-    name: uploadFiles
-    module: services.web.app.static.app
-    line: 61
-    cyclomatic_complexity: 8
-    calls_out: 5
+    line: 166
+    cyclomatic_complexity: 4
+    calls_out: 2
+    calls_in: 0
+  services.web.app.chat._format_incident:
+    name: _format_incident
+    module: services.web.app.chat
+    line: 353
+    cyclomatic_complexity: 15
+    calls_out: 17
     calls_in: 1
-  services.orchestrator.app.domain.aggregates.task._event_data:
-    name: _event_data
-    module: services.orchestrator.app.domain.aggregates.task
-    line: 17
+  services.web.app.static.workspace.appendMsg:
+    name: appendMsg
+    module: services.web.app.static.workspace
+    line: 311
+    cyclomatic_complexity: 1
+    calls_out: 1
+    calls_in: 2
+  services.web.app.static.access.checked:
+    name: checked
+    module: services.web.app.static.access
+    line: 72
     cyclomatic_complexity: 2
+    calls_out: 1
+    calls_in: 0
+  services.orchestrator.app.api.access.register_resource:
+    name: register_resource
+    module: services.orchestrator.app.api.access
+    line: 33
+    cyclomatic_complexity: 2
+    calls_out: 6
+    calls_in: 0
+  services.web.app.static.workroom.renderLedger:
+    name: renderLedger
+    module: services.web.app.static.workroom
+    line: 107
+    cyclomatic_complexity: 7
     calls_out: 3
     calls_in: 1
-  services.orchestrator.app.api.observability.rag_diagnose:
-    name: rag_diagnose
-    module: services.orchestrator.app.api.observability
-    line: 64
-    cyclomatic_complexity: 1
+  services.orchestrator.app.observability.incidents.IncidentRecorder._persist:
+    name: _persist
+    module: services.orchestrator.app.observability.incidents
+    line: 132
+    cyclomatic_complexity: 2
     calls_out: 4
     calls_in: 0
   services.orchestrator.app.api.rag.ask:
@@ -1580,174 +1972,55 @@ nodes:
     cyclomatic_complexity: 1
     calls_out: 6
     calls_in: 0
-  services.web.app.static.workspace.ticketUri:
-    name: ticketUri
-    module: services.web.app.static.workspace
-    line: 15
-    cyclomatic_complexity: 1
+  services.orchestrator.app.observability.incidents._incident_class:
+    name: _incident_class
+    module: services.orchestrator.app.observability.incidents
+    line: 303
+    cyclomatic_complexity: 4
     calls_out: 0
     calls_in: 1
-  services.web.app.static.workroom.st:
-    name: st
-    module: services.web.app.static.workroom
-    line: 97
-    cyclomatic_complexity: 1
-    calls_out: 1
-    calls_in: 0
-  services.web.app.static.workspace.color:
-    name: color
-    module: services.web.app.static.workspace
-    line: 338
-    cyclomatic_complexity: 1
-    calls_out: 1
-    calls_in: 0
-  services.orchestrator.app.observability.export.build_orchestrator_bundle:
-    name: build_orchestrator_bundle
-    module: services.orchestrator.app.observability.export
-    line: 82
-    cyclomatic_complexity: 11
-    calls_out: 17
-    calls_in: 1
-  services.orchestrator.app.api.access.build_resource_uri:
-    name: build_resource_uri
-    module: services.orchestrator.app.api.access
-    line: 91
+  services.projector.app.projections.incidents._handle_diagnostics_started:
+    name: _handle_diagnostics_started
+    module: services.projector.app.projections.incidents
+    line: 89
     cyclomatic_complexity: 1
     calls_out: 2
     calls_in: 0
-  services.projector.app.main.agent_fleet:
-    name: agent_fleet
-    module: services.projector.app.main
-    line: 123
+  services.projector.app.projections.incidents.project_incidents:
+    name: project_incidents
+    module: services.projector.app.projections.incidents
+    line: 7
     cyclomatic_complexity: 3
-    calls_out: 4
-    calls_in: 0
-  services.projector.app.main.rag_quality_board:
-    name: rag_quality_board
-    module: services.projector.app.main
-    line: 285
-    cyclomatic_complexity: 2
-    calls_out: 3
-    calls_in: 0
-  services.web.app.workspace.attach_context:
-    name: attach_context
-    module: services.web.app.workspace
-    line: 121
-    cyclomatic_complexity: 12
+    calls_out: 2
+    calls_in: 1
+  services.web.app.conductor._ready_turn:
+    name: _ready_turn
+    module: services.web.app.conductor
+    line: 137
+    cyclomatic_complexity: 1
     calls_out: 7
     calls_in: 1
-  services.projector.app.main.workflow_versions:
-    name: workflow_versions
-    module: services.projector.app.main
-    line: 315
-    cyclomatic_complexity: 2
-    calls_out: 3
-    calls_in: 0
-  services.web.app.static.workspace.id:
-    name: id
-    module: services.web.app.static.workspace
-    line: 179
-    cyclomatic_complexity: 2
-    calls_out: 6
-    calls_in: 1
-  services.web.app.static.workspace.renderSessionEvents:
-    name: renderSessionEvents
-    module: services.web.app.static.workspace
-    line: 256
-    cyclomatic_complexity: 5
-    calls_out: 5
-    calls_in: 3
-  services.orchestrator.app.access.transport.TransportService.fetch:
-    name: fetch
-    module: services.orchestrator.app.access.transport
-    line: 31
-    cyclomatic_complexity: 1
-    calls_out: 4
-    calls_in: 0
-  services.orchestrator.app.observability.rag_pipeline.RagPipeline.ask:
-    name: ask
-    module: services.orchestrator.app.observability.rag_pipeline
-    line: 23
-    cyclomatic_complexity: 10
-    calls_out: 36
-    calls_in: 0
-  services.web.app.static.workspace.m2:
-    name: m2
-    module: services.web.app.static.workspace
-    line: 182
-    cyclomatic_complexity: 1
-    calls_out: 3
-    calls_in: 0
-  services.web.app.static.workspace.state:
-    name: state
-    module: services.web.app.static.workspace
-    line: 59
-    cyclomatic_complexity: 1
-    calls_out: 2
-    calls_in: 0
-  services.orchestrator.app.observability.incidents._default_playbook:
-    name: _default_playbook
-    module: services.orchestrator.app.observability.incidents
-    line: 325
-    cyclomatic_complexity: 1
-    calls_out: 1
-    calls_in: 1
-  services.web.app.static.workroom.escapeHtml:
-    name: escapeHtml
-    module: services.web.app.static.workroom
-    line: 24
-    cyclomatic_complexity: 1
-    calls_out: 2
-    calls_in: 4
-  services.web.app.static.workroom.renderThread:
-    name: renderThread
-    module: services.web.app.static.workroom
-    line: 92
-    cyclomatic_complexity: 7
-    calls_out: 3
-    calls_in: 1
-  services.orchestrator.app.observability.middleware.CorrelationMiddleware.dispatch:
-    name: dispatch
-    module: services.orchestrator.app.observability.middleware
-    line: 10
-    cyclomatic_complexity: 3
-    calls_out: 5
-    calls_in: 0
-  services.web.app.workspace.handle_chat_message:
-    name: handle_chat_message
+  services.web.app.workspace._extract_ticket:
+    name: _extract_ticket
     module: services.web.app.workspace
-    line: 226
-    cyclomatic_complexity: 21
-    calls_out: 40
-    calls_in: 0
-  services.orchestrator.app.application.command_bus.CommandBus._approve_request:
-    name: _approve_request
-    module: services.orchestrator.app.application.command_bus
-    line: 638
-    cyclomatic_complexity: 3
-    calls_out: 6
-    calls_in: 0
-  services.web.app.static.workspace.toast:
-    name: toast
-    module: services.web.app.static.workspace
-    line: 19
-    cyclomatic_complexity: 3
+    line: 222
+    cyclomatic_complexity: 2
     calls_out: 2
-    calls_in: 13
-  services.web.app.conductor._extract_shell:
-    name: _extract_shell
-    module: services.web.app.conductor
-    line: 279
-    cyclomatic_complexity: 3
-    calls_out: 5
     calls_in: 2
-  services.web.app.static.workspace.refreshWorkspace:
-    name: refreshWorkspace
-    module: services.web.app.static.workspace
-    line: 57
-    cyclomatic_complexity: 7
-    calls_out: 13
-    calls_in: 8
+  agents.shell-agent.app.executor.run_shell_command:
+    name: run_shell_command
+    module: agents.shell-agent.app.executor
+    line: 27
+    cyclomatic_complexity: 4
+    calls_out: 3
+    calls_in: 1
+  services.web.app.workspace._format_export_text:
+    name: _format_export_text
+    module: services.web.app.workspace
+    line: 528
+    cyclomatic_complexity: 47
+    calls_out: 97
+    calls_in: 1
   services.orchestrator.app.observability.context.get_chat_session_id:
     name: get_chat_session_id
     module: services.orchestrator.app.observability.context
@@ -1755,104 +2028,363 @@ nodes:
     cyclomatic_complexity: 1
     calls_out: 1
     calls_in: 1
-  services.orchestrator.app.api.commands.rollback_workflow_version:
-    name: rollback_workflow_version
+  services.web.app.workspace._extract_shell_command:
+    name: _extract_shell_command
+    module: services.web.app.workspace
+    line: 227
+    cyclomatic_complexity: 4
+    calls_out: 8
+    calls_in: 2
+  services.web.app.static.workroom.escapeHtml:
+    name: escapeHtml
+    module: services.web.app.static.workroom
+    line: 24
+    cyclomatic_complexity: 1
+    calls_out: 2
+    calls_in: 4
+  services.orchestrator.app.domain.aggregates.task.Task.apply:
+    name: apply
+    module: services.orchestrator.app.domain.aggregates.task
+    line: 164
+    cyclomatic_complexity: 11
+    calls_out: 18
+    calls_in: 0
+  services.web.app.nlp2dsl_bridge._post_json:
+    name: _post_json
+    module: services.web.app.nlp2dsl_bridge
+    line: 62
+    cyclomatic_complexity: 4
+    calls_out: 6
+    calls_in: 2
+  services.projector.app.projections.incidents._error_code:
+    name: _error_code
+    module: services.projector.app.projections.incidents
+    line: 262
+    cyclomatic_complexity: 4
+    calls_out: 3
+    calls_in: 6
+  services.web.app.static.workspace.ticketWebUrl:
+    name: ticketWebUrl
+    module: services.web.app.static.workspace
+    line: 16
+    cyclomatic_complexity: 1
+    calls_out: 0
+    calls_in: 2
+  services.orchestrator.app.api.commands.install_plugin:
+    name: install_plugin
     module: services.orchestrator.app.api.commands
-    line: 285
+    line: 300
     cyclomatic_complexity: 1
     calls_out: 3
     calls_in: 0
-  services.orchestrator.app.observability.context.get_correlation_id:
-    name: get_correlation_id
-    module: services.orchestrator.app.observability.context
-    line: 27
-    cyclomatic_complexity: 1
-    calls_out: 1
-    calls_in: 9
-  services.web.app.static.workspace.confirmTicket:
-    name: confirmTicket
+  services.web.app.static.workspace.fields:
+    name: fields
     module: services.web.app.static.workspace
-    line: 155
+    line: 234
+    cyclomatic_complexity: 6
+    calls_out: 3
+    calls_in: 0
+  services.web.app.static.workspace.syncContextNote:
+    name: syncContextNote
+    module: services.web.app.static.workspace
+    line: 547
     cyclomatic_complexity: 1
+    calls_out: 3
+    calls_in: 0
+  services.web.app.static.workroom.loadAreas:
+    name: loadAreas
+    module: services.web.app.static.workroom
+    line: 83
+    cyclomatic_complexity: 2
+    calls_out: 2
+    calls_in: 1
+  services.web.app.chat._rag_diagnostics_hint:
+    name: _rag_diagnostics_hint
+    module: services.web.app.chat
+    line: 576
+    cyclomatic_complexity: 5
     calls_out: 6
     calls_in: 1
-  services.web.app.static.workspace.copyChatToClipboard:
-    name: copyChatToClipboard
-    module: services.web.app.static.workspace
-    line: 553
-    cyclomatic_complexity: 10
-    calls_out: 11
+  services.web.app.workspace.export_debug_logs:
+    name: export_debug_logs
+    module: services.web.app.workspace
+    line: 464
+    cyclomatic_complexity: 15
+    calls_out: 26
     calls_in: 0
-  services.web.app.conductor._fallback_turn:
-    name: _fallback_turn
-    module: services.web.app.conductor
-    line: 222
-    cyclomatic_complexity: 4
-    calls_out: 7
-    calls_in: 2
-  services.orchestrator.app.application.command_bus.CommandBus._register_resource:
-    name: _register_resource
-    module: services.orchestrator.app.application.command_bus
-    line: 832
-    cyclomatic_complexity: 5
-    calls_out: 16
-    calls_in: 0
-  services.projector.app.main.incident_feed:
-    name: incident_feed
-    module: services.projector.app.main
-    line: 226
-    cyclomatic_complexity: 3
-    calls_out: 4
-    calls_in: 0
-  services.orchestrator.app.application.sagas.approval_gate._is_skipped:
-    name: _is_skipped
-    module: services.orchestrator.app.application.sagas.approval_gate
-    line: 42
-    cyclomatic_complexity: 3
-    calls_out: 3
-    calls_in: 1
-  services.web.app.static.workroom.renderCatalog:
-    name: renderCatalog
-    module: services.web.app.static.workroom
-    line: 51
-    cyclomatic_complexity: 11
-    calls_out: 4
-    calls_in: 2
-  services.orchestrator.app.application.command_bus.CommandBus._rollback_plugin:
-    name: _rollback_plugin
-    module: services.orchestrator.app.application.command_bus
-    line: 606
+  services.web.app.chat._default_chat_reply:
+    name: _default_chat_reply
+    module: services.web.app.chat
+    line: 591
     cyclomatic_complexity: 1
-    calls_out: 5
-    calls_in: 0
-  services.web.app.static.workspace.collectClarifyValues:
-    name: collectClarifyValues
-    module: services.web.app.static.workspace
-    line: 245
-    cyclomatic_complexity: 4
-    calls_out: 4
+    calls_out: 0
     calls_in: 1
-  services.orchestrator.app.observability.incidents._event_payload:
-    name: _event_payload
-    module: services.orchestrator.app.observability.incidents
-    line: 187
-    cyclomatic_complexity: 19
-    calls_out: 28
-    calls_in: 1
-  services.orchestrator.app.api.observability.list_incidents:
-    name: list_incidents
-    module: services.orchestrator.app.api.observability
-    line: 93
-    cyclomatic_complexity: 3
-    calls_out: 7
-    calls_in: 0
-  services.web.app.static.workspace.appendMsg:
-    name: appendMsg
+  services.web.app.static.workspace.renderDraft:
+    name: renderDraft
     module: services.web.app.static.workspace
-    line: 306
+    line: 217
+    cyclomatic_complexity: 1
+    calls_out: 0
+    calls_in: 2
+  services.projector.app.main.workflow_versions:
+    name: workflow_versions
+    module: services.projector.app.main
+    line: 315
+    cyclomatic_complexity: 2
+    calls_out: 3
+    calls_in: 0
+  services.web.app.chat._rag_unavailable_answer:
+    name: _rag_unavailable_answer
+    module: services.web.app.chat
+    line: 563
     cyclomatic_complexity: 1
     calls_out: 1
+    calls_in: 1
+  services.web.app.chat._append_file_list_tip:
+    name: _append_file_list_tip
+    module: services.web.app.chat
+    line: 283
+    cyclomatic_complexity: 5
+    calls_out: 5
+    calls_in: 1
+  services.projector.app.projections.task_board._update_status:
+    name: _update_status
+    module: services.projector.app.projections.task_board
+    line: 102
+    cyclomatic_complexity: 1
+    calls_out: 1
+    calls_in: 1
+  services.web.app.access_matrix._empty_agent_resource:
+    name: _empty_agent_resource
+    module: services.web.app.access_matrix
+    line: 61
+    cyclomatic_complexity: 3
+    calls_out: 0
+    calls_in: 1
+  services.web.app.conductor._extract_shell:
+    name: _extract_shell
+    module: services.web.app.conductor
+    line: 458
+    cyclomatic_complexity: 3
+    calls_out: 5
     calls_in: 2
+  services.projector.app.projections.operational_feed.project_operational_feed:
+    name: project_operational_feed
+    module: services.projector.app.projections.operational_feed
+    line: 7
+    cyclomatic_complexity: 3
+    calls_out: 10
+    calls_in: 1
+  services.projector.app.projections.approval_requests.project_approval_requests:
+    name: project_approval_requests
+    module: services.projector.app.projections.approval_requests
+    line: 6
+    cyclomatic_complexity: 6
+    calls_out: 9
+    calls_in: 1
+  services.web.app.chat.get_history:
+    name: get_history
+    module: services.web.app.chat
+    line: 337
+    cyclomatic_complexity: 1
+    calls_out: 2
+    calls_in: 2
+  services.web.app.static.workspace.items:
+    name: items
+    module: services.web.app.static.workspace
+    line: 810
+    cyclomatic_complexity: 1
+    calls_out: 3
+    calls_in: 6
+  services.web.app.conductor.handle_turn:
+    name: handle_turn
+    module: services.web.app.conductor
+    line: 10
+    cyclomatic_complexity: 7
+    calls_out: 8
+    calls_in: 2
+  services.web.app.static.workspace.formValues:
+    name: formValues
+    module: services.web.app.static.workspace
+    line: 568
+    cyclomatic_complexity: 21
+    calls_out: 19
+    calls_in: 0
+  services.web.app.workspace.propose_task_draft:
+    name: propose_task_draft
+    module: services.web.app.workspace
+    line: 257
+    cyclomatic_complexity: 1
+    calls_out: 1
+    calls_in: 0
+  services.orchestrator.app.incidents.pipeline.classify_rag_error:
+    name: classify_rag_error
+    module: services.orchestrator.app.incidents.pipeline
+    line: 24
+    cyclomatic_complexity: 11
+    calls_out: 2
+    calls_in: 1
+  services.projector.app.main._row_to_dict:
+    name: _row_to_dict
+    module: services.projector.app.main
+    line: 329
+    cyclomatic_complexity: 3
+    calls_out: 5
+    calls_in: 12
+  services.web.app.agent_workroom._plan_steps:
+    name: _plan_steps
+    module: services.web.app.agent_workroom
+    line: 105
+    cyclomatic_complexity: 4
+    calls_out: 7
+    calls_in: 1
+  services.web.app.static.workroom.renderThread:
+    name: renderThread
+    module: services.web.app.static.workroom
+    line: 92
+    cyclomatic_complexity: 7
+    calls_out: 3
+    calls_in: 1
+  services.orchestrator.app.domain.aggregates.task._event_type:
+    name: _event_type
+    module: services.orchestrator.app.domain.aggregates.task
+    line: 9
+    cyclomatic_complexity: 1
+    calls_out: 1
+    calls_in: 1
+  services.web.app.static.workroom.ensureWorkroom:
+    name: ensureWorkroom
+    module: services.web.app.static.workroom
+    line: 31
+    cyclomatic_complexity: 4
+    calls_out: 4
+    calls_in: 3
+  services.web.app.chat._dedupe_rows_by_uri:
+    name: _dedupe_rows_by_uri
+    module: services.web.app.chat
+    line: 141
+    cyclomatic_complexity: 8
+    calls_out: 10
+    calls_in: 2
+  services.orchestrator.app.api.commands.expire_approval:
+    name: expire_approval
+    module: services.orchestrator.app.api.commands
+    line: 346
+    cyclomatic_complexity: 1
+    calls_out: 2
+    calls_in: 0
+  services.orchestrator.app.api.commands.propose_workflow_version:
+    name: propose_workflow_version
+    module: services.orchestrator.app.api.commands
+    line: 265
+    cyclomatic_complexity: 1
+    calls_out: 3
+    calls_in: 0
+  services.orchestrator.app.api.commands.validate_workflow_version:
+    name: validate_workflow_version
+    module: services.orchestrator.app.api.commands
+    line: 270
+    cyclomatic_complexity: 1
+    calls_out: 3
+    calls_in: 0
+  services.orchestrator.app.api.observability.rag_diagnose:
+    name: rag_diagnose
+    module: services.orchestrator.app.api.observability
+    line: 64
+    cyclomatic_complexity: 1
+    calls_out: 4
+    calls_in: 0
+  services.orchestrator.app.observability.context.get_retrieval_trace_id:
+    name: get_retrieval_trace_id
+    module: services.orchestrator.app.observability.context
+    line: 31
+    cyclomatic_complexity: 1
+    calls_out: 1
+    calls_in: 4
+  services.orchestrator.app.rag.store._cosine:
+    name: _cosine
+    module: services.orchestrator.app.rag.store
+    line: 11
+    cyclomatic_complexity: 9
+    calls_out: 8
+    calls_in: 1
+  services.orchestrator.app.api.queries.get_workflow:
+    name: get_workflow
+    module: services.orchestrator.app.api.queries
+    line: 75
+    cyclomatic_complexity: 6
+    calls_out: 7
+    calls_in: 0
+  services.web.app.static.workspace.renderContext:
+    name: renderContext
+    module: services.web.app.static.workspace
+    line: 197
+    cyclomatic_complexity: 16
+    calls_out: 3
+    calls_in: 3
+  services.web.app.static.workspace.sendChat:
+    name: sendChat
+    module: services.web.app.static.workspace
+    line: 567
+    cyclomatic_complexity: 26
+    calls_out: 21
+    calls_in: 0
+  services.orchestrator.app.rag.store.RagStore._keyword_fallback:
+    name: _keyword_fallback
+    module: services.orchestrator.app.rag.store
+    line: 183
+    cyclomatic_complexity: 10
+    calls_out: 12
+    calls_in: 0
+  services.web.app.static.app.text:
+    name: text
+    module: services.web.app.static.app
+    line: 73
+    cyclomatic_complexity: 16
+    calls_out: 15
+    calls_in: 0
+  services.web.app.conductor._task_reply:
+    name: _task_reply
+    module: services.web.app.conductor
+    line: 317
+    cyclomatic_complexity: 3
+    calls_out: 3
+    calls_in: 2
+  services.web.app.chat._answer_from_rag_payload:
+    name: _answer_from_rag_payload
+    module: services.web.app.chat
+    line: 496
+    cyclomatic_complexity: 6
+    calls_out: 3
+    calls_in: 1
+  services.web.app.static.access.id:
+    name: id
+    module: services.web.app.static.access
+    line: 137
+    cyclomatic_complexity: 2
+    calls_out: 2
+    calls_in: 1
+  services.orchestrator.app.application.sagas.task_routing.maybe_auto_assign:
+    name: maybe_auto_assign
+    module: services.orchestrator.app.application.sagas.task_routing
+    line: 29
+    cyclomatic_complexity: 5
+    calls_out: 6
+    calls_in: 1
+  services.web.app.workspace.archive_task:
+    name: archive_task
+    module: services.web.app.workspace
+    line: 645
+    cyclomatic_complexity: 2
+    calls_out: 3
+    calls_in: 0
+  services.orchestrator.app.domain.aggregates.task._utc_now:
+    name: _utc_now
+    module: services.orchestrator.app.domain.aggregates.task
+    line: 13
+    cyclomatic_complexity: 1
+    calls_out: 1
+    calls_in: 1
 edges:
 - caller: services.projector.app.main.operational_feed
   callee: services.projector.app.main._row_to_dict
@@ -1926,83 +2458,56 @@ edges:
 - caller: services.projector.app.projections.dispatcher.project_event
   callee: services.projector.app.projections.incidents.project_incidents
   call_type: resolved
-- caller: services.web.app.api_routes.chat_message
-  callee: services.web.app.conductor.handle_turn
+- caller: services.projector.app.projections.incidents._handle_rag_request_failed
+  callee: services.projector.app.projections.incidents._upsert_rag_quality
   call_type: resolved
-- caller: services.web.app.api_routes.list_tickets
-  callee: services.web.app.tickets.enrich_task
+- caller: services.projector.app.projections.incidents._handle_rag_request_failed
+  callee: services.projector.app.projections.incidents._upsert_service_health
   call_type: resolved
-- caller: services.web.app.api_routes.get_ticket
-  callee: services.web.app.tickets.enrich_task
+- caller: services.projector.app.projections.incidents._handle_rag_request_failed
+  callee: services.projector.app.projections.incidents._error_code
   call_type: resolved
-- caller: services.web.app.workspace.get_or_create
-  callee: services.web.app.workspace.new_session
+- caller: services.projector.app.projections.incidents._handle_incident_detected
+  callee: services.projector.app.projections.incidents._error_code
   call_type: resolved
-- caller: services.web.app.workspace.workspace_state
-  callee: services.web.app.workspace.get_or_create
+- caller: services.projector.app.projections.incidents._handle_incident_classified
+  callee: services.projector.app.projections.incidents._error_code
   call_type: resolved
-- caller: services.web.app.workspace.attach_context
-  callee: services.web.app.workspace.get_or_create
+- caller: services.projector.app.projections.incidents._handle_diagnostics_started
+  callee: services.projector.app.projections.incidents._update_incident_status
   call_type: resolved
-- caller: services.web.app.workspace.build_task_payload
-  callee: services.web.app.workspace.get_or_create
+- caller: services.projector.app.projections.incidents._handle_diagnostics_completed
+  callee: services.projector.app.projections.incidents._checks_payload
   call_type: resolved
-- caller: services.web.app.workspace.build_task_payload
-  callee: services.web.app.workspace._extract_shell_command
+- caller: services.projector.app.projections.incidents._handle_diagnostics_completed
+  callee: services.projector.app.projections.incidents._diagnostics_ok
   call_type: resolved
-- caller: services.web.app.workspace.build_task_payload
-  callee: services.web.app.workspace._extract_ticket
+- caller: services.projector.app.projections.incidents._handle_diagnostics_completed
+  callee: services.projector.app.projections.incidents._upsert_service_health
   call_type: resolved
-- caller: services.web.app.workspace.propose_task_draft
-  callee: services.web.app.workspace.build_task_payload
+- caller: services.projector.app.projections.incidents._handle_diagnostics_completed
+  callee: services.projector.app.projections.incidents._root_cause
   call_type: resolved
-- caller: services.web.app.workspace.create_task_immediate
-  callee: services.web.app.workspace.get_or_create
+- caller: services.projector.app.projections.incidents._handle_diagnostics_completed
+  callee: services.projector.app.projections.incidents._error_code
   call_type: resolved
-- caller: services.web.app.workspace.create_task_immediate
-  callee: services.web.app.workspace.link_ticket
+- caller: services.projector.app.projections.incidents._handle_remediation_started
+  callee: services.projector.app.projections.incidents._update_incident_status
   call_type: resolved
-- caller: services.web.app.workspace.handle_chat_message
-  callee: services.web.app.workspace.get_or_create
+- caller: services.projector.app.projections.incidents._handle_remediation_finished
+  callee: services.projector.app.projections.incidents._update_incident_status
   call_type: resolved
-- caller: services.web.app.workspace.handle_chat_message
-  callee: services.web.app.workspace._extract_ticket
+- caller: services.projector.app.projections.incidents._handle_post_remediation_verification
+  callee: services.projector.app.projections.incidents._update_incident_status
   call_type: resolved
-- caller: services.web.app.workspace.handle_chat_message
-  callee: services.web.app.workspace.attach_context
+- caller: services.projector.app.projections.incidents._handle_post_remediation_verification
+  callee: services.projector.app.projections.incidents._upsert_service_health
   call_type: resolved
-- caller: services.web.app.workspace.handle_chat_message
-  callee: services.web.app.workspace._extract_shell_command
+- caller: services.projector.app.projections.incidents._upsert_rag_quality
+  callee: services.projector.app.projections.incidents._error_code
   call_type: resolved
-- caller: services.web.app.workspace.handle_chat_message
-  callee: services.web.app.workspace.build_task_payload
-  call_type: resolved
-- caller: services.web.app.workspace.create_task_from_draft
-  callee: services.web.app.workspace.create_task_immediate
-  call_type: resolved
-- caller: services.web.app.workspace.create_task_from_draft
-  callee: services.web.app.workspace.get_or_create
-  call_type: resolved
-- caller: services.web.app.workspace.create_and_run
-  callee: services.web.app.workspace.create_task_immediate
-  call_type: resolved
-- caller: services.web.app.workspace.create_and_run
-  callee: services.web.app.workspace.get_or_create
-  call_type: resolved
-- caller: services.web.app.workspace.export_debug_logs
-  callee: services.web.app.workspace.get_or_create
-  call_type: resolved
-- caller: services.web.app.workspace.export_debug_logs
-  callee: services.web.app.workspace._format_export_text
-  call_type: resolved
-- caller: services.web.app.workspace.archive_task
-  callee: services.web.app.workspace.get_or_create
-  call_type: resolved
-- caller: services.web.app.workspace.link_ticket
-  callee: services.web.app.workspace.get_or_create
-  call_type: resolved
-- caller: services.web.app.workspace.fetch_live_board
-  callee: services.web.app.static.workspace.items
+- caller: services.projector.app.projections.incidents._root_cause
+  callee: services.projector.app.projections.incidents._error_code
   call_type: resolved
 - caller: services.web.app.agent_workroom._plan_steps
   callee: services.web.app.agent_workroom._extract_shell
@@ -2042,366 +2547,6 @@ edges:
   call_type: resolved
 - caller: services.web.app.nlp2dsl_bridge._post_json
   callee: services.web.app.nlp2dsl_bridge.backend_candidates
-  call_type: resolved
-- caller: services.web.app.chat._dedupe_rows_by_uri
-  callee: services.web.app.static.workspace.id
-  call_type: resolved
-- caller: services.web.app.chat.fetch_file_inventory
-  callee: services.web.app.chat._dedupe_rows_by_uri
-  call_type: resolved
-- caller: services.web.app.chat._format_history
-  callee: services.web.app.chat.get_history
-  call_type: resolved
-- caller: services.web.app.chat.handle_message
-  callee: services.web.app.chat._append
-  call_type: resolved
-- caller: services.web.app.chat.handle_message
-  callee: services.web.app.chat.is_file_list_intent
-  call_type: resolved
-- caller: services.web.app.chat.handle_message
-  callee: services.web.app.chat.format_file_list_reply
-  call_type: resolved
-- caller: services.web.app.chat.handle_message
-  callee: services.web.app.chat.get_history
-  call_type: resolved
-- caller: services.web.app.chat.create_task
-  callee: services.web.app.chat._orch
-  call_type: resolved
-- caller: services.web.app.conductor.handle_turn
-  callee: services.web.app.conductor._fallback_turn
-  call_type: resolved
-- caller: services.web.app.conductor.handle_turn
-  callee: services.web.app.conductor._mullm_file_list_turn
-  call_type: resolved
-- caller: services.web.app.conductor.handle_turn
-  callee: services.web.app.conductor._nlp2dsl_turn
-  call_type: resolved
-- caller: services.web.app.conductor._fallback_turn
-  callee: services.web.app.conductor._local_clarify
-  call_type: resolved
-- caller: services.web.app.conductor._local_clarify
-  callee: services.web.app.conductor._extract_shell
-  call_type: resolved
-- caller: services.web.app.static.workspace.ensureSession
-  callee: services.web.app.static.workspace.api
-  call_type: resolved
-- caller: services.web.app.static.workspace.loadTickets
-  callee: services.web.app.static.workspace.api
-  call_type: resolved
-- caller: services.web.app.static.workspace.refreshWorkspace
-  callee: services.web.app.static.workspace.ensureSession
-  call_type: resolved
-- caller: services.web.app.static.workspace.refreshWorkspace
-  callee: services.web.app.static.workspace.api
-  call_type: resolved
-- caller: services.web.app.static.workspace.refreshWorkspace
-  callee: services.web.app.static.workspace.renderContext
-  call_type: resolved
-- caller: services.web.app.static.workspace.refreshWorkspace
-  callee: services.web.app.static.workspace.renderSessionEvents
-  call_type: resolved
-- caller: services.web.app.static.workspace.refreshWorkspace
-  callee: services.web.app.static.workspace.renderChat
-  call_type: resolved
-- caller: services.web.app.static.workspace.refreshWorkspace
-  callee: services.web.app.static.workspace.loadTickets
-  call_type: resolved
-- caller: services.web.app.static.workspace.refreshWorkspace
-  callee: services.web.app.static.workspace.renderTasks
-  call_type: resolved
-- caller: services.web.app.static.workspace.refreshWorkspace
-  callee: services.web.app.static.workspace.filterTasks
-  call_type: resolved
-- caller: services.web.app.static.workspace.refreshWorkspace
-  callee: services.web.app.static.workspace.renderFileChips
-  call_type: resolved
-- caller: services.web.app.static.workspace.state
-  callee: services.web.app.static.workspace.api
-  call_type: resolved
-- caller: services.web.app.static.workspace.t
-  callee: services.web.app.static.workspace.renderTicketDetail
-  call_type: resolved
-- caller: services.web.app.static.workspace.t
-  callee: services.web.app.static.workspace.api
-  call_type: resolved
-- caller: services.web.app.static.workspace.t
-  callee: services.web.app.static.workspace.loadTicketDetail
-  call_type: resolved
-- caller: services.web.app.static.workspace.t
-  callee: services.web.app.static.workspace.toast
-  call_type: resolved
-- caller: services.web.app.static.workspace.loadTicketDetail
-  callee: services.web.app.static.workspace.api
-  call_type: resolved
-- caller: services.web.app.static.workspace.loadTicketDetail
-  callee: services.web.app.static.workspace.renderTicketDetail
-  call_type: resolved
-- caller: services.web.app.static.workspace.selectTicket
-  callee: services.web.app.static.workspace.ticketWebUrl
-  call_type: resolved
-- caller: services.web.app.static.workspace.selectTicket
-  callee: services.web.app.static.workspace.renderTasks
-  call_type: resolved
-- caller: services.web.app.static.workspace.selectTicket
-  callee: services.web.app.static.workspace.filterTasks
-  call_type: resolved
-- caller: services.web.app.static.workspace.selectTicket
-  callee: services.web.app.static.workspace.renderTicketDetail
-  call_type: resolved
-- caller: services.web.app.static.workspace.selectTicket
-  callee: services.web.app.static.workspace.api
-  call_type: resolved
-- caller: services.web.app.static.workspace.selectTicket
-  callee: services.web.app.static.workspace.loadTicketDetail
-  call_type: resolved
-- caller: services.web.app.static.workspace.renderTicketDetail
-  callee: services.web.app.static.workspace.escapeHtml
-  call_type: resolved
-- caller: services.web.app.static.workspace.renderTicketDetail
-  callee: services.web.app.static.workspace.ticketWebUrl
-  call_type: resolved
-- caller: services.web.app.static.workspace.renderTicketDetail
-  callee: services.web.app.static.workspace.ticketUri
-  call_type: resolved
-- caller: services.web.app.static.workspace.renderTicketDetail
-  callee: services.web.app.static.workspace.copyText
-  call_type: resolved
-- caller: services.web.app.static.workspace.renderTicketDetail
-  callee: services.web.app.static.workspace.confirmTicket
-  call_type: resolved
-- caller: services.web.app.static.workspace.renderTicketDetail
-  callee: services.web.app.static.workspace.toast
-  call_type: resolved
-- caller: services.web.app.static.workspace.renderTicketDetail
-  callee: services.web.app.static.workspace.archiveTicket
-  call_type: resolved
-- caller: services.web.app.static.workspace.color
-  callee: services.web.app.static.workspace.escapeHtml
-  call_type: resolved
-- caller: services.web.app.static.workspace.confirmTicket
-  callee: services.web.app.static.workspace.ensureSession
-  call_type: resolved
-- caller: services.web.app.static.workspace.confirmTicket
-  callee: services.web.app.static.workspace.api
-  call_type: resolved
-- caller: services.web.app.static.workspace.confirmTicket
-  callee: services.web.app.static.workspace.toast
-  call_type: resolved
-- caller: services.web.app.static.workspace.confirmTicket
-  callee: services.web.app.static.workspace.refreshWorkspace
-  call_type: resolved
-- caller: services.web.app.static.workspace.archiveTicket
-  callee: services.web.app.static.workspace.api
-  call_type: resolved
-- caller: services.web.app.static.workspace.archiveTicket
-  callee: services.web.app.static.workspace.toast
-  call_type: resolved
-- caller: services.web.app.static.workspace.archiveTicket
-  callee: services.web.app.static.workspace.refreshWorkspace
-  call_type: resolved
-- caller: services.web.app.static.workspace.initRouting
-  callee: services.web.app.static.workspace.selectTicket
-  call_type: resolved
-- caller: services.web.app.static.workspace.initRouting
-  callee: services.web.app.static.workspace.renderTicketDetail
-  call_type: resolved
-- caller: services.web.app.static.workspace.initRouting
-  callee: services.web.app.static.workspace.renderTasks
-  call_type: resolved
-- caller: services.web.app.static.workspace.initRouting
-  callee: services.web.app.static.workspace.filterTasks
-  call_type: resolved
-- caller: services.web.app.static.workspace.deep
-  callee: services.web.app.static.workspace.selectTicket
-  call_type: resolved
-- caller: services.web.app.static.workspace.deep
-  callee: services.web.app.static.workspace.renderTicketDetail
-  call_type: resolved
-- caller: services.web.app.static.workspace.deep
-  callee: services.web.app.static.workspace.renderTasks
-  call_type: resolved
-- caller: services.web.app.static.workspace.deep
-  callee: services.web.app.static.workspace.filterTasks
-  call_type: resolved
-- caller: services.web.app.static.workspace.id
-  callee: services.web.app.static.workspace.selectTicket
-  call_type: resolved
-- caller: services.web.app.static.workspace.id
-  callee: services.web.app.static.workspace.renderTicketDetail
-  call_type: resolved
-- caller: services.web.app.static.workspace.id
-  callee: services.web.app.static.workspace.renderTasks
-  call_type: resolved
-- caller: services.web.app.static.workspace.id
-  callee: services.web.app.static.workspace.filterTasks
-  call_type: resolved
-- caller: services.web.app.static.workspace.m2
-  callee: services.web.app.static.workspace.renderTicketDetail
-  call_type: resolved
-- caller: services.web.app.static.workspace.m2
-  callee: services.web.app.static.workspace.renderTasks
-  call_type: resolved
-- caller: services.web.app.static.workspace.m2
-  callee: services.web.app.static.workspace.filterTasks
-  call_type: resolved
-- caller: services.web.app.static.workspace.renderContext
-  callee: services.web.app.static.workspace.escapeHtml
-  call_type: resolved
-- caller: services.web.app.static.workspace.names
-  callee: services.web.app.static.workspace.escapeHtml
-  call_type: resolved
-- caller: services.web.app.static.workspace.renderClarify
-  callee: services.web.app.static.workspace.escapeHtml
-  call_type: resolved
-- caller: services.web.app.static.workspace.fields
-  callee: services.web.app.static.workspace.escapeHtml
-  call_type: resolved
-- caller: services.web.app.static.workspace.req
-  callee: services.web.app.static.workspace.escapeHtml
-  call_type: resolved
-- caller: services.web.app.static.workspace.renderSessionEvents
-  callee: services.web.app.static.workspace.escapeHtml
-  call_type: resolved
-- caller: services.web.app.static.workspace.renderChat
-  callee: services.web.app.static.workspace.appendMsgTo
-  call_type: resolved
-- caller: services.web.app.static.workspace.renderChat
-  callee: services.web.app.static.workspace.formatChatContent
-  call_type: resolved
-- caller: services.web.app.static.workspace.items
-  callee: services.web.app.static.workspace.toast
-  call_type: resolved
-- caller: services.web.app.static.workspace.appendMsg
-  callee: services.web.app.static.workspace.appendMsgTo
-  call_type: resolved
-- caller: services.web.app.static.workspace.renderTasks
-  callee: services.web.app.static.workspace.escapeHtml
-  call_type: resolved
-- caller: services.web.app.static.workspace.renderTasks
-  callee: services.web.app.static.workspace.selectTicket
-  call_type: resolved
-- caller: services.web.app.static.workspace.renderFileChips
-  callee: services.web.app.static.workspace.escapeHtml
-  call_type: resolved
-- caller: services.web.app.static.workspace.saveContextFromForm
-  callee: services.web.app.static.workspace.ensureSession
-  call_type: resolved
-- caller: services.web.app.static.workspace.saveContextFromForm
-  callee: services.web.app.static.workspace.api
-  call_type: resolved
-- caller: services.web.app.static.workspace.saveContextFromForm
-  callee: services.web.app.static.workspace.refreshWorkspace
-  call_type: resolved
-- caller: services.web.app.static.workspace.saveContextFromForm
-  callee: services.web.app.static.workspace.toast
-  call_type: resolved
-- caller: services.web.app.static.workspace.syncContextNote
-  callee: services.web.app.static.workspace.ensureSession
-  call_type: resolved
-- caller: services.web.app.static.workspace.syncContextNote
-  callee: services.web.app.static.workspace.api
-  call_type: resolved
-- caller: services.web.app.static.workspace.uploadFiles
-  callee: services.web.app.static.workspace.ensureSession
-  call_type: resolved
-- caller: services.web.app.static.workspace.uploadFiles
-  callee: services.web.app.static.workspace.api
-  call_type: resolved
-- caller: services.web.app.static.workspace.uploadFiles
-  callee: services.web.app.static.workspace.refreshWorkspace
-  call_type: resolved
-- caller: services.web.app.static.workspace.sendChat
-  callee: services.web.app.static.workspace.collectClarifyValues
-  call_type: resolved
-- caller: services.web.app.static.workspace.sendChat
-  callee: services.web.app.static.workspace.ensureSession
-  call_type: resolved
-- caller: services.web.app.static.workspace.sendChat
-  callee: services.web.app.static.workspace.uploadFiles
-  call_type: resolved
-- caller: services.web.app.static.workspace.sendChat
-  callee: services.web.app.static.workspace.appendMsg
-  call_type: resolved
-- caller: services.web.app.static.workspace.sendChat
-  callee: services.web.app.static.workspace.api
-  call_type: resolved
-- caller: services.web.app.static.workspace.formValues
-  callee: services.web.app.static.workspace.ensureSession
-  call_type: resolved
-- caller: services.web.app.static.workspace.formValues
-  callee: services.web.app.static.workspace.uploadFiles
-  call_type: resolved
-- caller: services.web.app.static.workspace.formValues
-  callee: services.web.app.static.workspace.appendMsg
-  call_type: resolved
-- caller: services.web.app.static.workspace.formValues
-  callee: services.web.app.static.workspace.api
-  call_type: resolved
-- caller: services.web.app.static.workspace.formValues
-  callee: services.web.app.static.workspace.renderChat
-  call_type: resolved
-- caller: services.web.app.static.workspace.text
-  callee: services.web.app.static.workspace.api
-  call_type: resolved
-- caller: services.web.app.static.workspace.text
-  callee: services.web.app.static.workspace.renderDraft
-  call_type: resolved
-- caller: services.web.app.static.workspace.createFromDraft
-  callee: services.web.app.static.workspace.ensureSession
-  call_type: resolved
-- caller: services.web.app.static.workspace.createFromDraft
-  callee: services.web.app.static.workspace.api
-  call_type: resolved
-- caller: services.web.app.static.workspace.createFromDraft
-  callee: services.web.app.static.workspace.renderDraft
-  call_type: resolved
-- caller: services.web.app.static.workspace.createFromDraft
-  callee: services.web.app.static.workspace.toast
-  call_type: resolved
-- caller: services.web.app.static.workspace.createFromDraft
-  callee: services.web.app.static.workspace.refreshWorkspace
-  call_type: resolved
-- caller: services.web.app.static.workspace.createFromDraft
-  callee: services.web.app.static.workspace.selectTicket
-  call_type: resolved
-- caller: services.web.app.static.workspace.drafted
-  callee: services.web.app.static.workspace.api
-  call_type: resolved
-- caller: services.web.app.static.workspace.copyText
-  callee: services.web.app.static.workspace.toast
-  call_type: resolved
-- caller: services.web.app.static.workspace.ta
-  callee: services.web.app.static.workspace.toast
-  call_type: resolved
-- caller: services.web.app.static.workspace.copyChatToClipboard
-  callee: services.web.app.static.workspace.ensureSession
-  call_type: resolved
-- caller: services.web.app.static.workspace.copyChatToClipboard
-  callee: services.web.app.static.workspace.api
-  call_type: resolved
-- caller: services.web.app.static.workspace.copyChatToClipboard
-  callee: services.web.app.static.workspace.copyText
-  call_type: resolved
-- caller: services.web.app.static.workspace.copyLogsToClipboard
-  callee: services.web.app.static.workspace.ensureSession
-  call_type: resolved
-- caller: services.web.app.static.workspace.copyLogsToClipboard
-  callee: services.web.app.static.workspace.api
-  call_type: resolved
-- caller: services.web.app.static.workspace.copyLogsToClipboard
-  callee: services.web.app.static.workspace.copyText
-  call_type: resolved
-- caller: services.web.app.static.workspace.submitTaskForm
-  callee: services.web.app.static.workspace.ensureSession
-  call_type: resolved
-- caller: services.web.app.static.workspace.submitTaskForm
-  callee: services.web.app.static.workspace.api
-  call_type: resolved
-- caller: services.web.app.static.workspace.submitTaskForm
-  callee: services.web.app.static.workspace.toast
-  call_type: resolved
-- caller: services.web.app.static.workspace.submitTaskForm
-  callee: services.web.app.static.workspace.refreshWorkspace
   call_type: resolved
 - caller: services.web.app.static.workroom.data
   callee: services.web.app.static.workroom.api
@@ -2584,7 +2729,7 @@ edges:
   callee: services.orchestrator.app.infrastructure.eventstore._utc_now
   call_type: resolved
 - caller: services.orchestrator.app.domain.aggregates.task._event_data
-  callee: services.web.app.static.workspace.data
+  callee: services.web.app.static.workroom.data
   call_type: resolved
 - caller: services.orchestrator.app.domain.aggregates.task._event_timestamp
   callee: services.orchestrator.app.domain.aggregates.task._utc_now
@@ -2775,56 +2920,740 @@ edges:
 - caller: agents.shell-agent.app.nats_consumer.ShellAgent.handle_message
   callee: agents.shell-agent.app.executor.run_shell_command
   call_type: resolved
-- caller: services.projector.app.projections.incidents._handle_rag_request_failed
-  callee: services.projector.app.projections.incidents._upsert_rag_quality
+- caller: services.web.app.api_routes.chat_message
+  callee: services.web.app.conductor.handle_turn
   call_type: resolved
-- caller: services.projector.app.projections.incidents._handle_rag_request_failed
-  callee: services.projector.app.projections.incidents._upsert_service_health
+- caller: services.web.app.api_routes.list_tickets
+  callee: services.web.app.tickets.enrich_task
   call_type: resolved
-- caller: services.projector.app.projections.incidents._handle_rag_request_failed
-  callee: services.projector.app.projections.incidents._error_code
+- caller: services.web.app.api_routes.get_ticket
+  callee: services.web.app.tickets.enrich_task
   call_type: resolved
-- caller: services.projector.app.projections.incidents._handle_incident_detected
-  callee: services.projector.app.projections.incidents._error_code
+- caller: services.web.app.workspace.get_or_create
+  callee: services.web.app.workspace.new_session
   call_type: resolved
-- caller: services.projector.app.projections.incidents._handle_incident_classified
-  callee: services.projector.app.projections.incidents._error_code
+- caller: services.web.app.workspace.register_artifact
+  callee: services.web.app.workspace._artifact_title
   call_type: resolved
-- caller: services.projector.app.projections.incidents._handle_diagnostics_started
-  callee: services.projector.app.projections.incidents._update_incident_status
+- caller: services.web.app.workspace.get_artifact
+  callee: services.web.app.workspace.get_session
   call_type: resolved
-- caller: services.projector.app.projections.incidents._handle_diagnostics_completed
-  callee: services.projector.app.projections.incidents._checks_payload
+- caller: services.web.app.workspace.workspace_state
+  callee: services.web.app.workspace.get_or_create
   call_type: resolved
-- caller: services.projector.app.projections.incidents._handle_diagnostics_completed
-  callee: services.projector.app.projections.incidents._diagnostics_ok
+- caller: services.web.app.workspace.workspace_state
+  callee: services.web.app.workspace.artifact_summaries
   call_type: resolved
-- caller: services.projector.app.projections.incidents._handle_diagnostics_completed
-  callee: services.projector.app.projections.incidents._upsert_service_health
+- caller: services.web.app.workspace.attach_context
+  callee: services.web.app.workspace.get_or_create
   call_type: resolved
-- caller: services.projector.app.projections.incidents._handle_diagnostics_completed
-  callee: services.projector.app.projections.incidents._root_cause
+- caller: services.web.app.workspace.build_task_payload
+  callee: services.web.app.workspace.get_or_create
   call_type: resolved
-- caller: services.projector.app.projections.incidents._handle_diagnostics_completed
-  callee: services.projector.app.projections.incidents._error_code
+- caller: services.web.app.workspace.build_task_payload
+  callee: services.web.app.workspace._extract_shell_command
   call_type: resolved
-- caller: services.projector.app.projections.incidents._handle_remediation_started
-  callee: services.projector.app.projections.incidents._update_incident_status
+- caller: services.web.app.workspace.build_task_payload
+  callee: services.web.app.workspace._extract_ticket
   call_type: resolved
-- caller: services.projector.app.projections.incidents._handle_remediation_finished
-  callee: services.projector.app.projections.incidents._update_incident_status
+- caller: services.web.app.workspace.propose_task_draft
+  callee: services.web.app.workspace.build_task_payload
   call_type: resolved
-- caller: services.projector.app.projections.incidents._handle_post_remediation_verification
-  callee: services.projector.app.projections.incidents._update_incident_status
+- caller: services.web.app.workspace.create_task_immediate
+  callee: services.web.app.workspace.get_or_create
   call_type: resolved
-- caller: services.projector.app.projections.incidents._handle_post_remediation_verification
-  callee: services.projector.app.projections.incidents._upsert_service_health
+- caller: services.web.app.workspace.create_task_immediate
+  callee: services.web.app.workspace.link_ticket
   call_type: resolved
-- caller: services.projector.app.projections.incidents._upsert_rag_quality
-  callee: services.projector.app.projections.incidents._error_code
+- caller: services.web.app.workspace.handle_chat_message
+  callee: services.web.app.workspace.get_or_create
   call_type: resolved
-- caller: services.projector.app.projections.incidents._root_cause
-  callee: services.projector.app.projections.incidents._error_code
+- caller: services.web.app.workspace.handle_chat_message
+  callee: services.web.app.workspace._extract_ticket
+  call_type: resolved
+- caller: services.web.app.workspace.handle_chat_message
+  callee: services.web.app.workspace.attach_context
+  call_type: resolved
+- caller: services.web.app.workspace.handle_chat_message
+  callee: services.web.app.workspace._extract_shell_command
+  call_type: resolved
+- caller: services.web.app.workspace.create_task_from_draft
+  callee: services.web.app.workspace.create_task_immediate
+  call_type: resolved
+- caller: services.web.app.workspace.create_task_from_draft
+  callee: services.web.app.workspace.get_or_create
+  call_type: resolved
+- caller: services.web.app.workspace.create_and_run
+  callee: services.web.app.workspace.create_task_immediate
+  call_type: resolved
+- caller: services.web.app.workspace.create_and_run
+  callee: services.web.app.workspace.get_or_create
+  call_type: resolved
+- caller: services.web.app.workspace.export_debug_logs
+  callee: services.web.app.workspace.get_or_create
+  call_type: resolved
+- caller: services.web.app.workspace.export_debug_logs
+  callee: services.web.app.workspace._format_export_text
+  call_type: resolved
+- caller: services.web.app.workspace.archive_task
+  callee: services.web.app.workspace.get_or_create
+  call_type: resolved
+- caller: services.web.app.workspace.link_ticket
+  callee: services.web.app.workspace.get_or_create
+  call_type: resolved
+- caller: services.web.app.workspace.fetch_live_board
+  callee: services.web.app.static.workspace.items
+  call_type: resolved
+- caller: services.web.app.resource_areas.agent_may_access
+  callee: services.web.app.access_matrix.agent_may_access_resource
+  call_type: resolved
+- caller: services.web.app.chat._uri_is_system_resource
+  callee: services.web.app.chat._uri_is_user_resource
+  call_type: resolved
+- caller: services.web.app.chat.filter_file_inventory
+  callee: services.web.app.chat._uri_is_user_resource
+  call_type: resolved
+- caller: services.web.app.chat.filter_file_inventory
+  callee: services.web.app.chat._uri_is_system_resource
+  call_type: resolved
+- caller: services.web.app.chat._dedupe_rows_by_uri
+  callee: services.web.app.static.access.id
+  call_type: resolved
+- caller: services.web.app.chat.fetch_file_inventory
+  callee: services.web.app.chat._dedupe_rows_by_uri
+  call_type: resolved
+- caller: services.web.app.chat.format_file_list_reply
+  callee: services.web.app.chat._append_session_files
+  call_type: resolved
+- caller: services.web.app.chat.format_file_list_reply
+  callee: services.web.app.chat._append_resource_rows
+  call_type: resolved
+- caller: services.web.app.chat.format_file_list_reply
+  callee: services.web.app.chat._append_rag_rows
+  call_type: resolved
+- caller: services.web.app.chat.format_file_list_reply
+  callee: services.web.app.chat._append_file_list_errors
+  call_type: resolved
+- caller: services.web.app.chat.format_file_list_reply
+  callee: services.web.app.chat._append_file_list_tip
+  call_type: resolved
+- caller: services.web.app.chat._append_session_files
+  callee: services.web.app.chat._format_scope_uri
+  call_type: resolved
+- caller: services.web.app.chat._format_scope_uri
+  callee: services.web.app.chat._uri_is_user_resource
+  call_type: resolved
+- caller: services.web.app.chat._append_resource_rows
+  callee: services.web.app.chat._empty_resource_hint
+  call_type: resolved
+- caller: services.web.app.chat._format_history
+  callee: services.web.app.chat.get_history
+  call_type: resolved
+- caller: services.web.app.chat.handle_message
+  callee: services.web.app.chat._append
+  call_type: resolved
+- caller: services.web.app.chat.handle_message
+  callee: services.web.app.chat._message_response
+  call_type: resolved
+- caller: services.web.app.chat.handle_message
+  callee: services.web.app.chat._file_list_answer
+  call_type: resolved
+- caller: services.web.app.chat.handle_message
+  callee: services.web.app.chat._default_chat_reply
+  call_type: resolved
+- caller: services.web.app.chat.handle_message
+  callee: services.web.app.chat._ask_rag
+  call_type: resolved
+- caller: services.web.app.chat._file_list_answer
+  callee: services.web.app.chat.file_list_scope
+  call_type: resolved
+- caller: services.web.app.chat._file_list_answer
+  callee: services.web.app.chat.filter_file_inventory
+  call_type: resolved
+- caller: services.web.app.chat._file_list_answer
+  callee: services.web.app.chat.format_file_list_reply
+  call_type: resolved
+- caller: services.web.app.chat._file_list_answer
+  callee: services.web.app.chat.is_file_list_intent
+  call_type: resolved
+- caller: services.web.app.chat._file_list_answer
+  callee: services.web.app.chat.fetch_file_inventory
+  call_type: resolved
+- caller: services.web.app.chat._ask_rag
+  callee: services.web.app.chat._rag_headers
+  call_type: resolved
+- caller: services.web.app.chat._ask_rag
+  callee: services.web.app.chat._rag_query
+  call_type: resolved
+- caller: services.web.app.chat._ask_rag
+  callee: services.web.app.chat._answer_from_rag_payload
+  call_type: resolved
+- caller: services.web.app.chat._ask_rag
+  callee: services.web.app.chat._rag_backend_fallback
+  call_type: resolved
+- caller: services.web.app.chat._ask_rag
+  callee: services.web.app.chat._orch
+  call_type: resolved
+- caller: services.web.app.chat._rag_query
+  callee: services.web.app.chat._format_history
+  call_type: resolved
+- caller: services.web.app.chat._answer_from_rag_payload
+  callee: services.web.app.chat._format_incident
+  call_type: resolved
+- caller: services.web.app.chat._answer_from_rag_payload
+  callee: services.web.app.chat._sources_fallback_answer
+  call_type: resolved
+- caller: services.web.app.chat._sources_fallback_answer
+  callee: services.web.app.chat._source_preview
+  call_type: resolved
+- caller: services.web.app.chat._rag_backend_fallback
+  callee: services.web.app.chat._rag_search_fallback
+  call_type: resolved
+- caller: services.web.app.chat._rag_backend_fallback
+  callee: services.web.app.chat._rag_unavailable_answer
+  call_type: resolved
+- caller: services.web.app.chat._rag_search_fallback
+  callee: services.web.app.chat._orch
+  call_type: resolved
+- caller: services.web.app.chat._rag_unavailable_answer
+  callee: services.web.app.chat._rag_diagnostics_hint
+  call_type: resolved
+- caller: services.web.app.chat._rag_diagnostics_hint
+  callee: services.web.app.chat._orch
+  call_type: resolved
+- caller: services.web.app.chat._message_response
+  callee: services.web.app.chat.get_history
+  call_type: resolved
+- caller: services.web.app.chat._message_response
+  callee: services.web.app.chat.build_file_list_artifact
+  call_type: resolved
+- caller: services.web.app.chat.create_task
+  callee: services.web.app.chat._orch
+  call_type: resolved
+- caller: services.web.app.access_matrix.default_state
+  callee: services.web.app.access_matrix._default_resources
+  call_type: resolved
+- caller: services.web.app.access_matrix.default_state
+  callee: services.web.app.access_matrix._default_agents
+  call_type: resolved
+- caller: services.web.app.access_matrix.default_state
+  callee: services.web.app.access_matrix._empty_agent_resource
+  call_type: resolved
+- caller: services.web.app.access_matrix.default_state
+  callee: services.web.app.access_matrix._empty_human_agent
+  call_type: resolved
+- caller: services.web.app.access_matrix.load_state
+  callee: services.web.app.access_matrix._matrix_path
+  call_type: resolved
+- caller: services.web.app.access_matrix.load_state
+  callee: services.web.app.access_matrix.default_state
+  call_type: resolved
+- caller: services.web.app.access_matrix.load_state
+  callee: services.web.app.access_matrix._reindex_state
+  call_type: resolved
+- caller: services.web.app.access_matrix.load_state
+  callee: services.web.app.access_matrix._merge_bool_matrix
+  call_type: resolved
+- caller: services.web.app.access_matrix._reindex_state
+  callee: services.web.app.access_matrix._default_resources
+  call_type: resolved
+- caller: services.web.app.access_matrix._reindex_state
+  callee: services.web.app.access_matrix._default_agents
+  call_type: resolved
+- caller: services.web.app.access_matrix.save_state
+  callee: services.web.app.access_matrix._reindex_state
+  call_type: resolved
+- caller: services.web.app.access_matrix.save_state
+  callee: services.web.app.access_matrix._matrix_path
+  call_type: resolved
+- caller: services.web.app.access_matrix.agent_may_access_resource
+  callee: services.web.app.access_matrix.load_state
+  call_type: resolved
+- caller: services.web.app.access_matrix.human_may_use_agent
+  callee: services.web.app.access_matrix.load_state
+  call_type: resolved
+- caller: services.web.app.conductor.handle_turn
+  callee: services.web.app.conductor._fallback_turn
+  call_type: resolved
+- caller: services.web.app.conductor.handle_turn
+  callee: services.web.app.conductor._mullm_file_list_turn
+  call_type: resolved
+- caller: services.web.app.conductor.handle_turn
+  callee: services.web.app.conductor._nlp2dsl_turn
+  call_type: resolved
+- caller: services.web.app.conductor._nlp2dsl_turn
+  callee: services.web.app.conductor._closed_turn
+  call_type: resolved
+- caller: services.web.app.conductor._nlp2dsl_turn
+  callee: services.web.app.conductor._in_progress_turn
+  call_type: resolved
+- caller: services.web.app.conductor._nlp2dsl_turn
+  callee: services.web.app.conductor._call_nlp2dsl
+  call_type: resolved
+- caller: services.web.app.conductor._nlp2dsl_turn
+  callee: services.web.app.conductor._ready_turn
+  call_type: resolved
+- caller: services.web.app.conductor._nlp2dsl_turn
+  callee: services.web.app.conductor._fallback_turn
+  call_type: resolved
+- caller: services.web.app.conductor._in_progress_turn
+  callee: services.web.app.conductor._nlp_output_base
+  call_type: resolved
+- caller: services.web.app.conductor._in_progress_turn
+  callee: services.web.app.conductor._append_turn
+  call_type: resolved
+- caller: services.web.app.conductor._ready_turn
+  callee: services.web.app.conductor._nlp_output_base
+  call_type: resolved
+- caller: services.web.app.conductor._ready_turn
+  callee: services.web.app.conductor._append_turn
+  call_type: resolved
+- caller: services.web.app.conductor._ready_turn
+  callee: services.web.app.conductor._ready_action_payload
+  call_type: resolved
+- caller: services.web.app.conductor._ready_action_payload
+  callee: services.web.app.conductor._system_file_list_payload
+  call_type: resolved
+- caller: services.web.app.conductor._ready_action_payload
+  callee: services.web.app.conductor._shell_task_payload
+  call_type: resolved
+- caller: services.web.app.conductor._ready_action_payload
+  callee: services.web.app.conductor._ticket_payload
+  call_type: resolved
+- caller: services.web.app.conductor._shell_task_payload
+  callee: services.web.app.conductor._extract_shell
+  call_type: resolved
+- caller: services.web.app.conductor._shell_task_payload
+  callee: services.web.app.conductor._shell_clarify_payload
+  call_type: resolved
+- caller: services.web.app.conductor._shell_task_payload
+  callee: services.web.app.conductor._task_reply
+  call_type: resolved
+- caller: services.web.app.conductor._ticket_payload
+  callee: services.web.app.conductor._task_reply
+  call_type: resolved
+- caller: services.web.app.conductor._closed_turn
+  callee: services.web.app.conductor._nlp_output_base
+  call_type: resolved
+- caller: services.web.app.conductor._closed_turn
+  callee: services.web.app.conductor._append_turn
+  call_type: resolved
+- caller: services.web.app.conductor._fallback_turn
+  callee: services.web.app.conductor._local_clarify
+  call_type: resolved
+- caller: services.web.app.conductor._local_clarify
+  callee: services.web.app.conductor._extract_shell
+  call_type: resolved
+- caller: services.web.app.static.access.renderAgentResourceMatrix
+  callee: services.web.app.static.access.escapeHtml
+  call_type: resolved
+- caller: services.web.app.static.access.checked
+  callee: services.web.app.static.access.escapeHtml
+  call_type: resolved
+- caller: services.web.app.static.access.renderHumanAgentMatrix
+  callee: services.web.app.static.access.escapeHtml
+  call_type: resolved
+- caller: services.web.app.static.access.renderAll
+  callee: services.web.app.static.access.renderAgentResourceMatrix
+  call_type: resolved
+- caller: services.web.app.static.access.renderAll
+  callee: services.web.app.static.access.renderHumanAgentMatrix
+  call_type: resolved
+- caller: services.web.app.static.access.load
+  callee: services.web.app.static.access.api
+  call_type: resolved
+- caller: services.web.app.static.access.load
+  callee: services.web.app.static.access.renderAll
+  call_type: resolved
+- caller: services.web.app.static.access.save
+  callee: services.web.app.static.access.api
+  call_type: resolved
+- caller: services.web.app.static.access.save
+  callee: services.web.app.static.access.toast
+  call_type: resolved
+- caller: services.web.app.static.access.res
+  callee: services.web.app.static.access.api
+  call_type: resolved
+- caller: services.web.app.static.access.resetAll
+  callee: services.web.app.static.access.api
+  call_type: resolved
+- caller: services.web.app.static.access.resetAll
+  callee: services.web.app.static.access.renderAll
+  call_type: resolved
+- caller: services.web.app.static.access.resetAll
+  callee: services.web.app.static.access.toast
+  call_type: resolved
+- caller: services.web.app.static.access.id
+  callee: services.web.app.static.access.toast
+  call_type: resolved
+- caller: services.web.app.static.access.title
+  callee: services.web.app.static.access.toast
+  call_type: resolved
+- caller: services.web.app.static.workspace.ensureSession
+  callee: services.web.app.static.workspace.api
+  call_type: resolved
+- caller: services.web.app.static.workspace.loadTickets
+  callee: services.web.app.static.workspace.api
+  call_type: resolved
+- caller: services.web.app.static.workspace.refreshWorkspace
+  callee: services.web.app.static.workspace.ensureSession
+  call_type: resolved
+- caller: services.web.app.static.workspace.refreshWorkspace
+  callee: services.web.app.static.workspace.api
+  call_type: resolved
+- caller: services.web.app.static.workspace.refreshWorkspace
+  callee: services.web.app.static.workspace.renderContext
+  call_type: resolved
+- caller: services.web.app.static.workspace.refreshWorkspace
+  callee: services.web.app.static.workspace.renderSessionEvents
+  call_type: resolved
+- caller: services.web.app.static.workspace.refreshWorkspace
+  callee: services.web.app.static.workspace.renderChat
+  call_type: resolved
+- caller: services.web.app.static.workspace.refreshWorkspace
+  callee: services.web.app.static.workspace.syncArtifacts
+  call_type: resolved
+- caller: services.web.app.static.workspace.refreshWorkspace
+  callee: services.web.app.static.workspace.loadTickets
+  call_type: resolved
+- caller: services.web.app.static.workspace.refreshWorkspace
+  callee: services.web.app.static.workspace.renderTasks
+  call_type: resolved
+- caller: services.web.app.static.workspace.refreshWorkspace
+  callee: services.web.app.static.workspace.filterTasks
+  call_type: resolved
+- caller: services.web.app.static.workspace.state
+  callee: services.web.app.static.workspace.api
+  call_type: resolved
+- caller: services.web.app.static.workspace.t
+  callee: services.web.app.static.workspace.renderTicketDetail
+  call_type: resolved
+- caller: services.web.app.static.workspace.t
+  callee: services.web.app.static.workspace.api
+  call_type: resolved
+- caller: services.web.app.static.workspace.t
+  callee: services.web.app.static.workspace.loadTicketDetail
+  call_type: resolved
+- caller: services.web.app.static.workspace.t
+  callee: services.web.app.static.workspace.toast
+  call_type: resolved
+- caller: services.web.app.static.workspace.loadTicketDetail
+  callee: services.web.app.static.workspace.api
+  call_type: resolved
+- caller: services.web.app.static.workspace.loadTicketDetail
+  callee: services.web.app.static.workspace.renderTicketDetail
+  call_type: resolved
+- caller: services.web.app.static.workspace.selectTicket
+  callee: services.web.app.static.workspace.ticketWebUrl
+  call_type: resolved
+- caller: services.web.app.static.workspace.selectTicket
+  callee: services.web.app.static.workspace.renderTasks
+  call_type: resolved
+- caller: services.web.app.static.workspace.selectTicket
+  callee: services.web.app.static.workspace.filterTasks
+  call_type: resolved
+- caller: services.web.app.static.workspace.selectTicket
+  callee: services.web.app.static.workspace.renderTicketDetail
+  call_type: resolved
+- caller: services.web.app.static.workspace.selectTicket
+  callee: services.web.app.static.workspace.api
+  call_type: resolved
+- caller: services.web.app.static.workspace.selectTicket
+  callee: services.web.app.static.workspace.loadTicketDetail
+  call_type: resolved
+- caller: services.web.app.static.workspace.renderTicketDetail
+  callee: services.web.app.static.workspace.escapeHtml
+  call_type: resolved
+- caller: services.web.app.static.workspace.renderTicketDetail
+  callee: services.web.app.static.workspace.ticketWebUrl
+  call_type: resolved
+- caller: services.web.app.static.workspace.renderTicketDetail
+  callee: services.web.app.static.workspace.ticketUri
+  call_type: resolved
+- caller: services.web.app.static.workspace.renderTicketDetail
+  callee: services.web.app.static.workspace.copyText
+  call_type: resolved
+- caller: services.web.app.static.workspace.renderTicketDetail
+  callee: services.web.app.static.workspace.confirmTicket
+  call_type: resolved
+- caller: services.web.app.static.workspace.renderTicketDetail
+  callee: services.web.app.static.workspace.toast
+  call_type: resolved
+- caller: services.web.app.static.workspace.renderTicketDetail
+  callee: services.web.app.static.workspace.archiveTicket
+  call_type: resolved
+- caller: services.web.app.static.workspace.color
+  callee: services.web.app.static.workspace.escapeHtml
+  call_type: resolved
+- caller: services.web.app.static.workspace.confirmTicket
+  callee: services.web.app.static.workspace.ensureSession
+  call_type: resolved
+- caller: services.web.app.static.workspace.confirmTicket
+  callee: services.web.app.static.workspace.api
+  call_type: resolved
+- caller: services.web.app.static.workspace.confirmTicket
+  callee: services.web.app.static.workspace.toast
+  call_type: resolved
+- caller: services.web.app.static.workspace.confirmTicket
+  callee: services.web.app.static.workspace.refreshWorkspace
+  call_type: resolved
+- caller: services.web.app.static.workspace.archiveTicket
+  callee: services.web.app.static.workspace.api
+  call_type: resolved
+- caller: services.web.app.static.workspace.archiveTicket
+  callee: services.web.app.static.workspace.toast
+  call_type: resolved
+- caller: services.web.app.static.workspace.archiveTicket
+  callee: services.web.app.static.workspace.refreshWorkspace
+  call_type: resolved
+- caller: services.web.app.static.workspace.initRouting
+  callee: services.web.app.static.workspace.selectTicket
+  call_type: resolved
+- caller: services.web.app.static.workspace.initRouting
+  callee: services.web.app.static.workspace.renderTicketDetail
+  call_type: resolved
+- caller: services.web.app.static.workspace.initRouting
+  callee: services.web.app.static.workspace.renderTasks
+  call_type: resolved
+- caller: services.web.app.static.workspace.initRouting
+  callee: services.web.app.static.workspace.filterTasks
+  call_type: resolved
+- caller: services.web.app.static.workspace.deep
+  callee: services.web.app.static.workspace.selectTicket
+  call_type: resolved
+- caller: services.web.app.static.workspace.deep
+  callee: services.web.app.static.workspace.renderTicketDetail
+  call_type: resolved
+- caller: services.web.app.static.workspace.deep
+  callee: services.web.app.static.workspace.renderTasks
+  call_type: resolved
+- caller: services.web.app.static.workspace.deep
+  callee: services.web.app.static.workspace.filterTasks
+  call_type: resolved
+- caller: services.web.app.static.workspace.id
+  callee: services.web.app.static.workspace.selectTicket
+  call_type: resolved
+- caller: services.web.app.static.workspace.id
+  callee: services.web.app.static.workspace.renderTicketDetail
+  call_type: resolved
+- caller: services.web.app.static.workspace.id
+  callee: services.web.app.static.workspace.renderTasks
+  call_type: resolved
+- caller: services.web.app.static.workspace.id
+  callee: services.web.app.static.workspace.filterTasks
+  call_type: resolved
+- caller: services.web.app.static.workspace.m2
+  callee: services.web.app.static.workspace.renderTicketDetail
+  call_type: resolved
+- caller: services.web.app.static.workspace.m2
+  callee: services.web.app.static.workspace.renderTasks
+  call_type: resolved
+- caller: services.web.app.static.workspace.m2
+  callee: services.web.app.static.workspace.filterTasks
+  call_type: resolved
+- caller: services.web.app.static.workspace.renderContext
+  callee: services.web.app.static.workspace.escapeHtml
+  call_type: resolved
+- caller: services.web.app.static.workspace.names
+  callee: services.web.app.static.workspace.escapeHtml
+  call_type: resolved
+- caller: services.web.app.static.workspace.renderClarify
+  callee: services.web.app.static.workspace.escapeHtml
+  call_type: resolved
+- caller: services.web.app.static.workspace.fields
+  callee: services.web.app.static.workspace.escapeHtml
+  call_type: resolved
+- caller: services.web.app.static.workspace.req
+  callee: services.web.app.static.workspace.escapeHtml
+  call_type: resolved
+- caller: services.web.app.static.workspace.renderSessionEvents
+  callee: services.web.app.static.workspace.escapeHtml
+  call_type: resolved
+- caller: services.web.app.static.workspace.renderChat
+  callee: services.web.app.static.workspace.appendMsgTo
+  call_type: resolved
+- caller: services.web.app.static.workspace.renderChat
+  callee: services.web.app.static.workspace.formatChatContent
+  call_type: resolved
+- caller: services.web.app.static.workspace.items
+  callee: services.web.app.static.workspace.toast
+  call_type: resolved
+- caller: services.web.app.static.workspace.appendMsg
+  callee: services.web.app.static.workspace.appendMsgTo
+  call_type: resolved
+- caller: services.web.app.static.workspace.syncArtifacts
+  callee: services.web.app.static.workspace.cacheArtifactFull
+  call_type: resolved
+- caller: services.web.app.static.workspace.syncArtifacts
+  callee: services.web.app.static.workspace.renderArtifactList
+  call_type: resolved
+- caller: services.web.app.static.workspace.syncArtifacts
+  callee: services.web.app.static.workspace.selectArtifact
+  call_type: resolved
+- caller: services.web.app.static.workspace.syncArtifacts
+  callee: services.web.app.static.workspace.clearArtifactPreview
+  call_type: resolved
+- caller: services.web.app.static.workspace.renderArtifactList
+  callee: services.web.app.static.workspace.escapeHtml
+  call_type: resolved
+- caller: services.web.app.static.workspace.renderArtifactList
+  callee: services.web.app.static.workspace.selectArtifact
+  call_type: resolved
+- caller: services.web.app.static.workspace.renderArtifactList
+  callee: services.web.app.static.workspace.toast
+  call_type: resolved
+- caller: services.web.app.static.workspace.when
+  callee: services.web.app.static.workspace.escapeHtml
+  call_type: resolved
+- caller: services.web.app.static.workspace.selectArtifact
+  callee: services.web.app.static.workspace.renderArtifactList
+  call_type: resolved
+- caller: services.web.app.static.workspace.selectArtifact
+  callee: services.web.app.static.workspace.ensureSession
+  call_type: resolved
+- caller: services.web.app.static.workspace.selectArtifact
+  callee: services.web.app.static.workspace.api
+  call_type: resolved
+- caller: services.web.app.static.workspace.selectArtifact
+  callee: services.web.app.static.workspace.cacheArtifactFull
+  call_type: resolved
+- caller: services.web.app.static.workspace.selectArtifact
+  callee: services.web.app.static.workspace.showArtifactPreview
+  call_type: resolved
+- caller: services.web.app.static.workspace.showArtifactPreview
+  callee: services.web.app.static.workspace.downloadArtifact
+  call_type: resolved
+- caller: services.web.app.static.workspace.downloadArtifact
+  callee: services.web.app.static.workspace.toast
+  call_type: resolved
+- caller: services.web.app.static.workspace.renderTasks
+  callee: services.web.app.static.workspace.escapeHtml
+  call_type: resolved
+- caller: services.web.app.static.workspace.renderTasks
+  callee: services.web.app.static.workspace.selectTicket
+  call_type: resolved
+- caller: services.web.app.static.workspace.renderFileChips
+  callee: services.web.app.static.workspace.escapeHtml
+  call_type: resolved
+- caller: services.web.app.static.workspace.saveContextFromForm
+  callee: services.web.app.static.workspace.ensureSession
+  call_type: resolved
+- caller: services.web.app.static.workspace.saveContextFromForm
+  callee: services.web.app.static.workspace.api
+  call_type: resolved
+- caller: services.web.app.static.workspace.saveContextFromForm
+  callee: services.web.app.static.workspace.refreshWorkspace
+  call_type: resolved
+- caller: services.web.app.static.workspace.saveContextFromForm
+  callee: services.web.app.static.workspace.toast
+  call_type: resolved
+- caller: services.web.app.static.workspace.syncContextNote
+  callee: services.web.app.static.workspace.ensureSession
+  call_type: resolved
+- caller: services.web.app.static.workspace.syncContextNote
+  callee: services.web.app.static.workspace.api
+  call_type: resolved
+- caller: services.web.app.static.workspace.uploadFiles
+  callee: services.web.app.static.workspace.ensureSession
+  call_type: resolved
+- caller: services.web.app.static.workspace.uploadFiles
+  callee: services.web.app.static.workspace.api
+  call_type: resolved
+- caller: services.web.app.static.workspace.uploadFiles
+  callee: services.web.app.static.workspace.refreshWorkspace
+  call_type: resolved
+- caller: services.web.app.static.workspace.sendChat
+  callee: services.web.app.static.workspace.collectClarifyValues
+  call_type: resolved
+- caller: services.web.app.static.workspace.sendChat
+  callee: services.web.app.static.workspace.ensureSession
+  call_type: resolved
+- caller: services.web.app.static.workspace.sendChat
+  callee: services.web.app.static.workspace.uploadFiles
+  call_type: resolved
+- caller: services.web.app.static.workspace.sendChat
+  callee: services.web.app.static.workspace.appendMsg
+  call_type: resolved
+- caller: services.web.app.static.workspace.sendChat
+  callee: services.web.app.static.workspace.api
+  call_type: resolved
+- caller: services.web.app.static.workspace.formValues
+  callee: services.web.app.static.workspace.ensureSession
+  call_type: resolved
+- caller: services.web.app.static.workspace.formValues
+  callee: services.web.app.static.workspace.uploadFiles
+  call_type: resolved
+- caller: services.web.app.static.workspace.formValues
+  callee: services.web.app.static.workspace.appendMsg
+  call_type: resolved
+- caller: services.web.app.static.workspace.formValues
+  callee: services.web.app.static.workspace.api
+  call_type: resolved
+- caller: services.web.app.static.workspace.formValues
+  callee: services.web.app.static.workspace.renderChat
+  call_type: resolved
+- caller: services.web.app.static.workspace.text
+  callee: services.web.app.static.workspace.api
+  call_type: resolved
+- caller: services.web.app.static.workspace.text
+  callee: services.web.app.static.workspace.renderDraft
+  call_type: resolved
+- caller: services.web.app.static.workspace.createFromDraft
+  callee: services.web.app.static.workspace.ensureSession
+  call_type: resolved
+- caller: services.web.app.static.workspace.createFromDraft
+  callee: services.web.app.static.workspace.api
+  call_type: resolved
+- caller: services.web.app.static.workspace.createFromDraft
+  callee: services.web.app.static.workspace.renderDraft
+  call_type: resolved
+- caller: services.web.app.static.workspace.createFromDraft
+  callee: services.web.app.static.workspace.toast
+  call_type: resolved
+- caller: services.web.app.static.workspace.createFromDraft
+  callee: services.web.app.static.workspace.refreshWorkspace
+  call_type: resolved
+- caller: services.web.app.static.workspace.createFromDraft
+  callee: services.web.app.static.workspace.selectTicket
+  call_type: resolved
+- caller: services.web.app.static.workspace.drafted
+  callee: services.web.app.static.workspace.api
+  call_type: resolved
+- caller: services.web.app.static.workspace.copyText
+  callee: services.web.app.static.workspace.toast
+  call_type: resolved
+- caller: services.web.app.static.workspace.ta
+  callee: services.web.app.static.workspace.toast
+  call_type: resolved
+- caller: services.web.app.static.workspace.copyChatToClipboard
+  callee: services.web.app.static.workspace.ensureSession
+  call_type: resolved
+- caller: services.web.app.static.workspace.copyChatToClipboard
+  callee: services.web.app.static.workspace.api
+  call_type: resolved
+- caller: services.web.app.static.workspace.copyChatToClipboard
+  callee: services.web.app.static.workspace.copyText
+  call_type: resolved
+- caller: services.web.app.static.workspace.copyLogsToClipboard
+  callee: services.web.app.static.workspace.ensureSession
+  call_type: resolved
+- caller: services.web.app.static.workspace.copyLogsToClipboard
+  callee: services.web.app.static.workspace.api
+  call_type: resolved
+- caller: services.web.app.static.workspace.copyLogsToClipboard
+  callee: services.web.app.static.workspace.copyText
+  call_type: resolved
+- caller: services.web.app.static.workspace.submitTaskForm
+  callee: services.web.app.static.workspace.ensureSession
+  call_type: resolved
+- caller: services.web.app.static.workspace.submitTaskForm
+  callee: services.web.app.static.workspace.api
+  call_type: resolved
+- caller: services.web.app.static.workspace.submitTaskForm
+  callee: services.web.app.static.workspace.toast
+  call_type: resolved
+- caller: services.web.app.static.workspace.submitTaskForm
+  callee: services.web.app.static.workspace.refreshWorkspace
   call_type: resolved
 modules:
   agents.shell-agent.app.executor:
@@ -3005,6 +3834,19 @@ modules:
   - services.projector.app.projections.task_board.project_task_board
   services.projector.app.projections.workflow_versions:
   - services.projector.app.projections.workflow_versions.project_workflow_versions
+  services.web.app.access_matrix:
+  - services.web.app.access_matrix._default_agents
+  - services.web.app.access_matrix._default_resources
+  - services.web.app.access_matrix._empty_agent_resource
+  - services.web.app.access_matrix._empty_human_agent
+  - services.web.app.access_matrix._matrix_path
+  - services.web.app.access_matrix._merge_bool_matrix
+  - services.web.app.access_matrix._reindex_state
+  - services.web.app.access_matrix.agent_may_access_resource
+  - services.web.app.access_matrix.default_state
+  - services.web.app.access_matrix.human_may_use_agent
+  - services.web.app.access_matrix.load_state
+  - services.web.app.access_matrix.save_state
   services.web.app.agent_workroom:
   - services.web.app.agent_workroom._extract_shell
   - services.web.app.agent_workroom._plan_steps
@@ -3016,22 +3858,60 @@ modules:
   - services.web.app.api_routes.get_ticket
   - services.web.app.api_routes.list_tickets
   services.web.app.chat:
+  - services.web.app.chat._answer_from_rag_payload
   - services.web.app.chat._append
+  - services.web.app.chat._append_file_list_errors
+  - services.web.app.chat._append_file_list_tip
+  - services.web.app.chat._append_rag_rows
+  - services.web.app.chat._append_resource_rows
+  - services.web.app.chat._append_session_files
+  - services.web.app.chat._ask_rag
   - services.web.app.chat._dedupe_rows_by_uri
+  - services.web.app.chat._default_chat_reply
+  - services.web.app.chat._empty_resource_hint
+  - services.web.app.chat._file_list_answer
   - services.web.app.chat._format_history
+  - services.web.app.chat._format_incident
+  - services.web.app.chat._format_scope_uri
+  - services.web.app.chat._message_response
   - services.web.app.chat._orch
+  - services.web.app.chat._rag_backend_fallback
+  - services.web.app.chat._rag_diagnostics_hint
+  - services.web.app.chat._rag_headers
+  - services.web.app.chat._rag_query
+  - services.web.app.chat._rag_search_fallback
+  - services.web.app.chat._rag_unavailable_answer
+  - services.web.app.chat._source_preview
+  - services.web.app.chat._sources_fallback_answer
+  - services.web.app.chat._uri_is_system_resource
+  - services.web.app.chat._uri_is_user_resource
+  - services.web.app.chat.build_file_list_artifact
   - services.web.app.chat.create_task
   - services.web.app.chat.fetch_file_inventory
+  - services.web.app.chat.file_list_scope
+  - services.web.app.chat.filter_file_inventory
   - services.web.app.chat.format_file_list_reply
   - services.web.app.chat.get_history
   - services.web.app.chat.handle_message
   - services.web.app.chat.is_file_list_intent
   services.web.app.conductor:
+  - services.web.app.conductor._append_turn
+  - services.web.app.conductor._call_nlp2dsl
+  - services.web.app.conductor._closed_turn
   - services.web.app.conductor._extract_shell
   - services.web.app.conductor._fallback_turn
+  - services.web.app.conductor._in_progress_turn
   - services.web.app.conductor._local_clarify
   - services.web.app.conductor._mullm_file_list_turn
   - services.web.app.conductor._nlp2dsl_turn
+  - services.web.app.conductor._nlp_output_base
+  - services.web.app.conductor._ready_action_payload
+  - services.web.app.conductor._ready_turn
+  - services.web.app.conductor._shell_clarify_payload
+  - services.web.app.conductor._shell_task_payload
+  - services.web.app.conductor._system_file_list_payload
+  - services.web.app.conductor._task_reply
+  - services.web.app.conductor._ticket_payload
   - services.web.app.conductor.handle_turn
   services.web.app.nlp2dsl_bridge:
   - services.web.app.nlp2dsl_bridge._post_json
@@ -3041,8 +3921,23 @@ modules:
   - services.web.app.nlp2dsl_bridge.chat_start
   - services.web.app.nlp2dsl_bridge.health
   services.web.app.resource_areas:
+  - services.web.app.resource_areas.agent_may_access
   - services.web.app.resource_areas.list_areas
   - services.web.app.resource_areas.list_groups
+  services.web.app.static.access:
+  - services.web.app.static.access.api
+  - services.web.app.static.access.checked
+  - services.web.app.static.access.escapeHtml
+  - services.web.app.static.access.id
+  - services.web.app.static.access.load
+  - services.web.app.static.access.renderAgentResourceMatrix
+  - services.web.app.static.access.renderAll
+  - services.web.app.static.access.renderHumanAgentMatrix
+  - services.web.app.static.access.res
+  - services.web.app.static.access.resetAll
+  - services.web.app.static.access.save
+  - services.web.app.static.access.title
+  - services.web.app.static.access.toast
   services.web.app.static.app:
   - services.web.app.static.app.appendMessage
   - services.web.app.static.app.ensureSession
@@ -3071,6 +3966,8 @@ modules:
   - services.web.app.static.workspace.appendMsg
   - services.web.app.static.workspace.appendMsgTo
   - services.web.app.static.workspace.archiveTicket
+  - services.web.app.static.workspace.cacheArtifactFull
+  - services.web.app.static.workspace.clearArtifactPreview
   - services.web.app.static.workspace.collectClarifyValues
   - services.web.app.static.workspace.color
   - services.web.app.static.workspace.confirmTicket
@@ -3078,8 +3975,8 @@ modules:
   - services.web.app.static.workspace.copyLogsToClipboard
   - services.web.app.static.workspace.copyText
   - services.web.app.static.workspace.createFromDraft
-  - services.web.app.static.workspace.data
   - services.web.app.static.workspace.deep
+  - services.web.app.static.workspace.downloadArtifact
   - services.web.app.static.workspace.drafted
   - services.web.app.static.workspace.ensureSession
   - services.web.app.static.workspace.escapeHtml
@@ -3095,6 +3992,7 @@ modules:
   - services.web.app.static.workspace.m2
   - services.web.app.static.workspace.names
   - services.web.app.static.workspace.refreshWorkspace
+  - services.web.app.static.workspace.renderArtifactList
   - services.web.app.static.workspace.renderChat
   - services.web.app.static.workspace.renderClarify
   - services.web.app.static.workspace.renderContext
@@ -3105,10 +4003,13 @@ modules:
   - services.web.app.static.workspace.renderTicketDetail
   - services.web.app.static.workspace.req
   - services.web.app.static.workspace.saveContextFromForm
+  - services.web.app.static.workspace.selectArtifact
   - services.web.app.static.workspace.selectTicket
   - services.web.app.static.workspace.sendChat
+  - services.web.app.static.workspace.showArtifactPreview
   - services.web.app.static.workspace.state
   - services.web.app.static.workspace.submitTaskForm
+  - services.web.app.static.workspace.syncArtifacts
   - services.web.app.static.workspace.syncContextNote
   - services.web.app.static.workspace.t
   - services.web.app.static.workspace.ta
@@ -3117,16 +4018,19 @@ modules:
   - services.web.app.static.workspace.ticketWebUrl
   - services.web.app.static.workspace.toast
   - services.web.app.static.workspace.uploadFiles
+  - services.web.app.static.workspace.when
   services.web.app.tickets:
   - services.web.app.tickets.enrich_task
   - services.web.app.tickets.status_meta
   - services.web.app.tickets.ticket_uri
   - services.web.app.tickets.ticket_web_path
   services.web.app.workspace:
+  - services.web.app.workspace._artifact_title
   - services.web.app.workspace._extract_shell_command
   - services.web.app.workspace._extract_ticket
   - services.web.app.workspace._format_export_text
   - services.web.app.workspace.archive_task
+  - services.web.app.workspace.artifact_summaries
   - services.web.app.workspace.attach_context
   - services.web.app.workspace.build_task_payload
   - services.web.app.workspace.create_and_run
@@ -3134,11 +4038,14 @@ modules:
   - services.web.app.workspace.create_task_immediate
   - services.web.app.workspace.export_debug_logs
   - services.web.app.workspace.fetch_live_board
+  - services.web.app.workspace.get_artifact
   - services.web.app.workspace.get_or_create
+  - services.web.app.workspace.get_session
   - services.web.app.workspace.handle_chat_message
   - services.web.app.workspace.link_ticket
   - services.web.app.workspace.new_session
   - services.web.app.workspace.propose_task_draft
+  - services.web.app.workspace.register_artifact
   - services.web.app.workspace.workspace_state
   services.web.src.main:
   - services.web.src.main.createTask
@@ -3457,6 +4364,9 @@ entry_points:
 - services.projector.app.projections.incidents._handle_rag_request_failed
 - services.projector.app.projections.incidents._handle_remediation_finished
 - services.projector.app.projections.incidents._handle_remediation_started
+- services.web.app.access_matrix.diagnose_file_list_command
+- services.web.app.access_matrix.human_may_use_agent
+- services.web.app.access_matrix.save_state
 - services.web.app.agent_workroom.LedgerEntry.to_dict
 - services.web.app.agent_workroom.WorkroomSession.add_ledger
 - services.web.app.agent_workroom.WorkroomSession.agent_say
@@ -3464,6 +4374,10 @@ entry_points:
 - services.web.app.agent_workroom.create_workroom
 - services.web.app.agent_workroom.run_workroom
 - services.web.app.agent_workroom.workroom_catalog
+- services.web.app.api_routes.access_diagnose_file_list
+- services.web.app.api_routes.access_matrix_get
+- services.web.app.api_routes.access_matrix_put
+- services.web.app.api_routes.access_matrix_reset
 - services.web.app.api_routes.api_resource_areas
 - services.web.app.api_routes.api_role_scopes
 - services.web.app.api_routes.archive_ticket
@@ -3486,11 +4400,15 @@ entry_points:
 - services.web.app.api_routes.workroom_run
 - services.web.app.api_routes.workroom_start
 - services.web.app.api_routes.workspace_chat_export
+- services.web.app.api_routes.workspace_file_list_export
+- services.web.app.api_routes.workspace_get_artifact
+- services.web.app.api_routes.workspace_list_artifacts
 - services.web.app.api_routes.workspace_logs_export
 - services.web.app.api_routes.workspace_state
 - services.web.app.chat.create_task
 - services.web.app.chat.handle_message
 - services.web.app.chat.new_session_id
+- services.web.app.main.access_matrix_page
 - services.web.app.main.agent_workroom_page
 - services.web.app.main.dashboard
 - services.web.app.main.health
@@ -3502,6 +4420,20 @@ entry_points:
 - services.web.app.nlp2dsl_bridge.health
 - services.web.app.nlp2dsl_bridge.primary_action
 - services.web.app.nlp2dsl_bridge.step_config
+- services.web.app.static.access.agents
+- services.web.app.static.access.checked
+- services.web.app.static.access.data
+- services.web.app.static.access.diag
+- services.web.app.static.access.humans
+- services.web.app.static.access.load
+- services.web.app.static.access.matrix
+- services.web.app.static.access.r
+- services.web.app.static.access.res
+- services.web.app.static.access.resetAll
+- services.web.app.static.access.resources
+- services.web.app.static.access.save
+- services.web.app.static.access.state
+- services.web.app.static.access.title
 - services.web.app.static.app.data
 - services.web.app.static.app.div
 - services.web.app.static.app.fd
@@ -3514,7 +4446,6 @@ entry_points:
 - services.web.app.static.app.tasksBody
 - services.web.app.static.app.text
 - services.web.app.static.app.uploaded
-- services.web.app.static.workroom.data
 - services.web.app.static.workroom.r
 - services.web.app.static.workroom.refresh
 - services.web.app.static.workroom.runAgents
@@ -3523,6 +4454,8 @@ entry_points:
 - services.web.app.static.workroom.userSessionId
 - services.web.app.static.workroom.workroomId
 - services.web.app.static.workspace.active
+- services.web.app.static.workspace.art
+- services.web.app.static.workspace.artifactFullCache
 - services.web.app.static.workspace.body
 - services.web.app.static.workspace.color
 - services.web.app.static.workspace.copyChatToClipboard
@@ -3530,6 +4463,7 @@ entry_points:
 - services.web.app.static.workspace.createFromDraft
 - services.web.app.static.workspace.currentDraft
 - services.web.app.static.workspace.d
+- services.web.app.static.workspace.data
 - services.web.app.static.workspace.deep
 - services.web.app.static.workspace.detail
 - services.web.app.static.workspace.div
@@ -3537,11 +4471,16 @@ entry_points:
 - services.web.app.static.workspace.fd
 - services.web.app.static.workspace.fields
 - services.web.app.static.workspace.formValues
+- services.web.app.static.workspace.hasJson
+- services.web.app.static.workspace.hasText
+- services.web.app.static.workspace.id
 - services.web.app.static.workspace.initRouting
 - services.web.app.static.workspace.input
+- services.web.app.static.workspace.link
 - services.web.app.static.workspace.m
 - services.web.app.static.workspace.m2
 - services.web.app.static.workspace.meta
+- services.web.app.static.workspace.name
 - services.web.app.static.workspace.names
 - services.web.app.static.workspace.note
 - services.web.app.static.workspace.openTicketDialogFromDraft
@@ -3550,6 +4489,7 @@ entry_points:
 - services.web.app.static.workspace.r
 - services.web.app.static.workspace.req
 - services.web.app.static.workspace.saveContextFromForm
+- services.web.app.static.workspace.selectedArtifactId
 - services.web.app.static.workspace.selectedTaskId
 - services.web.app.static.workspace.sendChat
 - services.web.app.static.workspace.sessionId
@@ -3562,7 +4502,9 @@ entry_points:
 - services.web.app.static.workspace.ta
 - services.web.app.static.workspace.text
 - services.web.app.static.workspace.tid
+- services.web.app.static.workspace.url
 - services.web.app.static.workspace.wait
+- services.web.app.static.workspace.when
 - services.web.app.workspace.WorkspaceContext.to_dict
 - services.web.app.workspace.WorkspaceSession.add_event
 - services.web.app.workspace.archive_task
@@ -3570,7 +4512,7 @@ entry_points:
 - services.web.app.workspace.create_task_from_draft
 - services.web.app.workspace.export_debug_logs
 - services.web.app.workspace.fetch_live_board
-- services.web.app.workspace.get_session
+- services.web.app.workspace.get_artifact
 - services.web.app.workspace.handle_chat_message
 - services.web.app.workspace.propose_task_draft
 - services.web.app.workspace.workspace_state

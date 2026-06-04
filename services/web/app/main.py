@@ -46,6 +46,11 @@ async def agent_workroom_page(request: Request):
     return templates.TemplateResponse("workroom.html", {"request": request})
 
 
+@app.get("/access", response_class=HTMLResponse)
+async def access_matrix_page(request: Request):
+    return templates.TemplateResponse("access.html", {"request": request})
+
+
 @app.get("/dashboard", response_class=HTMLResponse)
 async def dashboard(request: Request):
     tasks: list = []

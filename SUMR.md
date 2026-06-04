@@ -6,6 +6,7 @@ SUMD - Structured Unified Markdown Descriptor for AI-aware project refactorizati
 
 - [Metadata](#metadata)
 - [Architecture](#architecture)
+- [Workflows](#workflows)
 - [Call Graph](#call-graph)
 - [Test Contracts](#test-contracts)
 - [Refactoring Analysis](#refactoring-analysis)
@@ -16,7 +17,7 @@ SUMD - Structured Unified Markdown Descriptor for AI-aware project refactorizati
 - **name**: `mullm`
 - **version**: `0.0.0`
 - **ecosystem**: SUMD + DOQL + testql + taskfile
-- **generated_from**: requirements-dev.txt, testql(2), app.doql.less, goal.yaml, .env.example, docker-compose.yml, project/(5 analysis files)
+- **generated_from**: requirements-dev.txt, Makefile, testql(2), app.doql.less, goal.yaml, .env.example, docker-compose.yml, project/(5 analysis files)
 
 ## Architecture
 
@@ -322,6 +323,96 @@ interface[type="api"] {
   auth-type: jwt;
 }
 
+workflow[name="up"] {
+  trigger: manual;
+  step-1: run cmd=$(COMPOSE) $(PROFILE_ARGS) up -d;
+  step-2: run cmd=if [ "$(NLP2DSL)" = "1" ]; then \;
+  step-3: run cmd=$(MAKE) --no-print-directory nlp2dsl-up; \;
+  step-4: run cmd=fi;
+}
+
+workflow[name="down"] {
+  trigger: manual;
+  step-1: run cmd=if [ "$(NLP2DSL)" = "1" ]; then \;
+  step-2: run cmd=$(MAKE) --no-print-directory nlp2dsl-down; \;
+  step-3: run cmd=fi;
+  step-4: run cmd=$(COMPOSE) $(PROFILE_ARGS) down;
+}
+
+workflow[name="restart"] {
+  trigger: manual;
+  step-1: depend target=down;
+  step-2: depend target=up;
+}
+
+workflow[name="build"] {
+  trigger: manual;
+  step-1: run cmd=$(COMPOSE) $(PROFILE_ARGS) build;
+}
+
+workflow[name="logs"] {
+  trigger: manual;
+  step-1: run cmd=$(COMPOSE) $(PROFILE_ARGS) logs -f --tail=200;
+}
+
+workflow[name="ps"] {
+  trigger: manual;
+  step-1: run cmd=$(COMPOSE) $(PROFILE_ARGS) ps;
+}
+
+workflow[name="test"] {
+  trigger: manual;
+  step-1: run cmd=pytest -q;
+}
+
+workflow[name="smoke"] {
+  trigger: manual;
+  step-1: run cmd=curl -fsS http://127.0.0.1:3003/health;
+  step-2: run cmd=curl -fsS http://127.0.0.1:8001/health;
+  step-3: run cmd=curl -fsS http://127.0.0.1:8002/health;
+  step-4: run cmd=if [ "$(NLP2DSL)" = "1" ] && [ -f "$(NLP2DSL_DIR)/docker-compose.yml" ]; then \;
+  step-5: run cmd=curl -fsS -o /dev/null -w 'nlp2dsl backend: %{http_code}\n' http://127.0.0.1:8010/docs && \;
+  step-6: run cmd=curl -fsS -o /dev/null -w 'nlp2dsl nlp: %{http_code}\n' http://127.0.0.1:8012/docs && \;
+  step-7: run cmd=curl -fsS -o /dev/null -w 'nlp2dsl worker: %{http_code}\n' http://127.0.0.1:8004/health; \;
+  step-8: run cmd=fi;
+}
+
+workflow[name="ensure-env"] {
+  trigger: manual;
+  step-1: run cmd=if [ ! -f .env ] && [ -f .env.example ]; then \;
+  step-2: run cmd=cp .env.example .env; \;
+  step-3: run cmd=echo "Created .env from .env.example"; \;
+  step-4: run cmd=fi;
+}
+
+workflow[name="ensure-nlp2dsl-env"] {
+  trigger: manual;
+  step-1: run cmd=if [ -f "$(NLP2DSL_DIR)/docker-compose.yml" ]; then \;
+  step-2: run cmd=if [ ! -f "$(NLP2DSL_DIR)/.env" ] && [ -f "$(NLP2DSL_DIR)/.env.example" ]; then \;
+  step-3: run cmd=cp "$(NLP2DSL_DIR)/.env.example" "$(NLP2DSL_DIR)/.env"; \;
+  step-4: run cmd=echo "Created $(NLP2DSL_DIR)/.env from .env.example"; \;
+  step-5: run cmd=fi; \;
+  step-6: run cmd=fi;
+}
+
+workflow[name="nlp2dsl-up"] {
+  trigger: manual;
+  step-1: run cmd=if [ -f "$(NLP2DSL_DIR)/docker-compose.yml" ]; then \;
+  step-2: run cmd=cd "$(NLP2DSL_DIR)" && $(COMPOSE) up -d; \;
+  step-3: run cmd=else \;
+  step-4: run cmd=echo "Skipping nlp2dsl: $(NLP2DSL_DIR)/docker-compose.yml not found"; \;
+  step-5: run cmd=fi;
+}
+
+workflow[name="nlp2dsl-down"] {
+  trigger: manual;
+  step-1: run cmd=if [ -f "$(NLP2DSL_DIR)/docker-compose.yml" ]; then \;
+  step-2: run cmd=cd "$(NLP2DSL_DIR)" && $(COMPOSE) down; \;
+  step-3: run cmd=else \;
+  step-4: run cmd=echo "Skipping nlp2dsl: $(NLP2DSL_DIR)/docker-compose.yml not found"; \;
+  step-5: run cmd=fi;
+}
+
 deploy {
   target: docker-compose;
   compose_file: docker-compose.yml;
@@ -333,9 +424,11 @@ environment[name="local"] {
 }
 ```
 
+## Workflows
+
 ## Call Graph
 
-*255 nodes · 313 edges · 52 modules · CC̄=3.8*
+*340 nodes · 423 edges · 54 modules · CC̄=3.6*
 
 ### Hubs (by degree)
 
@@ -343,60 +436,60 @@ environment[name="local"] {
 |----------|----|----|-----|-------|
 | `_format_export_text` *(in services.web.app.workspace)* | 47 ⚠ | 1 | 97 | **98** |
 | `format_logs_text` *(in services.orchestrator.app.observability.export)* | 29 ⚠ | 1 | 66 | **67** |
-| `project_incidents` *(in services.projector.app.projections.incidents)* | 23 ⚠ | 1 | 51 | **52** |
 | `run_workroom` *(in services.web.app.agent_workroom)* | 22 ⚠ | 0 | 45 | **45** |
-| `handle_chat_message` *(in services.web.app.workspace)* | 21 ⚠ | 0 | 40 | **40** |
+| `handle_chat_message` *(in services.web.app.workspace)* | 22 ⚠ | 0 | 43 | **43** |
 | `ask` *(in services.orchestrator.app.observability.rag_pipeline.RagPipeline)* | 10 ⚠ | 0 | 36 | **36** |
-| `format_file_list_reply` *(in services.web.app.chat)* | 22 ⚠ | 1 | 35 | **36** |
-| `_nlp2dsl_turn` *(in services.web.app.conductor)* | 23 ⚠ | 1 | 35 | **36** |
+| `_event_payload` *(in services.orchestrator.app.observability.incidents)* | 19 ⚠ | 1 | 28 | **29** |
+| `export_debug_logs` *(in services.web.app.workspace)* | 15 ⚠ | 0 | 26 | **26** |
+| `api` *(in services.web.app.static.workspace)* | 6 | 21 | 4 | **25** |
 
 ```toon markpact:analysis path=project/calls.toon.yaml
 # code2llm call graph | /home/tom/github/wronai/mullm
-# generated in 0.14s
-# nodes: 255 | edges: 313 | modules: 52
-# CC̄=3.8
+# generated in 0.18s
+# nodes: 340 | edges: 423 | modules: 54
+# CC̄=3.6
 
 HUBS[20]:
   services.web.app.workspace._format_export_text
     CC=47  in:1  out:97  total:98
   services.orchestrator.app.observability.export.format_logs_text
     CC=29  in:1  out:66  total:67
-  services.projector.app.projections.incidents.project_incidents
-    CC=23  in:1  out:51  total:52
   services.web.app.agent_workroom.run_workroom
     CC=22  in:0  out:45  total:45
   services.web.app.workspace.handle_chat_message
-    CC=21  in:0  out:40  total:40
+    CC=22  in:0  out:43  total:43
   services.orchestrator.app.observability.rag_pipeline.RagPipeline.ask
     CC=10  in:0  out:36  total:36
-  services.web.app.chat.format_file_list_reply
-    CC=22  in:1  out:35  total:36
-  services.web.app.conductor._nlp2dsl_turn
-    CC=23  in:1  out:35  total:36
-  services.web.app.chat.handle_message
-    CC=33  in:0  out:35  total:35
   services.orchestrator.app.observability.incidents._event_payload
     CC=19  in:1  out:28  total:29
   services.web.app.workspace.export_debug_logs
     CC=15  in:0  out:26  total:26
   services.web.app.static.workspace.api
-    CC=6  in:20  out:4  total:24
+    CC=6  in:21  out:4  total:25
   services.orchestrator.app.observability.incidents.IncidentRecorder.record
     CC=16  in:0  out:23  total:23
-  services.orchestrator.app.api.commands._dispatch
-    CC=4  in:14  out:9  total:23
   services.orchestrator.app.observability.rag_diagnostics.RagDiagnostics.run
     CC=12  in:0  out:23  total:23
-  services.orchestrator.app.rag.indexer.RagIndexer.ingest_resource
-    CC=13  in:0  out:22  total:22
+  services.orchestrator.app.api.commands._dispatch
+    CC=4  in:14  out:9  total:23
+  services.web.app.static.workspace.refreshWorkspace
+    CC=8  in:8  out:14  total:22
   services.orchestrator.app.api.rag.search
     CC=3  in:0  out:22  total:22
-  services.web.app.static.workspace.refreshWorkspace
-    CC=7  in:8  out:13  total:21
+  services.orchestrator.app.rag.indexer.RagIndexer.ingest_resource
+    CC=13  in:0  out:22  total:22
+  services.web.app.static.workspace.sendChat
+    CC=26  in:0  out:21  total:21
   services.orchestrator.app.application.command_bus.CommandBus._create_task
     CC=6  in:0  out:20  total:20
   services.orchestrator.app.api.access.upload_resource
     CC=4  in:0  out:19  total:19
+  services.web.app.static.workspace.formValues
+    CC=21  in:0  out:19  total:19
+  services.web.app.static.workspace.selectTicket
+    CC=5  in:7  out:11  total:18
+  services.orchestrator.app.observability.export.build_orchestrator_bundle
+    CC=11  in:1  out:17  total:18
 
 MODULES:
   agents.shell-agent.app.executor  [1 funcs]
@@ -539,14 +632,17 @@ MODULES:
   services.projector.app.projections.dispatcher  [2 funcs]
     _normalize_event  CC=7  out:9
     project_event  CC=1  out:9
-  services.projector.app.projections.incidents  [7 funcs]
+  services.projector.app.projections.incidents  [16 funcs]
     _checks_payload  CC=10  out:11
     _diagnostics_ok  CC=6  out:4
     _error_code  CC=4  out:3
-    _root_cause  CC=4  out:5
-    _upsert_rag_quality  CC=1  out:4
-    _upsert_service_health  CC=1  out:2
-    project_incidents  CC=23  out:51
+    _handle_diagnostics_completed  CC=4  out:9
+    _handle_diagnostics_started  CC=1  out:2
+    _handle_incident_classified  CC=1  out:5
+    _handle_incident_detected  CC=6  out:12
+    _handle_post_remediation_verification  CC=4  out:4
+    _handle_rag_request_failed  CC=2  out:6
+    _handle_remediation_finished  CC=2  out:7
   services.projector.app.projections.operational_feed  [3 funcs]
     _summary_for  CC=6  out:6
     _title_for  CC=11  out:8
@@ -560,6 +656,17 @@ MODULES:
     project_task_board  CC=9  out:15
   services.projector.app.projections.workflow_versions  [1 funcs]
     project_workflow_versions  CC=5  out:6
+  services.web.app.access_matrix  [12 funcs]
+    _default_agents  CC=5  out:7
+    _default_resources  CC=3  out:2
+    _empty_agent_resource  CC=3  out:0
+    _empty_human_agent  CC=3  out:0
+    _matrix_path  CC=2  out:4
+    _merge_bool_matrix  CC=7  out:5
+    _reindex_state  CC=12  out:16
+    agent_may_access_resource  CC=4  out:6
+    default_state  CC=1  out:5
+    human_may_use_agent  CC=4  out:6
   services.web.app.agent_workroom  [5 funcs]
     _extract_shell  CC=4  out:8
     _plan_steps  CC=4  out:7
@@ -570,24 +677,28 @@ MODULES:
     chat_message  CC=6  out:10
     get_ticket  CC=5  out:9
     list_tickets  CC=10  out:7
-  services.web.app.chat  [10 funcs]
+  services.web.app.chat  [36 funcs]
+    _answer_from_rag_payload  CC=6  out:3
     _append  CC=1  out:2
+    _append_file_list_errors  CC=2  out:3
+    _append_file_list_tip  CC=5  out:5
+    _append_rag_rows  CC=9  out:11
+    _append_resource_rows  CC=7  out:12
+    _append_session_files  CC=7  out:9
+    _ask_rag  CC=5  out:9
     _dedupe_rows_by_uri  CC=8  out:10
-    _format_history  CC=3  out:3
-    _orch  CC=2  out:2
-    create_task  CC=7  out:8
-    fetch_file_inventory  CC=7  out:15
-    format_file_list_reply  CC=22  out:35
-    get_history  CC=1  out:2
-    handle_message  CC=33  out:35
-    is_file_list_intent  CC=7  out:5
-  services.web.app.conductor  [6 funcs]
+    _default_chat_reply  CC=1  out:0
+  services.web.app.conductor  [18 funcs]
+    _append_turn  CC=3  out:4
+    _call_nlp2dsl  CC=2  out:2
+    _closed_turn  CC=2  out:2
     _extract_shell  CC=3  out:5
     _fallback_turn  CC=4  out:7
+    _in_progress_turn  CC=3  out:4
     _local_clarify  CC=3  out:3
-    _mullm_file_list_turn  CC=1  out:5
-    _nlp2dsl_turn  CC=23  out:35
-    handle_turn  CC=7  out:8
+    _mullm_file_list_turn  CC=1  out:8
+    _nlp2dsl_turn  CC=7  out:8
+    _nlp_output_base  CC=1  out:0
   services.web.app.nlp2dsl_bridge  [6 funcs]
     _post_json  CC=4  out:6
     backend_candidates  CC=4  out:6
@@ -595,9 +706,21 @@ MODULES:
     chat_message  CC=1  out:1
     chat_start  CC=1  out:1
     health  CC=4  out:3
-  services.web.app.resource_areas  [2 funcs]
+  services.web.app.resource_areas  [3 funcs]
+    agent_may_access  CC=9  out:4
     list_areas  CC=2  out:1
     list_groups  CC=1  out:0
+  services.web.app.static.access  [13 funcs]
+    api  CC=5  out:3
+    checked  CC=2  out:1
+    escapeHtml  CC=1  out:2
+    id  CC=2  out:2
+    load  CC=3  out:4
+    renderAgentResourceMatrix  CC=11  out:4
+    renderAll  CC=1  out:2
+    renderHumanAgentMatrix  CC=11  out:4
+    res  CC=1  out:1
+    resetAll  CC=1  out:3
   services.web.app.static.app  [7 funcs]
     appendMessage  CC=2  out:2
     ensureSession  CC=3  out:4
@@ -617,33 +740,33 @@ MODULES:
     renderLedger  CC=7  out:3
     renderState  CC=3  out:2
     renderThread  CC=7  out:3
-  services.web.app.static.workspace  [50 funcs]
+  services.web.app.static.workspace  [57 funcs]
     api  CC=6  out:4
     appendMsg  CC=1  out:1
     appendMsgTo  CC=6  out:2
     archiveTicket  CC=2  out:5
+    cacheArtifactFull  CC=3  out:1
+    clearArtifactPreview  CC=8  out:3
     collectClarifyValues  CC=4  out:4
     color  CC=1  out:1
     confirmTicket  CC=1  out:6
     copyChatToClipboard  CC=10  out:11
-    copyLogsToClipboard  CC=2  out:5
-    copyText  CC=2  out:7
   services.web.app.tickets  [4 funcs]
     enrich_task  CC=4  out:6
     status_meta  CC=3  out:2
     ticket_uri  CC=1  out:0
     ticket_web_path  CC=1  out:0
-  services.web.app.workspace  [17 funcs]
+  services.web.app.workspace  [22 funcs]
+    _artifact_title  CC=6  out:4
     _extract_shell_command  CC=4  out:8
     _extract_ticket  CC=2  out:2
     _format_export_text  CC=47  out:97
     archive_task  CC=2  out:3
+    artifact_summaries  CC=2  out:11
     attach_context  CC=12  out:7
     build_task_payload  CC=4  out:7
     create_and_run  CC=5  out:9
     create_task_from_draft  CC=4  out:5
-    create_task_immediate  CC=3  out:7
-    export_debug_logs  CC=15  out:26
   services.web.src.main  [2 funcs]
     createTask  CC=4  out:9
     refresh  CC=7  out:8
@@ -673,32 +796,32 @@ EDGES:
   services.projector.app.projections.dispatcher.project_event → services.projector.app.projections.plugin_catalog.project_plugin_catalog
   services.projector.app.projections.dispatcher.project_event → services.projector.app.projections.resource_registry.project_resource_registry
   services.projector.app.projections.dispatcher.project_event → services.projector.app.projections.incidents.project_incidents
-  services.projector.app.projections.incidents.project_incidents → services.projector.app.projections.incidents._checks_payload
-  services.projector.app.projections.incidents.project_incidents → services.projector.app.projections.incidents._diagnostics_ok
-  services.projector.app.projections.incidents.project_incidents → services.projector.app.projections.incidents._upsert_rag_quality
-  services.projector.app.projections.incidents.project_incidents → services.projector.app.projections.incidents._upsert_service_health
+  services.projector.app.projections.incidents._handle_rag_request_failed → services.projector.app.projections.incidents._upsert_rag_quality
+  services.projector.app.projections.incidents._handle_rag_request_failed → services.projector.app.projections.incidents._upsert_service_health
+  services.projector.app.projections.incidents._handle_rag_request_failed → services.projector.app.projections.incidents._error_code
+  services.projector.app.projections.incidents._handle_incident_detected → services.projector.app.projections.incidents._error_code
+  services.projector.app.projections.incidents._handle_incident_classified → services.projector.app.projections.incidents._error_code
+  services.projector.app.projections.incidents._handle_diagnostics_started → services.projector.app.projections.incidents._update_incident_status
+  services.projector.app.projections.incidents._handle_diagnostics_completed → services.projector.app.projections.incidents._checks_payload
+  services.projector.app.projections.incidents._handle_diagnostics_completed → services.projector.app.projections.incidents._diagnostics_ok
+  services.projector.app.projections.incidents._handle_diagnostics_completed → services.projector.app.projections.incidents._upsert_service_health
+  services.projector.app.projections.incidents._handle_diagnostics_completed → services.projector.app.projections.incidents._root_cause
+  services.projector.app.projections.incidents._handle_diagnostics_completed → services.projector.app.projections.incidents._error_code
+  services.projector.app.projections.incidents._handle_remediation_started → services.projector.app.projections.incidents._update_incident_status
+  services.projector.app.projections.incidents._handle_remediation_finished → services.projector.app.projections.incidents._update_incident_status
+  services.projector.app.projections.incidents._handle_post_remediation_verification → services.projector.app.projections.incidents._update_incident_status
+  services.projector.app.projections.incidents._handle_post_remediation_verification → services.projector.app.projections.incidents._upsert_service_health
   services.projector.app.projections.incidents._upsert_rag_quality → services.projector.app.projections.incidents._error_code
   services.projector.app.projections.incidents._root_cause → services.projector.app.projections.incidents._error_code
-  services.web.app.workspace.get_or_create → services.web.app.workspace.new_session
-  services.web.app.workspace.workspace_state → services.web.app.workspace.get_or_create
-  services.web.app.workspace.attach_context → services.web.app.workspace.get_or_create
-  services.web.app.workspace.build_task_payload → services.web.app.workspace.get_or_create
-  services.web.app.workspace.build_task_payload → services.web.app.workspace._extract_shell_command
-  services.web.app.workspace.build_task_payload → services.web.app.workspace._extract_ticket
-  services.web.app.workspace.propose_task_draft → services.web.app.workspace.build_task_payload
-  services.web.app.workspace.create_task_immediate → services.web.app.workspace.get_or_create
-  services.web.app.workspace.create_task_immediate → services.web.app.workspace.link_ticket
-  services.web.app.workspace.handle_chat_message → services.web.app.workspace.get_or_create
-  services.web.app.workspace.handle_chat_message → services.web.app.workspace._extract_ticket
-  services.web.app.workspace.handle_chat_message → services.web.app.workspace.attach_context
-  services.web.app.workspace.handle_chat_message → services.web.app.workspace._extract_shell_command
-  services.web.app.workspace.handle_chat_message → services.web.app.workspace.build_task_payload
-  services.web.app.workspace.create_task_from_draft → services.web.app.workspace.create_task_immediate
-  services.web.app.workspace.create_task_from_draft → services.web.app.workspace.get_or_create
-  services.web.app.workspace.create_and_run → services.web.app.workspace.create_task_immediate
-  services.web.app.workspace.create_and_run → services.web.app.workspace.get_or_create
-  services.web.app.workspace.export_debug_logs → services.web.app.workspace.get_or_create
-  services.web.app.workspace.export_debug_logs → services.web.app.workspace._format_export_text
+  services.web.app.agent_workroom._plan_steps → services.web.app.agent_workroom._extract_shell
+  services.web.app.agent_workroom.run_workroom → services.web.app.agent_workroom.get_workroom
+  services.web.app.agent_workroom.run_workroom → services.web.app.agent_workroom._plan_steps
+  services.web.app.agent_workroom.workroom_catalog → services.web.app.resource_areas.list_areas
+  services.web.app.agent_workroom.workroom_catalog → services.web.app.resource_areas.list_groups
+  services.web.app.tickets.enrich_task → services.web.app.tickets.status_meta
+  services.web.app.tickets.enrich_task → services.web.app.tickets.ticket_uri
+  services.web.app.tickets.enrich_task → services.web.app.tickets.ticket_web_path
+  services.web.app.nlp2dsl_bridge.backend_url → services.web.app.nlp2dsl_bridge.backend_candidates
 ```
 
 ## Test Contracts
@@ -727,51 +850,51 @@ EDGES:
 
 ```toon markpact:analysis path=project/calls.toon.yaml
 # code2llm call graph | /home/tom/github/wronai/mullm
-# generated in 0.14s
-# nodes: 255 | edges: 313 | modules: 52
-# CC̄=3.8
+# generated in 0.18s
+# nodes: 340 | edges: 423 | modules: 54
+# CC̄=3.6
 
 HUBS[20]:
   services.web.app.workspace._format_export_text
     CC=47  in:1  out:97  total:98
   services.orchestrator.app.observability.export.format_logs_text
     CC=29  in:1  out:66  total:67
-  services.projector.app.projections.incidents.project_incidents
-    CC=23  in:1  out:51  total:52
   services.web.app.agent_workroom.run_workroom
     CC=22  in:0  out:45  total:45
   services.web.app.workspace.handle_chat_message
-    CC=21  in:0  out:40  total:40
+    CC=22  in:0  out:43  total:43
   services.orchestrator.app.observability.rag_pipeline.RagPipeline.ask
     CC=10  in:0  out:36  total:36
-  services.web.app.chat.format_file_list_reply
-    CC=22  in:1  out:35  total:36
-  services.web.app.conductor._nlp2dsl_turn
-    CC=23  in:1  out:35  total:36
-  services.web.app.chat.handle_message
-    CC=33  in:0  out:35  total:35
   services.orchestrator.app.observability.incidents._event_payload
     CC=19  in:1  out:28  total:29
   services.web.app.workspace.export_debug_logs
     CC=15  in:0  out:26  total:26
   services.web.app.static.workspace.api
-    CC=6  in:20  out:4  total:24
+    CC=6  in:21  out:4  total:25
   services.orchestrator.app.observability.incidents.IncidentRecorder.record
     CC=16  in:0  out:23  total:23
-  services.orchestrator.app.api.commands._dispatch
-    CC=4  in:14  out:9  total:23
   services.orchestrator.app.observability.rag_diagnostics.RagDiagnostics.run
     CC=12  in:0  out:23  total:23
-  services.orchestrator.app.rag.indexer.RagIndexer.ingest_resource
-    CC=13  in:0  out:22  total:22
+  services.orchestrator.app.api.commands._dispatch
+    CC=4  in:14  out:9  total:23
+  services.web.app.static.workspace.refreshWorkspace
+    CC=8  in:8  out:14  total:22
   services.orchestrator.app.api.rag.search
     CC=3  in:0  out:22  total:22
-  services.web.app.static.workspace.refreshWorkspace
-    CC=7  in:8  out:13  total:21
+  services.orchestrator.app.rag.indexer.RagIndexer.ingest_resource
+    CC=13  in:0  out:22  total:22
+  services.web.app.static.workspace.sendChat
+    CC=26  in:0  out:21  total:21
   services.orchestrator.app.application.command_bus.CommandBus._create_task
     CC=6  in:0  out:20  total:20
   services.orchestrator.app.api.access.upload_resource
     CC=4  in:0  out:19  total:19
+  services.web.app.static.workspace.formValues
+    CC=21  in:0  out:19  total:19
+  services.web.app.static.workspace.selectTicket
+    CC=5  in:7  out:11  total:18
+  services.orchestrator.app.observability.export.build_orchestrator_bundle
+    CC=11  in:1  out:17  total:18
 
 MODULES:
   agents.shell-agent.app.executor  [1 funcs]
@@ -914,14 +1037,17 @@ MODULES:
   services.projector.app.projections.dispatcher  [2 funcs]
     _normalize_event  CC=7  out:9
     project_event  CC=1  out:9
-  services.projector.app.projections.incidents  [7 funcs]
+  services.projector.app.projections.incidents  [16 funcs]
     _checks_payload  CC=10  out:11
     _diagnostics_ok  CC=6  out:4
     _error_code  CC=4  out:3
-    _root_cause  CC=4  out:5
-    _upsert_rag_quality  CC=1  out:4
-    _upsert_service_health  CC=1  out:2
-    project_incidents  CC=23  out:51
+    _handle_diagnostics_completed  CC=4  out:9
+    _handle_diagnostics_started  CC=1  out:2
+    _handle_incident_classified  CC=1  out:5
+    _handle_incident_detected  CC=6  out:12
+    _handle_post_remediation_verification  CC=4  out:4
+    _handle_rag_request_failed  CC=2  out:6
+    _handle_remediation_finished  CC=2  out:7
   services.projector.app.projections.operational_feed  [3 funcs]
     _summary_for  CC=6  out:6
     _title_for  CC=11  out:8
@@ -935,6 +1061,17 @@ MODULES:
     project_task_board  CC=9  out:15
   services.projector.app.projections.workflow_versions  [1 funcs]
     project_workflow_versions  CC=5  out:6
+  services.web.app.access_matrix  [12 funcs]
+    _default_agents  CC=5  out:7
+    _default_resources  CC=3  out:2
+    _empty_agent_resource  CC=3  out:0
+    _empty_human_agent  CC=3  out:0
+    _matrix_path  CC=2  out:4
+    _merge_bool_matrix  CC=7  out:5
+    _reindex_state  CC=12  out:16
+    agent_may_access_resource  CC=4  out:6
+    default_state  CC=1  out:5
+    human_may_use_agent  CC=4  out:6
   services.web.app.agent_workroom  [5 funcs]
     _extract_shell  CC=4  out:8
     _plan_steps  CC=4  out:7
@@ -945,24 +1082,28 @@ MODULES:
     chat_message  CC=6  out:10
     get_ticket  CC=5  out:9
     list_tickets  CC=10  out:7
-  services.web.app.chat  [10 funcs]
+  services.web.app.chat  [36 funcs]
+    _answer_from_rag_payload  CC=6  out:3
     _append  CC=1  out:2
+    _append_file_list_errors  CC=2  out:3
+    _append_file_list_tip  CC=5  out:5
+    _append_rag_rows  CC=9  out:11
+    _append_resource_rows  CC=7  out:12
+    _append_session_files  CC=7  out:9
+    _ask_rag  CC=5  out:9
     _dedupe_rows_by_uri  CC=8  out:10
-    _format_history  CC=3  out:3
-    _orch  CC=2  out:2
-    create_task  CC=7  out:8
-    fetch_file_inventory  CC=7  out:15
-    format_file_list_reply  CC=22  out:35
-    get_history  CC=1  out:2
-    handle_message  CC=33  out:35
-    is_file_list_intent  CC=7  out:5
-  services.web.app.conductor  [6 funcs]
+    _default_chat_reply  CC=1  out:0
+  services.web.app.conductor  [18 funcs]
+    _append_turn  CC=3  out:4
+    _call_nlp2dsl  CC=2  out:2
+    _closed_turn  CC=2  out:2
     _extract_shell  CC=3  out:5
     _fallback_turn  CC=4  out:7
+    _in_progress_turn  CC=3  out:4
     _local_clarify  CC=3  out:3
-    _mullm_file_list_turn  CC=1  out:5
-    _nlp2dsl_turn  CC=23  out:35
-    handle_turn  CC=7  out:8
+    _mullm_file_list_turn  CC=1  out:8
+    _nlp2dsl_turn  CC=7  out:8
+    _nlp_output_base  CC=1  out:0
   services.web.app.nlp2dsl_bridge  [6 funcs]
     _post_json  CC=4  out:6
     backend_candidates  CC=4  out:6
@@ -970,9 +1111,21 @@ MODULES:
     chat_message  CC=1  out:1
     chat_start  CC=1  out:1
     health  CC=4  out:3
-  services.web.app.resource_areas  [2 funcs]
+  services.web.app.resource_areas  [3 funcs]
+    agent_may_access  CC=9  out:4
     list_areas  CC=2  out:1
     list_groups  CC=1  out:0
+  services.web.app.static.access  [13 funcs]
+    api  CC=5  out:3
+    checked  CC=2  out:1
+    escapeHtml  CC=1  out:2
+    id  CC=2  out:2
+    load  CC=3  out:4
+    renderAgentResourceMatrix  CC=11  out:4
+    renderAll  CC=1  out:2
+    renderHumanAgentMatrix  CC=11  out:4
+    res  CC=1  out:1
+    resetAll  CC=1  out:3
   services.web.app.static.app  [7 funcs]
     appendMessage  CC=2  out:2
     ensureSession  CC=3  out:4
@@ -992,33 +1145,33 @@ MODULES:
     renderLedger  CC=7  out:3
     renderState  CC=3  out:2
     renderThread  CC=7  out:3
-  services.web.app.static.workspace  [50 funcs]
+  services.web.app.static.workspace  [57 funcs]
     api  CC=6  out:4
     appendMsg  CC=1  out:1
     appendMsgTo  CC=6  out:2
     archiveTicket  CC=2  out:5
+    cacheArtifactFull  CC=3  out:1
+    clearArtifactPreview  CC=8  out:3
     collectClarifyValues  CC=4  out:4
     color  CC=1  out:1
     confirmTicket  CC=1  out:6
     copyChatToClipboard  CC=10  out:11
-    copyLogsToClipboard  CC=2  out:5
-    copyText  CC=2  out:7
   services.web.app.tickets  [4 funcs]
     enrich_task  CC=4  out:6
     status_meta  CC=3  out:2
     ticket_uri  CC=1  out:0
     ticket_web_path  CC=1  out:0
-  services.web.app.workspace  [17 funcs]
+  services.web.app.workspace  [22 funcs]
+    _artifact_title  CC=6  out:4
     _extract_shell_command  CC=4  out:8
     _extract_ticket  CC=2  out:2
     _format_export_text  CC=47  out:97
     archive_task  CC=2  out:3
+    artifact_summaries  CC=2  out:11
     attach_context  CC=12  out:7
     build_task_payload  CC=4  out:7
     create_and_run  CC=5  out:9
     create_task_from_draft  CC=4  out:5
-    create_task_immediate  CC=3  out:7
-    export_debug_logs  CC=15  out:26
   services.web.src.main  [2 funcs]
     createTask  CC=4  out:9
     refresh  CC=7  out:8
@@ -1048,55 +1201,45 @@ EDGES:
   services.projector.app.projections.dispatcher.project_event → services.projector.app.projections.plugin_catalog.project_plugin_catalog
   services.projector.app.projections.dispatcher.project_event → services.projector.app.projections.resource_registry.project_resource_registry
   services.projector.app.projections.dispatcher.project_event → services.projector.app.projections.incidents.project_incidents
-  services.projector.app.projections.incidents.project_incidents → services.projector.app.projections.incidents._checks_payload
-  services.projector.app.projections.incidents.project_incidents → services.projector.app.projections.incidents._diagnostics_ok
-  services.projector.app.projections.incidents.project_incidents → services.projector.app.projections.incidents._upsert_rag_quality
-  services.projector.app.projections.incidents.project_incidents → services.projector.app.projections.incidents._upsert_service_health
+  services.projector.app.projections.incidents._handle_rag_request_failed → services.projector.app.projections.incidents._upsert_rag_quality
+  services.projector.app.projections.incidents._handle_rag_request_failed → services.projector.app.projections.incidents._upsert_service_health
+  services.projector.app.projections.incidents._handle_rag_request_failed → services.projector.app.projections.incidents._error_code
+  services.projector.app.projections.incidents._handle_incident_detected → services.projector.app.projections.incidents._error_code
+  services.projector.app.projections.incidents._handle_incident_classified → services.projector.app.projections.incidents._error_code
+  services.projector.app.projections.incidents._handle_diagnostics_started → services.projector.app.projections.incidents._update_incident_status
+  services.projector.app.projections.incidents._handle_diagnostics_completed → services.projector.app.projections.incidents._checks_payload
+  services.projector.app.projections.incidents._handle_diagnostics_completed → services.projector.app.projections.incidents._diagnostics_ok
+  services.projector.app.projections.incidents._handle_diagnostics_completed → services.projector.app.projections.incidents._upsert_service_health
+  services.projector.app.projections.incidents._handle_diagnostics_completed → services.projector.app.projections.incidents._root_cause
+  services.projector.app.projections.incidents._handle_diagnostics_completed → services.projector.app.projections.incidents._error_code
+  services.projector.app.projections.incidents._handle_remediation_started → services.projector.app.projections.incidents._update_incident_status
+  services.projector.app.projections.incidents._handle_remediation_finished → services.projector.app.projections.incidents._update_incident_status
+  services.projector.app.projections.incidents._handle_post_remediation_verification → services.projector.app.projections.incidents._update_incident_status
+  services.projector.app.projections.incidents._handle_post_remediation_verification → services.projector.app.projections.incidents._upsert_service_health
   services.projector.app.projections.incidents._upsert_rag_quality → services.projector.app.projections.incidents._error_code
   services.projector.app.projections.incidents._root_cause → services.projector.app.projections.incidents._error_code
-  services.web.app.workspace.get_or_create → services.web.app.workspace.new_session
-  services.web.app.workspace.workspace_state → services.web.app.workspace.get_or_create
-  services.web.app.workspace.attach_context → services.web.app.workspace.get_or_create
-  services.web.app.workspace.build_task_payload → services.web.app.workspace.get_or_create
-  services.web.app.workspace.build_task_payload → services.web.app.workspace._extract_shell_command
-  services.web.app.workspace.build_task_payload → services.web.app.workspace._extract_ticket
-  services.web.app.workspace.propose_task_draft → services.web.app.workspace.build_task_payload
-  services.web.app.workspace.create_task_immediate → services.web.app.workspace.get_or_create
-  services.web.app.workspace.create_task_immediate → services.web.app.workspace.link_ticket
-  services.web.app.workspace.handle_chat_message → services.web.app.workspace.get_or_create
-  services.web.app.workspace.handle_chat_message → services.web.app.workspace._extract_ticket
-  services.web.app.workspace.handle_chat_message → services.web.app.workspace.attach_context
-  services.web.app.workspace.handle_chat_message → services.web.app.workspace._extract_shell_command
-  services.web.app.workspace.handle_chat_message → services.web.app.workspace.build_task_payload
-  services.web.app.workspace.create_task_from_draft → services.web.app.workspace.create_task_immediate
-  services.web.app.workspace.create_task_from_draft → services.web.app.workspace.get_or_create
-  services.web.app.workspace.create_and_run → services.web.app.workspace.create_task_immediate
-  services.web.app.workspace.create_and_run → services.web.app.workspace.get_or_create
-  services.web.app.workspace.export_debug_logs → services.web.app.workspace.get_or_create
-  services.web.app.workspace.export_debug_logs → services.web.app.workspace._format_export_text
+  services.web.app.agent_workroom._plan_steps → services.web.app.agent_workroom._extract_shell
+  services.web.app.agent_workroom.run_workroom → services.web.app.agent_workroom.get_workroom
+  services.web.app.agent_workroom.run_workroom → services.web.app.agent_workroom._plan_steps
+  services.web.app.agent_workroom.workroom_catalog → services.web.app.resource_areas.list_areas
+  services.web.app.agent_workroom.workroom_catalog → services.web.app.resource_areas.list_groups
+  services.web.app.tickets.enrich_task → services.web.app.tickets.status_meta
+  services.web.app.tickets.enrich_task → services.web.app.tickets.ticket_uri
+  services.web.app.tickets.enrich_task → services.web.app.tickets.ticket_web_path
+  services.web.app.nlp2dsl_bridge.backend_url → services.web.app.nlp2dsl_bridge.backend_candidates
 ```
 
 ### Code Analysis (`project/analysis.toon.yaml`)
 
 ```toon markpact:analysis path=project/analysis.toon.yaml
-# code2llm | 134f 18312L | python:83,md:16,json:11,txt:6,yaml:5,javascript:4,shell:3,ini:1,yml:1 | 2026-06-04
+# code2llm | 139f 19830L | python:85,md:17,json:11,txt:6,yaml:5,javascript:5,shell:3,yml:1,ini:1 | 2026-06-04
 # generated in 0.03s
-# CC̅=3.8 | critical:24/571 | dups:0 | cycles:0
+# CC̅=3.6 | critical:22/698 | dups:0 | cycles:0
 
 HEALTH[20]:
-  🔴 GOD   services/orchestrator/app/domain/events/__init__.py = 1045L, 42 classes, 3m, max CC=7
-  🟡 CC    project_incidents CC=23 (limit:15)
-  🟡 CC    handle_chat_message CC=21 (limit:15)
-  🟡 CC    export_debug_logs CC=15 (limit:15)
-  🟡 CC    _format_export_text CC=47 (limit:15)
-  🟡 CC    format_file_list_reply CC=22 (limit:15)
-  🟡 CC    _format_incident CC=15 (limit:15)
-  🟡 CC    handle_message CC=33 (limit:15)
-  🟡 CC    renderTicketDetail CC=24 (limit:15)
-  🟡 CC    renderContext CC=16 (limit:15)
-  🟡 CC    sendChat CC=23 (limit:15)
-  🟡 CC    formValues CC=18 (limit:15)
-  🟡 CC    createFromDraft CC=15 (limit:15)
+  🔴 GOD   services/orchestrator/app/domain/events/__init__.py = 811L, 32 classes, 3m, max CC=7
+  🔴 GOD   services/web/app/api_routes.py = 528L, 11 classes, 31m, max CC=19
+  🟡 CC    run_workroom CC=22 (limit:15)
   🟡 CC    text CC=16 (limit:15)
   🟡 CC    ORCHESTRATOR_URL CC=15 (limit:15)
   🟡 CC    PROJECTOR_URL CC=15 (limit:15)
@@ -1104,12 +1247,23 @@ HEALTH[20]:
   🟡 CC    handle CC=29 (limit:15)
   🟡 CC    format_logs_text CC=29 (limit:15)
   🟡 CC    classify_rag_failure CC=15 (limit:15)
+  🟡 CC    record CC=16 (limit:15)
+  🟡 CC    _event_payload CC=19 (limit:15)
+  🟡 CC    confirm_ticket CC=19 (limit:15)
+  🟡 CC    handle_chat_message CC=22 (limit:15)
+  🟡 CC    export_debug_logs CC=15 (limit:15)
+  🟡 CC    _format_export_text CC=47 (limit:15)
+  🟡 CC    filter_file_inventory CC=29 (limit:15)
+  🟡 CC    _format_incident CC=15 (limit:15)
+  🟡 CC    renderTicketDetail CC=24 (limit:15)
+  🟡 CC    renderContext CC=16 (limit:15)
 
-REFACTOR[2]:
+REFACTOR[3]:
   1. split services/orchestrator/app/domain/events/__init__.py  (god module)
-  2. split 19 high-CC methods  (CC>15)
+  2. split services/web/app/api_routes.py  (god module)
+  3. split 18 high-CC methods  (CC>15)
 
-PIPELINES[370]:
+PIPELINES[404]:
   [1] Src [lifespan]: lifespan → project_event → _normalize_event
       PURITY: 100% pure
   [2] Src [health_check]: health_check
@@ -1148,98 +1302,101 @@ PIPELINES[370]:
       PURITY: 100% pure
   [19] Src [_run_schema_migrations]: _run_schema_migrations
       PURITY: 100% pure
-  [20] Src [add_event]: add_event
+  [20] Src [_handle_rag_request_failed]: _handle_rag_request_failed → _upsert_rag_quality → _error_code
       PURITY: 100% pure
-  [21] Src [get_session]: get_session
+  [21] Src [_handle_incident_detected]: _handle_incident_detected → _error_code
       PURITY: 100% pure
-  [22] Src [workspace_state]: workspace_state → get_or_create → new_session
+  [22] Src [_handle_incident_classified]: _handle_incident_classified → _error_code
       PURITY: 100% pure
-  [23] Src [propose_task_draft]: propose_task_draft → build_task_payload → get_or_create → new_session
+  [23] Src [_handle_diagnostics_started]: _handle_diagnostics_started → _update_incident_status
       PURITY: 100% pure
-  [24] Src [handle_chat_message]: handle_chat_message → get_or_create → new_session
+  [24] Src [_handle_diagnostics_completed]: _handle_diagnostics_completed → _checks_payload
       PURITY: 100% pure
-  [25] Src [create_task_from_draft]: create_task_from_draft → create_task_immediate → get_or_create → new_session
+  [25] Src [_handle_remediation_started]: _handle_remediation_started → _update_incident_status
       PURITY: 100% pure
-  [26] Src [create_and_run]: create_and_run → create_task_immediate → get_or_create → new_session
+  [26] Src [_handle_remediation_finished]: _handle_remediation_finished → _update_incident_status
       PURITY: 100% pure
-  [27] Src [export_debug_logs]: export_debug_logs → get_or_create → new_session
+  [27] Src [_handle_post_remediation_verification]: _handle_post_remediation_verification → _update_incident_status
       PURITY: 100% pure
-  [28] Src [archive_task]: archive_task → get_or_create → new_session
+  [28] Src [add_ledger]: add_ledger
       PURITY: 100% pure
-  [29] Src [fetch_live_board]: fetch_live_board → items → toast
+  [29] Src [agent_say]: agent_say
       PURITY: 100% pure
-  [30] Src [backend_url]: backend_url → backend_candidates
+  [30] Src [to_dict]: to_dict
       PURITY: 100% pure
-  [31] Src [health]: health → backend_candidates
+  [31] Src [create_workroom]: create_workroom
       PURITY: 100% pure
-  [32] Src [chat_start]: chat_start → _post_json → backend_candidates
+  [32] Src [run_workroom]: run_workroom → get_workroom
       PURITY: 100% pure
-  [33] Src [chat_message]: chat_message → _post_json → backend_candidates
+  [33] Src [workroom_catalog]: workroom_catalog → list_areas
       PURITY: 100% pure
-  [34] Src [form_to_prompt]: form_to_prompt
+  [34] Src [backend_url]: backend_url → backend_candidates
       PURITY: 100% pure
-  [35] Src [primary_action]: primary_action
+  [35] Src [health]: health → backend_candidates
       PURITY: 100% pure
-  [36] Src [step_config]: step_config
+  [36] Src [chat_start]: chat_start → _post_json → backend_candidates
       PURITY: 100% pure
-  [37] Src [new_session_id]: new_session_id
+  [37] Src [chat_message]: chat_message → _post_json → backend_candidates
       PURITY: 100% pure
-  [38] Src [handle_message]: handle_message → _append
+  [38] Src [form_to_prompt]: form_to_prompt
       PURITY: 100% pure
-  [39] Src [create_task]: create_task → _orch
+  [39] Src [primary_action]: primary_action
       PURITY: 100% pure
-  [40] Src [r]: r
+  [40] Src [step_config]: step_config
       PURITY: 100% pure
-  [41] Src [state]: state → api
+  [41] Src [workroomId]: workroomId
       PURITY: 100% pure
-  [42] Src [t]: t → renderTicketDetail → escapeHtml
+  [42] Src [userSessionId]: userSessionId
       PURITY: 100% pure
-  [43] Src [color]: color → escapeHtml
+  [43] Src [r]: r
       PURITY: 100% pure
-  [44] Src [initRouting]: initRouting → selectTicket → ticketWebUrl
+  [44] Src [st]: st → escapeHtml
       PURITY: 100% pure
-  [45] Src [deep]: deep → selectTicket → ticketWebUrl
+  [45] Src [runAgents]: runAgents → ensureWorkroom → api
       PURITY: 100% pure
-  [46] Src [m2]: m2 → renderTicketDetail → escapeHtml
+  [46] Src [text]: text → ensureWorkroom → api
       PURITY: 100% pure
-  [47] Src [names]: names → escapeHtml
+  [47] Src [refresh]: refresh → loadAreas → api
       PURITY: 100% pure
-  [48] Src [fields]: fields → escapeHtml
+  [48] Src [sessionId]: sessionId
       PURITY: 100% pure
-  [49] Src [req]: req → escapeHtml
+  [49] Src [div]: div
       PURITY: 100% pure
-  [50] Src [fd]: fd
+  [50] Src [r]: r
       PURITY: 100% pure
 
 LAYERS:
-  services/                       CC̄=3.8    ←in:0  →out:0
-  │ !! __init__                  1045L  42C    3m  CC=7      ←0
+  services/                       CC̄=3.6    ←in:0  →out:0
   │ !! command_bus                982L  1C   41m  CC=29     ←0
-  │ !! workspace.js               669L  0C   71m  CC=24     ←3
-  │ !! workspace                  604L  2C   22m  CC=47     ←0
-  │ !! api_routes                 443L  10C   24m  CC=19     ←0
+  │ !! workspace.js               842L  0C   87m  CC=26     ←1
+  │ !! __init__                   811L  32C    3m  CC=7      ←0
+  │ !! workspace                  680L  2C   26m  CC=47     ←0
+  │ !! chat                       664L  0C   38m  CC=29     ←0
+  │ !! api_routes                 528L  11C   31m  CC=19     ←0
+  │ conductor                  462L  0C   18m  CC=7      ←2
   │ commands                   379L  14C   23m  CC=4      ←0
-  │ !! chat                       354L  0C   13m  CC=33     ←0
   │ !! agent_workroom             354L  2C   10m  CC=22     ←0
   │ main                       340L  0C   15m  CC=4      ←0
   │ !! incidents                  337L  2C   12m  CC=19     ←2
   │ pipeline                   321L  1C    8m  CC=14     ←0
-  │ !! incidents                  294L  0C    8m  CC=23     ←1
-  │ !! conductor                  283L  0C    6m  CC=23     ←2
+  │ incidents                  320L  0C   16m  CC=10     ←1
+  │ incidents                  254L  10C   20m  CC=1      ←0
   │ store                      240L  1C   12m  CC=10     ←0
   │ task                       231L  1C   15m  CC=11     ←0
+  │ access_matrix              205L  0C   13m  CC=12     ←1
   │ rag_diagnostics            204L  1C    8m  CC=12     ←0
   │ !! main.jsx                   203L  0C   14m  CC=15     ←0
   │ main                       195L  0C    5m  CC=6      ←0
   │ !! app.js                     193L  0C   19m  CC=16     ←0
   │ !! export                     190L  0C    2m  CC=29     ←1
+  │ workroom.js                186L  0C   17m  CC=11     ←1
   │ eventstore_esdb            186L  1C    8m  CC=4      ←0
-  │ workroom.js                186L  0C   17m  CC=11     ←0
   │ eventstore                 182L  2C    9m  CC=6      ←3
   │ queries                    180L  4C    6m  CC=10     ←0
+  │ resource_areas             157L  0C    3m  CC=9      ←1
+  │ access.js                  157L  0C   21m  CC=11     ←1
   │ evaluation                 146L  1C    4m  CC=13     ←0
   │ workflow                   144L  1C    9m  CC=3      ←0
-  │ resource_areas             144L  0C    3m  CC=7      ←1
   │ rag_pipeline               142L  1C    2m  CC=10     ←0
   │ rag                        142L  2C    6m  CC=3      ←0
   │ access                     136L  3C    8m  CC=4      ←0
@@ -1249,10 +1406,10 @@ LAYERS:
   │ openrouter                 111L  1C    6m  CC=9      ←1
   │ observability              108L  1C    5m  CC=3      ←0
   │ evolution                  104L  2C    5m  CC=4      ←0
+  │ main                       104L  0C    5m  CC=1      ←0
   │ policy_engine              103L  2C    5m  CC=14     ←0
   │ nlp2dsl_bridge             100L  0C    9m  CC=6      ←0
   │ resource                   100L  1C    6m  CC=3      ←0
-  │ main                        99L  0C    4m  CC=1      ←0
   │ plugin                      97L  2C    7m  CC=2      ←0
   │ approval                    97L  2C    6m  CC=2      ←0
   │ postgres                    92L  1C    7m  CC=5      ←0
@@ -1295,7 +1452,7 @@ LAYERS:
   │ __init__                    12L  0C    0m  CC=0.0    ←0
   │ Dockerfile                   7L  0C    0m  CC=0.0    ←0
   │ __init__                     6L  0C    0m  CC=0.0    ←0
-  │ requirements.txt             5L  0C    0m  CC=0.0    ←0
+  │ requirements.txt             6L  0C    0m  CC=0.0    ←0
   │ requirements.txt             5L  0C    0m  CC=0.0    ←0
   │ __init__                     4L  0C    0m  CC=0.0    ←0
   │ __init__                     3L  0C    0m  CC=0.0    ←0
@@ -1314,19 +1471,21 @@ LAYERS:
   ./                              CC̄=0.0    ←in:0  →out:0
   │ !! planfile.yaml             1319L  0C    0m  CC=0.0    ←0
   │ !! goal.yaml                  509L  0C    0m  CC=0.0    ←0
-  │ CHANGELOG.md               225L  0C    0m  CC=0.0    ←0
-  │ TODO.md                    214L  0C    0m  CC=0.0    ←0
-  │ README.md                  209L  0C    0m  CC=0.0    ←0
+  │ CHANGELOG.md               261L  0C    0m  CC=0.0    ←0
+  │ TODO.md                    227L  0C    0m  CC=0.0    ←0
+  │ README.md                  213L  0C    0m  CC=0.0    ←0
   │ docker-compose.yml         204L  0C    0m  CC=0.0    ←0
   │ prefact.yaml                94L  0C    0m  CC=0.0    ←0
+  │ Makefile                    89L  0C    0m  CC=0.0    ←0
   │ project.sh                  52L  0C    0m  CC=0.0    ←0
   │ pytest.ini                   6L  0C    0m  CC=0.0    ←0
   │ requirements-dev.txt         5L  0C    0m  CC=0.0    ←0
   │ tree.sh                      1L  0C    0m  CC=0.0    ←0
   │
   docs/                           CC̄=0.0    ←in:0  →out:0
-  │ !! README.md                  776L  0C    0m  CC=0.0    ←0
+  │ !! README.md                  826L  0C    0m  CC=0.0    ←0
   │ roadmap-90d.md              83L  0C    0m  CC=0.0    ←0
+  │ multi-agent-workroom.md     76L  0C    0m  CC=0.0    ←0
   │ observability.md            50L  0C    0m  CC=0.0    ←0
   │ architecture.md             46L  0C    0m  CC=0.0    ←0
   │ workspace-conductor.md      43L  0C    0m  CC=0.0    ←0
@@ -1381,26 +1540,26 @@ EXTERNAL:
 ### Duplication (`project/duplication.toon.yaml`)
 
 ```toon markpact:analysis path=project/duplication.toon.yaml
-# redup/duplication | 16 groups | 90f 11521L | 2026-06-04
+# redup/duplication | 18 groups | 92f 12440L | 2026-06-04
 
 SUMMARY:
-  files_scanned: 90
-  total_lines:   11521
-  dup_groups:    16
-  dup_fragments: 48
-  saved_lines:   405
-  scan_ms:       2310
+  files_scanned: 92
+  total_lines:   12440
+  dup_groups:    18
+  dup_fragments: 52
+  saved_lines:   418
+  scan_ms:       2434
 
 HOTSPOTS[7] (files with most duplication):
-  services/projector/app/main.py  dup=217L  groups=2  frags=12  (1.9%)
-  services/orchestrator/app/api/commands.py  dup=105L  groups=1  frags=7  (0.9%)
+  services/projector/app/main.py  dup=217L  groups=2  frags=12  (1.7%)
+  services/orchestrator/app/api/commands.py  dup=105L  groups=1  frags=7  (0.8%)
   services/orchestrator/app/api/queries.py  dup=60L  groups=1  frags=3  (0.5%)
-  services/orchestrator/app/domain/events/__init__.py  dup=42L  groups=3  frags=7  (0.4%)
-  services/orchestrator/app/api/access.py  dup=30L  groups=3  frags=4  (0.3%)
+  services/orchestrator/app/api/access.py  dup=30L  groups=3  frags=4  (0.2%)
+  services/orchestrator/app/domain/events/__init__.py  dup=30L  groups=2  frags=5  (0.2%)
   services/orchestrator/app/api/evolution.py  dup=24L  groups=2  frags=3  (0.2%)
-  services/orchestrator/app/infrastructure/postgres.py  dup=22L  groups=5  frags=5  (0.2%)
+  services/web/app/access_matrix.py  dup=24L  groups=2  frags=4  (0.2%)
 
-DUPLICATES[16] (ranked by impact):
+DUPLICATES[18] (ranked by impact):
   [fc5b148fddf5c532] !! STRU  task_board  L=26 N=5 saved=104 sim=1.00
       services/projector/app/main.py:94-119  (task_board)
       services/projector/app/main.py:123-148  (agent_fleet)
@@ -1439,14 +1598,20 @@ DUPLICATES[16] (ranked by impact):
       services/orchestrator/app/api/access.py:77-87  (list_resources)
       services/orchestrator/app/api/evolution.py:75-80  (capability_registry)
   [32839d90ea67fb47]   EXAC  _projector  L=7 N=2 saved=7 sim=1.00
-      services/web/app/chat.py:27-33  (_projector)
+      services/web/app/chat.py:44-50  (_projector)
       services/web/app/workspace.py:19-25  (_projector)
+  [46f02a3f0dd7583d]   STRU  agent_may_access_resource  L=7 N=2 saved=7 sim=1.00
+      services/web/app/access_matrix.py:175-181  (agent_may_access_resource)
+      services/web/app/access_matrix.py:184-190  (human_may_use_agent)
   [1fb3398c7c69da23]   EXAC  data  L=6 N=2 saved=6 sim=1.00
-      services/orchestrator/app/domain/events/__init__.py:1018-1023  (data)
-      services/orchestrator/app/domain/events/__init__.py:1040-1045  (data)
+      services/orchestrator/app/domain/events/incidents.py:227-232  (data)
+      services/orchestrator/app/domain/events/incidents.py:249-254  (data)
   [8d49c56953675bd9]   STRU  data  L=6 N=2 saved=6 sim=1.00
       services/orchestrator/app/domain/events/__init__.py:347-352  (data)
       services/orchestrator/app/domain/events/__init__.py:414-419  (data)
+  [89dfe849b85b91ed]   STRU  _empty_agent_resource  L=6 N=2 saved=6 sim=1.00
+      services/web/app/access_matrix.py:61-66  (_empty_agent_resource)
+      services/web/app/access_matrix.py:69-72  (_empty_human_agent)
   [0344e427af6677d5]   STRU  probe_uri  L=5 N=2 saved=5 sim=1.00
       services/orchestrator/app/api/access.py:61-65  (probe_uri)
       services/orchestrator/app/api/access.py:69-73  (fetch_uri)
@@ -1466,7 +1631,7 @@ DUPLICATES[16] (ranked by impact):
       services/orchestrator/app/infrastructure/postgres.py:46-48  (__init__)
       services/projector/app/db.py:18-20  (__init__)
 
-REFACTOR[16] (ranked by priority):
+REFACTOR[18] (ranked by priority):
   [1] ○ extract_function   → services/projector/app/utils/task_board.py
       WHY: 5 occurrences of 26-line block across 1 files — saves 104 lines
       FILES: services/projector/app/main.py
@@ -1491,32 +1656,38 @@ REFACTOR[16] (ranked by priority):
   [8] ○ extract_function   → services/web/app/utils/_projector.py
       WHY: 2 occurrences of 7-line block across 2 files — saves 7 lines
       FILES: services/web/app/chat.py, services/web/app/workspace.py
-  [9] ○ extract_function   → services/orchestrator/app/domain/events/utils/data.py
-      WHY: 2 occurrences of 6-line block across 1 files — saves 6 lines
-      FILES: services/orchestrator/app/domain/events/__init__.py
+  [9] ○ extract_function   → services/web/app/utils/agent_may_access_resource.py
+      WHY: 2 occurrences of 7-line block across 1 files — saves 7 lines
+      FILES: services/web/app/access_matrix.py
   [10] ○ extract_function   → services/orchestrator/app/domain/events/utils/data.py
       WHY: 2 occurrences of 6-line block across 1 files — saves 6 lines
+      FILES: services/orchestrator/app/domain/events/incidents.py
+  [11] ○ extract_function   → services/orchestrator/app/domain/events/utils/data.py
+      WHY: 2 occurrences of 6-line block across 1 files — saves 6 lines
       FILES: services/orchestrator/app/domain/events/__init__.py
-  [11] ○ extract_function   → services/orchestrator/app/api/utils/probe_uri.py
+  [12] ○ extract_function   → services/web/app/utils/_empty_agent_resource.py
+      WHY: 2 occurrences of 6-line block across 1 files — saves 6 lines
+      FILES: services/web/app/access_matrix.py
+  [13] ○ extract_function   → services/orchestrator/app/api/utils/probe_uri.py
       WHY: 2 occurrences of 5-line block across 1 files — saves 5 lines
       FILES: services/orchestrator/app/api/access.py
-  [12] ○ extract_function   → services/utils/connect.py
+  [14] ○ extract_function   → services/utils/connect.py
       WHY: 2 occurrences of 5-line block across 2 files — saves 5 lines
       FILES: services/orchestrator/app/infrastructure/postgres.py, services/projector/app/db.py
-  [13] ○ extract_function   → services/utils/execute.py
+  [15] ○ extract_function   → services/utils/execute.py
       WHY: 2 occurrences of 5-line block across 2 files — saves 5 lines
       FILES: services/orchestrator/app/infrastructure/postgres.py, services/projector/app/db.py
-  [14] ○ extract_function   → services/utils/fetch.py
+  [16] ○ extract_function   → services/utils/fetch.py
       WHY: 2 occurrences of 5-line block across 2 files — saves 5 lines
       FILES: services/orchestrator/app/infrastructure/postgres.py, services/projector/app/db.py
-  [15] ○ extract_function   → services/utils/disconnect.py
+  [17] ○ extract_function   → services/utils/disconnect.py
       WHY: 2 occurrences of 4-line block across 2 files — saves 4 lines
       FILES: services/orchestrator/app/infrastructure/postgres.py, services/projector/app/db.py
-  [16] ○ extract_function   → services/utils/__init__.py
+  [18] ○ extract_function   → services/utils/__init__.py
       WHY: 2 occurrences of 3-line block across 2 files — saves 3 lines
       FILES: services/orchestrator/app/infrastructure/postgres.py, services/projector/app/db.py
 
-QUICK_WINS[10] (low risk, high savings — do first):
+QUICK_WINS[12] (low risk, high savings — do first):
   [1] extract_function   saved=104L  → services/projector/app/utils/task_board.py
       FILES: main.py
   [2] extract_function   saved=90L  → services/orchestrator/app/api/utils/create_task.py
@@ -1533,12 +1704,12 @@ QUICK_WINS[10] (low risk, high savings — do first):
       FILES: access.py, evolution.py
   [8] extract_function   saved=7L  → services/web/app/utils/_projector.py
       FILES: chat.py, workspace.py
-  [9] extract_function   saved=6L  → services/orchestrator/app/domain/events/utils/data.py
-      FILES: __init__.py
+  [9] extract_function   saved=7L  → services/web/app/utils/agent_may_access_resource.py
+      FILES: access_matrix.py
   [10] extract_function   saved=6L  → services/orchestrator/app/domain/events/utils/data.py
-      FILES: __init__.py
+      FILES: incidents.py
 
-EFFORT_ESTIMATE (total ≈ 13.5h):
+EFFORT_ESTIMATE (total ≈ 13.9h):
   hard   task_board                          saved=104L  ~208min
   hard   create_task                         saved=90L  ~180min
   hard   operational_feed                    saved=84L  ~168min
@@ -1547,19 +1718,19 @@ EFFORT_ESTIMATE (total ≈ 13.5h):
   easy   data                                saved=12L  ~24min
   easy   list_resources                      saved=11L  ~22min
   easy   _projector                          saved=7L  ~14min
+  easy   agent_may_access_resource           saved=7L  ~14min
   easy   data                                saved=6L  ~12min
-  easy   data                                saved=6L  ~12min
-  ... +6 more (~54min)
+  ... +8 more (~78min)
 
 METRICS-TARGET:
-  dup_groups:  16 → 0
-  saved_lines: 405 lines recoverable
+  dup_groups:  18 → 0
+  saved_lines: 418 lines recoverable
 ```
 
 ### Evolution / Churn (`project/evolution.toon.yaml`)
 
 ```toon markpact:analysis path=project/evolution.toon.yaml
-# code2llm/evolution | 571 func | 76f | 2026-06-04
+# code2llm/evolution | 698 func | 79f | 2026-06-04
 # generated in 0.00s
 
 NEXT[10] (ranked by impact):
@@ -1567,9 +1738,9 @@ NEXT[10] (ranked by impact):
       WHY: 982L, 1 classes, max CC=29
       EFFORT: ~4h  IMPACT: 28478
 
-  [2] !! SPLIT           services/orchestrator/app/domain/events/__init__.py
-      WHY: 1045L, 42 classes, max CC=7
-      EFFORT: ~4h  IMPACT: 7315
+  [2] !! SPLIT           services/web/app/static/workspace.js
+      WHY: 842L, 0 classes, max CC=26
+      EFFORT: ~4h  IMPACT: 21892
 
   [3] !! SPLIT-FUNC      _format_export_text  CC=47  fan=20
       WHY: CC=47 exceeds 15
@@ -1579,13 +1750,13 @@ NEXT[10] (ranked by impact):
       WHY: CC=29 exceeds 15
       EFFORT: ~1h  IMPACT: 841
 
-  [5] !! SPLIT-FUNC      handle_message  CC=33  fan=21
-      WHY: CC=33 exceeds 15
-      EFFORT: ~1h  IMPACT: 693
+  [5] !! SPLIT-FUNC      sendChat  CC=26  fan=21
+      WHY: CC=26 exceeds 15
+      EFFORT: ~1h  IMPACT: 546
 
-  [6] !  SPLIT-FUNC      sendChat  CC=23  fan=19
-      WHY: CC=23 exceeds 15
-      EFFORT: ~1h  IMPACT: 437
+  [6] !  SPLIT-FUNC      handle_chat_message  CC=22  fan=20
+      WHY: CC=22 exceeds 15
+      EFFORT: ~1h  IMPACT: 440
 
   [7] !  SPLIT-FUNC      run_workroom  CC=22  fan=19
       WHY: CC=22 exceeds 15
@@ -1595,9 +1766,9 @@ NEXT[10] (ranked by impact):
       WHY: CC=29 exceeds 15
       EFFORT: ~1h  IMPACT: 406
 
-  [9] !  SPLIT-FUNC      handle_chat_message  CC=21  fan=18
+  [9] !  SPLIT-FUNC      formValues  CC=21  fan=19
       WHY: CC=21 exceeds 15
-      EFFORT: ~1h  IMPACT: 378
+      EFFORT: ~1h  IMPACT: 399
 
   [10] !  SPLIT-FUNC      ORCHESTRATOR_URL  CC=15  fan=24
       WHY: CC=15 exceeds 15
@@ -1606,14 +1777,14 @@ NEXT[10] (ranked by impact):
 
 RISKS[3]:
   ⚠ Splitting planfile.yaml may break 0 import paths
-  ⚠ Splitting services/orchestrator/app/domain/events/__init__.py may break 3 import paths
   ⚠ Splitting services/orchestrator/app/application/command_bus.py may break 41 import paths
+  ⚠ Splitting services/web/app/static/workspace.js may break 87 import paths
 
 METRICS-TARGET:
-  CC̄:          3.8 → ≤2.7
+  CC̄:          3.6 → ≤2.5
   max-CC:      47 → ≤20
-  god-modules: 7 → 0
-  high-CC(≥15): 24 → ≤12
+  god-modules: 9 → 0
+  high-CC(≥15): 22 → ≤11
   hub-types:   0 → ≤0
 
 PATTERNS (language parser shared logic):
@@ -1641,7 +1812,7 @@ PATTERNS (language parser shared logic):
     - Standardized FunctionInfo/ClassInfo models
 
 HISTORY:
-  prev CC̄=3.8 → now CC̄=3.8
+  prev CC̄=3.6 → now CC̄=3.6
 ```
 
 ## Intent

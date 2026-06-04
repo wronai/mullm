@@ -155,6 +155,28 @@ body {
   background: var(--surface2);
 }
 
+.chat-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.35rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  flex-shrink: 0;
+}
+.chat-panel-title {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  font-weight: 600;
+}
+.chat-panel-actions {
+  display: flex;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+}
 .chat-messages {
   flex: 1 1 auto;
   min-height: 120px;
@@ -172,12 +194,47 @@ body {
   font-size: 0.88rem;
   line-height: 1.45;
   white-space: pre-wrap;
+  position: relative;
+}
+.msg-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.35rem;
+  margin-bottom: 0.3rem;
+}
+.msg-role {
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+.msg.user .msg-role { color: #9ec5ff; }
+.msg.assistant .msg-role { color: var(--accent2); }
+.msg-copy {
+  flex-shrink: 0;
+  padding: 0.1rem 0.35rem;
+  font-size: 0.65rem;
+  line-height: 1.2;
+  opacity: 0.65;
+}
+.msg:hover .msg-copy,
+.msg-copy:focus {
+  opacity: 1;
 }
 .msg.user { align-self: flex-end; background: #1e3a5f; }
 .msg.assistant { align-self: flex-start; background: var(--surface2); border: 1px solid var(--border); }
 .msg.system { align-self: center; background: transparent; color: var(--muted); font-size: 0.78rem; border: 1px dashed var(--border); max-width: 95%; }
 .msg-meta { font-size: 0.72rem; color: var(--muted); margin-top: 0.25rem; }
 .msg-body { white-space: pre-wrap; word-break: break-word; }
+.msg-artifact {
+  align-self: flex-start;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: -0.2rem 0 0.25rem;
+}
 
 .chat-compose {
   border-top: 1px solid var(--border);
@@ -448,17 +505,18 @@ body {
 }
 .draft-head { display: flex; align-items: center; margin-bottom: 0.35rem; }
 
-/* Chat-first layout */
+/* Chat-first layout: [tickety?] | chat | artefakty | [ticket detail?] */
 .ws-chat-first .layout-chat-first {
   display: grid;
-  grid-template-columns: 0 1fr 0;
+  grid-template-columns: 0 minmax(0, 1fr) minmax(240px, 300px) 0;
   height: calc(100vh - 46px);
   transition: grid-template-columns 0.2s ease;
 }
 .ws-chat-first.tickets-open .layout-chat-first {
-  grid-template-columns: 220px 1fr 260px;
+  grid-template-columns: 220px minmax(0, 1fr) minmax(240px, 300px) 260px;
 }
 .ws-chat-first .rail-tickets,
+.ws-chat-first .rail-artifacts,
 .ws-chat-first .rail-ticket {
   overflow: hidden;
   min-height: 0;
@@ -469,6 +527,111 @@ body {
   width: 0;
   padding: 0;
   border: none;
+}
+.rail-artifacts {
+  border-left: 1px solid var(--border);
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.artifact-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+.artifact-list {
+  list-style: none;
+  margin: 0;
+  padding: 0.35rem;
+  flex: 0 0 auto;
+  max-height: 38%;
+  overflow-y: auto;
+  border-bottom: 1px solid var(--border);
+}
+.artifact-list li {
+  margin: 0 0 0.3rem;
+  padding: 0.4rem 0.5rem;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-size: 0.78rem;
+  line-height: 1.3;
+}
+.artifact-list li:hover {
+  background: var(--surface2);
+  border-color: var(--border);
+}
+.artifact-list li.active {
+  background: rgba(61, 139, 253, 0.14);
+  border-color: var(--accent);
+}
+.artifact-list .art-title {
+  display: block;
+  font-weight: 600;
+  color: var(--text);
+}
+.artifact-list .art-meta {
+  display: block;
+  font-size: 0.68rem;
+  color: var(--muted);
+  margin-top: 0.15rem;
+}
+.artifact-list .artifact-empty {
+  cursor: default;
+  border: none;
+}
+.artifact-list .artifact-empty:hover {
+  background: transparent;
+}
+.artifact-preview {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 0;
+}
+.artifact-preview-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.35rem;
+  padding: 0.4rem 0.5rem;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.artifact-preview-title {
+  font-size: 0.78rem;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+}
+.artifact-preview-actions {
+  display: flex;
+  gap: 0.2rem;
+  flex-shrink: 0;
+}
+.artifact-preview-actions .btn.active {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.artifact-preview-body {
+  flex: 1 1 auto;
+  margin: 0;
+  padding: 0.55rem 0.6rem;
+  overflow: auto;
+  font-size: 0.72rem;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-break: break-word;
+  background: var(--bg);
+  border: none;
+  color: var(--text);
+  font-family: ui-monospace, "Cascadia Code", monospace;
 }
 .chat-main {
   display: flex;
@@ -526,11 +689,17 @@ body {
   .layout-simple,
   .ws-chat-first .layout-chat-first {
     grid-template-columns: 1fr;
-    grid-template-rows: auto 1fr auto;
+    grid-template-rows: auto 1fr minmax(200px, 40vh) auto;
     height: auto;
   }
   body.ws-simple { overflow: auto; }
   .rail-tickets { max-height: 180px; }
+  .rail-artifacts {
+    border-left: none;
+    border-top: 1px solid var(--border);
+    max-height: 45vh;
+  }
+  .artifact-list { max-height: 120px; }
   .ws-chat-first.tickets-open .rail-tickets,
   .ws-chat-first.tickets-open .rail-ticket { visibility: visible; width: auto; }
 }

@@ -1,7 +1,7 @@
 <!-- code2docs:start --># mullm
 
-![version](https://img.shields.io/badge/version-0.1.0-blue) ![python](https://img.shields.io/badge/python-%3E%3D3.9-blue) ![coverage](https://img.shields.io/badge/coverage-unknown-lightgrey) ![functions](https://img.shields.io/badge/functions-591-green)
-> **591** functions | **144** classes | **143** files | CC̄ = 3.7
+![version](https://img.shields.io/badge/version-0.1.0-blue) ![python](https://img.shields.io/badge/python-%3E%3D3.9-blue) ![coverage](https://img.shields.io/badge/coverage-unknown-lightgrey) ![functions](https://img.shields.io/badge/functions-698-green)
+> **698** functions | **135** classes | **146** files | CC̄ = 3.6
 
 > Auto-generated project documentation from source code analysis.
 
@@ -80,6 +80,7 @@ mullm/
     ├── observability
     ├── workspace-ui
     ├── workspace-simple
+    ├── multi-agent-workroom
     ├── roadmap-90d
     ├── domain
     ├── workspace-conductor
@@ -112,8 +113,10 @@ mullm/
             ├── tickets
             ├── nlp2dsl_bridge
             ├── chat
+            ├── access_matrix
             ├── main
             ├── conductor
+                ├── access
                 ├── workspace
                 ├── workroom
                 ├── app
@@ -155,6 +158,7 @@ mullm/
                 ├── experiments
                 ├── value_objects/
                 ├── events/
+                    ├── incidents
                     ├── plugin
                     ├── agent
                     ├── approval
@@ -200,9 +204,8 @@ mullm/
             ├── nats_consumer
             ├── executor
             ├── main
+├── Makefile
 ├── TODO
-    ├── multi-agent-workroom
-                    ├── incidents
 ```
 
 ## API Overview
@@ -220,6 +223,7 @@ mullm/
 - **`SessionRef`** — —
 - **`WorkroomStart`** — —
 - **`WorkroomMessage`** — —
+- **`AccessMatrixBody`** — —
 - **`WorkspaceContext`** — —
 - **`WorkspaceSession`** — —
 - **`LedgerEntry`** — —
@@ -343,16 +347,6 @@ mullm/
 - **`ProbeUriCommand`** — —
 - **`ShellAgent`** — —
 - **`ShellResult`** — —
-- **`RagRequestFailed`** — —
-- **`IncidentDetected`** — —
-- **`IncidentClassified`** — —
-- **`DiagnosticsStarted`** — —
-- **`DiagnosticsCompleted`** — —
-- **`RemediationStarted`** — —
-- **`RemediationSucceeded`** — —
-- **`RemediationFailed`** — —
-- **`PostRemediationVerificationPassed`** — —
-- **`PostRemediationVerificationFailed`** — —
 
 ### Functions
 
@@ -396,6 +390,9 @@ mullm/
 - `archive_ticket(task_id, body)` — —
 - `link_ticket(task_id, body)` — —
 - `ticket_statuses()` — —
+- `workspace_list_artifacts(session_id)` — —
+- `workspace_get_artifact(session_id, artifact_id)` — —
+- `workspace_file_list_export(session_id, message, scope)` — Lista plików jako artefakt (text + json).
 - `workspace_chat_export(session_id)` — Transkrypt chatu do schowka (tylko rozmowa, bez RAG health).
 - `workspace_logs_export(session_id, limit)` — Paczka logów do schowka: RAG health, incydenty, historia sesji, feed.
 - `workroom_start(body)` — —
@@ -403,9 +400,16 @@ mullm/
 - `workroom_run(workroom_id, body)` — —
 - `api_resource_areas()` — —
 - `api_role_scopes()` — —
+- `access_matrix_get()` — —
+- `access_matrix_put(body)` — —
+- `access_matrix_reset()` — —
+- `access_diagnose_file_list()` — —
 - `new_session()` — —
 - `get_session(session_id)` — —
 - `get_or_create(session_id)` — —
+- `register_artifact(session, artifact)` — Zapisuje artefakt w sesji (lista + podgląd po prawej w UI).
+- `artifact_summaries(session)` — Metadane do listy (bez dużego json — pełny podgląd po id).
+- `get_artifact(session_id, artifact_id)` — —
 - `workspace_state(session_id)` — —
 - `attach_context(session_id)` — —
 - `build_task_payload(session_id, message)` — Szkic pól zadania (tylko API /tasks/draft) — nie zapisuje sesji.
@@ -420,7 +424,7 @@ mullm/
 - `fetch_live_board()` — —
 - `list_areas()` — —
 - `list_groups()` — Grupy logiczne — filtrowanie polityk po labelach.
-- `agent_may_access(role_id, area_id, action)` — Decyzja MVP: allow | deny | approval.
+- `agent_may_access(role_id, area_id, action)` — Decyzja MVP: allow | deny | approval (+ macierz z /access).
 - `create_workroom()` — —
 - `get_workroom(workroom_id)` — —
 - `run_workroom(workroom_id, user_message)` — —
@@ -438,21 +442,54 @@ mullm/
 - `primary_action(dsl)` — —
 - `step_config(dsl)` — —
 - `is_file_list_intent(message)` — —
+- `file_list_scope(message)` — Zakres listy: all | user | system | session | rag.
+- `filter_file_inventory(inventory, list_scope)` — Filtruje rejestr i RAG według zakresu.
 - `fetch_file_inventory()` — —
 - `format_file_list_reply(inventory)` — —
+- `build_file_list_artifact(reply_text, inventory)` — Artefakt do pobrania w UI (Blob) lub ponownego exportu API.
 - `new_session_id()` — —
 - `get_history(session_id)` — —
 - `handle_message()` — —
 - `create_task()` — —
+- `default_state()` — —
+- `load_state()` — —
+- `save_state(state)` — —
+- `agent_may_access_resource(agent_id, resource_id)` — —
+- `human_may_use_agent(human_id, agent_id)` — —
+- `diagnose_file_list_command()` — Wyjaśnienie: lista plików ≠ shell, ≠ dysk hosta.
 - `health()` — —
 - `workspace_home(request, task_id)` — —
 - `agent_workroom_page(request)` — —
+- `access_matrix_page(request)` — —
 - `dashboard(request)` — —
 - `handle_turn()` — Jedna ścieżka czatu: nlp2dsl (dopytywanie) → wykonanie Mullm → fallback RAG.
+- `state()` — —
+- `toast()` — —
+- `api()` — —
+- `r()` — —
+- `data()` — —
+- `escapeHtml()` — —
+- `renderAgentResourceMatrix()` — —
+- `resources()` — —
+- `agents()` — —
+- `matrix()` — —
+- `checked()` — —
+- `renderHumanAgentMatrix()` — —
+- `humans()` — —
+- `renderAll()` — —
+- `load()` — —
+- `diag()` — —
+- `save()` — —
+- `res()` — —
+- `resetAll()` — —
+- `id()` — —
+- `title()` — —
 - `sessionId()` — —
 - `currentDraft()` — —
 - `selectedTaskId()` — —
 - `pendingClarify()` — —
+- `artifactFullCache()` — —
+- `selectedArtifactId()` — —
 - `ticketWebUrl()` — —
 - `ticketUri()` — —
 - `toast()` — —
@@ -494,11 +531,25 @@ mullm/
 - `items()` — —
 - `meta()` — —
 - `appendMsg()` — —
+- `cacheArtifactFull()` — —
+- `syncArtifacts()` — —
+- `clearArtifactPreview()` — —
+- `renderArtifactList()` — —
+- `active()` — —
+- `when()` — —
+- `selectArtifact()` — —
+- `art()` — —
+- `showArtifactPreview()` — —
+- `hasText()` — —
+- `hasJson()` — —
+- `downloadArtifact()` — —
+- `name()` — —
+- `url()` — —
+- `link()` — —
 - `appendMsgTo()` — —
 - `div()` — —
 - `body()` — —
 - `renderTasks()` — —
-- `active()` — —
 - `renderFileChips()` — —
 - `escapeHtml()` — —
 - `saveContextFromForm()` — —
@@ -657,6 +708,7 @@ mullm/
 ## Project Structure
 
 📄 `CHANGELOG`
+📄 `Makefile`
 📄 `README`
 📄 `TODO`
 📄 `TODO.1`
@@ -724,7 +776,7 @@ mullm/
 📄 `services.orchestrator.app.domain.aggregates.resource` (6 functions, 1 classes)
 📄 `services.orchestrator.app.domain.aggregates.task` (15 functions, 1 classes)
 📄 `services.orchestrator.app.domain.aggregates.workflow` (9 functions, 1 classes)
-📦 `services.orchestrator.app.domain.events` (3 functions, 42 classes)
+📦 `services.orchestrator.app.domain.events` (3 functions, 32 classes)
 📄 `services.orchestrator.app.domain.events.incidents` (20 functions, 10 classes)
 📦 `services.orchestrator.app.domain.value_objects` (2 functions, 11 classes)
 📦 `services.orchestrator.app.evolution`
@@ -765,7 +817,7 @@ mullm/
 📄 `services.projector.app.projections.agent_fleet` (1 functions)
 📄 `services.projector.app.projections.approval_requests` (1 functions)
 📄 `services.projector.app.projections.dispatcher` (2 functions)
-📄 `services.projector.app.projections.incidents` (8 functions)
+📄 `services.projector.app.projections.incidents` (16 functions)
 📄 `services.projector.app.projections.operational_feed` (3 functions)
 📄 `services.projector.app.projections.plugin_catalog` (1 functions)
 📄 `services.projector.app.projections.resource_registry` (1 functions)
@@ -774,18 +826,20 @@ mullm/
 📄 `services.projector.requirements`
 📄 `services.web.Dockerfile`
 📦 `services.web.app`
+📄 `services.web.app.access_matrix` (13 functions)
 📄 `services.web.app.agent_workroom` (10 functions, 2 classes)
-📄 `services.web.app.api_routes` (24 functions, 10 classes)
-📄 `services.web.app.chat` (13 functions)
-📄 `services.web.app.conductor` (6 functions)
-📄 `services.web.app.main` (4 functions)
+📄 `services.web.app.api_routes` (31 functions, 11 classes)
+📄 `services.web.app.chat` (38 functions)
+📄 `services.web.app.conductor` (18 functions)
+📄 `services.web.app.main` (5 functions)
 📄 `services.web.app.nlp2dsl_bridge` (9 functions)
 📄 `services.web.app.resource_areas` (3 functions)
+📄 `services.web.app.static.access` (25 functions)
 📄 `services.web.app.static.app` (28 functions)
 📄 `services.web.app.static.workroom` (21 functions)
-📄 `services.web.app.static.workspace` (90 functions)
+📄 `services.web.app.static.workspace` (109 functions)
 📄 `services.web.app.tickets` (4 functions)
-📄 `services.web.app.workspace` (22 functions, 2 classes)
+📄 `services.web.app.workspace` (26 functions, 2 classes)
 📄 `services.web.package`
 📄 `services.web.requirements`
 📄 `services.web.src.main` (14 functions)

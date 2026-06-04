@@ -10,6 +10,7 @@ from __future__ import annotations
 import re
 import uuid
 from dataclasses import dataclass, field
+from datetime import datetime, timezone
 from typing import Any
 
 from app import chat as chat_service
@@ -107,13 +108,26 @@ def _plan_steps(goal: str) -> list[dict[str, str]]:
     steps: list[dict[str, str]] = [
         {"id": "1", "agent": "coordinator", "action": "analyze", "label": "Analiza celu"},
     ]
-    if chat_service.is_file_list_intent(goal) or "plik" in lowered:
+    if (
+        chat_service.is_file_list_intent(goal)
+        or "plik" in lowered
+        or re.search(r"\baplik", lowered)
+    ):
+        scope = chat_service.file_list_scope(goal)
+        labels = {
+            "user": "Lista plików użytkownika",
+            "system": "Lista zasobów systemowych",
+            "session": "Pliki w scope sesji",
+            "rag": "Dokumenty RAG",
+            "all": "Lista plików i zasobów",
+        }
         steps.append(
             {
                 "id": "2",
                 "agent": "files_agent",
                 "action": "list_files",
-                "label": "Lista plików i zasobów",
+                "label": labels.get(scope, labels["all"]),
+                "list_scope": scope,
             }
         )
     elif _extract_shell(goal):
@@ -143,6 +157,66 @@ def _plan_steps(goal: str) -> list[dict[str, str]]:
             }
         )
     return steps
+
+
+async def _build_file_list_for_goal(
+    goal: str,
+    *,
+    scope_files: list[str],
+    scope_uris: list[str],
+) -> tuple[str, dict[str, Any], str]:
+    scope_kind = chat_service.file_list_scope(goal)
+    inv = chat_service.filter_file_inventory(
+        await chat_service.fetch_file_inventory(),
+        scope_kind,
+        scope_files=scope_files,
+        scope_uris=scope_uris,
+    )
+    reply = chat_service.format_file_list_reply(
+        inv,
+        scope_files=scope_files,
+        scope_uris=scope_uris,
+        list_scope=scope_kind,
+    )
+    return reply, inv, scope_kind
+
+
+def format_workroom_export(session: WorkroomSession) -> str:
+    """Pełna treść workroom do schowka (wątek + ledger + odpowiedź)."""
+    lines = [
+        "# Mullm — Agent Workroom export",
+        f"generated_at: {datetime.now(timezone.utc).isoformat()}",
+        f"workroom_id: {session.workroom_id}",
+        f"user_session_id: {session.user_session_id or '—'}",
+        f"status: {session.status}",
+        "",
+        "## Cel",
+        session.goal or "—",
+        "",
+        "## Rozmowa agentów",
+    ]
+    if not session.agent_thread:
+        lines.append("(brak)")
+    else:
+        for m in session.agent_thread:
+            who = m.get("role") or m.get("agent_id") or "?"
+            lines.append(f"\n### {who}")
+            lines.append((m.get("text") or "").strip())
+    lines.append("")
+    lines.append("## Ledger wykonania")
+    if not session.ledger:
+        lines.append("(brak)")
+    else:
+        for e in session.ledger:
+            lines.append(
+                f"- [{e.kind}] {e.agent_id} ({e.status}): {e.summary}"
+            )
+            if e.detail and e.detail != e.summary:
+                lines.append(f"  detail: {e.detail[:500]}")
+    lines.append("")
+    lines.append("## Odpowiedź dla użytkownika")
+    lines.append(session.result_summary or "—")
+    return "\n".join(lines).strip() + "\n"
 
 
 def _extract_shell(text: str) -> str | None:
@@ -235,24 +309,54 @@ async def run_workroom(
                     **perm,
                 )
 
+            scope_kind = step.get("list_scope") or chat_service.file_list_scope(
+                user_message
+            )
+            perm_user = agent_may_access("files_agent", "filesystem:user", "list")
+            if scope_kind == "user" and perm_user["decision"] == "deny":
+                session.add_ledger(
+                    "permission",
+                    "files_agent",
+                    "Brak dostępu do filesystem:user",
+                    status="denied",
+                    **perm_user,
+                )
+                final_parts.append("Odmowa dostępu do plików użytkownika.")
+                continue
+
             session.agent_say(
                 "files_agent",
                 "Files Agent",
-                "Pobieram rejestr zasobów i indeks RAG…",
+                f"Pobieram rejestr (zakres: {scope_kind})…",
                 status="running",
             )
-            inv = await chat_service.fetch_file_inventory()
-            reply = chat_service.format_file_list_reply(
-                inv, scope_files=scope_files, scope_uris=scope_uris
+            reply, inv, scope_kind = await _build_file_list_for_goal(
+                user_message,
+                scope_files=scope_files,
+                scope_uris=scope_uris,
             )
             session.agent_say("files_agent", "Files Agent", reply, status="ok")
             session.add_ledger(
                 "result",
                 "files_agent",
-                "Lista plików gotowa",
+                f"Lista plików gotowa ({scope_kind})",
                 detail=reply[:2000],
                 status="ok",
+                list_scope=scope_kind,
             )
+            if session.user_session_id:
+                ws = workspace_service.get_or_create(session.user_session_id)
+                artifact = chat_service.build_file_list_artifact(
+                    reply,
+                    inv,
+                    session_id=ws.session_id,
+                    list_scope=scope_kind,
+                )
+                workspace_service.register_artifact(
+                    ws,
+                    artifact,
+                    source_message=user_message,
+                )
             final_parts.append(reply)
             continue
 

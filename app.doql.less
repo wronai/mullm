@@ -293,6 +293,96 @@ interface[type="api"] {
   auth-type: jwt;
 }
 
+workflow[name="up"] {
+  trigger: manual;
+  step-1: run cmd=$(COMPOSE) $(PROFILE_ARGS) up -d;
+  step-2: run cmd=if [ "$(NLP2DSL)" = "1" ]; then \;
+  step-3: run cmd=$(MAKE) --no-print-directory nlp2dsl-up; \;
+  step-4: run cmd=fi;
+}
+
+workflow[name="down"] {
+  trigger: manual;
+  step-1: run cmd=if [ "$(NLP2DSL)" = "1" ]; then \;
+  step-2: run cmd=$(MAKE) --no-print-directory nlp2dsl-down; \;
+  step-3: run cmd=fi;
+  step-4: run cmd=$(COMPOSE) $(PROFILE_ARGS) down;
+}
+
+workflow[name="restart"] {
+  trigger: manual;
+  step-1: depend target=down;
+  step-2: depend target=up;
+}
+
+workflow[name="build"] {
+  trigger: manual;
+  step-1: run cmd=$(COMPOSE) $(PROFILE_ARGS) build;
+}
+
+workflow[name="logs"] {
+  trigger: manual;
+  step-1: run cmd=$(COMPOSE) $(PROFILE_ARGS) logs -f --tail=200;
+}
+
+workflow[name="ps"] {
+  trigger: manual;
+  step-1: run cmd=$(COMPOSE) $(PROFILE_ARGS) ps;
+}
+
+workflow[name="test"] {
+  trigger: manual;
+  step-1: run cmd=pytest -q;
+}
+
+workflow[name="smoke"] {
+  trigger: manual;
+  step-1: run cmd=curl -fsS http://127.0.0.1:3003/health;
+  step-2: run cmd=curl -fsS http://127.0.0.1:8001/health;
+  step-3: run cmd=curl -fsS http://127.0.0.1:8002/health;
+  step-4: run cmd=if [ "$(NLP2DSL)" = "1" ] && [ -f "$(NLP2DSL_DIR)/docker-compose.yml" ]; then \;
+  step-5: run cmd=curl -fsS -o /dev/null -w 'nlp2dsl backend: %{http_code}\n' http://127.0.0.1:8010/docs && \;
+  step-6: run cmd=curl -fsS -o /dev/null -w 'nlp2dsl nlp: %{http_code}\n' http://127.0.0.1:8012/docs && \;
+  step-7: run cmd=curl -fsS -o /dev/null -w 'nlp2dsl worker: %{http_code}\n' http://127.0.0.1:8004/health; \;
+  step-8: run cmd=fi;
+}
+
+workflow[name="ensure-env"] {
+  trigger: manual;
+  step-1: run cmd=if [ ! -f .env ] && [ -f .env.example ]; then \;
+  step-2: run cmd=cp .env.example .env; \;
+  step-3: run cmd=echo "Created .env from .env.example"; \;
+  step-4: run cmd=fi;
+}
+
+workflow[name="ensure-nlp2dsl-env"] {
+  trigger: manual;
+  step-1: run cmd=if [ -f "$(NLP2DSL_DIR)/docker-compose.yml" ]; then \;
+  step-2: run cmd=if [ ! -f "$(NLP2DSL_DIR)/.env" ] && [ -f "$(NLP2DSL_DIR)/.env.example" ]; then \;
+  step-3: run cmd=cp "$(NLP2DSL_DIR)/.env.example" "$(NLP2DSL_DIR)/.env"; \;
+  step-4: run cmd=echo "Created $(NLP2DSL_DIR)/.env from .env.example"; \;
+  step-5: run cmd=fi; \;
+  step-6: run cmd=fi;
+}
+
+workflow[name="nlp2dsl-up"] {
+  trigger: manual;
+  step-1: run cmd=if [ -f "$(NLP2DSL_DIR)/docker-compose.yml" ]; then \;
+  step-2: run cmd=cd "$(NLP2DSL_DIR)" && $(COMPOSE) up -d; \;
+  step-3: run cmd=else \;
+  step-4: run cmd=echo "Skipping nlp2dsl: $(NLP2DSL_DIR)/docker-compose.yml not found"; \;
+  step-5: run cmd=fi;
+}
+
+workflow[name="nlp2dsl-down"] {
+  trigger: manual;
+  step-1: run cmd=if [ -f "$(NLP2DSL_DIR)/docker-compose.yml" ]; then \;
+  step-2: run cmd=cd "$(NLP2DSL_DIR)" && $(COMPOSE) down; \;
+  step-3: run cmd=else \;
+  step-4: run cmd=echo "Skipping nlp2dsl: $(NLP2DSL_DIR)/docker-compose.yml not found"; \;
+  step-5: run cmd=fi;
+}
+
 deploy {
   target: docker-compose;
   compose_file: docker-compose.yml;
