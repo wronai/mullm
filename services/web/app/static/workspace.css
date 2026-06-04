@@ -227,6 +227,14 @@ body {
 .msg.assistant { align-self: flex-start; background: var(--surface2); border: 1px solid var(--border); }
 .msg.system { align-self: center; background: transparent; color: var(--muted); font-size: 0.78rem; border: 1px dashed var(--border); max-width: 95%; }
 .msg-meta { font-size: 0.72rem; color: var(--muted); margin-top: 0.25rem; }
+.msg-route-badge {
+  font-size: 0.68rem;
+  font-family: ui-monospace, monospace;
+  color: var(--accent, #6eb5ff);
+  margin-top: 0.2rem;
+  opacity: 0.9;
+  cursor: help;
+}
 .msg-body { white-space: pre-wrap; word-break: break-word; }
 .msg-artifact {
   align-self: flex-start;

@@ -1,665 +1,169 @@
-# mullm | 136f 17856L | python:123,css:5,javascript:4,shell:3,less:1 | 2026-06-04
-# stats: 408 func | 144 cls | 136 mod | CC̄=3.7 | critical:22 | cycles:0
-# alerts[5]: CC _format_export_text=47; CC format_logs_text=29; CC filter_file_inventory=29; CC run_workroom=22; CC handle_chat_message=22
-# hotspots[5]: lifespan fan=21; run_workroom fan=18; upload_resource fan=17; handle_chat_message fan=17; search fan=15
-# evolution: baseline
+# mullm | 150f 20790L | txt:6,yaml:5,yml:1,shell:3,ini:1,md:18,python:95,json:11,javascript:5 | 2026-06-04
+# generated in 0.01s
+# stats: 758 func | 0 cls | 150 mod | CC̄=3.5 | critical:20 | cycles:0
+# alerts[5]: CC CommandBus.handle=29; CC filter_file_inventory=29; CC format_logs_text=29; CC sendChat=29; fan-out CommandBus.handle=29
+# hotspots[5]: CommandBus.handle fan=29; lifespan fan=25; ORCHESTRATOR_URL fan=24; PROJECTOR_URL fan=24; App fan=24
+# evolution: CC̄ 3.6→3.5 (improved -0.1)
 # Keys: M=modules, D=details, i=imports, e=exports, c=classes, f=functions, m=methods
-M[136]:
-  agents/shell-agent/app/__init__.py,2
-  agents/shell-agent/app/executor.py,49
-  agents/shell-agent/app/main.py,27
-  agents/shell-agent/app/nats_consumer.py,48
-  app.doql.less,395
-  integrations/nlp2dsl/mullm_registry.py,33
-  integrations/nlp2dsl/patch_startup.py,8
-  project.sh,53
-  scripts/test.sh,14
-  services/orchestrator/app/__init__.py,2
-  services/orchestrator/app/access/__init__.py,5
-  services/orchestrator/app/access/adapters/__init__.py,18
-  services/orchestrator/app/access/adapters/base.py,34
-  services/orchestrator/app/access/adapters/http_adapter.py,50
-  services/orchestrator/app/access/adapters/localfs.py,72
-  services/orchestrator/app/access/transport.py,78
-  services/orchestrator/app/access/uri.py,44
-  services/orchestrator/app/api/__init__.py,2
-  services/orchestrator/app/api/access.py,137
-  services/orchestrator/app/api/catalog.py,42
-  services/orchestrator/app/api/commands.py,380
-  services/orchestrator/app/api/evolution.py,105
-  services/orchestrator/app/api/observability.py,109
-  services/orchestrator/app/api/queries.py,181
-  services/orchestrator/app/api/rag.py,143
-  services/orchestrator/app/application/__init__.py,2
-  services/orchestrator/app/application/command_bus.py,983
-  services/orchestrator/app/application/sagas/__init__.py,15
-  services/orchestrator/app/application/sagas/approval_gate.py,130
-  services/orchestrator/app/application/sagas/task_routing.py,62
-  services/orchestrator/app/config.py,55
-  services/orchestrator/app/domain/__init__.py,2
-  services/orchestrator/app/domain/aggregates/__init__.py,2
-  services/orchestrator/app/domain/aggregates/agent.py,84
-  services/orchestrator/app/domain/aggregates/approval.py,98
-  services/orchestrator/app/domain/aggregates/plugin.py,98
-  services/orchestrator/app/domain/aggregates/resource.py,101
-  services/orchestrator/app/domain/aggregates/task.py,232
-  services/orchestrator/app/domain/aggregates/workflow.py,145
-  services/orchestrator/app/domain/events/__init__.py,812
-  services/orchestrator/app/domain/events/incidents.py,255
-  services/orchestrator/app/domain/value_objects/__init__.py,86
-  services/orchestrator/app/evolution/__init__.py,13
-  services/orchestrator/app/evolution/catalog.py,93
-  services/orchestrator/app/evolution/evaluation.py,147
-  services/orchestrator/app/evolution/experiments.py,77
-  services/orchestrator/app/evolution/policy_engine.py,104
-  services/orchestrator/app/incidents/__init__.py,4
-  services/orchestrator/app/incidents/pipeline.py,322
-  services/orchestrator/app/infrastructure/__init__.py,2
-  services/orchestrator/app/infrastructure/eventstore.py,183
-  services/orchestrator/app/infrastructure/eventstore_dual.py,58
-  services/orchestrator/app/infrastructure/eventstore_esdb.py,187
-  services/orchestrator/app/infrastructure/eventstore_factory.py,51
-  services/orchestrator/app/infrastructure/nats_bus.py,50
-  services/orchestrator/app/infrastructure/postgres.py,93
-  services/orchestrator/app/main.py,196
-  services/orchestrator/app/observability/__init__.py,23
-  services/orchestrator/app/observability/context.py,60
-  services/orchestrator/app/observability/export.py,191
-  services/orchestrator/app/observability/incidents.py,338
-  services/orchestrator/app/observability/logging.py,44
-  services/orchestrator/app/observability/middleware.py,20
-  services/orchestrator/app/observability/rag_diagnostics.py,205
-  services/orchestrator/app/observability/rag_pipeline.py,143
-  services/orchestrator/app/rag/__init__.py,7
-  services/orchestrator/app/rag/chunking.py,28
-  services/orchestrator/app/rag/indexer.py,86
-  services/orchestrator/app/rag/openrouter.py,112
-  services/orchestrator/app/rag/retriever.py,88
-  services/orchestrator/app/rag/store.py,241
-  services/orchestrator/tests/__init__.py,2
-  services/orchestrator/tests/conftest.py,10
-  services/orchestrator/tests/fakes.py,64
-  services/orchestrator/tests/test_api.py,90
-  services/orchestrator/tests/test_command_bus.py,57
-  services/orchestrator/tests/test_observability.py,22
-  services/orchestrator/tests/test_task_aggregate.py,28
-  services/projector/app/__init__.py,2
-  services/projector/app/db.py,57
-  services/projector/app/main.py,341
-  services/projector/app/projections/__init__.py,4
-  services/projector/app/projections/agent_fleet.py,82
-  services/projector/app/projections/approval_requests.py,80
-  services/projector/app/projections/dispatcher.py,42
-  services/projector/app/projections/incidents.py,321
-  services/projector/app/projections/operational_feed.py,70
-  services/projector/app/projections/plugin_catalog.py,43
-  services/projector/app/projections/resource_registry.py,119
-  services/projector/app/projections/task_board.py,116
-  services/projector/app/projections/workflow_versions.py,48
-  services/web/app/__init__.py,1
-  services/web/app/access_matrix.py,206
-  services/web/app/agent_workroom.py,355
-  services/web/app/api_routes.py,529
-  services/web/app/chat.py,665
-  services/web/app/conductor.py,463
-  services/web/app/main.py,105
-  services/web/app/nlp2dsl_bridge.py,101
-  services/web/app/resource_areas.py,158
-  services/web/app/static/access.css,84
-  services/web/app/static/access.js,158
-  services/web/app/static/app.css,200
-  services/web/app/static/app.js,194
-  services/web/app/static/workroom.css,87
-  services/web/app/static/workroom.js,187
-  services/web/app/static/workspace.css,656
-  services/web/app/static/workspace.js,843
-  services/web/app/tickets.py,46
-  services/web/app/workspace.py,681
-  services/web/src/styles.css,287
-  services/web/tests/test_access_matrix.py,38
-  services/web/tests/test_agent_workroom.py,30
-  services/web/tests/test_artifacts.py,31
-  services/web/tests/test_chat_intent.py,111
-  tests/conftest.py,354
-  tests/test_access_fabric.py,62
-  tests/test_agent_aggregate.py,33
-  tests/test_api_orchestrator.py,152
-  tests/test_approval_aggregate.py,26
-  tests/test_approval_gate.py,121
-  tests/test_command_bus.py,134
-  tests/test_e2e_flow.py,46
-  tests/test_eventstore_factory.py,26
-  tests/test_evolution_layer.py,90
-  tests/test_incident_observability.py,170
-  tests/test_integration_postgres.py,43
-  tests/test_plugin_aggregate.py,30
-  tests/test_projections.py,88
-  tests/test_projector_routes.py,37
-  tests/test_rag.py,115
-  tests/test_shell_executor.py,43
-  tests/test_task_aggregate.py,38
-  tests/test_task_routing.py,48
-  tests/test_workflow_aggregate.py,25
-  tree.sh,2
+M[150]:
+  CHANGELOG.md,285
+  Makefile,94
+  README.md,213
+  TODO.md,240
+  TODO/1.md,142
+  TODO/2.md,187
+  TODO/3.md,291
+  TODO/4.md,394
+  agents/shell-agent/Dockerfile,14
+  agents/shell-agent/app/executor.py,48
+  agents/shell-agent/app/main.py,26
+  agents/shell-agent/app/nats_consumer.py,47
+  agents/shell-agent/requirements.txt,1
+  catalog/capabilities.json,48
+  catalog/domains.json,30
+  catalog/events/access.json,30
+  catalog/events/evolution.json,45
+  catalog/events/rag.json,15
+  catalog/events/task.json,46
+  catalog/events/workflow.json,42
+  catalog/index.json,19
+  catalog/policies.json,49
+  catalog/services.json,39
+  docker-compose.yml,204
+  docs/README.md,886
+  docs/architecture.md,46
+  docs/domain.md,24
+  docs/events.md,38
+  docs/multi-agent-workroom.md,88
+  docs/observability.md,50
+  docs/prompt-router.md,81
+  docs/roadmap-90d.md,83
+  docs/workspace-conductor.md,43
+  docs/workspace-simple.md,40
+  docs/workspace-ui.md,30
+  goal.yaml,509
+  integrations/nlp2dsl/mullm_registry.py,32
+  integrations/nlp2dsl/patch_startup.py,7
+  planfile.yaml,1319
+  prefact.yaml,94
+  project.sh,52
+  pytest.ini,6
+  requirements-dev.txt,5
+  scripts/test.sh,13
+  services/orchestrator/Dockerfile,27
+  services/orchestrator/app/access/__init__.py,4
+  services/orchestrator/app/access/adapters/__init__.py,17
+  services/orchestrator/app/access/adapters/base.py,33
+  services/orchestrator/app/access/adapters/http_adapter.py,49
+  services/orchestrator/app/access/adapters/localfs.py,71
+  services/orchestrator/app/access/transport.py,77
+  services/orchestrator/app/access/uri.py,43
+  services/orchestrator/app/api/access.py,136
+  services/orchestrator/app/api/catalog.py,41
+  services/orchestrator/app/api/commands.py,379
+  services/orchestrator/app/api/evolution.py,104
+  services/orchestrator/app/api/observability.py,108
+  services/orchestrator/app/api/queries.py,180
+  services/orchestrator/app/api/rag.py,142
+  services/orchestrator/app/application/command_bus.py,982
+  services/orchestrator/app/application/sagas/__init__.py,14
+  services/orchestrator/app/application/sagas/approval_gate.py,129
+  services/orchestrator/app/application/sagas/task_routing.py,61
+  services/orchestrator/app/config.py,54
+  services/orchestrator/app/domain/aggregates/agent.py,83
+  services/orchestrator/app/domain/aggregates/approval.py,97
+  services/orchestrator/app/domain/aggregates/plugin.py,97
+  services/orchestrator/app/domain/aggregates/resource.py,100
+  services/orchestrator/app/domain/aggregates/task.py,231
+  services/orchestrator/app/domain/aggregates/workflow.py,144
+  services/orchestrator/app/domain/events/__init__.py,811
+  services/orchestrator/app/domain/events/incidents.py,254
+  services/orchestrator/app/domain/value_objects/__init__.py,85
+  services/orchestrator/app/evolution/__init__.py,12
+  services/orchestrator/app/evolution/catalog.py,92
+  services/orchestrator/app/evolution/evaluation.py,146
+  services/orchestrator/app/evolution/experiments.py,76
+  services/orchestrator/app/evolution/policy_engine.py,103
+  services/orchestrator/app/incidents/__init__.py,3
+  services/orchestrator/app/incidents/pipeline.py,321
+  services/orchestrator/app/infrastructure/eventstore.py,182
+  services/orchestrator/app/infrastructure/eventstore_dual.py,57
+  services/orchestrator/app/infrastructure/eventstore_esdb.py,186
+  services/orchestrator/app/infrastructure/eventstore_factory.py,50
+  services/orchestrator/app/infrastructure/nats_bus.py,49
+  services/orchestrator/app/infrastructure/postgres.py,92
+  services/orchestrator/app/main.py,195
+  services/orchestrator/app/observability/__init__.py,22
+  services/orchestrator/app/observability/context.py,59
+  services/orchestrator/app/observability/export.py,190
+  services/orchestrator/app/observability/incidents.py,337
+  services/orchestrator/app/observability/logging.py,43
+  services/orchestrator/app/observability/middleware.py,19
+  services/orchestrator/app/observability/rag_diagnostics.py,204
+  services/orchestrator/app/observability/rag_pipeline.py,142
+  services/orchestrator/app/rag/__init__.py,6
+  services/orchestrator/app/rag/chunking.py,27
+  services/orchestrator/app/rag/indexer.py,85
+  services/orchestrator/app/rag/openrouter.py,111
+  services/orchestrator/app/rag/retriever.py,87
+  services/orchestrator/app/rag/store.py,240
+  services/orchestrator/requirements.txt,15
+  services/orchestrator/requirements-esdb.txt,2
+  services/projector/Dockerfile,21
+  services/projector/app/__init__.py,1
+  services/projector/app/db.py,56
+  services/projector/app/main.py,340
+  services/projector/app/projections/__init__.py,3
+  services/projector/app/projections/agent_fleet.py,81
+  services/projector/app/projections/approval_requests.py,79
+  services/projector/app/projections/dispatcher.py,41
+  services/projector/app/projections/incidents.py,320
+  services/projector/app/projections/operational_feed.py,69
+  services/projector/app/projections/plugin_catalog.py,42
+  services/projector/app/projections/resource_registry.py,118
+  services/projector/app/projections/task_board.py,115
+  services/projector/app/projections/workflow_versions.py,47
+  services/projector/requirements.txt,5
+  services/web/Dockerfile,7
+  services/web/app/__init__.py,0
+  services/web/app/access_matrix.py,205
+  services/web/app/agent_workroom.py,558
+  services/web/app/api/__init__.py,1
+  services/web/app/api/access_routes.py,46
+  services/web/app/api/chat_routes.py,154
+  services/web/app/api/config.py,16
+  services/web/app/api/models.py,80
+  services/web/app/api/router_routes.py,25
+  services/web/app/api/task_routes.py,166
+  services/web/app/api/workroom_routes.py,54
+  services/web/app/api/workspace_routes.py,101
+  services/web/app/api_routes.py,21
+  services/web/app/chat.py,692
+  services/web/app/conductor.py,464
+  services/web/app/main.py,104
+  services/web/app/nlp2dsl_bridge.py,100
+  services/web/app/prompt_router.py,203
+  services/web/app/resource_areas.py,157
+  services/web/app/static/access.js,157
+  services/web/app/static/app.js,193
+  services/web/app/static/workroom.js,268
+  services/web/app/static/workspace.js,901
+  services/web/app/tickets.py,45
+  services/web/app/workspace.py,731
+  services/web/package.json,18
+  services/web/requirements.txt,6
+  services/web/src/main.jsx,203
+  testql-scenarios/generated-api-smoke.testql.toon.yaml,40
+  testql-scenarios/generated-from-pytests.testql.toon.yaml,34
+  tree.sh,1
 D:
-  agents/shell-agent/app/__init__.py:
-  agents/shell-agent/app/executor.py:
-    e: run_shell_command,ShellResult
-    ShellResult: ok(0),to_dict(0)
-    run_shell_command(command;timeout_seconds)
-  agents/shell-agent/app/main.py:
-    e: main
-    main()
-  agents/shell-agent/app/nats_consumer.py:
-    e: ShellAgent
-    ShellAgent: __init__(0),run(0),handle_message(1)
-  integrations/nlp2dsl/mullm_registry.py:
-  integrations/nlp2dsl/patch_startup.py:
-  services/orchestrator/app/__init__.py:
-  services/orchestrator/app/access/__init__.py:
-  services/orchestrator/app/access/adapters/__init__.py:
-    e: get_adapter
-    get_adapter(name)
-  services/orchestrator/app/access/adapters/base.py:
-    e: AdapterResult,ResourceAdapter
-    AdapterResult:
-    ResourceAdapter: probe(1),fetch(1),copy_to_local(2)
-  services/orchestrator/app/access/adapters/http_adapter.py:
-    e: HttpAdapter
-    HttpAdapter: probe(1),fetch(1),copy_to_local(2),_to_url(1)
-  services/orchestrator/app/access/adapters/localfs.py:
-    e: LocalFsAdapter
-    LocalFsAdapter: __init__(1),_resolve(1),probe(1),fetch(1),copy_to_local(2)
-  services/orchestrator/app/access/transport.py:
-    e: TransportService
-    TransportService: __init__(0),_sandbox_dir(0),probe(1),fetch(1),copy(2),package_to_sandbox(1),_result_dict(2)  # Access Fabric — probe, fetch, copy między adapterami.
-  services/orchestrator/app/access/uri.py:
-    e: parse_uri,build_uri,MullmUri
-    MullmUri: canonical(0)
-    parse_uri(uri)
-    build_uri(adapter;path)
-  services/orchestrator/app/api/__init__.py:
-  services/orchestrator/app/api/access.py:
-    e: register_resource,transfer_resource,probe_uri,fetch_uri,list_resources,build_resource_uri,_safe_filename,upload_resource,RegisterResourceCommand,TransferResourceCommand,ProbeUriCommand
-    RegisterResourceCommand:
-    TransferResourceCommand:
-    ProbeUriCommand:
-    register_resource(command;request)
-    transfer_resource(command;request)
-    probe_uri(command;request)
-    fetch_uri(command;request)
-    list_resources(request;limit)
-    build_resource_uri(adapter;path)
-    _safe_filename(name)
-    upload_resource(request;file;classification)
-  services/orchestrator/app/api/catalog.py:
-    e: catalog_index,catalog_graph,catalog_domains,catalog_events,catalog_capabilities,catalog_services,catalog_policies
-    catalog_index(request)
-    catalog_graph(request)
-    catalog_domains(request)
-    catalog_events(request)
-    catalog_capabilities(request)
-    catalog_services(request)
-    catalog_policies(request)
-  services/orchestrator/app/api/commands.py:
-    e: post_command,create_task,assign_task,start_task,complete_task,fail_task,register_agent,start_workflow,propose_workflow_version,validate_workflow_version,approve_workflow_version,activate_workflow_version,rollback_workflow_version,propose_plugin,validate_plugin,install_plugin,activate_plugin,rollback_plugin,create_approval,approve_request,reject_request,expire_approval,_dispatch,CommandEnvelope,CreateTaskCommand,AssignTaskCommand,StartTaskCommand,CompleteTaskCommand,FailTaskCommand,RegisterAgentCommand,StartWorkflowCommand,ProposeWorkflowVersionCommand,WorkflowVersionCommand,ProposePluginCommand,PluginIdCommand,CreateApprovalCommand,ApprovalActionCommand
-    CommandEnvelope:
-    CreateTaskCommand:
-    AssignTaskCommand:
-    StartTaskCommand:
-    CompleteTaskCommand:
-    FailTaskCommand:
-    RegisterAgentCommand:
-    StartWorkflowCommand:
-    ProposeWorkflowVersionCommand:
-    WorkflowVersionCommand:
-    ProposePluginCommand:
-    PluginIdCommand:
-    CreateApprovalCommand:
-    ApprovalActionCommand:
-    post_command(command;request)
-    create_task(command;request)
-    assign_task(command;request)
-    start_task(command;request)
-    complete_task(command;request)
-    fail_task(command;request)
-    register_agent(command;request)
-    start_workflow(command;request)
-    propose_workflow_version(command;request)
-    validate_workflow_version(command;request)
-    approve_workflow_version(command;request)
-    activate_workflow_version(command;request)
-    rollback_workflow_version(command;request)
-    propose_plugin(command;request)
-    validate_plugin(command;request)
-    install_plugin(command;request)
-    activate_plugin(command;request)
-    rollback_plugin(command;request)
-    create_approval(command;request)
-    approve_request(command;request)
-    reject_request(command;request)
-    expire_approval(command;request)
-    _dispatch(request;command_type;data)
-  services/orchestrator/app/api/evolution.py:
-    e: evolution_metrics,list_experiments,capability_registry,propose_change,shadow_workflow,ProposeChangeCommand,ShadowWorkflowCommand
-    ProposeChangeCommand:
-    ShadowWorkflowCommand:
-    evolution_metrics(request;subject_type;subject_id;limit)
-    list_experiments(request;status;limit)
-    capability_registry(request;limit)
-    propose_change(command;request)
-    shadow_workflow(command;request)
-  services/orchestrator/app/api/observability.py:
-    e: rag_health,rag_diagnose,list_playbooks,export_logs,list_incidents,DiagnoseBody
-    DiagnoseBody:
-    rag_health(request)
-    rag_diagnose(body;request)
-    list_playbooks()
-    export_logs(request;correlation_id;limit)
-    list_incidents(request;limit)
-  services/orchestrator/app/api/queries.py:
-    e: get_task,get_agent,get_workflow,list_tasks,list_agents,_event_to_dict,TaskQuery,AgentQuery,WorkflowQuery,TaskListQuery
-    TaskQuery:
-    AgentQuery:
-    WorkflowQuery:
-    TaskListQuery:
-    get_task(task_id;request)
-    get_agent(agent_id;request)
-    get_workflow(workflow_id;request)
-    list_tasks(request;status;agent_id;limit;offset)
-    list_agents(request;limit;offset)
-    _event_to_dict(event)
-  services/orchestrator/app/api/rag.py:
-    e: rag_health,list_documents,search,ask,ingest_resource,_safe_rag_diagnostics,SearchQuery,AskQuery
-    SearchQuery:
-    AskQuery:
-    rag_health(request)
-    list_documents(request;limit)
-    search(body;request)
-    ask(body;request)
-    ingest_resource(resource_id;request)
-    _safe_rag_diagnostics(request)
-  services/orchestrator/app/application/__init__.py:
   services/orchestrator/app/application/command_bus.py:
     e: CommandBus
     CommandBus: __init__(2),handle(0),handle_envelope(1),_create_task(4),_assign_task(4),_start_task(4),_complete_task(4),_fail_task(4),_register_agent(4),_agent_heartbeat(4),_start_workflow(4),_propose_workflow_version(4),_validate_workflow_version(4),_approve_workflow_version(4),_activate_workflow_version(4),_rollback_workflow_version(4),_shadow_workflow_version(4),_propose_change(4),_propose_plugin(4),_validate_plugin(4),_install_plugin(4),_activate_plugin(4),_rollback_plugin(4),_create_approval(4),_approve_request(4),_reject_request(4),_expire_approval(4),_persist_workflow(4),_persist_plugin(4),_persist_approval(4),_load_workflow(1),_load_plugin(1),_load_approval(1),_load_task(1),_append_and_publish(3),_publish(2),_apply_policy(2),_register_resource(4),_request_transfer(4),_record_task_outcome(1),_result(2)
-  services/orchestrator/app/application/sagas/__init__.py:
-  services/orchestrator/app/application/sagas/approval_gate.py:
-    e: _is_skipped,ensure_approval,follow_up_after_grant,ApprovalRequired
-    ApprovalRequired: __init__(0)  # Komenda wymaga wcześniejszego ApprovalGranted.
-    _is_skipped(data;metadata)
-    ensure_approval(event_store;command_type;data)
-    follow_up_after_grant(command_bus)
-  services/orchestrator/app/application/sagas/task_routing.py:
-    e: pick_idle_agent,maybe_auto_assign
-    pick_idle_agent(event_store;required_capabilities)
-    maybe_auto_assign(command_bus)
-  services/orchestrator/app/config.py:
-    e: Settings
-    Settings: model_post_init(1)
-  services/orchestrator/app/domain/__init__.py:
-  services/orchestrator/app/domain/aggregates/__init__.py:
-  services/orchestrator/app/domain/aggregates/agent.py:
-    e: _utc_now,Agent
-    Agent: register(5),heartbeat(1),assign_task(1),mark_idle(0),get_uncommitted_events(0),mark_events_committed(0)
-    _utc_now()
-  services/orchestrator/app/domain/aggregates/approval.py:
-    e: ApprovalStatus,Approval
-    ApprovalStatus:
-    Approval: create_request(1),approve(1),reject(2),expire(0),get_uncommitted_events(0),mark_events_committed(0)
-  services/orchestrator/app/domain/aggregates/plugin.py:
-    e: PluginStatus,Plugin
-    PluginStatus:
-    Plugin: propose(5),validate(0),install(0),activate(0),rollback(1),get_uncommitted_events(0),mark_events_committed(0)
-  services/orchestrator/app/domain/aggregates/resource.py:
-    e: Resource
-    Resource: register(1),request_transfer(0),complete_transfer(2),fail_transfer(2),get_uncommitted_events(0),mark_events_committed(0)
-  services/orchestrator/app/domain/aggregates/task.py:
-    e: _event_type,_utc_now,_event_data,_event_timestamp,Task
-    Task: __init__(8),create(8),from_events(2),assign_to_agent(1),start(0),complete(1),fail(1),apply(1),get_uncommitted_events(0),mark_events_committed(0),to_dict(0)
-    _event_type(event)
-    _utc_now()
-    _event_data(event)
-    _event_timestamp(event)
-  services/orchestrator/app/domain/aggregates/workflow.py:
-    e: Workflow
-    Workflow: start(4),propose_version(4),validate_version(0),approve_version(1),shadow_version(1),activate_version(0),rollback_version(1),get_uncommitted_events(0),mark_events_committed(0)
-  services/orchestrator/app/domain/events/__init__.py:
-    e: _utc_now,_json_value,DomainEvent,TaskCreated,TaskAssigned,TaskStarted,TaskCompleted,TaskFailed,AgentRegistered,AgentHeartbeatReceived,TaskAssignedToAgent,AgentMarkedIdle,WorkflowStarted,WorkflowVersionProposed,WorkflowVersionValidated,WorkflowVersionApproved,WorkflowVersionShadowed,WorkflowVersionActivated,WorkflowVersionRolledBack,PluginProposed,PluginValidated,PluginInstalled,PluginActivated,PluginRolledBack,ApprovalRequested,ApprovalGranted,ApprovalRejected,ChangeProposed,CapabilityRegistered,ResourceRegistered,TransferRequested,TransferCompleted,TransferFailed,ApprovalExpired
-    DomainEvent: aggregate_id(0),data(0),to_message(0)
-    TaskCreated: aggregate_id(0),data(0)
-    TaskAssigned: aggregate_id(0),data(0)
-    TaskStarted: aggregate_id(0),data(0)
-    TaskCompleted: aggregate_id(0),data(0)
-    TaskFailed: aggregate_id(0),data(0)
-    AgentRegistered: aggregate_id(0),data(0)
-    AgentHeartbeatReceived: aggregate_id(0),data(0)
-    TaskAssignedToAgent: aggregate_id(0),data(0)
-    AgentMarkedIdle: aggregate_id(0),data(0)
-    WorkflowStarted: aggregate_id(0),data(0)
-    WorkflowVersionProposed: aggregate_id(0),data(0)
-    WorkflowVersionValidated: aggregate_id(0),data(0)
-    WorkflowVersionApproved: aggregate_id(0),data(0)
-    WorkflowVersionShadowed: aggregate_id(0),data(0)
-    WorkflowVersionActivated: aggregate_id(0),data(0)
-    WorkflowVersionRolledBack: aggregate_id(0),data(0)
-    PluginProposed: aggregate_id(0),data(0)
-    PluginValidated: aggregate_id(0),data(0)
-    PluginInstalled: aggregate_id(0),data(0)
-    PluginActivated: aggregate_id(0),data(0)
-    PluginRolledBack: aggregate_id(0),data(0)
-    ApprovalRequested: aggregate_id(0),data(0)
-    ApprovalGranted: aggregate_id(0),data(0)
-    ApprovalRejected: aggregate_id(0),data(0)
-    ChangeProposed: aggregate_id(0),data(0)
-    CapabilityRegistered: aggregate_id(0),data(0)
-    ResourceRegistered: aggregate_id(0),data(0)
-    TransferRequested: aggregate_id(0),data(0)
-    TransferCompleted: aggregate_id(0),data(0)
-    TransferFailed: aggregate_id(0),data(0)
-    ApprovalExpired: aggregate_id(0),data(0)
-    _utc_now()
-    _json_value(value)
-  services/orchestrator/app/domain/events/incidents.py:
-    e: RagRequestFailed,IncidentDetected,IncidentClassified,DiagnosticsStarted,DiagnosticsCompleted,RemediationStarted,RemediationSucceeded,RemediationFailed,PostRemediationVerificationPassed,PostRemediationVerificationFailed
-    RagRequestFailed: aggregate_id(0),data(0)
-    IncidentDetected: aggregate_id(0),data(0)
-    IncidentClassified: aggregate_id(0),data(0)
-    DiagnosticsStarted: aggregate_id(0),data(0)
-    DiagnosticsCompleted: aggregate_id(0),data(0)
-    RemediationStarted: aggregate_id(0),data(0)
-    RemediationSucceeded: aggregate_id(0),data(0)
-    RemediationFailed: aggregate_id(0),data(0)
-    PostRemediationVerificationPassed: aggregate_id(0),data(0)
-    PostRemediationVerificationFailed: aggregate_id(0),data(0)
-  services/orchestrator/app/domain/value_objects/__init__.py:
-    e: TaskId,AgentId,WorkflowId,PluginId,ApprovalId,ResourceId,Priority,TaskStatus,ExecutionMode,AgentStatus,WorkflowStatus
-    TaskId:
-    AgentId:
-    WorkflowId:
-    PluginId:
-    ApprovalId:
-    ResourceId:
-    Priority: from_value(2)
-    TaskStatus:
-    ExecutionMode: from_value(2)
-    AgentStatus:
-    WorkflowStatus:
-  services/orchestrator/app/evolution/__init__.py:
-  services/orchestrator/app/evolution/catalog.py:
-    e: ArchitectureCatalog
-    ArchitectureCatalog: __init__(1),_load_json(1),index(0),domains(0),capabilities(0),services(0),policies(0),list_events(0),get_event_schema(1),get_capability(1),as_graph(0)  # Samopiszący katalog architektury mullm (domains, events, cap
-  services/orchestrator/app/evolution/evaluation.py:
-    e: EvaluationEngine
-    EvaluationEngine: __init__(1),record_task_outcome(0),_upsert_metrics(0),should_auto_rollback(2)  # Pętla oceny skutków — metryki jakości ewolucji i runtime.
-  services/orchestrator/app/evolution/experiments.py:
-    e: ExperimentManager
-    ExperimentManager: __init__(1),start_experiment(0),complete_experiment(1),active_shadow(1)  # Shadow / canary — stan eksperymentu powiązany z wersją workf
-  services/orchestrator/app/evolution/policy_engine.py:
-    e: PolicyViolation,PolicyEngine
-    PolicyViolation: __init__(2)
-    PolicyEngine: __init__(1),rule_for(1),validate_command(2),validate_activation_metrics(3)  # Reguły first — AI proponuje tylko w granicach polityk z kata
-  services/orchestrator/app/incidents/__init__.py:
-  services/orchestrator/app/incidents/pipeline.py:
-    e: classify_rag_error,IncidentPipeline
-    IncidentPipeline: __init__(0),handle_rag_failure(0),_run_rag_diagnostics(1),_remediate_rag_incident(0),_verify_rag(1),_append_and_publish(2),_with_incident_id(2)
-    classify_rag_error(error)
-  services/orchestrator/app/infrastructure/__init__.py:
-  services/orchestrator/app/infrastructure/eventstore.py:
-    e: _loads_json,_utc_now,EventRecord,EventStore
-    EventRecord: to_message(0)
-    EventStore: __init__(1),append(3),get_events_for_aggregate(2),get_aggregate_ids(1),all_events(0),_record_from_row(1)
-    _loads_json(value)
-    _utc_now()
-  services/orchestrator/app/infrastructure/eventstore_dual.py:
-    e: DualEventStore
-    DualEventStore: __init__(2),append(3),get_events_for_aggregate(2),get_aggregate_ids(1),all_events(0)  # Zapis do Postgres (odczyt) + mirror do EventStoreDB.
-  services/orchestrator/app/infrastructure/eventstore_esdb.py:
-    e: _parse_esdb_uri,EsdbEventStore
-    EsdbEventStore: __init__(1),connect(0),disconnect(0),append(3),get_events_for_aggregate(2),get_aggregate_ids(1),all_events(0)  # Adapter EventStoreDB przez pakiet `esdbclient`.
-    _parse_esdb_uri(uri)
-  services/orchestrator/app/infrastructure/eventstore_factory.py:
-    e: build_event_store
-    build_event_store()
-  services/orchestrator/app/infrastructure/nats_bus.py:
-    e: NATSBus
-    NATSBus: __init__(1),connect(0),disconnect(0),publish(2),subscribe(2)
-  services/orchestrator/app/infrastructure/postgres.py:
-    e: PostgresConnection
-    PostgresConnection: __init__(1),connect(0),disconnect(0),execute(1),fetch(1),fetchrow(1),_run_schema_migrations(0)
-  services/orchestrator/app/main.py:
-    e: lifespan,health_check,root,_seed_capability_registry,_subscribe_shell_results
-    lifespan(app)
-    health_check()
-    root()
-    _seed_capability_registry(app)
-    _subscribe_shell_results(app)
-  services/orchestrator/app/observability/__init__.py:
-  services/orchestrator/app/observability/context.py:
-    e: new_correlation_id,new_retrieval_trace_id,get_correlation_id,get_retrieval_trace_id,get_chat_session_id,observability_context
-    new_correlation_id()
-    new_retrieval_trace_id()
-    get_correlation_id()
-    get_retrieval_trace_id()
-    get_chat_session_id()
-    observability_context()
   services/orchestrator/app/observability/export.py:
     e: format_logs_text,build_orchestrator_bundle
     format_logs_text(bundle)
     build_orchestrator_bundle()
-  services/orchestrator/app/observability/incidents.py:
-    e: classify_rag_failure,_event_payload,_query_from_trace,_check_names,_checks_payload,_root_cause,_event_status,_incident_class,_default_playbook,IncidentCode,IncidentRecorder
-    IncidentCode:
-    IncidentRecorder: record(0),_persist(1),_publish_event(2)
-    classify_rag_failure()
-    _event_payload(event_type;row)
-    _query_from_trace(trace_steps)
-    _check_names(diagnostics)
-    _checks_payload(diagnostics)
-    _root_cause(diagnostics;code)
-    _event_status(event_type;row)
-    _incident_class(code)
-    _default_playbook(code)
-  services/orchestrator/app/observability/logging.py:
-    e: log_event
-    log_event()
-  services/orchestrator/app/observability/middleware.py:
-    e: CorrelationMiddleware
-    CorrelationMiddleware: dispatch(2)
-  services/orchestrator/app/observability/rag_diagnostics.py:
-    e: RagDiagnostics
-    RagDiagnostics: run(0),_check_postgres(0),_check_rag_tables(0),_check_openrouter_config(0),_check_embedding(0),_check_search(1),_recommendations(1),_snapshot(1)
-  services/orchestrator/app/observability/rag_pipeline.py:
-    e: RagPipeline
-    RagPipeline: ask(0),_failure_payload(0)
-  services/orchestrator/app/rag/__init__.py:
-  services/orchestrator/app/rag/chunking.py:
-    e: chunk_text
-    chunk_text(text)
-  services/orchestrator/app/rag/indexer.py:
-    e: RagIndexer
-    RagIndexer: __init__(3),ingest_resource(0)  # Ingest zasobu po rejestracji — fetch → chunk → embed → store
-  services/orchestrator/app/rag/openrouter.py:
-    e: normalize_openrouter_model,OpenRouterClient
-    OpenRouterClient: __init__(1),configured(0),_headers(0),embed(1),chat(1),health(0)  # Klient OpenRouter — embeddings i chat (LLM_MODEL z .env).
-    normalize_openrouter_model(model)
-  services/orchestrator/app/rag/retriever.py:
-    e: RagRetriever
-    RagRetriever: __init__(2),search(1),ask(1)
-  services/orchestrator/app/rag/store.py:
-    e: _cosine,_parse_embedding,_row_dict,_chunk_hit,RagStore
-    RagStore: __init__(1),upsert_document_pending(0),mark_indexed(0),mark_failed(0),replace_chunks(0),list_documents(0),search(1),_keyword_fallback(1)
-    _cosine(a;b)
-    _parse_embedding(row)
-    _row_dict(row)
-    _chunk_hit(row;score)
-  services/orchestrator/tests/__init__.py:
-  services/orchestrator/tests/conftest.py:
-  services/orchestrator/tests/fakes.py:
-    e: FakeEventStore,FakeMessageBus
-    FakeEventStore: __init__(0),append(3),get_events_for_aggregate(2),get_aggregate_ids(1)
-    FakeMessageBus: __init__(0),publish(2)
-  services/orchestrator/tests/test_api.py:
-    e: client,test_create_task_endpoint_dispatches_command,test_generic_command_envelope_endpoint,test_get_task_query_returns_reconstructed_state,test_get_task_query_returns_404,StubCommandBus,StubEventStore
-    StubCommandBus: __init__(0),handle(0),handle_envelope(1)
-    StubEventStore: get_events_for_aggregate(2),get_aggregate_ids(1)
-    client()
-    test_create_task_endpoint_dispatches_command(client)
-    test_generic_command_envelope_endpoint(client)
-    test_get_task_query_returns_reconstructed_state(client)
-    test_get_task_query_returns_404(client)
-  services/orchestrator/tests/test_command_bus.py:
-    e: test_command_bus_creates_assigns_and_completes_task,test_command_bus_registers_agent
-    test_command_bus_creates_assigns_and_completes_task()
-    test_command_bus_registers_agent()
-  services/orchestrator/tests/test_observability.py:
-    e: test_classify_llm_unavailable,test_classify_empty_sources,test_classify_grounding,test_classify_backend_500
-    test_classify_llm_unavailable()
-    test_classify_empty_sources()
-    test_classify_grounding()
-    test_classify_backend_500()
-  services/orchestrator/tests/test_task_aggregate.py:
-    e: test_task_rehydrates_from_domain_events,test_task_cannot_complete_before_assignment
-    test_task_rehydrates_from_domain_events()
-    test_task_cannot_complete_before_assignment()
-  services/projector/app/__init__.py:
-  services/projector/app/db.py:
-    e: Database
-    Database: __init__(1),connect(0),disconnect(0),execute(1),fetch(1),_run_schema_migrations(0)
-  services/projector/app/main.py:
-    e: lifespan,health_check,operational_feed,task_board,agent_fleet,approval_requests,plugin_catalog,rag_documents,incident_feed,service_health,remediation_history,rag_quality_board,resource_registry,workflow_versions,_row_to_dict
-    lifespan(app)
-    health_check()
-    operational_feed(limit;offset)
-    task_board(status;limit;offset)
-    agent_fleet(status;limit;offset)
-    approval_requests(status;limit;offset)
-    plugin_catalog(status;limit;offset)
-    rag_documents(limit;offset)
-    incident_feed(status;limit;offset)
-    service_health(limit;offset)
-    remediation_history(limit;offset)
-    rag_quality_board(limit;offset)
-    resource_registry(limit;offset)
-    workflow_versions(limit;offset)
-    _row_to_dict(row)
-  services/projector/app/projections/__init__.py:
-  services/projector/app/projections/agent_fleet.py:
-    e: project_agent_fleet
-    project_agent_fleet(db;event)
-  services/projector/app/projections/approval_requests.py:
-    e: project_approval_requests
-    project_approval_requests(db;event)
-  services/projector/app/projections/dispatcher.py:
-    e: project_event,_normalize_event
-    project_event(db;event)
-    _normalize_event(event)
-  services/projector/app/projections/incidents.py:
-    e: project_incidents,_handle_rag_request_failed,_handle_incident_detected,_handle_incident_classified,_handle_diagnostics_started,_handle_diagnostics_completed,_handle_remediation_started,_handle_remediation_finished,_handle_post_remediation_verification,_upsert_rag_quality,_upsert_service_health,_update_incident_status,_error_code,_checks_payload,_root_cause,_diagnostics_ok
-    project_incidents(db;event)
-    _handle_rag_request_failed(db;event)
-    _handle_incident_detected(db;event)
-    _handle_incident_classified(db;event)
-    _handle_diagnostics_started(db;event)
-    _handle_diagnostics_completed(db;event)
-    _handle_remediation_started(db;event)
-    _handle_remediation_finished(db;event)
-    _handle_post_remediation_verification(db;event)
-    _upsert_rag_quality(db;payload;occurred_at)
-    _upsert_service_health(db)
-    _update_incident_status(db;incident_id;status;occurred_at)
-    _error_code(payload)
-    _checks_payload(payload)
-    _root_cause(payload)
-    _diagnostics_ok(checks)
-  services/projector/app/projections/operational_feed.py:
-    e: project_operational_feed,_title_for,_summary_for
-    project_operational_feed(db;event)
-    _title_for(event_type;payload)
-    _summary_for(event_type;payload)
-  services/projector/app/projections/plugin_catalog.py:
-    e: project_plugin_catalog
-    project_plugin_catalog(db;event)
-  services/projector/app/projections/resource_registry.py:
-    e: project_resource_registry
-    project_resource_registry(db;event)
-  services/projector/app/projections/task_board.py:
-    e: project_task_board,_update_status
-    project_task_board(db;event)
-    _update_status(db;task_id;status;event_type;occurred_at)
-  services/projector/app/projections/workflow_versions.py:
-    e: project_workflow_versions
-    project_workflow_versions(db;event)
-  services/web/app/__init__.py:
-  services/web/app/access_matrix.py:
-    e: _matrix_path,_default_resources,_default_agents,_empty_agent_resource,_empty_human_agent,default_state,load_state,_merge_bool_matrix,_reindex_state,save_state,agent_may_access_resource,human_may_use_agent,diagnose_file_list_command
-    _matrix_path()
-    _default_resources()
-    _default_agents()
-    _empty_agent_resource(resources;agents)
-    _empty_human_agent(agents;humans)
-    default_state()
-    load_state()
-    _merge_bool_matrix(base;patch)
-    _reindex_state(state)
-    save_state(state)
-    agent_may_access_resource(agent_id;resource_id)
-    human_may_use_agent(human_id;agent_id)
-    diagnose_file_list_command()
-  services/web/app/agent_workroom.py:
-    e: create_workroom,get_workroom,_plan_steps,_extract_shell,run_workroom,workroom_catalog,LedgerEntry,WorkroomSession
-    LedgerEntry: to_dict(0)
-    WorkroomSession: add_ledger(3),agent_say(3),to_dict(0)
-    create_workroom()
-    get_workroom(workroom_id)
-    _plan_steps(goal)
-    _extract_shell(text)
-    run_workroom(workroom_id;user_message)
-    workroom_catalog()
-  services/web/app/api_routes.py:
-    e: start_chat_session,get_chat_session,workspace_state,chat_message,task_draft,create_task,create_task_from_draft,create_and_run_task,context_attach,upload_files,board_snapshot,list_tickets,get_ticket,confirm_ticket,archive_ticket,link_ticket,ticket_statuses,workspace_list_artifacts,workspace_get_artifact,workspace_file_list_export,workspace_chat_export,workspace_logs_export,workroom_start,workroom_get,workroom_run,api_resource_areas,api_role_scopes,access_matrix_get,access_matrix_put,access_matrix_reset,access_diagnose_file_list,ChatSessionStart,ChatMessage,TaskDraftRequest,CreateTaskBody,CreateFromDraftBody,ConfirmTicketBody,ContextAttachBody,SessionRef,WorkroomStart,WorkroomMessage,AccessMatrixBody
-    ChatSessionStart:
-    ChatMessage:
-    TaskDraftRequest:
-    CreateTaskBody:
-    CreateFromDraftBody:
-    ConfirmTicketBody:
-    ContextAttachBody:
-    SessionRef:
-    WorkroomStart:
-    WorkroomMessage:
-    AccessMatrixBody:
-    start_chat_session(body)
-    get_chat_session(session_id)
-    workspace_state(session_id)
-    chat_message(body)
-    task_draft(body)
-    create_task(body)
-    create_task_from_draft(body)
-    create_and_run_task(body)
-    context_attach(body)
-    upload_files(session_id;files;classification)
-    board_snapshot()
-    list_tickets(session_id;view)
-    get_ticket(task_id;session_id)
-    confirm_ticket(task_id;body)
-    archive_ticket(task_id;body)
-    link_ticket(task_id;body)
-    ticket_statuses()
-    workspace_list_artifacts(session_id)
-    workspace_get_artifact(session_id;artifact_id)
-    workspace_file_list_export(session_id;message;scope)
-    workspace_chat_export(session_id)
-    workspace_logs_export(session_id;limit)
-    workroom_start(body)
-    workroom_get(workroom_id)
-    workroom_run(workroom_id;body)
-    api_resource_areas()
-    api_role_scopes()
-    access_matrix_get()
-    access_matrix_put(body)
-    access_matrix_reset()
-    access_diagnose_file_list()
   services/web/app/chat.py:
     e: _orch,_projector,is_file_list_intent,file_list_scope,_uri_is_user_resource,_uri_is_system_resource,filter_file_inventory,_dedupe_rows_by_uri,fetch_file_inventory,format_file_list_reply,_append_session_files,_format_scope_uri,_append_resource_rows,_empty_resource_hint,_append_rag_rows,_append_file_list_errors,_append_file_list_tip,build_file_list_artifact,new_session_id,get_history,_append,_format_history,_format_incident,handle_message,_file_list_answer,_ask_rag,_rag_headers,_rag_query,_answer_from_rag_payload,_sources_fallback_answer,_source_preview,_rag_backend_fallback,_rag_search_fallback,_rag_unavailable_answer,_rag_diagnostics_hint,_default_chat_reply,_message_response,create_task
     _orch()
@@ -700,57 +204,130 @@ D:
     _default_chat_reply()
     _message_response()
     create_task()
-  services/web/app/conductor.py:
-    e: handle_turn,_nlp2dsl_turn,_call_nlp2dsl,_nlp_output_base,_in_progress_turn,_ready_turn,_ready_action_payload,_system_file_list_payload,_shell_task_payload,_shell_clarify_payload,_ticket_payload,_task_reply,_closed_turn,_append_turn,_mullm_file_list_turn,_fallback_turn,_local_clarify,_extract_shell
-    handle_turn()
-    _nlp2dsl_turn()
-    _call_nlp2dsl(nlp_conversation_id;message)
-    _nlp_output_base(cid;status)
-    _in_progress_turn(session_id;message;resp;cid;status;assistant)
-    _ready_turn()
-    _ready_action_payload(action)
-    _system_file_list_payload(session_id;message;scope_files;scope_uris)
-    _shell_task_payload(session_id;message;cfg;cid;wait_for_confirmation)
-    _shell_clarify_payload(cid)
-    _ticket_payload(session_id;message;cfg;wait_for_confirmation)
-    _task_reply(result)
-    _closed_turn(session_id;message;cid;status;assistant)
-    _append_turn(session_id;message;out)
-    _mullm_file_list_turn()
-    _fallback_turn()
-    _local_clarify(message)
-    _extract_shell(text)
-  services/web/app/main.py:
-    e: health,workspace_home,agent_workroom_page,access_matrix_page,dashboard
-    health()
-    workspace_home(request;task_id)
-    agent_workroom_page(request)
-    access_matrix_page(request)
-    dashboard(request)
-  services/web/app/nlp2dsl_bridge.py:
-    e: backend_url,backend_candidates,health,chat_start,chat_message,_post_json,form_to_prompt,primary_action,step_config
-    backend_url()
-    backend_candidates()
-    health()
-    chat_start(text)
-    chat_message(conversation_id;text)
-    _post_json(path;payload)
-    form_to_prompt(form;values)
-    primary_action(dsl)
-    step_config(dsl)
-  services/web/app/resource_areas.py:
-    e: list_areas,list_groups,agent_may_access
-    list_areas()
-    list_groups()
-    agent_may_access(role_id;area_id;action)
-  services/web/app/tickets.py:
-    e: ticket_uri,ticket_web_path,status_meta,enrich_task
-    ticket_uri(task_id)
-    ticket_web_path(task_id)
-    status_meta(status)
-    enrich_task(row)
+  services/web/app/static/workspace.js:
+    e: sessionId,currentDraft,selectedTaskId,pendingClarify,artifactFullCache,selectedArtifactId,ticketWebUrl,ticketUri,toast,api,r,data,detail,ensureSession,data,loadTickets,data,refreshWorkspace,state,t,filterTasks,q,loadTicketDetail,t,selectTicket,t,renderTicketDetail,sk,stClass,color,confirmTicket,archiveTicket,initRouting,deep,m,id,m2,renderContext,names,renderDraft,renderClarify,fields,req,collectClarifyValues,fd,renderSessionEvents,formatChatContent,renderChat,items,meta,appendMsg,cacheArtifactFull,syncArtifacts,clearArtifactPreview,renderArtifactList,active,when,selectArtifact,art,showArtifactPreview,hasText,hasJson,downloadArtifact,name,url,link,msgRoleLabel,appendMsgTo,div,raw,head,label,copyBtn,body,m,renderTasks,items,active,sk,stClass,color,renderFileChips,escapeHtml,saveContextFromForm,syncContextNote,uploadFiles,fd,data,sendChat,formValues,text,data,createFromDraft,text,drafted,data,tid,openTicketDialogFromDraft,d,input,copyText,ta,buildChatTextFromDom,body,label,copyChatToClipboard,data,copyChatViewToClipboard,copyLogsToClipboard,data,bindCopyChatButtons,handlerFull,handlerView,art,art,note,submitTaskForm,fd,wait,items
+    sessionId()
+    currentDraft()
+    selectedTaskId()
+    pendingClarify()
+    artifactFullCache()
+    selectedArtifactId()
+    ticketWebUrl()
+    ticketUri()
+    toast()
+    api()
+    r()
+    data()
+    detail()
+    ensureSession()
+    data()
+    loadTickets()
+    data()
+    refreshWorkspace()
+    state()
+    t()
+    filterTasks()
+    q()
+    loadTicketDetail()
+    t()
+    selectTicket()
+    t()
+    renderTicketDetail()
+    sk()
+    stClass()
+    color()
+    confirmTicket()
+    archiveTicket()
+    initRouting()
+    deep()
+    m()
+    id()
+    m2()
+    renderContext()
+    names()
+    renderDraft()
+    renderClarify()
+    fields()
+    req()
+    collectClarifyValues()
+    fd()
+    renderSessionEvents()
+    formatChatContent()
+    renderChat()
+    items()
+    meta()
+    appendMsg()
+    cacheArtifactFull()
+    syncArtifacts()
+    clearArtifactPreview()
+    renderArtifactList()
+    active()
+    when()
+    selectArtifact()
+    art()
+    showArtifactPreview()
+    hasText()
+    hasJson()
+    downloadArtifact()
+    name()
+    url()
+    link()
+    msgRoleLabel()
+    appendMsgTo()
+    div()
+    raw()
+    head()
+    label()
+    copyBtn()
+    body()
+    m()
+    renderTasks()
+    items()
+    active()
+    sk()
+    stClass()
+    color()
+    renderFileChips()
+    escapeHtml()
+    saveContextFromForm()
+    syncContextNote()
+    uploadFiles()
+    fd()
+    data()
+    sendChat()
+    formValues()
+    text()
+    data()
+    createFromDraft()
+    text()
+    drafted()
+    data()
+    tid()
+    openTicketDialogFromDraft()
+    d()
+    input()
+    copyText()
+    ta()
+    buildChatTextFromDom()
+    body()
+    label()
+    copyChatToClipboard()
+    data()
+    copyChatViewToClipboard()
+    copyLogsToClipboard()
+    data()
+    bindCopyChatButtons()
+    handlerFull()
+    handlerView()
+    art()
+    art()
+    note()
+    submitTaskForm()
+    fd()
+    wait()
+    items()
   services/web/app/workspace.py:
-    e: _orch,_projector,new_session,get_session,get_or_create,_artifact_title,register_artifact,artifact_summaries,get_artifact,workspace_state,attach_context,_extract_ticket,_extract_shell_command,build_task_payload,propose_task_draft,create_task_immediate,handle_chat_message,create_task_from_draft,create_and_run,export_debug_logs,_format_export_text,archive_task,link_ticket,fetch_live_board,WorkspaceContext,WorkspaceSession
+    e: WorkspaceContext,WorkspaceSession,_orch,_projector,new_session,get_session,get_or_create,_artifact_title,register_artifact,artifact_summaries,get_artifact,workspace_state,attach_context,_extract_ticket,_extract_shell_command,build_task_payload,propose_task_draft,create_task_immediate,handle_chat_message,create_task_from_draft,create_and_run,export_debug_logs,_format_export_text,_append_context_section,_append_inventory_section,_append_history_section,_append_draft_section,_append_session_events_section,_event_extra,_append_rag_health_section,_append_incidents_section,_append_rag_snapshots_section,_session_rag_snapshots,_append_operational_feed_section,archive_task,link_ticket,fetch_live_board
     WorkspaceContext: to_dict(0)
     WorkspaceSession: add_event(2)
     _orch()
@@ -774,149 +351,747 @@ D:
     create_and_run(session_id)
     export_debug_logs(session_id)
     _format_export_text(bundle)
+    _append_context_section(lines;ctx)
+    _append_inventory_section(lines;inv)
+    _append_history_section(lines;history)
+    _append_draft_section(lines;sess)
+    _append_session_events_section(lines;events)
+    _event_extra(ev)
+    _append_rag_health_section(lines;rag)
+    _append_incidents_section(lines;incidents)
+    _append_rag_snapshots_section(lines;bundle)
+    _session_rag_snapshots(bundle)
+    _append_operational_feed_section(lines;feed)
     archive_task(session_id;task_id)
     link_ticket(session_id;task_id)
     fetch_live_board()
-  services/web/tests/test_access_matrix.py:
-    e: matrix_file,test_default_all_checked,test_save_and_deny,test_diagnose_file_list_no_shell
-    matrix_file(monkeypatch)
-    test_default_all_checked(matrix_file)
-    test_save_and_deny(matrix_file)
-    test_diagnose_file_list_no_shell()
-  services/web/tests/test_agent_workroom.py:
-    e: test_plan_includes_files_for_lista_plikow,test_files_agent_may_list_rag,test_mail_agent_denied_rag,test_groups_nonempty,test_workroom_session_dict
-    test_plan_includes_files_for_lista_plikow()
-    test_files_agent_may_list_rag()
-    test_mail_agent_denied_rag()
-    test_groups_nonempty()
-    test_workroom_session_dict()
-  services/web/tests/test_artifacts.py:
-    e: test_register_and_get_artifact
-    test_register_and_get_artifact()
-  services/web/tests/test_chat_intent.py:
-    e: test_file_list_intent_pl,test_format_file_list,test_file_list_scope_usera,test_filter_user_files,test_file_list_artifact,test_format_user_scope_title,test_dedupe_rag_documents_by_uri,test_handle_message_file_list_builds_artifact
-    test_file_list_intent_pl()
-    test_format_file_list()
-    test_file_list_scope_usera()
-    test_filter_user_files()
-    test_file_list_artifact()
-    test_format_user_scope_title()
-    test_dedupe_rag_documents_by_uri()
-    test_handle_message_file_list_builds_artifact(monkeypatch)
-  tests/conftest.py:
-    e: fake_postgres,fake_bus,event_store,catalog,command_bus,sample_command_id,orchestrator_app,api_client,FakeRow,InMemoryPostgres,FakeMessageBus
-    FakeRow: __getitem__(1),get(2),keys(0)
-    InMemoryPostgres: __init__(0),connect(0),disconnect(0),execute(1),fetchrow(1),fetch(1),_event_row(1)
-    FakeMessageBus: __init__(0),publish(2)
-    fake_postgres()
-    fake_bus()
-    event_store(fake_postgres)
-    catalog()
-    command_bus(event_store;fake_bus;fake_postgres;catalog)
-    sample_command_id()
-    orchestrator_app(command_bus;event_store;fake_postgres;catalog)
-    api_client(orchestrator_app)
-  tests/test_access_fabric.py:
-    e: test_parse_and_build_uri,test_localfs_probe_and_fetch,test_register_and_transfer_resource
-    test_parse_and_build_uri()
-    test_localfs_probe_and_fetch(tmp_path)
-    test_register_and_transfer_resource(command_bus;tmp_path)
-  tests/test_agent_aggregate.py:
-    e: test_register_agent,test_assign_task_marks_busy,test_disabled_agent_cannot_take_task
-    test_register_agent()
-    test_assign_task_marks_busy()
-    test_disabled_agent_cannot_take_task()
-  tests/test_api_orchestrator.py:
-    e: test_health_not_on_minimal_app,test_register_agent_api,test_approval_api_flow,test_plugin_api_flow,test_workflow_version_api,test_command_envelope
-    test_health_not_on_minimal_app(api_client)
-    test_register_agent_api(api_client)
-    test_approval_api_flow(api_client)
-    test_plugin_api_flow(api_client)
-    test_workflow_version_api(api_client)
-    test_command_envelope(api_client)
-  tests/test_approval_aggregate.py:
-    e: test_approval_request_and_grant,test_cannot_approve_twice
-    test_approval_request_and_grant()
-    test_cannot_approve_twice()
-  tests/test_approval_gate.py:
-    e: test_activate_plugin_requires_approval,test_activate_plugin_with_granted_approval,test_skip_approval_for_dev,test_ensure_approval_rejects_wrong_target
-    test_activate_plugin_requires_approval(command_bus)
-    test_activate_plugin_with_granted_approval(command_bus)
-    test_skip_approval_for_dev(command_bus)
-    test_ensure_approval_rejects_wrong_target(command_bus)
-  tests/test_command_bus.py:
-    e: test_create_and_assign_task,test_register_agent_and_heartbeat,test_approval_flow,test_plugin_and_workflow_version_flow
-    test_create_and_assign_task(command_bus;fake_bus)
-    test_register_agent_and_heartbeat(command_bus)
-    test_approval_flow(command_bus)
-    test_plugin_and_workflow_version_flow(command_bus)
-  tests/test_e2e_flow.py:
-    e: test_full_task_lifecycle
-    test_full_task_lifecycle(command_bus;fake_bus)
-  tests/test_eventstore_factory.py:
-    e: test_build_postgres_backend,test_build_dual_without_esdb_falls_back
-    test_build_postgres_backend(fake_postgres)
-    test_build_dual_without_esdb_falls_back(fake_postgres)
-  tests/test_evolution_layer.py:
-    e: catalog,test_catalog_loads_events,test_catalog_graph,test_policy_requires_plugin_manifest,test_policy_accepts_full_manifest,test_shadow_workflow,test_propose_change
-    catalog()
-    test_catalog_loads_events(catalog)
-    test_catalog_graph(catalog)
-    test_policy_requires_plugin_manifest(catalog)
-    test_policy_accepts_full_manifest(catalog)
-    test_shadow_workflow(command_bus)
-    test_propose_change(command_bus)
-  tests/test_incident_observability.py:
-    e: test_observability_playbooks_are_exposed,test_incident_recorder_publishes_projectable_events,test_rag_search_failure_returns_incident_payload,test_project_incidents_accepts_legacy_incident_code_payload,_load_project_incidents,RecordingDb
-    RecordingDb: __init__(0),execute(1)
-    test_observability_playbooks_are_exposed()
-    test_incident_recorder_publishes_projectable_events(fake_postgres;fake_bus)
-    test_rag_search_failure_returns_incident_payload(fake_postgres;fake_bus)
-    test_project_incidents_accepts_legacy_incident_code_payload()
-    _load_project_incidents()
-  tests/test_integration_postgres.py:
-    e: live_command_bus,test_create_task_persisted
-    live_command_bus()
-    test_create_task_persisted(live_command_bus)
-  tests/test_plugin_aggregate.py:
-    e: test_plugin_lifecycle,test_cannot_install_before_validate
-    test_plugin_lifecycle()
-    test_cannot_install_before_validate()
-  tests/test_projections.py:
-    e: _project_event,_event,test_task_created_updates_task_board_and_feed,test_approval_requested_projection,RecordingDB
-    RecordingDB: __init__(0),execute(1)
-    _project_event()
-    _event(event_type;aggregate_type;aggregate_id;payload)
-    test_task_created_updates_task_board_and_feed()
-    test_approval_requested_projection()
-  tests/test_projector_routes.py:
-    e: _projector_app,test_projector_get_routes_are_unique
-    _projector_app()
-    test_projector_get_routes_are_unique()
-  tests/test_rag.py:
-    e: test_chunk_text_overlap,test_auto_ingest_on_register,test_rag_search_keyword,test_rag_ask_without_api_key,test_openrouter_embed_mock
-    test_chunk_text_overlap()
-    test_auto_ingest_on_register(command_bus;fake_postgres;tmp_path)
-    test_rag_search_keyword(fake_postgres)
-    test_rag_ask_without_api_key(fake_postgres)
-    test_openrouter_embed_mock()
-  tests/test_shell_executor.py:
-    e: _run_shell_command,test_run_shell_command_success,test_run_shell_command_failure,test_run_shell_command_timeout
-    _run_shell_command(command;timeout_seconds)
-    test_run_shell_command_success()
-    test_run_shell_command_failure()
-    test_run_shell_command_timeout()
-  tests/test_task_aggregate.py:
-    e: test_create_task_emits_task_created,test_assign_and_complete_lifecycle,test_cannot_complete_without_assignment,test_replay_from_events
-    test_create_task_emits_task_created()
-    test_assign_and_complete_lifecycle()
-    test_cannot_complete_without_assignment()
-    test_replay_from_events()
-  tests/test_task_routing.py:
-    e: test_pick_idle_agent,test_auto_assign_after_create
-    test_pick_idle_agent(command_bus)
-    test_auto_assign_after_create(command_bus)
-  tests/test_workflow_aggregate.py:
-    e: test_start_workflow,test_version_lifecycle
-    test_start_workflow()
-    test_version_lifecycle()
+  services/orchestrator/app/observability/incidents.py:
+    e: IncidentCode,IncidentRecorder,classify_rag_failure,_event_payload,_query_from_trace,_check_names,_checks_payload,_root_cause,_event_status,_incident_class,_default_playbook
+    IncidentCode(str,Enum):
+    IncidentRecorder: record(0),_persist(1),_publish_event(2)
+    classify_rag_failure()
+    _event_payload(event_type;row)
+    _query_from_trace(trace_steps)
+    _check_names(diagnostics)
+    _checks_payload(diagnostics)
+    _root_cause(diagnostics;code)
+    _event_status(event_type;row)
+    _incident_class(code)
+    _default_playbook(code)
+  services/web/app/static/app.js:
+    e: sessionId,toast,appendMessage,div,m,renderHistory,ensureSession,r,data,uploadFiles,files,fd,r,data,text,uploaded,r,data,fd,r,data,rowTask,escapeHtml,refreshTables,r,data,tasksBody,tasks
+    sessionId()
+    toast()
+    appendMessage()
+    div()
+    m()
+    renderHistory()
+    ensureSession()
+    r()
+    data()
+    uploadFiles()
+    files()
+    fd()
+    r()
+    data()
+    text()
+    uploaded()
+    r()
+    data()
+    fd()
+    r()
+    data()
+    rowTask()
+    escapeHtml()
+    refreshTables()
+    r()
+    data()
+    tasksBody()
+    tasks()
+  services/web/src/main.jsx:
+    i: lucide-react,react,react-dom/client
+    e: ORCHESTRATOR_URL,PROJECTOR_URL,App,metrics,active,completed,failed,refresh,createTask,createResponse,created,taskId,assignResponse,timer
+    ORCHESTRATOR_URL()
+    PROJECTOR_URL()
+    App()
+    metrics()
+    active()
+    completed()
+    failed()
+    refresh()
+    createTask()
+    createResponse()
+    created()
+    taskId()
+    assignResponse()
+    timer()
+  services/orchestrator/app/incidents/pipeline.py:
+    e: IncidentPipeline,classify_rag_error
+    IncidentPipeline: __init__(0),handle_rag_failure(0),_run_rag_diagnostics(1),_remediate_rag_incident(0),_verify_rag(1),_append_and_publish(2),_with_incident_id(2)
+    classify_rag_error(error)
+  services/orchestrator/app/evolution/policy_engine.py:
+    e: PolicyViolation,PolicyEngine
+    PolicyViolation(Exception): __init__(2)
+    PolicyEngine: __init__(1),rule_for(1),validate_command(2),validate_activation_metrics(3)  # Reguły first — AI proponuje tylko w granicach polityk z kata...
+  services/orchestrator/app/rag/indexer.py:
+    e: RagIndexer
+    RagIndexer: __init__(3),ingest_resource(0)  # Ingest zasobu po rejestracji — fetch → chunk → embed → store...
+  services/orchestrator/app/evolution/evaluation.py:
+    e: EvaluationEngine
+    EvaluationEngine: __init__(1),record_task_outcome(0),_upsert_metrics(0),should_auto_rollback(2)  # Pętla oceny skutków — metryki jakości ewolucji i runtime...
+  services/web/app/agent_workroom.py:
+    e: LedgerEntry,WorkroomSession,create_workroom,get_workroom,_plan_steps,_build_file_list_for_goal,format_workroom_export,_extract_shell,run_workroom,_reset_workroom,_start_plan,_workspace_scope,_run_workroom_step,_run_analyze_step,_run_files_step,_add_permission,_record_file_list_result,_register_file_list_artifact,_run_shell_step,_record_shell_result,_run_summarize_step,_finish_workroom,workroom_catalog
+    LedgerEntry: to_dict(0)
+    WorkroomSession: add_ledger(3),agent_say(3),to_dict(0)
+    create_workroom()
+    get_workroom(workroom_id)
+    _plan_steps(goal)
+    _build_file_list_for_goal(goal)
+    format_workroom_export(session)
+    _extract_shell(text)
+    run_workroom(workroom_id;user_message)
+    _reset_workroom(session;user_message)
+    _start_plan(session;user_message)
+    _workspace_scope(session)
+    _run_workroom_step(session;step;user_message)
+    _run_analyze_step(session)
+    _run_files_step(session;step;user_message)
+    _add_permission(session;agent_id;summary;status;perm)
+    _record_file_list_result(session;reply;scope_kind)
+    _register_file_list_artifact(session;reply;inventory;scope_kind;user_message)
+    _run_shell_step(session;user_message)
+    _record_shell_result(session;result;wait_for_confirmation)
+    _run_summarize_step(session)
+    _finish_workroom(session;final_parts)
+    workroom_catalog()
+  services/web/app/access_matrix.py:
+    e: _matrix_path,_default_resources,_default_agents,_empty_agent_resource,_empty_human_agent,default_state,load_state,_merge_bool_matrix,_reindex_state,save_state,agent_may_access_resource,human_may_use_agent,diagnose_file_list_command
+    _matrix_path()
+    _default_resources()
+    _default_agents()
+    _empty_agent_resource(resources;agents)
+    _empty_human_agent(agents;humans)
+    default_state()
+    load_state()
+    _merge_bool_matrix(base;patch)
+    _reindex_state(state)
+    save_state(state)
+    agent_may_access_resource(agent_id;resource_id)
+    human_may_use_agent(human_id;agent_id)
+    diagnose_file_list_command()
+  services/orchestrator/app/observability/rag_diagnostics.py:
+    e: RagDiagnostics
+    RagDiagnostics: run(0),_check_postgres(0),_check_rag_tables(0),_check_openrouter_config(0),_check_embedding(0),_check_search(1),_recommendations(1),_snapshot(1)
+  services/web/app/static/workroom.js:
+    e: workroomId,userSessionId,toast,api,r,data,escapeHtml,ensureWorkroom,data,renderCatalog,loadAreas,data,renderThread,st,renderLedger,lastState,renderState,copyText,ta,buildLedgerExport,buildFallbackExport,who,text,copyWorkroomAll,data,copyWorkroomLogs,data,state,runAgents,text,data,refresh,data
+    workroomId()
+    userSessionId()
+    toast()
+    api()
+    r()
+    data()
+    escapeHtml()
+    ensureWorkroom()
+    data()
+    renderCatalog()
+    loadAreas()
+    data()
+    renderThread()
+    st()
+    renderLedger()
+    lastState()
+    renderState()
+    copyText()
+    ta()
+    buildLedgerExport()
+    buildFallbackExport()
+    who()
+    text()
+    copyWorkroomAll()
+    data()
+    copyWorkroomLogs()
+    data()
+    state()
+    runAgents()
+    text()
+    data()
+    refresh()
+    data()
+  services/projector/app/projections/operational_feed.py:
+    e: project_operational_feed,_title_for,_summary_for
+    project_operational_feed(db;event)
+    _title_for(event_type;payload)
+    _summary_for(event_type;payload)
+  services/web/app/static/access.js:
+    e: state,toast,api,r,data,escapeHtml,renderAgentResourceMatrix,resources,agents,matrix,checked,renderHumanAgentMatrix,agents,humans,matrix,checked,renderAll,load,diag,save,res,resetAll,res,id,title
+    state()
+    toast()
+    api()
+    r()
+    data()
+    escapeHtml()
+    renderAgentResourceMatrix()
+    resources()
+    agents()
+    matrix()
+    checked()
+    renderHumanAgentMatrix()
+    agents()
+    humans()
+    matrix()
+    checked()
+    renderAll()
+    load()
+    diag()
+    save()
+    res()
+    resetAll()
+    res()
+    id()
+    title()
+  services/orchestrator/app/domain/aggregates/task.py:
+    e: Task,_event_type,_utc_now,_event_data,_event_timestamp
+    Task: __init__(8),create(7),from_events(1),assign_to_agent(1),start(0),complete(1),fail(1),apply(1),get_uncommitted_events(0),mark_events_committed(0),to_dict(0)
+    _event_type(event)
+    _utc_now()
+    _event_data(event)
+    _event_timestamp(event)
+  services/web/app/prompt_router.py:
+    e: RouteDecision,_shell_prefix,decide_route_rules,decide_route_llm,decide_route
+    RouteDecision: to_dict(0)
+    _shell_prefix(message)
+    decide_route_rules(message)
+    decide_route_llm(message)
+    decide_route(message)
+  services/projector/app/projections/incidents.py:
+    e: project_incidents,_handle_rag_request_failed,_handle_incident_detected,_handle_incident_classified,_handle_diagnostics_started,_handle_diagnostics_completed,_handle_remediation_started,_handle_remediation_finished,_handle_post_remediation_verification,_upsert_rag_quality,_upsert_service_health,_update_incident_status,_error_code,_checks_payload,_root_cause,_diagnostics_ok
+    project_incidents(db;event)
+    _handle_rag_request_failed(db;event)
+    _handle_incident_detected(db;event)
+    _handle_incident_classified(db;event)
+    _handle_diagnostics_started(db;event)
+    _handle_diagnostics_completed(db;event)
+    _handle_remediation_started(db;event)
+    _handle_remediation_finished(db;event)
+    _handle_post_remediation_verification(db;event)
+    _upsert_rag_quality(db;payload;occurred_at)
+    _upsert_service_health(db)
+    _update_incident_status(db;incident_id;status;occurred_at)
+    _error_code(payload)
+    _checks_payload(payload)
+    _root_cause(payload)
+    _diagnostics_ok(checks)
+  services/orchestrator/app/rag/store.py:
+    e: RagStore,_cosine,_parse_embedding,_row_dict,_chunk_hit
+    RagStore: __init__(1),upsert_document_pending(0),mark_indexed(0),mark_failed(0),replace_chunks(0),list_documents(0),search(1),_keyword_fallback(1)
+    _cosine(a;b)
+    _parse_embedding(row)
+    _row_dict(row)
+    _chunk_hit(row;score)
+  services/orchestrator/app/application/sagas/task_routing.py:
+    e: pick_idle_agent,maybe_auto_assign
+    pick_idle_agent(event_store;required_capabilities)
+    maybe_auto_assign(command_bus)
+  services/orchestrator/app/observability/rag_pipeline.py:
+    e: RagPipeline
+    RagPipeline: ask(0),_failure_payload(0)
+  services/orchestrator/app/api/queries.py:
+    e: TaskQuery,AgentQuery,WorkflowQuery,TaskListQuery,get_task,get_agent,get_workflow,list_tasks,list_agents,_event_to_dict
+    TaskQuery(BaseModel):
+    AgentQuery(BaseModel):
+    WorkflowQuery(BaseModel):
+    TaskListQuery(BaseModel):
+    get_task(task_id;request)
+    get_agent(agent_id;request)
+    get_workflow(workflow_id;request)
+    list_tasks(request;status;agent_id;limit;offset)
+    list_agents(request;limit;offset)
+    _event_to_dict(event)
+  services/projector/app/projections/task_board.py:
+    e: project_task_board,_update_status
+    project_task_board(db;event)
+    _update_status(db;task_id;status;event_type;occurred_at)
+  services/web/app/resource_areas.py:
+    e: list_areas,list_groups,agent_may_access
+    list_areas()
+    list_groups()
+    agent_may_access(role_id;area_id;action)
+  services/orchestrator/app/rag/openrouter.py:
+    e: OpenRouterClient,normalize_openrouter_model
+    OpenRouterClient: __init__(1),_headers(0),embed(1),chat(1),health(0)  # Klient OpenRouter — embeddings i chat (LLM_MODEL z .env)...
+    normalize_openrouter_model(model)
+  services/projector/app/projections/resource_registry.py:
+    e: project_resource_registry
+    project_resource_registry(db;event)
+  services/projector/app/projections/agent_fleet.py:
+    e: project_agent_fleet
+    project_agent_fleet(db;event)
+  services/orchestrator/app/infrastructure/eventstore_factory.py:
+    e: build_event_store
+    build_event_store()
+  services/orchestrator/app/rag/retriever.py:
+    e: RagRetriever
+    RagRetriever: __init__(2),search(1),ask(1)
+  services/orchestrator/app/application/sagas/approval_gate.py:
+    e: ApprovalRequired,_is_skipped,ensure_approval,follow_up_after_grant
+    ApprovalRequired(Exception): __init__(0)  # Komenda wymaga wcześniejszego ApprovalGranted...
+    _is_skipped(data;metadata)
+    ensure_approval(event_store;command_type;data)
+    follow_up_after_grant(command_bus)
+  services/web/app/api/task_routes.py:
+    e: create_task,create_task_from_draft,create_and_run_task,list_tickets,ticket_statuses,get_ticket,confirm_ticket,archive_ticket,link_ticket,_archived_ids,_filter_tickets_view,_confirmable_task_and_agent,_first_idle_agent_id,_assign_ticket
+    create_task(body)
+    create_task_from_draft(body)
+    create_and_run_task(body)
+    list_tickets(session_id;view)
+    ticket_statuses()
+    get_ticket(task_id;session_id)
+    confirm_ticket(task_id;body)
+    archive_ticket(task_id;body)
+    link_ticket(task_id;body)
+    _archived_ids(session_id)
+    _filter_tickets_view(items;view)
+    _confirmable_task_and_agent(task_id)
+    _first_idle_agent_id(board)
+    _assign_ticket(task_id;agent_id;shell)
+  services/projector/app/projections/dispatcher.py:
+    e: project_event,_normalize_event
+    project_event(db;event)
+    _normalize_event(event)
+  services/orchestrator/app/rag/chunking.py:
+    e: chunk_text
+    chunk_text(text)
+  services/orchestrator/app/domain/events/__init__.py:
+    e: DomainEvent,TaskCreated,TaskAssigned,TaskStarted,TaskCompleted,TaskFailed,AgentRegistered,AgentHeartbeatReceived,TaskAssignedToAgent,AgentMarkedIdle,WorkflowStarted,WorkflowVersionProposed,WorkflowVersionValidated,WorkflowVersionApproved,WorkflowVersionShadowed,WorkflowVersionActivated,WorkflowVersionRolledBack,PluginProposed,PluginValidated,PluginInstalled,PluginActivated,PluginRolledBack,ApprovalRequested,ApprovalGranted,ApprovalRejected,ChangeProposed,CapabilityRegistered,ResourceRegistered,TransferRequested,TransferCompleted,TransferFailed,ApprovalExpired,_utc_now,_json_value
+    DomainEvent: to_message(0)
+    TaskCreated(DomainEvent):
+    TaskAssigned(DomainEvent):
+    TaskStarted(DomainEvent):
+    TaskCompleted(DomainEvent):
+    TaskFailed(DomainEvent):
+    AgentRegistered(DomainEvent):
+    AgentHeartbeatReceived(DomainEvent):
+    TaskAssignedToAgent(DomainEvent):
+    AgentMarkedIdle(DomainEvent):
+    WorkflowStarted(DomainEvent):
+    WorkflowVersionProposed(DomainEvent):
+    WorkflowVersionValidated(DomainEvent):
+    WorkflowVersionApproved(DomainEvent):
+    WorkflowVersionShadowed(DomainEvent):
+    WorkflowVersionActivated(DomainEvent):
+    WorkflowVersionRolledBack(DomainEvent):
+    PluginProposed(DomainEvent):
+    PluginValidated(DomainEvent):
+    PluginInstalled(DomainEvent):
+    PluginActivated(DomainEvent):
+    PluginRolledBack(DomainEvent):
+    ApprovalRequested(DomainEvent):
+    ApprovalGranted(DomainEvent):
+    ApprovalRejected(DomainEvent):
+    ChangeProposed(DomainEvent):
+    CapabilityRegistered(DomainEvent):
+    ResourceRegistered(DomainEvent):
+    TransferRequested(DomainEvent):
+    TransferCompleted(DomainEvent):
+    TransferFailed(DomainEvent):
+    ApprovalExpired(DomainEvent):
+    _utc_now()
+    _json_value(value)
+  services/web/app/conductor.py:
+    e: handle_turn,_nlp2dsl_turn,_call_nlp2dsl,_nlp_output_base,_in_progress_turn,_ready_turn,_ready_action_payload,_system_file_list_payload,_shell_task_payload,_shell_clarify_payload,_ticket_payload,_task_reply,_closed_turn,_append_turn,_mullm_file_list_turn,_fallback_turn,_local_clarify,_extract_shell
+    handle_turn()
+    _nlp2dsl_turn()
+    _call_nlp2dsl(nlp_conversation_id;message)
+    _nlp_output_base(cid;status)
+    _in_progress_turn(session_id;message;resp;cid;status;assistant)
+    _ready_turn()
+    _ready_action_payload(action)
+    _system_file_list_payload(session_id;message;scope_files;scope_uris)
+    _shell_task_payload(session_id;message;cfg;cid;wait_for_confirmation)
+    _shell_clarify_payload(cid)
+    _ticket_payload(session_id;message;cfg;wait_for_confirmation)
+    _task_reply(result)
+    _closed_turn(session_id;message;cid;status;assistant)
+    _append_turn(session_id;message;out)
+    _mullm_file_list_turn()
+    _fallback_turn()
+    _local_clarify(message)
+    _extract_shell(text)
+  services/web/app/api/workspace_routes.py:
+    e: workspace_list_artifacts,workspace_get_artifact,workspace_file_list_export,workspace_chat_export,_format_chat_export,workspace_logs_export
+    workspace_list_artifacts(session_id)
+    workspace_get_artifact(session_id;artifact_id)
+    workspace_file_list_export(session_id;message;scope)
+    workspace_chat_export(session_id)
+    _format_chat_export(session;history)
+    workspace_logs_export(session_id;limit)
+  services/projector/app/projections/approval_requests.py:
+    e: project_approval_requests
+    project_approval_requests(db;event)
+  services/web/app/nlp2dsl_bridge.py:
+    e: backend_url,backend_candidates,health,chat_start,chat_message,_post_json,form_to_prompt,primary_action,step_config
+    backend_url()
+    backend_candidates()
+    health()
+    chat_start(text)
+    chat_message(conversation_id;text)
+    _post_json(path;payload)
+    form_to_prompt(form;values)
+    primary_action(dsl)
+    step_config(dsl)
+  services/orchestrator/app/main.py:
+    e: lifespan,health_check,root,_seed_capability_registry,_subscribe_shell_results
+    lifespan(app)
+    health_check()
+    root()
+    _seed_capability_registry(app)
+    _subscribe_shell_results(app)
+  services/orchestrator/app/infrastructure/eventstore.py:
+    e: EventRecord,EventStore,_loads_json,_utc_now
+    EventRecord: to_message(0)
+    EventStore: __init__(1),append(3),get_events_for_aggregate(2),get_aggregate_ids(1),all_events(0),_record_from_row(1)
+    _loads_json(value)
+    _utc_now()
+  services/orchestrator/app/access/uri.py:
+    e: MullmUri,parse_uri,build_uri
+    MullmUri:
+    parse_uri(uri)
+    build_uri(adapter;path)
+  services/web/app/api/chat_routes.py:
+    e: start_chat_session,get_chat_session,workspace_state,chat_message,task_draft,context_attach,upload_files,_upload_one_file,board_snapshot
+    start_chat_session(body)
+    get_chat_session(session_id)
+    workspace_state(session_id)
+    chat_message(body)
+    task_draft(body)
+    context_attach(body)
+    upload_files(session_id;files;classification)
+    _upload_one_file(client;upload)
+    board_snapshot()
+  services/projector/app/projections/workflow_versions.py:
+    e: project_workflow_versions
+    project_workflow_versions(db;event)
+  services/projector/app/projections/plugin_catalog.py:
+    e: project_plugin_catalog
+    project_plugin_catalog(db;event)
+  services/orchestrator/app/infrastructure/postgres.py:
+    e: PostgresConnection
+    PostgresConnection: __init__(1),connect(0),disconnect(0),execute(1),fetch(1),fetchrow(1),_run_schema_migrations(0)
+  services/orchestrator/app/observability/context.py:
+    e: new_correlation_id,new_retrieval_trace_id,get_correlation_id,get_retrieval_trace_id,get_chat_session_id,observability_context
+    new_correlation_id()
+    new_retrieval_trace_id()
+    get_correlation_id()
+    get_retrieval_trace_id()
+    get_chat_session_id()
+    observability_context()
+  services/projector/app/main.py:
+    e: lifespan,health_check,operational_feed,task_board,agent_fleet,approval_requests,plugin_catalog,rag_documents,incident_feed,service_health,remediation_history,rag_quality_board,resource_registry,workflow_versions,_row_to_dict
+    lifespan(app)
+    health_check()
+    operational_feed(limit;offset)
+    task_board(status;limit;offset)
+    agent_fleet(status;limit;offset)
+    approval_requests(status;limit;offset)
+    plugin_catalog(status;limit;offset)
+    rag_documents(limit;offset)
+    incident_feed(status;limit;offset)
+    service_health(limit;offset)
+    remediation_history(limit;offset)
+    rag_quality_board(limit;offset)
+    resource_registry(limit;offset)
+    workflow_versions(limit;offset)
+    _row_to_dict(row)
+  services/projector/app/db.py:
+    e: Database
+    Database: __init__(1),connect(0),disconnect(0),execute(1),fetch(1),_run_schema_migrations(0)
+  services/web/app/tickets.py:
+    e: ticket_uri,ticket_web_path,status_meta,enrich_task
+    ticket_uri(task_id)
+    ticket_web_path(task_id)
+    status_meta(status)
+    enrich_task(row)
+  services/orchestrator/app/infrastructure/nats_bus.py:
+    e: NATSBus
+    NATSBus: __init__(1),connect(0),disconnect(0),publish(2),subscribe(2)
+  services/orchestrator/app/infrastructure/eventstore_esdb.py:
+    e: EsdbEventStore,_parse_esdb_uri
+    EsdbEventStore: __init__(1),connect(0),disconnect(0),append(3),get_events_for_aggregate(2),get_aggregate_ids(1),all_events(0)  # Adapter EventStoreDB przez pakiet `esdbclient`...
+    _parse_esdb_uri(uri)
+  services/orchestrator/app/access/transport.py:
+    e: TransportService
+    TransportService: __init__(0),_sandbox_dir(0),probe(1),fetch(1),copy(2),package_to_sandbox(1),_result_dict(2)  # Access Fabric — probe, fetch, copy między adapterami...
+  services/orchestrator/app/access/adapters/localfs.py:
+    e: LocalFsAdapter
+    LocalFsAdapter(ResourceAdapter): __init__(1),_resolve(1),probe(1),fetch(1),copy_to_local(2)
+  services/orchestrator/app/evolution/catalog.py:
+    e: ArchitectureCatalog
+    ArchitectureCatalog: __init__(1),_load_json(1),list_events(0),get_event_schema(1),get_capability(1),as_graph(0)  # Samopiszący katalog architektury mullm (domains, events, cap...
+  services/orchestrator/app/domain/value_objects/__init__.py:
+    e: TaskId,AgentId,WorkflowId,PluginId,ApprovalId,ResourceId,Priority,TaskStatus,ExecutionMode,AgentStatus,WorkflowStatus
+    TaskId(str):
+    AgentId(str):
+    WorkflowId(str):
+    PluginId(str):
+    ApprovalId(str):
+    ResourceId(str):
+    Priority(str,Enum): from_value(1)
+    TaskStatus(str,Enum):
+    ExecutionMode(str,Enum): from_value(1)
+    AgentStatus(str,Enum):
+    WorkflowStatus(str,Enum):
+  services/orchestrator/app/api/commands.py:
+    e: CommandEnvelope,CreateTaskCommand,AssignTaskCommand,StartTaskCommand,CompleteTaskCommand,FailTaskCommand,RegisterAgentCommand,StartWorkflowCommand,ProposeWorkflowVersionCommand,WorkflowVersionCommand,ProposePluginCommand,PluginIdCommand,CreateApprovalCommand,ApprovalActionCommand,post_command,create_task,assign_task,start_task,complete_task,fail_task,register_agent,start_workflow,propose_workflow_version,validate_workflow_version,approve_workflow_version,activate_workflow_version,rollback_workflow_version,propose_plugin,validate_plugin,install_plugin,activate_plugin,rollback_plugin,create_approval,approve_request,reject_request,expire_approval,_dispatch
+    CommandEnvelope(BaseModel):
+    CreateTaskCommand(BaseModel):
+    AssignTaskCommand(BaseModel):
+    StartTaskCommand(BaseModel):
+    CompleteTaskCommand(BaseModel):
+    FailTaskCommand(BaseModel):
+    RegisterAgentCommand(BaseModel):
+    StartWorkflowCommand(BaseModel):
+    ProposeWorkflowVersionCommand(BaseModel):
+    WorkflowVersionCommand(BaseModel):
+    ProposePluginCommand(BaseModel):
+    PluginIdCommand(BaseModel):
+    CreateApprovalCommand(BaseModel):
+    ApprovalActionCommand(BaseModel):
+    post_command(command;request)
+    create_task(command;request)
+    assign_task(command;request)
+    start_task(command;request)
+    complete_task(command;request)
+    fail_task(command;request)
+    register_agent(command;request)
+    start_workflow(command;request)
+    propose_workflow_version(command;request)
+    validate_workflow_version(command;request)
+    approve_workflow_version(command;request)
+    activate_workflow_version(command;request)
+    rollback_workflow_version(command;request)
+    propose_plugin(command;request)
+    validate_plugin(command;request)
+    install_plugin(command;request)
+    activate_plugin(command;request)
+    rollback_plugin(command;request)
+    create_approval(command;request)
+    approve_request(command;request)
+    reject_request(command;request)
+    expire_approval(command;request)
+    _dispatch(request;command_type;data)
+  services/orchestrator/app/api/evolution.py:
+    e: ProposeChangeCommand,ShadowWorkflowCommand,evolution_metrics,list_experiments,capability_registry,propose_change,shadow_workflow
+    ProposeChangeCommand(BaseModel):
+    ShadowWorkflowCommand(BaseModel):
+    evolution_metrics(request;subject_type;subject_id;limit)
+    list_experiments(request;status;limit)
+    capability_registry(request;limit)
+    propose_change(command;request)
+    shadow_workflow(command;request)
+  services/orchestrator/app/api/access.py:
+    e: RegisterResourceCommand,TransferResourceCommand,ProbeUriCommand,register_resource,transfer_resource,probe_uri,fetch_uri,list_resources,build_resource_uri,_safe_filename,upload_resource
+    RegisterResourceCommand(BaseModel):
+    TransferResourceCommand(BaseModel):
+    ProbeUriCommand(BaseModel):
+    register_resource(command;request)
+    transfer_resource(command;request)
+    probe_uri(command;request)
+    fetch_uri(command;request)
+    list_resources(request;limit)
+    build_resource_uri(adapter;path)
+    _safe_filename(name)
+    upload_resource(request;file;classification)
+  agents/shell-agent/app/nats_consumer.py:
+    e: ShellAgent
+    ShellAgent: __init__(0),run(0),handle_message(1)
+  agents/shell-agent/app/executor.py:
+    e: ShellResult,run_shell_command
+    ShellResult: to_dict(0)
+    run_shell_command(command;timeout_seconds)
+  services/orchestrator/app/access/adapters/http_adapter.py:
+    e: HttpAdapter
+    HttpAdapter(ResourceAdapter): probe(1),fetch(1),copy_to_local(2),_to_url(1)
+  services/orchestrator/app/domain/aggregates/resource.py:
+    e: Resource
+    Resource: register(0),request_transfer(0),complete_transfer(2),fail_transfer(2),get_uncommitted_events(0),mark_events_committed(0)
+  services/orchestrator/app/domain/aggregates/workflow.py:
+    e: Workflow
+    Workflow: start(3),propose_version(3),validate_version(0),approve_version(1),shadow_version(1),activate_version(0),rollback_version(1),get_uncommitted_events(0),mark_events_committed(0)
+  services/orchestrator/app/observability/middleware.py:
+    e: CorrelationMiddleware
+    CorrelationMiddleware(BaseHTTPMiddleware): dispatch(2)
+  services/orchestrator/app/observability/logging.py:
+    e: log_event
+    log_event()
+  services/orchestrator/app/api/observability.py:
+    e: DiagnoseBody,rag_health,rag_diagnose,list_playbooks,export_logs,list_incidents
+    DiagnoseBody(BaseModel):
+    rag_health(request)
+    rag_diagnose(body;request)
+    list_playbooks()
+    export_logs(request;correlation_id;limit)
+    list_incidents(request;limit)
+  services/orchestrator/app/api/rag.py:
+    e: SearchQuery,AskQuery,rag_health,list_documents,search,ask,ingest_resource,_safe_rag_diagnostics
+    SearchQuery(BaseModel):
+    AskQuery(BaseModel):
+    rag_health(request)
+    list_documents(request;limit)
+    search(body;request)
+    ask(body;request)
+    ingest_resource(resource_id;request)
+    _safe_rag_diagnostics(request)
+  services/orchestrator/app/infrastructure/eventstore_dual.py:
+    e: DualEventStore
+    DualEventStore: __init__(2),append(3),get_events_for_aggregate(2),get_aggregate_ids(1),all_events(0)  # Zapis do Postgres (odczyt) + mirror do EventStoreDB...
+  services/orchestrator/app/access/adapters/__init__.py:
+    e: get_adapter
+    get_adapter(name)
+  services/orchestrator/app/evolution/experiments.py:
+    e: ExperimentManager
+    ExperimentManager: __init__(1),start_experiment(0),complete_experiment(1),active_shadow(1)  # Shadow / canary — stan eksperymentu powiązany z wersją workf...
+  services/orchestrator/app/domain/aggregates/plugin.py:
+    e: PluginStatus,Plugin
+    PluginStatus:
+    Plugin: propose(4),validate(0),install(0),activate(0),rollback(1),get_uncommitted_events(0),mark_events_committed(0)
+  services/orchestrator/app/domain/aggregates/agent.py:
+    e: Agent,_utc_now
+    Agent: register(4),heartbeat(1),assign_task(1),mark_idle(0),get_uncommitted_events(0),mark_events_committed(0)
+    _utc_now()
+  services/orchestrator/app/domain/aggregates/approval.py:
+    e: ApprovalStatus,Approval
+    ApprovalStatus:
+    Approval: create_request(0),approve(1),reject(2),expire(0),get_uncommitted_events(0),mark_events_committed(0)
+  agents/shell-agent/app/main.py:
+    e: main
+    main()
+  services/web/app/api/workroom_routes.py:
+    e: workroom_start,workroom_get,workroom_export,workroom_run,_workroom_or_404
+    workroom_start(body)
+    workroom_get(workroom_id)
+    workroom_export(workroom_id)
+    workroom_run(workroom_id;body)
+    _workroom_or_404(workroom_id)
+  services/web/app/main.py:
+    e: health,workspace_home,agent_workroom_page,access_matrix_page,dashboard
+    health()
+    workspace_home(request;task_id)
+    agent_workroom_page(request)
+    access_matrix_page(request)
+    dashboard(request)
+  services/orchestrator/app/config.py:
+    e: Settings
+    Settings(BaseSettings): model_post_init(1)
+  services/orchestrator/app/access/adapters/base.py:
+    e: AdapterResult,ResourceAdapter
+    AdapterResult:
+    ResourceAdapter(ABC): probe(1),fetch(1),copy_to_local(2)
+  services/orchestrator/app/domain/events/incidents.py:
+    e: RagRequestFailed,IncidentDetected,IncidentClassified,DiagnosticsStarted,DiagnosticsCompleted,RemediationStarted,RemediationSucceeded,RemediationFailed,PostRemediationVerificationPassed,PostRemediationVerificationFailed
+    RagRequestFailed(DomainEvent): aggregate_id(0),data(0)
+    IncidentDetected(DomainEvent): aggregate_id(0),data(0)
+    IncidentClassified(DomainEvent): aggregate_id(0),data(0)
+    DiagnosticsStarted(DomainEvent): aggregate_id(0),data(0)
+    DiagnosticsCompleted(DomainEvent): aggregate_id(0),data(0)
+    RemediationStarted(DomainEvent): aggregate_id(0),data(0)
+    RemediationSucceeded(DomainEvent): aggregate_id(0),data(0)
+    RemediationFailed(DomainEvent): aggregate_id(0),data(0)
+    PostRemediationVerificationPassed(DomainEvent): aggregate_id(0),data(0)
+    PostRemediationVerificationFailed(DomainEvent): aggregate_id(0),data(0)
+  services/orchestrator/app/api/catalog.py:
+    e: catalog_index,catalog_graph,catalog_domains,catalog_events,catalog_capabilities,catalog_services,catalog_policies
+    catalog_index(request)
+    catalog_graph(request)
+    catalog_domains(request)
+    catalog_events(request)
+    catalog_capabilities(request)
+    catalog_services(request)
+    catalog_policies(request)
+  services/web/app/api/router_routes.py:
+    e: router_decide
+    router_decide(message;mode;use_rag)
+  services/web/app/api/access_routes.py:
+    e: api_resource_areas,api_role_scopes,access_matrix_get,access_matrix_put,access_matrix_reset,access_diagnose_file_list
+    api_resource_areas()
+    api_role_scopes()
+    access_matrix_get()
+    access_matrix_put(body)
+    access_matrix_reset()
+    access_diagnose_file_list()
+  requirements-dev.txt:
+  goal.yaml:
+  planfile.yaml:
+  docker-compose.yml:
+  tree.sh:
+  pytest.ini:
+  TODO.md:
+  prefact.yaml:
+  project.sh:
+  README.md:
+  docs/observability.md:
+  docs/workspace-ui.md:
+  docs/workspace-simple.md:
+  docs/roadmap-90d.md:
+  docs/domain.md:
+  docs/workspace-conductor.md:
+  docs/architecture.md:
+  docs/events.md:
+  services/projector/requirements.txt:
+  services/projector/Dockerfile:
+  services/projector/app/__init__.py:
+  services/projector/app/projections/__init__.py:
+  services/web/requirements.txt:
+  services/web/package.json:
+  services/web/Dockerfile:
+  services/web/app/__init__.py:
+  services/orchestrator/requirements-esdb.txt:
+  services/orchestrator/requirements.txt:
+  services/orchestrator/Dockerfile:
+  services/orchestrator/app/rag/__init__.py:
+  services/orchestrator/app/incidents/__init__.py:
+  services/orchestrator/app/application/sagas/__init__.py:
+  services/orchestrator/app/access/__init__.py:
+  services/orchestrator/app/evolution/__init__.py:
+  services/orchestrator/app/observability/__init__.py:
+  TODO/4.md:
+  TODO/1.md:
+  TODO/2.md:
+  TODO/3.md:
+  scripts/test.sh:
+  testql-scenarios/generated-from-pytests.testql.toon.yaml:
+  testql-scenarios/generated-api-smoke.testql.toon.yaml:
+  catalog/index.json:
+  catalog/services.json:
+  catalog/domains.json:
+  catalog/policies.json:
+  catalog/capabilities.json:
+  catalog/events/task.json:
+  catalog/events/rag.json:
+  catalog/events/workflow.json:
+  catalog/events/evolution.json:
+  catalog/events/access.json:
+  integrations/nlp2dsl/mullm_registry.py:
+  integrations/nlp2dsl/patch_startup.py:
+  agents/shell-agent/requirements.txt:
+  agents/shell-agent/Dockerfile:
+  Makefile:
+  CHANGELOG.md:
+  docs/prompt-router.md:
+  docs/multi-agent-workroom.md:
+  docs/README.md:
+  services/web/app/api_routes.py:
+  services/web/app/api/config.py:
+  services/web/app/api/__init__.py:
+  services/web/app/api/models.py:
+    e: ChatSessionStart,ChatMessage,TaskDraftRequest,CreateTaskBody,CreateFromDraftBody,ConfirmTicketBody,SessionRef,ContextAttachBody,WorkroomStart,WorkroomMessage,AccessMatrixBody
+    ChatSessionStart(BaseModel):
+    ChatMessage(BaseModel):
+    TaskDraftRequest(BaseModel):
+    CreateTaskBody(BaseModel):
+    CreateFromDraftBody(BaseModel):
+    ConfirmTicketBody(BaseModel):
+    SessionRef(BaseModel):
+    ContextAttachBody(BaseModel):
+    WorkroomStart(BaseModel):
+    WorkroomMessage(BaseModel):
+    AccessMatrixBody(BaseModel):

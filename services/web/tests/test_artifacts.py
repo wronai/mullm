@@ -1,4 +1,5 @@
 from app.workspace import (
+    _format_export_text,
     artifact_summaries,
     get_artifact,
     get_or_create,
@@ -28,3 +29,26 @@ def test_register_and_get_artifact():
     full = get_artifact(session.session_id, art["artifact_id"])
     assert full is not None
     assert full["text"] == "hello"
+
+
+def test_format_export_text_keeps_core_sections():
+    text = _format_export_text(
+        {
+            "generated_at": "2026-06-04T00:00:00+00:00",
+            "correlation_id": "corr-1",
+            "session": {
+                "context": {"ticket_id": "ABC-1", "file_names": ["a.txt"]},
+                "chat_history": [{"role": "user", "content": "lista plikow"}],
+                "events": [{"type": "FileListReturned", "summary": "Lista"}],
+            },
+            "inventory": {
+                "resources": [{"name": "a.txt", "uri": "mullm://localfs/a.txt", "status": "ready"}],
+                "rag_documents": [],
+            },
+        }
+    )
+
+    assert "## Kontekst" in text
+    assert "ABC-1" in text
+    assert "## Historia chatu" in text
+    assert "## Zdarzenia sesji" in text

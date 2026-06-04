@@ -5,6 +5,18 @@ from typing import Any
 
 from app import chat as chat_service
 from app import nlp2dsl_bridge as nlp
+from app import prompt_router
+
+
+def _attach_routing(
+    session_id: str,
+    out: dict[str, Any],
+    decision: prompt_router.RouteDecision,
+) -> dict[str, Any]:
+    routing = decision.to_dict()
+    out["routing"] = routing
+    chat_service.stamp_last_assistant_routing(session_id, routing)
+    return out
 
 
 async def handle_turn(
@@ -16,6 +28,8 @@ async def handle_turn(
     scope_uris: list[str] | None = None,
     form_values: dict[str, Any] | None = None,
     wait_for_confirmation: bool = False,
+    chat_mode: str = "discuss",
+    use_rag: bool = True,
 ) -> dict[str, Any]:
     """
     Jedna ścieżka czatu: nlp2dsl (dopytywanie) → wykonanie Mullm → fallback RAG.
@@ -26,17 +40,62 @@ async def handle_turn(
         if extra:
             message = f"{message} {extra}".strip() if message else extra
 
-    # Mullm-native intencje — przed nlp2dsl (unika „Nie rozpoznałem intencji”)
-    if chat_service.is_file_list_intent(message):
-        return await _mullm_file_list_turn(
+    decision = await prompt_router.decide_route(
+        message,
+        chat_mode=chat_mode,
+        use_rag=use_rag,
+    )
+    prompt_router.record_route_event(session_id, decision, outcome="selected")
+
+    if decision.route == "mullm_file_list":
+        out = await _mullm_file_list_turn(
             session_id=session_id,
             message=message,
             scope_files=scope_files,
             scope_uris=scope_uris,
         )
+        prompt_router.record_route_event(session_id, decision, outcome="succeeded")
+        return _attach_routing(session_id, out, decision)
+
+    if decision.route == "mullm_shell":
+        from app import workspace as ws
+
+        shell = _extract_shell(message)
+        if not shell:
+            decision.requires_clarification = True
+            prompt_router.record_route_event(
+                session_id, decision, event_type="RouteFailed", outcome="no_shell"
+            )
+            out = {
+                "reply": "Podaj polecenie shell (np. `run ls -la`).",
+                "history": chat_service.get_history(session_id),
+            }
+            return _attach_routing(session_id, out, decision)
+        result = await ws.create_task_immediate(
+            session_id,
+            title=message[:80],
+            description=message,
+            shell_command=shell,
+            wait_for_confirmation=wait_for_confirmation,
+        )
+        reply = (
+            f"Ticket `{result.get('task_id', '?')}` w kolejce."
+            if result.get("ok")
+            else f"Nie udało się: {result.get('error')}"
+        )
+        chat_service._append(session_id, "user", message)
+        chat_service._append(session_id, "assistant", reply)
+        out = {
+            "reply": reply,
+            "task": result,
+            "executed": "mullm_shell",
+            "history": chat_service.get_history(session_id),
+        }
+        prompt_router.record_route_event(session_id, decision, outcome="succeeded")
+        return _attach_routing(session_id, out, decision)
 
     if await nlp.health():
-        return await _nlp2dsl_turn(
+        out = await _nlp2dsl_turn(
             session_id=session_id,
             message=message,
             nlp_conversation_id=nlp_conversation_id,
@@ -44,13 +103,23 @@ async def handle_turn(
             scope_uris=scope_uris,
             wait_for_confirmation=wait_for_confirmation,
         )
+        prompt_router.record_route_event(session_id, decision, outcome="succeeded")
+        return _attach_routing(session_id, out, decision)
 
-    return await _fallback_turn(
+    fb = decision.fallback_route or "rag"
+    prompt_router.record_route_event(
+        session_id,
+        decision,
+        event_type="RouteFallbackApplied",
+        outcome=f"→{fb}",
+    )
+    out = await _fallback_turn(
         session_id=session_id,
         message=message,
         scope_files=scope_files,
         scope_uris=scope_uris,
     )
+    return _attach_routing(session_id, out, decision)
 
 
 async def _nlp2dsl_turn(

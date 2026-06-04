@@ -137,26 +137,52 @@ def filter_file_inventory(
     scope_files = scope_files or []
     scope_uris = scope_uris or []
 
-    if list_scope == "user":
-        resources = [r for r in resources if _uri_is_user_resource(r.get("uri") or "")]
-        rag_docs = [d for d in rag_docs if _uri_is_user_resource(d.get("uri") or "")]
-    elif list_scope == "system":
-        resources = [r for r in resources if _uri_is_system_resource(r.get("uri") or "")]
-        rag_docs = [d for d in rag_docs if _uri_is_system_resource(d.get("uri") or "")]
-    elif list_scope == "session":
-        uri_set = {u for u in scope_uris if _uri_is_user_resource(u)}
-        resources = [r for r in resources if (r.get("uri") or "") in uri_set]
-        rag_docs = [d for d in rag_docs if (d.get("uri") or "") in uri_set]
-    elif list_scope == "rag":
-        resources = []
-
     return {
         **inventory,
-        "resources": resources,
-        "rag_documents": rag_docs,
+        "resources": _filtered_resources(resources, list_scope, scope_uris),
+        "rag_documents": _filter_rows_by_scope(rag_docs, list_scope, scope_uris),
         "list_scope": list_scope,
         "session_uploads": list(scope_files),
     }
+
+
+def _filtered_resources(
+    resources: list[dict[str, Any]],
+    list_scope: str,
+    scope_uris: list[str],
+) -> list[dict[str, Any]]:
+    if list_scope == "rag":
+        return []
+    return _filter_rows_by_scope(resources, list_scope, scope_uris)
+
+
+def _filter_rows_by_scope(
+    rows: list[dict[str, Any]],
+    list_scope: str,
+    scope_uris: list[str],
+) -> list[dict[str, Any]]:
+    if list_scope == "user":
+        return _rows_matching_uri(rows, _uri_is_user_resource)
+    if list_scope == "system":
+        return _rows_matching_uri(rows, _uri_is_system_resource)
+    if list_scope == "session":
+        return _rows_in_session_scope(rows, scope_uris)
+    return rows
+
+
+def _rows_matching_uri(
+    rows: list[dict[str, Any]],
+    predicate,
+) -> list[dict[str, Any]]:
+    return [row for row in rows if predicate(row.get("uri") or "")]
+
+
+def _rows_in_session_scope(
+    rows: list[dict[str, Any]],
+    scope_uris: list[str],
+) -> list[dict[str, Any]]:
+    uri_set = {uri for uri in scope_uris if _uri_is_user_resource(uri)}
+    return [row for row in rows if (row.get("uri") or "") in uri_set]
 
 
 def _dedupe_rows_by_uri(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -368,6 +394,17 @@ def get_history(session_id: str) -> list[dict[str, Any]]:
 
 def _append(session_id: str, role: str, content: str, **extra: Any) -> None:
     _sessions.setdefault(session_id, []).append({"role": role, "content": content, **extra})
+
+
+def stamp_last_assistant_routing(session_id: str, routing: dict[str, Any]) -> None:
+    """Dołącza decyzję routera do ostatniej wiadomości asystenta (badge w UI)."""
+    items = _sessions.get(session_id)
+    if not items:
+        return
+    for i in range(len(items) - 1, -1, -1):
+        if items[i].get("role") == "assistant":
+            items[i]["routing"] = routing
+            return
 
 
 def _format_history(session_id: str, *, limit: int = 12) -> str:

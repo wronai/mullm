@@ -1,12 +1,12 @@
-# redup/duplication | 18 groups | 92f 12440L | 2026-06-04
+# redup/duplication | 19 groups | 102f 13064L | 2026-06-04
 
 SUMMARY:
-  files_scanned: 92
-  total_lines:   12440
-  dup_groups:    18
-  dup_fragments: 52
-  saved_lines:   418
-  scan_ms:       2434
+  files_scanned: 102
+  total_lines:   13064
+  dup_groups:    19
+  dup_fragments: 54
+  saved_lines:   425
+  scan_ms:       2385
 
 HOTSPOTS[7] (files with most duplication):
   services/projector/app/main.py  dup=217L  groups=2  frags=12  (1.7%)
@@ -17,7 +17,7 @@ HOTSPOTS[7] (files with most duplication):
   services/orchestrator/app/api/evolution.py  dup=24L  groups=2  frags=3  (0.2%)
   services/web/app/access_matrix.py  dup=24L  groups=2  frags=4  (0.2%)
 
-DUPLICATES[18] (ranked by impact):
+DUPLICATES[19] (ranked by impact):
   [fc5b148fddf5c532] !! STRU  task_board  L=26 N=5 saved=104 sim=1.00
       services/projector/app/main.py:94-119  (task_board)
       services/projector/app/main.py:123-148  (agent_fleet)
@@ -56,11 +56,14 @@ DUPLICATES[18] (ranked by impact):
       services/orchestrator/app/api/access.py:77-87  (list_resources)
       services/orchestrator/app/api/evolution.py:75-80  (capability_registry)
   [32839d90ea67fb47]   EXAC  _projector  L=7 N=2 saved=7 sim=1.00
-      services/web/app/chat.py:44-50  (_projector)
+      services/web/app/chat.py:45-51  (_projector)
       services/web/app/workspace.py:19-25  (_projector)
   [46f02a3f0dd7583d]   STRU  agent_may_access_resource  L=7 N=2 saved=7 sim=1.00
       services/web/app/access_matrix.py:175-181  (agent_may_access_resource)
       services/web/app/access_matrix.py:184-190  (human_may_use_agent)
+  [454ed159e8c7ebbf]   STRU  _run_analyze_step  L=7 N=2 saved=7 sim=1.00
+      services/web/app/agent_workroom.py:338-344  (_run_analyze_step)
+      services/web/app/agent_workroom.py:519-525  (_run_summarize_step)
   [1fb3398c7c69da23]   EXAC  data  L=6 N=2 saved=6 sim=1.00
       services/orchestrator/app/domain/events/incidents.py:227-232  (data)
       services/orchestrator/app/domain/events/incidents.py:249-254  (data)
@@ -89,7 +92,7 @@ DUPLICATES[18] (ranked by impact):
       services/orchestrator/app/infrastructure/postgres.py:46-48  (__init__)
       services/projector/app/db.py:18-20  (__init__)
 
-REFACTOR[18] (ranked by priority):
+REFACTOR[19] (ranked by priority):
   [1] ○ extract_function   → services/projector/app/utils/task_board.py
       WHY: 5 occurrences of 26-line block across 1 files — saves 104 lines
       FILES: services/projector/app/main.py
@@ -117,35 +120,38 @@ REFACTOR[18] (ranked by priority):
   [9] ○ extract_function   → services/web/app/utils/agent_may_access_resource.py
       WHY: 2 occurrences of 7-line block across 1 files — saves 7 lines
       FILES: services/web/app/access_matrix.py
-  [10] ○ extract_function   → services/orchestrator/app/domain/events/utils/data.py
-      WHY: 2 occurrences of 6-line block across 1 files — saves 6 lines
-      FILES: services/orchestrator/app/domain/events/incidents.py
+  [10] ○ extract_function   → services/web/app/utils/_run_analyze_step.py
+      WHY: 2 occurrences of 7-line block across 1 files — saves 7 lines
+      FILES: services/web/app/agent_workroom.py
   [11] ○ extract_function   → services/orchestrator/app/domain/events/utils/data.py
       WHY: 2 occurrences of 6-line block across 1 files — saves 6 lines
+      FILES: services/orchestrator/app/domain/events/incidents.py
+  [12] ○ extract_function   → services/orchestrator/app/domain/events/utils/data.py
+      WHY: 2 occurrences of 6-line block across 1 files — saves 6 lines
       FILES: services/orchestrator/app/domain/events/__init__.py
-  [12] ○ extract_function   → services/web/app/utils/_empty_agent_resource.py
+  [13] ○ extract_function   → services/web/app/utils/_empty_agent_resource.py
       WHY: 2 occurrences of 6-line block across 1 files — saves 6 lines
       FILES: services/web/app/access_matrix.py
-  [13] ○ extract_function   → services/orchestrator/app/api/utils/probe_uri.py
+  [14] ○ extract_function   → services/orchestrator/app/api/utils/probe_uri.py
       WHY: 2 occurrences of 5-line block across 1 files — saves 5 lines
       FILES: services/orchestrator/app/api/access.py
-  [14] ○ extract_function   → services/utils/connect.py
+  [15] ○ extract_function   → services/utils/connect.py
       WHY: 2 occurrences of 5-line block across 2 files — saves 5 lines
       FILES: services/orchestrator/app/infrastructure/postgres.py, services/projector/app/db.py
-  [15] ○ extract_function   → services/utils/execute.py
+  [16] ○ extract_function   → services/utils/execute.py
       WHY: 2 occurrences of 5-line block across 2 files — saves 5 lines
       FILES: services/orchestrator/app/infrastructure/postgres.py, services/projector/app/db.py
-  [16] ○ extract_function   → services/utils/fetch.py
+  [17] ○ extract_function   → services/utils/fetch.py
       WHY: 2 occurrences of 5-line block across 2 files — saves 5 lines
       FILES: services/orchestrator/app/infrastructure/postgres.py, services/projector/app/db.py
-  [17] ○ extract_function   → services/utils/disconnect.py
+  [18] ○ extract_function   → services/utils/disconnect.py
       WHY: 2 occurrences of 4-line block across 2 files — saves 4 lines
       FILES: services/orchestrator/app/infrastructure/postgres.py, services/projector/app/db.py
-  [18] ○ extract_function   → services/utils/__init__.py
+  [19] ○ extract_function   → services/utils/__init__.py
       WHY: 2 occurrences of 3-line block across 2 files — saves 3 lines
       FILES: services/orchestrator/app/infrastructure/postgres.py, services/projector/app/db.py
 
-QUICK_WINS[12] (low risk, high savings — do first):
+QUICK_WINS[13] (low risk, high savings — do first):
   [1] extract_function   saved=104L  → services/projector/app/utils/task_board.py
       FILES: main.py
   [2] extract_function   saved=90L  → services/orchestrator/app/api/utils/create_task.py
@@ -164,10 +170,10 @@ QUICK_WINS[12] (low risk, high savings — do first):
       FILES: chat.py, workspace.py
   [9] extract_function   saved=7L  → services/web/app/utils/agent_may_access_resource.py
       FILES: access_matrix.py
-  [10] extract_function   saved=6L  → services/orchestrator/app/domain/events/utils/data.py
-      FILES: incidents.py
+  [10] extract_function   saved=7L  → services/web/app/utils/_run_analyze_step.py
+      FILES: agent_workroom.py
 
-EFFORT_ESTIMATE (total ≈ 13.9h):
+EFFORT_ESTIMATE (total ≈ 14.2h):
   hard   task_board                          saved=104L  ~208min
   hard   create_task                         saved=90L  ~180min
   hard   operational_feed                    saved=84L  ~168min
@@ -177,9 +183,9 @@ EFFORT_ESTIMATE (total ≈ 13.9h):
   easy   list_resources                      saved=11L  ~22min
   easy   _projector                          saved=7L  ~14min
   easy   agent_may_access_resource           saved=7L  ~14min
-  easy   data                                saved=6L  ~12min
-  ... +8 more (~78min)
+  easy   _run_analyze_step                   saved=7L  ~14min
+  ... +9 more (~90min)
 
 METRICS-TARGET:
-  dup_groups:  18 → 0
-  saved_lines: 418 lines recoverable
+  dup_groups:  19 → 0
+  saved_lines: 425 lines recoverable

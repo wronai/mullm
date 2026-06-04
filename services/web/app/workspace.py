@@ -303,6 +303,8 @@ async def handle_chat_message(
     if not message and mode != "discuss":
         return {"error": "empty message"}
 
+    session.add_event("PromptReceived", message[:120] or "(pusty)", mode=mode)
+
     ticket = _extract_ticket(message)
     if ticket:
         attach_context(session.session_id, ticket_id=ticket)
@@ -358,6 +360,8 @@ async def handle_chat_message(
             scope_uris=list(ctx.uris),
             form_values=None,
             wait_for_confirmation=wait_for_confirmation,
+            chat_mode=mode,
+            use_rag=use_rag,
         )
         if outcome.get("nlp2dsl_conversation_id"):
             session.nlp2dsl_conversation_id = outcome["nlp2dsl_conversation_id"]
@@ -533,50 +537,87 @@ def _format_export_text(bundle: dict[str, Any]) -> str:
         "",
     ]
     sess = bundle.get("session") or {}
-    ctx = sess.get("context") or {}
-    if ctx:
-        lines.append("## Kontekst")
-        for key in ("ticket_id", "project", "branch", "agent_id"):
-            if ctx.get(key):
-                lines.append(f"- {key}: {ctx[key]}")
-        if ctx.get("uris"):
-            lines.append(f"- uris: {', '.join(ctx['uris'][:8])}")
-        if ctx.get("file_names"):
-            lines.append(f"- pliki w sesji: {', '.join(ctx['file_names'][:8])}")
-        lines.append("")
+    _append_context_section(lines, sess.get("context") or {})
+    _append_inventory_section(lines, bundle.get("inventory") or {})
+    _append_history_section(lines, sess.get("chat_history") or [])
+    _append_draft_section(lines, sess)
+    _append_session_events_section(lines, sess.get("events") or [])
+    _append_rag_health_section(lines, bundle.get("rag_health") or {})
+    _append_incidents_section(lines, bundle.get("incidents") or [])
+    _append_rag_snapshots_section(lines, bundle)
+    _append_operational_feed_section(lines, bundle.get("operational_feed") or [])
+    if bundle.get("orchestrator_error"):
+        lines.append(f"(orchestrator: {bundle['orchestrator_error']})")
 
-    inv = bundle.get("inventory") or {}
+    lines.append("---")
+    lines.append("Wklej do ticketa / Cursor / support.")
+    return "\n".join(lines)
+
+
+def _append_context_section(lines: list[str], ctx: dict[str, Any]) -> None:
+    lines.append("## Kontekst")
+    if not ctx:
+        lines.append("- (brak danych kontekstu)")
+        lines.append("")
+        return
+    wrote = False
+    for key in ("ticket_id", "linked_ticket_id", "project", "branch", "agent_id"):
+        if ctx.get(key):
+            lines.append(f"- {key}: {ctx[key]}")
+            wrote = True
+    if ctx.get("uris"):
+        lines.append(f"- uris: {', '.join(ctx['uris'][:8])}")
+        wrote = True
+    if ctx.get("file_names"):
+        lines.append(f"- pliki w sesji: {', '.join(ctx['file_names'][:8])}")
+        wrote = True
+    if ctx.get("notes"):
+        lines.append(f"- notatki: {len(ctx['notes'])}")
+        wrote = True
+    if not wrote:
+        lines.append(
+            "- (pusty — brak ticketu, wgranych plików 📎; lista plików i tak działa z rejestru)"
+        )
+    lines.append("")
+
+
+def _append_inventory_section(lines: list[str], inv: dict[str, Any]) -> None:
     resources = inv.get("resources") or []
     rag_docs = inv.get("rag_documents") or []
-    if resources or rag_docs:
-        lines.append("## Pliki i zasoby (stan systemu)")
-        for row in resources:
-            lines.append(
-                f"- {row.get('name') or '?'} | {row.get('uri')} | {row.get('status')}"
-            )
-        for doc in rag_docs:
-            lines.append(
-                f"- [RAG] {doc.get('name') or '?'} | {doc.get('uri')} | "
-                f"{doc.get('status')} chunks={doc.get('chunk_count')}"
-            )
-        lines.append("")
+    if not resources and not rag_docs:
+        return
+    lines.append("## Pliki i zasoby (stan systemu)")
+    for row in resources:
+        lines.append(
+            f"- {row.get('name') or '?'} | {row.get('uri')} | {row.get('status')}"
+        )
+    for doc in rag_docs:
+        lines.append(
+            f"- [RAG] {doc.get('name') or '?'} | {doc.get('uri')} | "
+            f"{doc.get('status')} chunks={doc.get('chunk_count')}"
+        )
+    lines.append("")
 
-    history = sess.get("chat_history") or []
+
+def _append_history_section(lines: list[str], history: list[dict[str, Any]]) -> None:
     lines.append("## Historia chatu")
     if not history:
         lines.append("(brak — wyślij wiadomość w workspace lub sesja wygasła po restarcie web)")
-    else:
-        for msg in history:
-            role = msg.get("role", "?")
-            content = (msg.get("content") or "").strip()
-            if not content:
-                continue
-            lines.append(f"\n### {role}")
-            lines.append(content[:4000])
-            if msg.get("sources"):
-                lines.append(f"(źródeł RAG: {len(msg['sources'])})")
+        lines.append("")
+        return
+    for msg in history:
+        role = msg.get("role", "?")
+        content = (msg.get("content") or "").strip()
+        if not content:
+            continue
+        lines.append(f"\n### {role}")
+        lines.append(content[:4000])
+        if msg.get("sources"):
+            lines.append(f"(źródeł RAG: {len(msg['sources'])})")
     lines.append("")
 
+
+def _append_draft_section(lines: list[str], sess: dict[str, Any]) -> None:
     if sess.get("draft"):
         d = sess["draft"]
         lines.append("## Szkic (nieużywany — tickety tworzone od razu z chatu)")
@@ -584,62 +625,76 @@ def _format_export_text(bundle: dict[str, Any]) -> str:
         lines.append(f"- shell: {d.get('shell_command') or '—'}")
         lines.append("")
 
-    if sess.get("events"):
-        lines.append("## Zdarzenia sesji")
-        for ev in sess["events"][-30:]:
-            extra = ""
-            if ev.get("task_id"):
-                extra = f" task_id={ev['task_id']}"
-            if ev.get("retrieval_trace_id"):
-                extra += f" trace={ev['retrieval_trace_id']}"
-            lines.append(f"- {ev.get('type')}: {ev.get('summary', '')}{extra}")
-        lines.append("")
 
-    rag = bundle.get("rag_health") or {}
-    if rag:
-        lines.append("## RAG health (skrót)")
-        lines.append(f"status: {rag.get('status')} · code: {rag.get('primary_incident_code')}")
-        for check in rag.get("checks") or []:
-            lines.append(f"  - {check.get('name')}: {check.get('status')} {check.get('detail', '')}")
-        lines.append("")
+def _append_session_events_section(lines: list[str], events: list[dict[str, Any]]) -> None:
+    if not events:
+        return
+    lines.append("## Zdarzenia sesji")
+    for ev in events[-30:]:
+        extra = _event_extra(ev)
+        lines.append(f"- {ev.get('type')}: {ev.get('summary', '')}{extra}")
+    lines.append("")
 
-    incidents = bundle.get("incidents") or []
-    if incidents:
-        lines.append("## Incydenty (ta sesja)")
-        for inc in incidents:
-            lines.append(
-                f"- {inc.get('incident_code')} {inc.get('message', '')[:120]} "
-                f"trace={inc.get('retrieval_trace_id', '')}"
-            )
-        lines.append("")
 
-    snapshots = [
+def _event_extra(ev: dict[str, Any]) -> str:
+    extra = ""
+    if ev.get("task_id"):
+        extra = f" task_id={ev['task_id']}"
+    if ev.get("retrieval_trace_id"):
+        extra += f" trace={ev['retrieval_trace_id']}"
+    return extra
+
+
+def _append_rag_health_section(lines: list[str], rag: dict[str, Any]) -> None:
+    if not rag:
+        return
+    lines.append("## RAG health (skrót)")
+    lines.append(f"status: {rag.get('status')} · code: {rag.get('primary_incident_code')}")
+    for check in rag.get("checks") or []:
+        lines.append(f"  - {check.get('name')}: {check.get('status')} {check.get('detail', '')}")
+    lines.append("")
+
+
+def _append_incidents_section(lines: list[str], incidents: list[dict[str, Any]]) -> None:
+    if not incidents:
+        return
+    lines.append("## Incydenty (ta sesja)")
+    for inc in incidents:
+        lines.append(
+            f"- {inc.get('incident_code')} {inc.get('message', '')[:120]} "
+            f"trace={inc.get('retrieval_trace_id', '')}"
+        )
+    lines.append("")
+
+
+def _append_rag_snapshots_section(lines: list[str], bundle: dict[str, Any]) -> None:
+    snapshots = _session_rag_snapshots(bundle)
+    if not snapshots:
+        return
+    lines.append("## RAG snapshots (ta sesja)")
+    for s in snapshots:
+        lines.append(f"- {s.get('created_at')} {s.get('status')}")
+    lines.append("")
+
+
+def _session_rag_snapshots(bundle: dict[str, Any]) -> list[dict[str, Any]]:
+    return [
         s
         for s in (bundle.get("rag_snapshots") or [])
         if s.get("correlation_id") == bundle.get("correlation_id")
     ][:5]
-    if snapshots:
-        lines.append("## RAG snapshots (ta sesja)")
-        for s in snapshots:
-            lines.append(f"- {s.get('created_at')} {s.get('status')}")
-        lines.append("")
 
-    feed = bundle.get("operational_feed") or []
-    if feed:
-        lines.append("## Operational feed")
-        for row in feed[:15]:
-            lines.append(
-                f"- {str(row.get('occurred_at', ''))[:19]} "
-                f"{row.get('event_type')} — {row.get('summary') or row.get('title', '')}"
-            )
-        lines.append("")
 
-    if bundle.get("orchestrator_error"):
-        lines.append(f"(orchestrator: {bundle['orchestrator_error']})")
-
-    lines.append("---")
-    lines.append("Wklej do ticketa / Cursor / support.")
-    return "\n".join(lines)
+def _append_operational_feed_section(lines: list[str], feed: list[dict[str, Any]]) -> None:
+    if not feed:
+        return
+    lines.append("## Operational feed")
+    for row in feed[:15]:
+        lines.append(
+            f"- {str(row.get('occurred_at', ''))[:19]} "
+            f"{row.get('event_type')} — {row.get('summary') or row.get('title', '')}"
+        )
+    lines.append("")
 
 
 def archive_task(session_id: str, task_id: str) -> dict[str, Any]:

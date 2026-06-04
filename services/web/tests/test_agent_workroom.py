@@ -1,3 +1,6 @@
+import pytest
+
+from app import agent_workroom
 from app.agent_workroom import _plan_steps, create_workroom, format_workroom_export
 from app.chat import file_list_scope, is_file_list_intent
 from app.resource_areas import agent_may_access, list_groups
@@ -47,3 +50,19 @@ def test_workroom_session_dict():
     d = s.to_dict()
     assert d["workroom_id"]
     assert d["status"] == "idle"
+
+
+@pytest.mark.asyncio
+async def test_run_workroom_file_list_step(monkeypatch):
+    async def fake_file_list(goal, *, scope_files, scope_uris):
+        return "Lista plików testowa", {"resources": [], "rag_documents": []}, "all"
+
+    monkeypatch.setattr(agent_workroom, "_build_file_list_for_goal", fake_file_list)
+    s = create_workroom()
+
+    out = await agent_workroom.run_workroom(s.workroom_id, "lista plikow")
+
+    assert out["ok"] is True
+    assert out["status"] == "done"
+    assert "Lista plików testowa" in out["result_summary"]
+    assert any(e["kind"] == "result" for e in out["ledger"])

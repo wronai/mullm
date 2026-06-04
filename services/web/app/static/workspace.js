@@ -300,7 +300,8 @@
         formatChatContent(item.content),
         meta,
         false,
-        item.content || ""
+        item.content || "",
+        item.routing
       );
     });
     if (!items.length) {
@@ -477,7 +478,24 @@
     return role;
   }
 
-  function appendMsgTo(box, role, content, meta, scroll, rawContent) {
+  function formatRouteBadge(routing) {
+    if (!routing?.route) return "";
+    const pct = Math.round((routing.confidence || 0) * 100);
+    const codes = (routing.reason_codes || []).slice(0, 3).join(", ");
+    const ms = routing.timing_ms != null ? `${routing.timing_ms}ms` : "";
+    return [routing.route, `${pct}%`, codes, ms].filter(Boolean).join(" · ");
+  }
+
+  function appendRouteBadge(div, routing) {
+    if (!routing?.route) return;
+    const badge = document.createElement("div");
+    badge.className = "msg-route-badge";
+    badge.title = JSON.stringify(routing, null, 2);
+    badge.textContent = formatRouteBadge(routing);
+    div.appendChild(badge);
+  }
+
+  function appendMsgTo(box, role, content, meta, scroll, rawContent, routing) {
     const div = document.createElement("div");
     div.className =
       "msg " + (role === "user" ? "user" : role === "system" ? "system" : "assistant");
@@ -513,6 +531,7 @@
       m.textContent = meta;
       div.appendChild(m);
     }
+    if (role === "assistant" && routing) appendRouteBadge(div, routing);
     box.appendChild(div);
     if (scroll) box.scrollTop = box.scrollHeight;
   }
@@ -635,6 +654,9 @@
       if (!data.clarify) pendingClarify = null;
       renderContext(data.context);
       renderSessionEvents(data.events);
+      if (data.routing) {
+        toast(`Trasa: ${formatRouteBadge(data.routing)}`, true);
+      }
       if (data.task?.ok) {
         document.body.classList.add("tickets-open");
         toast("Ticket: " + (data.task.task_id || "?"), true);

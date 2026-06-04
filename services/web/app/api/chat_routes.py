@@ -51,6 +51,8 @@ async def chat_message(body: ChatMessage):
             scope_uris=list(session.context.uris),
             form_values=body.form_values,
             wait_for_confirmation=body.wait_for_confirmation,
+            chat_mode=body.mode or "discuss",
+            use_rag=body.use_rag,
         )
         if outcome.get("nlp2dsl_conversation_id"):
             session.nlp2dsl_conversation_id = outcome["nlp2dsl_conversation_id"]
