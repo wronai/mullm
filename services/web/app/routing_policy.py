@@ -11,7 +11,15 @@ from typing import Any
 
 import yaml
 
-_DEFAULT_ORDER = ["rag_probe", "rules", "agent_shell", "nlp2dsl", "rag_answer"]
+_DEFAULT_ORDER = [
+    "nlp2dsl_resume",
+    "nlp2dsl_orient",
+    "rag_probe",
+    "rules",
+    "agent_shell",
+    "nlp2dsl",
+    "rag_answer",
+]
 
 _VALID_STEPS = frozenset(_DEFAULT_ORDER)
 
@@ -33,8 +41,10 @@ class RoutingPolicy:
     agents_default: str = "shell_agent"
     agents_by_route: dict[str, str] = field(default_factory=dict)
     prefer_session_agent: bool = True
+    agent_plugins: list[dict[str, Any]] = field(default_factory=list)
     rag_probe: RagProbeSettings = field(default_factory=RagProbeSettings)
     mode_overrides: dict[str, list[str]] = field(default_factory=dict)
+    user_expectations: list[dict[str, Any]] = field(default_factory=list)
     source_path: str = ""
 
     def ingress_for_mode(self, chat_mode: str) -> list[str]:
@@ -63,6 +73,7 @@ class RoutingPolicy:
                 "by_route": self.agents_by_route,
                 "prefer_session_agent": self.prefer_session_agent,
             },
+            "agent_plugins": self.agent_plugins,
             "rag_probe": {
                 "enabled": self.rag_probe.enabled,
                 "min_hits": self.rag_probe.min_hits,
@@ -71,6 +82,7 @@ class RoutingPolicy:
                 "skip_file_list_intent": self.rag_probe.skip_file_list_intent,
                 "skip_shell_prefix": self.rag_probe.skip_shell_prefix,
             },
+            "user_expectations": self.user_expectations,
             "source_path": self.source_path,
         }
 
@@ -88,16 +100,31 @@ def _policy_path() -> Path:
 def _parse_policy(data: dict[str, Any], path: Path) -> RoutingPolicy:
     agents = _parse_agents(data.get("agents") or {})
     rp = data.get("rag_probe") or {}
+    plugins = data.get("agent_plugins") or []
+    if not isinstance(plugins, list):
+        plugins = []
     return RoutingPolicy(
         version=int(data.get("version") or 1),
         ingress_order=_valid_ingress_order(data.get("ingress_order")),
         agents_default=agents["default"],
         agents_by_route=agents["by_route"],
         prefer_session_agent=agents["prefer_session_agent"],
+        agent_plugins=[dict(p) for p in plugins if isinstance(p, dict)],
         rag_probe=_parse_rag_probe(rp),
         mode_overrides=_parse_mode_overrides(data.get("mode_overrides") or {}),
+        user_expectations=_parse_user_expectations(data.get("user_expectations") or []),
         source_path=str(path),
     )
+
+
+def _parse_user_expectations(raw: Any) -> list[dict[str, Any]]:
+    if not isinstance(raw, list):
+        return []
+    out: list[dict[str, Any]] = []
+    for item in raw:
+        if isinstance(item, dict) and item.get("id"):
+            out.append(dict(item))
+    return out
 
 
 def _parse_agents(raw_agents: dict[str, Any]) -> dict[str, Any]:

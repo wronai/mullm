@@ -7,7 +7,13 @@ from typing import Any
 
 import httpx
 
+from app.agent_plugins.nlp2cmd_helpers import resolve_command_text
 from app.agent_plugins.protocol import ShellTranslation
+from app.routing_schemas import (
+    NlpCommandAnalysis,
+    build_nlp2cmd_request,
+    parse_nlp2cmd_response,
+)
 
 _PLUGIN_ID = "nlp2cmd"
 _EXECUTOR = "shell_agent"
@@ -20,7 +26,6 @@ def backend_candidates() -> list[str]:
         "http://nlp2cmd:8000",
         "http://host.docker.internal:8020",
         "http://127.0.0.1:8020",
-        "http://localhost:8000",
     ]
     seen: set[str] = set()
     out: list[str] = []
@@ -56,36 +61,62 @@ class Nlp2CmdPlugin:
         self,
         message: str,
         *,
-        dsl: str = "shell",
+        dsl: str = "auto",
+        explain: bool | None = None,
     ) -> ShellTranslation | None:
+        analysis = await self.analyze_shell_nl(message, dsl=dsl, explain=explain)
+        return analysis.to_shell_translation() if analysis else None
+
+    async def analyze_shell_nl(
+        self,
+        message: str,
+        *,
+        dsl: str = "auto",
+        explain: bool | None = None,
+    ) -> NlpCommandAnalysis | None:
         text = (message or "").strip()
         if not text:
             return None
-        payload = {"query": text, "dsl": dsl, "explain": False, "execute": False}
+        req = build_nlp2cmd_request(text, dsl=dsl)
+        if explain is not None:
+            req = req.model_copy(update={"explain": explain})
+        payload = req.model_dump(mode="json", exclude={"schema_id"})
         async with httpx.AsyncClient(timeout=30.0) as client:
             for base in backend_candidates():
                 try:
                     r = await client.post(f"{base}/query", json=payload)
                     r.raise_for_status()
-                    data = r.json()
-                    return _translation_from_response(data)
+                    parsed = parse_nlp2cmd_response(r.json())
+                    if not parsed or not parsed.success:
+                        continue
+                    cmd = resolve_command_text(text, parsed)
+                    if not cmd:
+                        continue
+                    if cmd != parsed.command_text:
+                        parsed = parsed.model_copy(update={"command": cmd})
+                    return NlpCommandAnalysis(request=req, response=parsed)
                 except httpx.HTTPError:
                     continue
         return None
 
 
-def _translation_from_response(data: dict[str, Any]) -> ShellTranslation | None:
-    if not data.get("success"):
+def _translation_from_response(
+    data: dict[str, Any],
+    *,
+    query: str = "",
+) -> ShellTranslation | None:
+    parsed = parse_nlp2cmd_response(data)
+    if not parsed or not parsed.success:
         return None
-    command = (data.get("command") or "").strip()
-    if not command:
+    cmd = resolve_command_text(query, parsed) if query else parsed.command_text
+    if not cmd:
         return None
     return ShellTranslation(
-        command=command,
-        confidence=float(data.get("confidence") or 0.0),
-        domain=str(data.get("domain") or ""),
-        intent=str(data.get("intent") or ""),
-        raw=data,
+        command=cmd,
+        confidence=float(parsed.confidence or 0.0),
+        domain=str(parsed.domain or ""),
+        intent=str(parsed.intent or ""),
+        raw=parsed.model_dump(mode="json"),
     )
 
 

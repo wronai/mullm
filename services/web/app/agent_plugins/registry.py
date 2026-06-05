@@ -12,6 +12,7 @@ from typing import Any
 from app.agent_plugins.nlp2cmd_plugin import plugin as nlp2cmd_plugin
 from app.agent_plugins.nlp2dsl_plugin import plugin as nlp2dsl_plugin
 from app.agent_plugins.protocol import AgentPlugin, ShellTranslation
+from app.routing_schemas import NlpCommandAnalysis
 
 _PLUGINS: dict[str, AgentPlugin] = {
     nlp2cmd_plugin.plugin_id: nlp2cmd_plugin,
@@ -59,12 +60,33 @@ async def agents_status() -> list[dict[str, Any]]:
     return out
 
 
+async def analyze_shell_nl(
+    message: str,
+    *,
+    plugin_id: str = "nlp2cmd",
+    dsl: str = "auto",
+) -> NlpCommandAnalysis | None:
+    """Walidowana analiza NL (schema nlp2cmd QueryRequest/Response)."""
+    plugin = get_plugin(plugin_id)
+    if not plugin:
+        return None
+    analyze = getattr(plugin, "analyze_shell_nl", None)
+    if not callable(analyze):
+        return None
+    if not await plugin.health():
+        return None
+    return await analyze(message, dsl=dsl)
+
+
 async def translate_shell_nl(
     message: str,
     *,
     plugin_id: str = "nlp2cmd",
-    dsl: str = "shell",
+    dsl: str = "auto",
 ) -> ShellTranslation | None:
+    analysis = await analyze_shell_nl(message, plugin_id=plugin_id, dsl=dsl)
+    if analysis:
+        return analysis.to_shell_translation()
     plugin = get_plugin(plugin_id)
     if not plugin:
         return None

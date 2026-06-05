@@ -365,13 +365,33 @@ workflow[name="test"] {
 workflow[name="test-web"] {
   trigger: manual;
   step-1: run cmd=pip install -q -r requirements-dev.txt -r services/web/requirements.txt;
-  step-2: run cmd=pytest -c services/web/pytest.ini services/web/tests -q;
+  step-2: run cmd=[ -f requirements-quality.txt ] && pip install -q -r requirements-quality.txt || true;
+  step-3: run cmd=pytest -c services/web/pytest.ini services/web/tests -q;
 }
 
 workflow[name="test-e2e-live"] {
   trigger: manual;
   step-1: run cmd=pip install -q -r requirements-dev.txt -r services/web/requirements.txt;
-  step-2: run cmd=MULLM_E2E=1 pytest -c services/web/pytest.ini services/web/tests/test_e2e_live_stack.py -v;
+  step-2: run cmd=chmod +x scripts/wait-for-web.sh;
+  step-3: run cmd=./scripts/wait-for-web.sh;
+  step-4: run cmd=MULLM_E2E=1 pytest -c services/web/pytest.ini services/web/tests/test_e2e_live_stack.py -v;
+}
+
+workflow[name="test-quality"] {
+  trigger: manual;
+  step-1: run cmd=chmod +x scripts/test-quality.sh;
+  step-2: run cmd=./scripts/test-quality.sh;
+}
+
+workflow[name="test-quality-deps"] {
+  trigger: manual;
+  step-1: run cmd=pip install -q -r requirements-dev.txt -r services/web/requirements.txt -r requirements-quality.txt;
+}
+
+workflow[name="propact-pact"] {
+  trigger: manual;
+  step-1: run cmd=chmod +x scripts/run-propact-pact.sh;
+  step-2: run cmd=./scripts/run-propact-pact.sh;
 }
 
 workflow[name="mullm-cli"] {

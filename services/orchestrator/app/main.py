@@ -169,20 +169,19 @@ async def _seed_capability_registry(app: FastAPI) -> None:
 async def _subscribe_shell_results(app: FastAPI) -> None:
     async def complete_from_shell(msg):
         payload = json.loads(msg.data.decode())
-        await app.state.command_bus.handle(
-            command_type="CompleteTask",
+        await app.state.command_bus.complete_task_from_shell(
+            payload=payload,
             command_id=f"shell-completed-{payload['task_id']}",
-            data={"task_id": payload["task_id"], "result": payload},
             metadata={"actor": {"type": "agent", "id": payload.get("agent_id")}},
         )
 
     async def fail_from_shell(msg):
         payload = json.loads(msg.data.decode())
         error = payload.get("stderr") or f"Shell command failed with exit code {payload.get('exit_code')}"
-        await app.state.command_bus.handle(
-            command_type="FailTask",
+        await app.state.command_bus.fail_task_from_shell(
+            payload=payload,
             command_id=f"shell-failed-{payload['task_id']}",
-            data={"task_id": payload["task_id"], "error": error},
+            error=error,
             metadata={"actor": {"type": "agent", "id": payload.get("agent_id")}},
         )
 

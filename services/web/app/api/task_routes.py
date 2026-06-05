@@ -113,6 +113,11 @@ async def link_ticket(task_id: str, body: SessionRef):
     return {"context": workspace_service.link_ticket(body.session_id, task_id)}
 
 
+@router.post("/tickets/{task_id}/unlink")
+async def unlink_ticket(task_id: str, body: SessionRef):
+    return {"context": workspace_service.unlink_ticket(body.session_id, task_id)}
+
+
 def _archived_ids(session_id: str | None) -> set[str]:
     if not session_id:
         return set()

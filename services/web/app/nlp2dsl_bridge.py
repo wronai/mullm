@@ -59,6 +59,45 @@ async def chat_message(conversation_id: str, text: str) -> dict[str, Any]:
     )
 
 
+async def orient(text: str, *, connector: str = "mullm") -> dict[str, Any] | None:
+    """Orientacja zapytania (file_list / shell / workflow) — lokalnie w nlp2dsl."""
+    try:
+        return await _post_json(
+            "/workflow/nlp/orient",
+            {"text": text, "connector": connector},
+        )
+    except httpx.HTTPError:
+        return None
+
+
+def nlp_service_candidates() -> list[str]:
+    urls = [
+        os.getenv("NLP2DSL_NLP_URL"),
+        os.getenv("NLP_SERVICE_URL"),
+        "http://nlp2dsl-nlp:8002",
+        "http://host.docker.internal:8012",
+        "http://localhost:8012",
+    ]
+    seen: set[str] = set()
+    out: list[str] = []
+    for url in urls:
+        if not url:
+            continue
+        normalized = url.rstrip("/")
+        if normalized not in seen:
+            out.append(normalized)
+            seen.add(normalized)
+    return out
+
+
+async def orient_direct(text: str, *, connector: str = "mullm") -> dict[str, Any]:
+    """Orientacja — cienki wrapper; logika w app.routing.orientation_provider."""
+    from app.routing.orientation_provider import orient_message
+
+    orient = await orient_message(text, connector=connector, use_cache=False)
+    return orient.to_dict()
+
+
 async def _post_json(path: str, payload: dict[str, Any]) -> dict[str, Any]:
     last_error: Exception | None = None
     async with httpx.AsyncClient(timeout=60.0) as client:
@@ -117,6 +156,8 @@ def intent_routing_policy_flags(routing: dict[str, Any] | None) -> dict[str, Any
         "nlp2dsl_confidence": routing.get("confidence"),
         "nlp2dsl_authorized": routing.get("authorized"),
     }
+    if routing.get("orientation"):
+        flags["nlp2dsl_orientation"] = routing["orientation"]
     codes = routing.get("reason_codes")
     if codes:
         flags["nlp2dsl_reason_codes"] = codes

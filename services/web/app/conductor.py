@@ -8,6 +8,10 @@ from app import chat as chat_service
 from app import nlp2dsl_bridge as nlp
 from app import prompt_router
 from app import routing_policy
+from app import routing_feedback
+from app import routing_trace
+from app.routing.execution_resolver import route_from_orientation
+from app.routing.orientation_provider import orient_message
 from app.agent_plugins import translate_shell_nl
 from app.agent_plugins.protocol import ShellTranslation
 from app.workspace import get_or_create
@@ -46,16 +50,34 @@ def _attach_routing(
     decision: prompt_router.RouteDecision,
 ) -> dict[str, Any]:
     routing = decision.to_dict()
-    routing["nlp2dsl_invoked"] = bool(out.get("nlp2dsl_routing"))
-    if out.get("nlp2dsl_routing"):
+    orient = decision.policy_flags.get("nlp2dsl_orientation")
+    if orient:
+        routing["nlp2dsl"] = orient
+        routing["nlp2dsl_orient"] = True
+        routing["nlp2dsl_invoked"] = True
+        src = decision.policy_flags.get("orientation_source") or orient.get("source")
+        if src:
+            routing["orientation_source"] = src
+    shell_trans = decision.policy_flags.get("shell_translation_source")
+    if shell_trans:
+        routing["shell_translation_source"] = shell_trans
+    elif out.get("nlp2dsl_routing"):
         routing["nlp2dsl"] = out["nlp2dsl_routing"]
+        routing["nlp2dsl_invoked"] = True
     elif decision.route in ("mullm_file_list", "mullm_shell", "nlp2cmd_shell"):
         routing["nlp2dsl_skipped"] = True
-    if decision.policy_flags.get("shell_plugin") == "nlp2cmd":
-        routing["shell_plugin"] = "nlp2cmd"
+    shell_plugin = decision.policy_flags.get("shell_plugin")
+    if shell_plugin:
+        routing["shell_plugin"] = shell_plugin
+    if shell_plugin == "nlp2cmd":
         trans = decision.policy_flags.get("nlp2cmd_translation")
         if isinstance(trans, dict):
             routing["nlp2cmd"] = trans
+    elif shell_plugin == "nlp2dsl_orient":
+        trans = decision.policy_flags.get("nlp2cmd_translation")
+        if isinstance(trans, dict):
+            routing["nlp2dsl_orient_cmd"] = trans
+    routing["turn_id"] = routing_feedback.new_turn_id()
     out["routing"] = routing
     chat_service.stamp_last_assistant_routing(session_id, routing)
     return out
@@ -152,14 +174,27 @@ async def _execute_shell_route(
     wait_for_confirmation: bool,
 ) -> dict[str, Any]:
     shell = _extract_shell(message)
-    translation: ShellTranslation | None = None
+    translation: ShellTranslation | None = _translation_from_policy_flags(decision)
+    if not shell and translation:
+        shell = translation.command
+        if decision.route != "nlp2cmd_shell":
+            decision = _apply_nlp2cmd_decision(decision, translation)
     if not shell:
-        translation = await translate_shell_nl(message)
+        translation = translation or await translate_shell_nl(message)
         if translation:
             shell = translation.command
             decision = _apply_nlp2cmd_decision(decision, translation)
     if not shell:
-        return _missing_shell_response(session_id, decision)
+        session = get_or_create(session_id)
+        return await _missing_shell_response(
+            session_id,
+            decision,
+            message=message,
+            nlp_conversation_id=session.nlp2dsl_conversation_id,
+            scope_files=scope_files,
+            scope_uris=scope_uris,
+            wait_for_confirmation=wait_for_confirmation,
+        )
     result = await _create_shell_task(
         session_id,
         message=message,
@@ -167,22 +202,66 @@ async def _execute_shell_route(
         wait_for_confirmation=wait_for_confirmation,
         agent=decision.policy_flags.get("assigned_agent"),
     )
-    return _shell_route_response(session_id, message, decision, result, translation=translation)
+    return _shell_route_response(
+        session_id,
+        message,
+        decision,
+        result,
+        translation=translation,
+        wait_for_confirmation=wait_for_confirmation,
+    )
 
 
-def _missing_shell_response(
+async def _missing_shell_response(
     session_id: str,
     decision: prompt_router.RouteDecision,
+    *,
+    message: str = "",
+    nlp_conversation_id: str | None = None,
+    scope_files: list[str] | None = None,
+    scope_uris: list[str] | None = None,
+    wait_for_confirmation: bool = False,
 ) -> dict[str, Any]:
+    """Brak polecenia shell — spróbuj nlp2dsl (dopytania) zamiast sztywnego komunikatu."""
+    if await nlp.health():
+        try:
+            out = await _nlp2dsl_turn(
+                session_id=session_id,
+                message=message or "Potrzebuję doprecyzowania polecenia.",
+                nlp_conversation_id=nlp_conversation_id,
+                scope_files=scope_files,
+                scope_uris=scope_uris,
+                wait_for_confirmation=wait_for_confirmation,
+            )
+            decision.route = "nlp2dsl"
+            decision.handler = "nlp2dsl.workflow.chat"
+            decision.reason = "Brak shell — delegacja do nlp2dsl (dopytania)"
+            decision.reason_codes = list(decision.reason_codes) + ["nlp2dsl_clarify_fallback"]
+            decision.requires_clarification = True
+            _merge_nlp2dsl_routing(out, out.get("nlp2dsl_routing"), decision)
+            prompt_router.record_route_event(session_id, decision, outcome="clarify")
+            return _attach_routing(session_id, out, decision)
+        except Exception:
+            pass
     decision.requires_clarification = True
     prompt_router.record_route_event(
         session_id, decision, event_type="RouteFailed", outcome="no_shell"
     )
     out = {
-        "reply": "Podaj polecenie shell (np. `run ls -la`).",
+        "reply": "Podaj polecenie shell (np. `run ls -la`) lub opisz workflow (np. faktura).",
         "history": chat_service.get_history(session_id),
     }
     return _attach_routing(session_id, out, decision)
+
+
+def _shell_wait_seconds() -> float:
+    import os
+
+    raw = (os.getenv("MULLM_SHELL_WAIT_SECONDS") or "20").strip()
+    try:
+        return max(0.0, float(raw))
+    except ValueError:
+        return 20.0
 
 
 async def _create_shell_task(
@@ -195,13 +274,41 @@ async def _create_shell_task(
 ) -> dict[str, Any]:
     from app import workspace as ws
 
-    return await ws.create_task_immediate(
+    # executor w polityce (shell_agent) ≠ ID agenta NATS — auto_assign wybiera shell-agent-a/b
+    result = await ws.create_task_immediate(
         session_id,
         title=message[:80],
         description=message,
         shell_command=shell,
         wait_for_confirmation=wait_for_confirmation,
-        agent_id=agent,
+        agent_id=None,
+    )
+    result["executor_label"] = agent
+    wait_sec = _shell_wait_seconds()
+    tid = result.get("task_id")
+    if (
+        wait_sec > 0
+        and not wait_for_confirmation
+        and result.get("ok")
+        and tid
+    ):
+        terminal = await chat_service.wait_for_task_terminal(str(tid), timeout=wait_sec)
+        if terminal:
+            result["terminal_state"] = terminal
+    return result
+
+
+def _translation_from_policy_flags(
+    decision: prompt_router.RouteDecision,
+) -> ShellTranslation | None:
+    raw = (decision.policy_flags or {}).get("nlp2cmd_translation")
+    if not isinstance(raw, dict) or not raw.get("command"):
+        return None
+    return ShellTranslation(
+        command=str(raw["command"]),
+        confidence=float(raw.get("confidence") or 0.0),
+        domain=str(raw.get("domain") or ""),
+        intent=str(raw.get("intent") or ""),
     )
 
 
@@ -211,6 +318,7 @@ def _apply_nlp2cmd_decision(
 ) -> prompt_router.RouteDecision:
     flags = dict(decision.policy_flags)
     flags["shell_plugin"] = "nlp2cmd"
+    flags["shell_translation_source"] = "nlp2cmd"
     flags["nlp2cmd_translation"] = {
         "command": translation.command,
         "confidence": translation.confidence,
@@ -242,9 +350,16 @@ def _shell_route_response(
     result: dict[str, Any],
     *,
     translation: ShellTranslation | None = None,
+    wait_for_confirmation: bool = False,
 ) -> dict[str, Any]:
-    agent = decision.policy_flags.get("assigned_agent")
-    reply = _shell_task_reply(result, agent, translation=translation)
+    agent = result.get("executor_label") or decision.policy_flags.get("assigned_agent")
+    reply = _shell_task_reply(
+        result,
+        agent,
+        translation=translation,
+        wait_for_confirmation=wait_for_confirmation,
+        shell_plugin=decision.policy_flags.get("shell_plugin"),
+    )
     chat_service._append(session_id, "user", message)
     chat_service._append(session_id, "assistant", reply)
     executed = "nlp2cmd_shell" if decision.route == "nlp2cmd_shell" else "mullm_shell"
@@ -264,17 +379,49 @@ def _shell_task_reply(
     agent: str | None,
     *,
     translation: ShellTranslation | None = None,
+    wait_for_confirmation: bool = False,
+    shell_plugin: str | None = None,
 ) -> str:
-    base = (
-        f"Ticket `{result.get('task_id', '?')}`"
-        + (f" → agent `{agent}`" if agent and result.get("ok") else "")
-        + (" w kolejce." if result.get("ok") else f" — {result.get('error')}")
-    )
+    tid = result.get("task_id", "?")
+    if not result.get("ok"):
+        base = f"Nie udało się utworzyć ticketu: {result.get('error')}"
+    elif wait_for_confirmation:
+        base = f"Ticket `{tid}` w kolejce — potwierdź na liście ticketów (◎)."
+    else:
+        base = f"Ticket `{tid}`" + (f" → `{agent}`" if agent else "") + " — uruchomiono."
+        terminal = result.get("terminal_state")
+        if isinstance(terminal, dict):
+            base += _format_shell_terminal(terminal)
+        elif _shell_wait_seconds() > 0:
+            base += (
+                f"\n\n(Wynik shell nie gotowy w {_shell_wait_seconds():.0f}s — "
+                f"sprawdź ticket ◎ lub wyślij kolejną wiadomość z ID `{tid}`.)"
+            )
     if translation:
-        return (
-            f"nlp2cmd: `{translation.command}` (conf={translation.confidence:.2f})\n{base}"
-        )
+        label = "nlp2dsl orient" if shell_plugin == "nlp2dsl_orient" else "nlp2cmd"
+        return f"{label}: `{translation.command}` (conf={translation.confidence:.2f})\n{base}"
     return base
+
+
+def _format_shell_terminal(state: dict[str, Any]) -> str:
+    status = str(state.get("status") or "").lower()
+    if status == "failed":
+        err = state.get("error") or "błąd wykonania"
+        return f"\n\n**Shell — failed**\n{err}"
+    raw = state.get("result")
+    if not isinstance(raw, dict):
+        return "\n\n**Shell — completed** (brak stdout w stanie zadania)"
+    stdout = (raw.get("stdout") or "").strip()
+    stderr = (raw.get("stderr") or "").strip()
+    exit_code = raw.get("exit_code")
+    parts = [f"\n\n**Shell — exit {exit_code}**"]
+    if stdout:
+        parts.append(f"```\n{stdout[:8000]}\n```")
+    if stderr:
+        parts.append(f"stderr:\n```\n{stderr[:2000]}\n```")
+    if not stdout and not stderr:
+        parts.append("(puste stdout/stderr)")
+    return "\n".join(parts)
 
 
 async def _execute_rag_route(
@@ -299,6 +446,7 @@ async def _execute_rag_route(
 _RULE_ROUTE_HANDLERS = {
     "mullm_file_list": _execute_file_list_route,
     "mullm_shell": _execute_shell_route,
+    "nlp2cmd_shell": _execute_shell_route,
     "rag": _execute_rag_route,
 }
 
@@ -335,8 +483,21 @@ async def handle_turn(
 
     pipeline_result = await _run_ingress_pipeline(state)
     if pipeline_result is not None:
-        return pipeline_result
-    return await _fallback_routed_turn(state)
+        return await _attach_decision_tree(
+            pipeline_result,
+            session_id=session_id,
+            message=message,
+            chat_mode=chat_mode,
+            use_rag=use_rag,
+        )
+    fallback = await _fallback_routed_turn(state)
+    return await _attach_decision_tree(
+        fallback,
+        session_id=session_id,
+        message=message,
+        chat_mode=chat_mode,
+        use_rag=use_rag,
+    )
 
 
 def _message_with_form_values(
@@ -352,8 +513,149 @@ def _message_with_form_values(
     return f"{message} {extra}".strip() if message else extra
 
 
+async def _attach_decision_tree(
+    out: dict[str, Any],
+    *,
+    session_id: str,
+    message: str,
+    chat_mode: str,
+    use_rag: bool,
+) -> dict[str, Any]:
+    routing = out.get("routing") or {}
+    route = routing.get("route")
+    if not route:
+        return out
+    tree = await routing_trace.explain_pipeline(
+        message,
+        chat_mode=chat_mode,
+        use_rag=use_rag,
+        session_id=session_id,
+    )
+    ingress_step = routing.get("policy_flags", {}).get("pipeline_step")
+    tree = routing_trace.align_tree_to_route(tree, route, ingress_step=ingress_step)
+    routing["decision_tree"] = tree
+    if not routing.get("turn_id"):
+        routing["turn_id"] = routing_feedback.new_turn_id()
+    out["routing"] = routing
+    chat_service.stamp_last_assistant_routing(session_id, routing)
+    get_or_create(session_id).add_event(
+        "RoutingDecisionTree",
+        f"route={route}",
+        decision_tree=tree,
+    )
+    return out
+
+
+def _should_interrupt_nlp2dsl_resume(state: TurnState) -> bool:
+    """Nowa intencja file_list / jawny shell — przerwij wznawianie rozmowy workflow."""
+    if state.chat_mode != "discuss":
+        return True
+    if chat_service.is_file_list_intent(state.message):
+        return True
+    if prompt_router._shell_prefix(state.message):
+        return True
+    return False
+
+
+async def _nlp2dsl_orient_step(state: TurnState) -> dict[str, Any] | None:
+    """Orientacja zapytania w nlp2dsl przed regułami / nlp2cmd / OpenRouter."""
+    orient = await orient_message(
+        state.message,
+        connector="mullm",
+        session_id=state.session_id,
+        chat_mode=state.chat_mode,
+    )
+    orient_dict = orient.to_dict()
+    state.pipeline_ctx["nlp2dsl_orient"] = orient_dict
+    state.pipeline_ctx["nlp2dsl_orient_source"] = orient.source
+    state.pipeline_ctx["orientation"] = orient_dict
+    if orient.category in ("unknown", "system_local"):
+        return None
+
+    decision = route_from_orientation(orient)
+    if not decision:
+        return None
+
+    if decision.route == "nlp2dsl":
+        state.decision = _enrich_decision(
+            decision,
+            state.session_id,
+            chat_mode=state.chat_mode,
+            pipeline_ctx=state.pipeline_ctx,
+        )
+        return None
+
+    decision.timing_ms = orient.latency_ms
+    state.decision = _enrich_decision(
+        decision,
+        state.session_id,
+        chat_mode=state.chat_mode,
+        pipeline_ctx=state.pipeline_ctx,
+    )
+    state.pipeline_ctx["nlp2dsl_orient_handled"] = True
+    result = await _execute_rules_route(
+        session_id=state.session_id,
+        message=state.message,
+        decision=state.decision,
+        nlp_conversation_id=state.nlp_conversation_id,
+        scope_files=state.scope_files,
+        scope_uris=state.scope_uris,
+        wait_for_confirmation=state.wait_for_confirmation,
+    )
+    if result is None:
+        return None
+    _merge_nlp2dsl_routing(
+        result,
+        {
+            "action": orient.suggested_action,
+            "intent": orient.category,
+            "confidence": orient.confidence,
+            "source": "orientation",
+            "orientation": orient_dict,
+        },
+        state.decision,
+    )
+    return result
+
+
+async def _nlp2dsl_resume_step(state: TurnState) -> dict[str, Any] | None:
+    """
+    Wznów rozmowę nlp2dsl (dopytania, formularz) — nie tylko na słowo „kontynuuj”.
+    """
+    if not state.nlp_conversation_id:
+        return None
+    if _should_interrupt_nlp2dsl_resume(state):
+        return None
+    status = get_or_create(state.session_id).nlp2dsl_status
+    if status and status not in ("in_progress", "ready"):
+        return None
+    if not await nlp.health():
+        return None
+    state.decision = _enrich_decision(
+        _nlp2dsl_continue_decision(),
+        state.session_id,
+        chat_mode=state.chat_mode,
+        pipeline_ctx=state.pipeline_ctx,
+    )
+    state.decision.reason = "Wznowienie rozmowy nlp2dsl (dopytania / brakujące pola)"
+    state.decision.reason_codes = list(state.decision.reason_codes) + ["nlp2dsl_resume"]
+    out = await _nlp2dsl_turn(
+        session_id=state.session_id,
+        message=state.message,
+        nlp_conversation_id=state.nlp_conversation_id,
+        scope_files=state.scope_files,
+        scope_uris=state.scope_uris,
+        wait_for_confirmation=state.wait_for_confirmation,
+    )
+    _merge_nlp2dsl_routing(out, out.get("nlp2dsl_routing"), state.decision)
+    prompt_router.record_route_event(state.session_id, state.decision, outcome="succeeded")
+    return _attach_routing(state.session_id, out, state.decision)
+
+
 async def _run_ingress_pipeline(state: TurnState) -> dict[str, Any] | None:
     handlers = {
+        "nlp2dsl_resume": _nlp2dsl_resume_step,
+        "nlp2dsl_orient": _nlp2dsl_orient_step,
         "rag_probe": _rag_probe_step,
         "rules": _rules_step,
         "agent_shell": _agent_shell_step,
@@ -538,6 +840,8 @@ def _rag_probe_decision() -> prompt_router.RouteDecision:
 
 
 async def _rules_step(state: TurnState) -> dict[str, Any] | None:
+    if state.pipeline_ctx.get("nlp2dsl_orient_handled"):
+        return None
     continued = await _try_continue_turn(state)
     if continued is not None:
         return continued
@@ -566,7 +870,9 @@ async def _rules_step(state: TurnState) -> dict[str, Any] | None:
 
 
 def _should_skip_nlp2dsl_step(state: TurnState) -> bool:
-    """Reguły / agent_shell już obsłużyły trasę — nie wołaj nlp2dsl ponownie."""
+    """Reguły / orient / agent_shell już obsłużyły trasę — nie wołaj nlp2dsl ponownie."""
+    if state.pipeline_ctx.get("nlp2dsl_orient_handled"):
+        return True
     if state.pipeline_ctx.get("agent_shell_handled"):
         return True
     if state.decision and state.decision.route in (
@@ -579,7 +885,7 @@ def _should_skip_nlp2dsl_step(state: TurnState) -> bool:
         return True
     if prompt_router._shell_prefix(state.message):
         return True
-    return bool(chat_service.is_shell_nl_intent(state.message))
+    return False
 
 
 def _nlp2cmd_ingress_decision(
@@ -609,7 +915,7 @@ def _nlp2cmd_ingress_decision(
 # @intract.v1 id:mullm.ingress.agent_shell scope:function intent:orchestrate:agent_shell domain:routing effect:network meaning:"Ingress nlp2cmd→ticket shell_agent; Mullm nie wykonuje polecenia"
 async def _agent_shell_step(state: TurnState) -> dict[str, Any] | None:
     """NL → shell (nlp2cmd) → ticket shell_agent — Mullm tylko orkiestruje."""
-    if not chat_service.is_shell_nl_intent(state.message):
+    if not chat_service.is_nlp2cmd_candidate(state.message):
         return None
     translation = await translate_shell_nl(state.message)
     if not translation:
@@ -634,6 +940,7 @@ async def _agent_shell_step(state: TurnState) -> dict[str, Any] | None:
         state.decision,
         result,
         translation=translation,
+        wait_for_confirmation=state.wait_for_confirmation,
     )
 
 

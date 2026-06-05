@@ -9,6 +9,8 @@ from app.api_routes import router
         "/chat/message",
         "/files/upload",
         "/tickets/{task_id}/confirm",
+        "/tickets/{task_id}/unlink",
+        "/context/clear-tickets",
         "/workspace/logs/export",
         "/agent-workroom/{workroom_id}/run",
         "/access/matrix",

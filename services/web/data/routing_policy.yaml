@@ -4,8 +4,10 @@
 version: 1
 
 # Domyślny pipeline (tryb Auto / discuss)
-# Mullm = orchestrator; agent_shell → nlp2cmd (NL→cmd) → shell_agent (NATS)
+# nlp2dsl_resume = dopytania / formularz gdy trwa rozmowa workflow (in_progress)
 ingress_order:
+  - nlp2dsl_resume
+  - nlp2dsl_orient
   - rag_probe
   - rules
   - agent_shell
@@ -50,3 +52,55 @@ mode_overrides:
     ingress_order: [rag_answer]
   run_task:
     ingress_order: [rules]
+
+# Standardy oczekiwań użytkownika (dokumentacja + dopasowanie w /api/routing/explain).
+# Rozszerzaj phrases / reason_codes — logika file_list/shell nadal w chat.py + prompt_router.
+user_expectations:
+  - id: file_list_user_scope_registry
+    match:
+      phrases:
+        - "lista plikow usera z rejestru"
+        - "lista plików użytkownika wgrane"
+        - "user files w workspace"
+        - "user files localfs"
+    route: mullm_file_list
+    reason_codes: [intent_file_list, scope_user, expectation_file_list_registry]
+    standard: "Rejestr Access Fabric (files_agent) — jawny rejestr/wgrane/localfs."
+  - id: shell_host_user_files
+    match:
+      phrases:
+        - "lista plikow usera"
+        - "lista plików użytkownika"
+        - "user files"
+      exclude_phrases:
+        - "rejestr"
+        - "access fabric"
+        - "wgrane"
+        - "localfs"
+        - "workspace"
+    route: nlp2cmd_shell
+    reason_codes: [ingress_agent_shell, nlp2cmd_translate, expectation_host_user_files]
+    standard: "Domyślnie: katalog domowy na hoście (nlp2cmd → ls ~), nie rejestr Mullm."
+  - id: shell_explicit_prefix
+    match:
+      phrases: ["run ls", "exec ", "shell "]
+    route: mullm_shell
+    reason_codes: [shell_prefix, expectation_shell_explicit]
+    standard: "Jawny prefix run/exec → ticket shell_agent."
+  - id: nlp2dsl_clarify_workflow
+    match:
+      phrases:
+        - "wyślij fakturę"
+        - "wyslij fakture"
+        - "automatyzacj"
+    route: nlp2dsl
+    reason_codes: [delegate_nlp2dsl, expectation_nlp2dsl_clarify]
+    standard: "Workflow z brakującymi polami → nlp2dsl dopytuje (formularz clarify)."
+  - id: shell_nl_disk_space
+    match:
+      phrases:
+        - "sprawdz miejsce na dysku"
+        - "miejsce na dysku"
+    route: nlp2cmd_shell
+    reason_codes: [ingress_agent_shell, nlp2cmd_translate, expectation_disk_check]
+    standard: "NL → nlp2cmd (np. df -h) → shell_agent; nie mylić z file_list."

@@ -15,6 +15,21 @@ class ShellTranslation:
     domain: str = ""
     intent: str = ""
     raw: dict[str, Any] = field(default_factory=dict)
+    analysis_schema_id: str = ""
+
+    @classmethod
+    def from_validated_analysis(cls, analysis: Any) -> ShellTranslation:
+        """Z NlpCommandAnalysis (routing_schemas)."""
+        flags = analysis.to_policy_flags()
+        trans = flags["nlp2cmd_translation"]
+        return cls(
+            command=str(trans["command"]),
+            confidence=float(trans.get("confidence") or 0.0),
+            domain=str(trans.get("domain") or ""),
+            intent=str(trans.get("intent") or ""),
+            raw=analysis.model_dump(mode="json"),
+            analysis_schema_id=str(analysis.schema_id),
+        )
 
 
 @runtime_checkable

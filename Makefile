@@ -14,7 +14,7 @@ PROFILE_ARGS := $(foreach profile,$(PROFILES),--profile $(profile))
 
 .DEFAULT_GOAL := help
 
-.PHONY: help up down restart build logs ps test test-web test-e2e-live test-quality smoke ensure-env ensure-nlp2dsl-env nlp2dsl-up nlp2dsl-down nlp2cmd-up nlp2cmd-down mullm-cli
+.PHONY: help up down restart build logs ps test test-web test-e2e-live test-quality propact-pact smoke ensure-env ensure-nlp2dsl-env nlp2dsl-up nlp2dsl-down nlp2cmd-up nlp2cmd-down mullm-cli
 
 help:
 	@printf "Mullm targets:\n"
@@ -64,15 +64,25 @@ test:
 
 test-web:
 	pip install -q -r requirements-dev.txt -r services/web/requirements.txt
+	@[ -f requirements-quality.txt ] && pip install -q -r requirements-quality.txt || true
 	pytest -c services/web/pytest.ini services/web/tests -q
 
 test-e2e-live:
 	pip install -q -r requirements-dev.txt -r services/web/requirements.txt
+	chmod +x scripts/wait-for-web.sh
+	./scripts/wait-for-web.sh
 	MULLM_E2E=1 pytest -c services/web/pytest.ini services/web/tests/test_e2e_live_stack.py -v
 
 test-quality:
 	chmod +x scripts/test-quality.sh
 	./scripts/test-quality.sh
+
+test-quality-deps:
+	pip install -q -r requirements-dev.txt -r services/web/requirements.txt -r requirements-quality.txt
+
+propact-pact:
+	chmod +x scripts/run-propact-pact.sh
+	./scripts/run-propact-pact.sh
 
 mullm-cli:
 	@printf "Dodaj do PATH:\n  export PATH=\"$(CURDIR)/scripts:$$PATH\"\n"

@@ -2,6 +2,8 @@
 
 Mullm **nie wykonuje** poleceń użytkownika w czacie — routuje do pluginów i przypisuje **agentów wykonawczych** (NATS / Access Fabric).
 
+**Integracja usługowa (Docker vs CI):** [architecture-service-integrations.md](architecture-service-integrations.md)
+
 ## Pipeline ingress (discuss)
 
 ```
@@ -41,6 +43,7 @@ cd ~/github/wronai/mullm
 cp -n .env.example .env   # jeśli brak .env
 export NLP2CMD=1 NLP2DSL=1
 make up
+# nlp2cmd: docker/nlp2cmd-service.Dockerfile (port ${MULLM_NLP2CMD_HOST_PORT:-8020})
 export PATH="$(pwd)/scripts:$PATH"
 mullm agents status
 mullm chat send "sprawdz miejsce na dysku"

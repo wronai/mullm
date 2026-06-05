@@ -4,6 +4,7 @@
 id: nlp2cmd
 title: nlp2cmd — NL → polecenie shell
 repo: ../nlp2cmd
+dockerfile: mullm/docker/nlp2cmd-service.Dockerfile
 executor_agent_id: shell_agent
 ingress_steps:
   - agent_shell

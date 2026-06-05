@@ -1,7 +1,7 @@
 <!-- code2docs:start --># mullm
 
-![version](https://img.shields.io/badge/version-0.1.0-blue) ![python](https://img.shields.io/badge/python-%3E%3D3.9-blue) ![coverage](https://img.shields.io/badge/coverage-unknown-lightgrey) ![functions](https://img.shields.io/badge/functions-1141-green)
-> **1141** functions | **143** classes | **178** files | CC̄ = 2.8
+![version](https://img.shields.io/badge/version-0.1.0-blue) ![python](https://img.shields.io/badge/python-%3E%3D3.9-blue) ![coverage](https://img.shields.io/badge/coverage-unknown-lightgrey) ![functions](https://img.shields.io/badge/functions-1317-green)
+> **1317** functions | **158** classes | **201** files | CC̄ = 3.0
 
 > Auto-generated project documentation from source code analysis.
 
@@ -68,24 +68,33 @@ docs = generate_docs("./my-project", config=config)
 ```
 mullm/
 ├── requirements-dev
+├── requirements-quality
 ├── goal
+├── intract
+├── planfile
 ├── Makefile
 ├── docker-compose
 ├── tree
 ├── pytest
 ├── prefact
+├── CHANGELOG
 ├── project
 ├── README
     ├── observability
     ├── workspace-ui
+    ├── architecture-service-integrations
+    ├── agent-orchestration
     ├── prompt-router
     ├── workspace-simple
+    ├── quality-intract-propact
     ├── multi-agent-workroom
     ├── roadmap-90d
     ├── domain
     ├── workspace-conductor
     ├── e2e-chat-routing
     ├── architecture
+    ├── routing-feedback-loop
+    ├── ticket-queues-and-planfile
     ├── README
     ├── events
         ├── requirements
@@ -107,20 +116,24 @@ mullm/
         ├── pytest
         ├── package
         ├── Dockerfile
+            ├── local_orient
             ├── api_routes
+            ├── routing_feedback
             ├── workspace
             ├── routing_policy
+            ├── planfile_bridge
             ├── resource_areas
         ├── app/
             ├── prompt_router
             ├── agent_workroom
             ├── tickets
-            ├── nlp2dsl_bridge
+            ├── ticket_schemas
             ├── chat
             ├── access_matrix
             ├── main
-            ├── conductor
+            ├── routing_schemas
                 ├── access
+                ├── workspace
                 ├── workroom
                 ├── app
                 ├── protocol
@@ -137,6 +150,7 @@ mullm/
                 ├── models
                 ├── workspace_routes
                 ├── workroom_routes
+                ├── feedback_routes
                 ├── access_routes
             ├── main
             ├── routing_policy
@@ -210,6 +224,9 @@ mullm/
     ├── 1
     ├── 2
     ├── 3
+    ├── test-quality
+    ├── wait-for-web
+    ├── run-propact-pact
     ├── e2e-chat-routing
     ├── test
             ├── toon
@@ -224,6 +241,8 @@ mullm/
         ├── workflow
         ├── evolution
         ├── access
+    ├── README
+        ├── schemas
         ├── agent_manifest
         ├── agent_manifest
         ├── mullm_registry
@@ -233,11 +252,15 @@ mullm/
             ├── nats_consumer
             ├── executor
             ├── main
-├── planfile
 ├── TODO
-├── CHANGELOG
-    ├── agent-orchestration
-                ├── workspace
+            ├── nlp2dsl_bridge
+            ├── conductor
+            ├── routing_trace
+                ├── decision
+            ├── routing/
+                ├── execution_resolver
+                ├── ingress_cache
+                ├── orientation_provider
 ```
 
 ## API Overview
@@ -245,6 +268,8 @@ mullm/
 ### Classes
 
 - **`Database`** — —
+- **`OrientationResult`** — —
+- **`RoutingFeedbackRecord`** — —
 - **`WorkspaceContext`** — —
 - **`WorkspaceSession`** — —
 - **`RagProbeSettings`** — —
@@ -252,7 +277,14 @@ mullm/
 - **`RouteDecision`** — Audytowalna decyzja routingu (ingress Mullm BFF).
 - **`LedgerEntry`** — —
 - **`WorkroomSession`** — —
-- **`TurnState`** — —
+- **`MullmTicketRef`** — Wspólny nagłówek odniesienia (URI + źródło).
+- **`ExecutionTicketCreate`** — POST orchestrator /api/commands/tasks (CreateTask).
+- **`ImprovementTicket`** — mullm.routing.improvement_ticket.v1 (routing feedback).
+- **`WorkflowTicketRef`** — nlp2dsl — rozmowa workflow (nie UUID orchestratora).
+- **`Nlp2CmdQueryRequest`** — Zgodne z nlp2cmd.service.QueryRequest.
+- **`Nlp2CmdQueryResponse`** — Zgodne z nlp2cmd.service.QueryResponse.
+- **`LlmRouteClassifierOutput`** — JSON z OpenRouter (PROMPT_ROUTER_MODE llm/hybrid).
+- **`NlpCommandAnalysis`** — Walidowany wynik analizy NL (nlp2cmd) używany przez router Mullm.
 - **`ShellTranslation`** — Wynik tłumaczenia NL → polecenie shell (bez wykonania).
 - **`AgentPlugin`** — Plugin łączący Mullm z usługą agenta (HTTP/CLI w sibling repo).
 - **`Nlp2CmdPlugin`** — —
@@ -267,6 +299,7 @@ mullm/
 - **`ContextAttachBody`** — —
 - **`WorkroomStart`** — —
 - **`WorkroomMessage`** — —
+- **`RoutingFeedbackBody`** — —
 - **`AccessMatrixBody`** — —
 - **`Settings`** — —
 - **`DualEventStore`** — Zapis do Postgres (odczyt) + mirror do EventStoreDB.
@@ -387,6 +420,11 @@ mullm/
 - **`ProbeUriCommand`** — —
 - **`ShellAgent`** — —
 - **`ShellResult`** — —
+- **`TurnState`** — —
+- **`TraceCheck`** — —
+- **`TraceStep`** — —
+- **`DecisionTree`** — —
+- **`OrientationDecision`** — —
 
 ### Functions
 
@@ -413,6 +451,13 @@ mullm/
 - `project_incidents(db, event)` — —
 - `project_agent_fleet(db, event)` — —
 - `project_plugin_catalog(db, event)` — —
+- `orient_query(text)` — —
+- `feedback_dir()` — —
+- `record_feedback()` — —
+- `list_feedback()` — —
+- `list_improvement_tickets()` — —
+- `aggregate_learnings()` — Propozycje ewolucji polityki z zebranych ocen (do przeglądu operatora).
+- `new_turn_id()` — —
 - `new_session()` — —
 - `get_session(session_id)` — —
 - `get_or_create(session_id)` — —
@@ -432,13 +477,20 @@ mullm/
 - `export_debug_logs(session_id)` — Zbiera logi sesji + orchestrator + feed do kopiowania do schowka.
 - `archive_task(session_id, task_id)` — —
 - `link_ticket(session_id, task_id)` — —
+- `unlink_ticket(session_id, task_id)` — —
+- `clear_ticket_uris(session_id)` — —
 - `fetch_live_board()` — —
 - `load_policy()` — —
+- `planfile_sync_enabled()` — —
+- `planfile_project_path()` — —
+- `sync_improvement_ticket(ticket)` — Tworzy ticket planfile z improvement_ticket (best-effort).
 - `list_areas()` — —
 - `list_groups()` — Grupy logiczne — filtrowanie polityk po labelach.
 - `agent_may_access(role_id, area_id, action)` — Decyzja MVP: allow | deny | approval (+ macierz z /access).
 - `decide_route_rules(message)` — Kaskada reguł z listą kandydatów (ranking confidence).
 - `decide_route_llm(message)` — Opcjonalna klasyfikacja JSON przez OpenRouter.
+- `decide_route_local_first(message)` — Równolegle: reguły + expectations + nlp2cmd; OpenRouter tylko jako fallback.
+- `decide_route_hybrid(message)` — —
 - `decide_route(message)` — —
 - `record_route_event(session_id, decision)` — Zapis do ledger sesji (observability).
 - `create_workroom()` — —
@@ -450,17 +502,7 @@ mullm/
 - `ticket_web_path(task_id)` — —
 - `status_meta(status)` — —
 - `enrich_task(row)` — —
-- `backend_url()` — —
-- `backend_candidates()` — —
-- `health()` — —
-- `chat_start(text)` — —
-- `chat_message(conversation_id, text)` — —
-- `form_to_prompt(form, values)` — —
-- `primary_action(dsl)` — —
-- `step_config(dsl)` — —
-- `routing_from_response(resp)` — IntentDecision z nlp2dsl (pole routing w ConversationResponse).
-- `intent_routing_policy_flags(routing)` — Mapuje routing nlp2dsl → policy_flags RouteDecision (PR-C / observability).
-- `merge_intent_into_policy_flags(policy_flags, routing)` — —
+- `schemas_bundle()` — —
 - `is_continue_intent(message)` — Krótka komenda kontynuacji (bez nowej intencji DSL).
 - `is_file_list_intent(message)` — —
 - `is_shell_nl_intent(message)` — Naturalny język → shell przez nlp2cmd (nie rejestr plików, nie jawny prefix run).
@@ -474,6 +516,8 @@ mullm/
 - `stamp_last_assistant_routing(session_id, routing)` — Dołącza decyzję routera do ostatniej wiadomości asystenta (badge w UI).
 - `handle_message()` — —
 - `probe_rag()` — Lekkie wyszukiwanie RAG (bez LLM) — krok rag_probe w polityce ingress.
+- `fetch_task_state(task_id)` — Stan zadania z orchestratora (projekcja z eventów).
+- `wait_for_task_terminal(task_id)` — Czeka na completed/failed (orchestrator + fallback projector).
 - `create_task()` — —
 - `default_state()` — —
 - `load_state()` — —
@@ -486,7 +530,13 @@ mullm/
 - `agent_workroom_page(request)` — —
 - `access_matrix_page(request)` — —
 - `dashboard(request)` — —
-- `handle_turn()` — Pipeline ingress z routing_policy.yaml (rag_probe → rules → agent_shell → nlp2dsl → rag_answer).
+- `routing_analysis_use_explain()` — —
+- `build_nlp2cmd_request(message)` — —
+- `parse_nlp2cmd_response(data)` — —
+- `parse_llm_classifier(data)` — —
+- `llm_classifier_json_schema()` — —
+- `llm_system_prompt_with_schema()` — Prompt LLM z osadzonym JSON Schema (OpenRouter / lokalny klasyfikator).
+- `schemas_bundle()` — Eksport schematów dla API / dokumentacji integracji.
 - `state()` — —
 - `toast()` — —
 - `api()` — —
@@ -508,6 +558,189 @@ mullm/
 - `resetAll()` — —
 - `id()` — —
 - `title()` — —
+- `sessionId()` — —
+- `currentDraft()` — —
+- `selectedTaskId()` — —
+- `pendingClarify()` — —
+- `artifactFullCache()` — —
+- `selectedArtifactId()` — —
+- `ticketWebUrl()` — —
+- `ticketUri()` — —
+- `toast()` — —
+- `api()` — —
+- `r()` — —
+- `data()` — —
+- `detail()` — —
+- `ensureSession()` — —
+- `loadTickets()` — —
+- `refreshWorkspace()` — —
+- `state()` — —
+- `t()` — —
+- `filterTasks()` — —
+- `q()` — —
+- `loadTicketDetail()` — —
+- `selectTicket()` — —
+- `renderTicketDetail()` — —
+- `renderEmptyTicketDetail()` — —
+- `ticketStatus()` — —
+- `key()` — —
+- `ticketDetailHtml()` — —
+- `status()` — —
+- `bindTicketDetailActions()` — —
+- `confirmTicket()` — —
+- `unlinkTicket()` — —
+- `archiveTicket()` — —
+- `initRouting()` — —
+- `deep()` — —
+- `m()` — —
+- `id()` — —
+- `m2()` — —
+- `renderContext()` — —
+- `setInputValue()` — —
+- `renderTextList()` — —
+- `renderDraft()` — —
+- `renderClarify()` — —
+- `fields()` — —
+- `req()` — —
+- `collectClarifyValues()` — —
+- `fd()` — —
+- `routingTraceRows()` — —
+- `seen()` — —
+- `assistantIdx()` — —
+- `renderRoutingPolicy()` — —
+- `saveSessionAgent()` — —
+- `agentId()` — —
+- `lastDecisionTree()` — —
+- `tree()` — —
+- `renderExpectations()` — —
+- `renderRuleNodes()` — —
+- `pass()` — —
+- `renderChecks()` — —
+- `renderStep()` — —
+- `rules()` — —
+- `checks()` — —
+- `renderSteps()` — —
+- `renderPrinciples()` — —
+- `renderDecisionTree()` — —
+- `expectHtml()` — —
+- `stepsHtml()` — —
+- `principles()` — —
+- `renderDecisionTreeFromHistory()` — —
+- `fetchRoutingExplain()` — —
+- `renderRoutingTrace()` — —
+- `rows()` — —
+- `pct()` — —
+- `codes()` — —
+- `label()` — —
+- `n2()` — —
+- `n2html()` — —
+- `routingTraceText()` — —
+- `formatChatContent()` — —
+- `renderChat()` — —
+- `items()` — —
+- `meta()` — —
+- `appendMsg()` — —
+- `cacheArtifactFull()` — —
+- `syncArtifacts()` — —
+- `clearArtifactPreview()` — —
+- `renderArtifactList()` — —
+- `active()` — —
+- `when()` — —
+- `selectArtifact()` — —
+- `art()` — —
+- `showArtifactPreview()` — —
+- `preferredArtifactTab()` — —
+- `updateArtifactPreviewTabs()` — —
+- `hasText()` — —
+- `hasJson()` — —
+- `updateArtifactTab()` — —
+- `renderArtifactPreviewBody()` — —
+- `downloadArtifact()` — —
+- `name()` — —
+- `url()` — —
+- `link()` — —
+- `msgRoleLabel()` — —
+- `formatNlp2dslBadge()` — —
+- `action()` — —
+- `src()` — —
+- `auth()` — —
+- `formatRouteBadge()` — —
+- `ms()` — —
+- `fb()` — —
+- `appendRouteBadge()` — —
+- `badge()` — —
+- `submitRoutingFeedback()` — —
+- `res()` — —
+- `appendFeedbackBar()` — —
+- `turnId()` — —
+- `bar()` — —
+- `mkBtn()` — —
+- `b()` — —
+- `form()` — —
+- `routeSel()` — —
+- `hint()` — —
+- `notes()` — —
+- `send()` — —
+- `renderLearningsSummary()` — —
+- `st()` — —
+- `open()` — —
+- `neg()` — —
+- `props()` — —
+- `appendMsgTo()` — —
+- `div()` — —
+- `raw()` — —
+- `head()` — —
+- `copyBtn()` — —
+- `body()` — —
+- `renderTasks()` — —
+- `sk()` — —
+- `stClass()` — —
+- `color()` — —
+- `renderFileChips()` — —
+- `escapeHtml()` — —
+- `saveContextFromForm()` — —
+- `syncContextNote()` — —
+- `uploadFiles()` — —
+- `sendChat()` — —
+- `input()` — —
+- `chatInput()` — —
+- `uploadPendingChatFiles()` — —
+- `appendPendingChatInput()` — —
+- `formValuesText()` — —
+- `clearChatInput()` — —
+- `chatPayload()` — —
+- `handleChatResponse()` — —
+- `showFileListToast()` — —
+- `showRoutingToast()` — —
+- `focusCreatedTicket()` — —
+- `setChatSending()` — —
+- `resetChatFiles()` — —
+- `createFromDraft()` — —
+- `draft()` — —
+- `ensureDraftFromInput()` — —
+- `text()` — —
+- `drafted()` — —
+- `submitDraft()` — —
+- `draftCreated()` — —
+- `finishDraftCreation()` — —
+- `tid()` — —
+- `openTicketDialogFromDraft()` — —
+- `d()` — —
+- `copyText()` — —
+- `ta()` — —
+- `routingLineFromMsgEl()` — —
+- `buildChatTextFromDom()` — —
+- `routeLine()` — —
+- `copyChatToClipboard()` — —
+- `copyChatViewToClipboard()` — —
+- `copyLogsToClipboard()` — —
+- `bindCopyChatButtons()` — —
+- `handlerFull()` — —
+- `handlerView()` — —
+- `msg()` — —
+- `note()` — —
+- `submitTaskForm()` — —
+- `wait()` — —
 - `workroomId()` — —
 - `userSessionId()` — —
 - `toast()` — —
@@ -546,8 +779,11 @@ mullm/
 - `uploadFiles()` — —
 - `files()` — —
 - `fd()` — —
-- `text()` — —
+- `updateFileList()` — —
+- `postChatMessage()` — —
+- `handleSendMessage()` — —
 - `uploaded()` — —
+- `text()` — —
 - `rowTask()` — —
 - `escapeHtml()` — —
 - `refreshTables()` — —
@@ -558,10 +794,15 @@ mullm/
 - `get_plugin(plugin_id)` — —
 - `plugins_for_ingress_step(step)` — —
 - `agents_status()` — Health wszystkich zarejestrowanych pluginów (UI / CLI / smoke).
+- `analyze_shell_nl(message)` — Walidowana analiza NL (schema nlp2cmd QueryRequest/Response).
 - `translate_shell_nl(message)` — —
 - `backend_candidates()` — —
 - `router_decide(message, mode, use_rag)` — Podgląd trasy promptu (debug): reguły lub LLM (PROMPT_ROUTER_MODE).
+- `routing_schemas_get()` — JSON Schema (Pydantic) granic routingu: nlp2cmd, OpenRouter, agregat Mullm.
+- `ticket_schemas_get()` — Standardy ticketów Mullm + mapowanie na planfile (kolejki).
 - `routing_policy_get(reload)` — Aktualna polityka ingress (YAML + domyślne).
+- `routing_explain(message, mode, use_rag, session_id)` — Drzewo decyzji ingress + kaskada reguł (bez wykonania handlerów).
+- `routing_trace_last(session_id)` — Ostatnie drzewo decyzji z sesji (event RoutingDecisionTree lub routing w historii).
 - `agents_status_get()` — Health pluginów agentów (nlp2cmd, nlp2dsl, …).
 - `create_task(body)` — —
 - `create_task_from_draft(body)` — —
@@ -572,12 +813,14 @@ mullm/
 - `confirm_ticket(task_id, body)` — —
 - `archive_ticket(task_id, body)` — —
 - `link_ticket(task_id, body)` — —
+- `unlink_ticket(task_id, body)` — —
 - `start_chat_session(body)` — —
 - `get_chat_session(session_id)` — —
 - `workspace_state(session_id)` — —
 - `chat_message(body)` — —
 - `task_draft(body)` — —
 - `context_attach(body)` — —
+- `context_clear_tickets(body)` — —
 - `upload_files(session_id, files, classification)` — —
 - `board_snapshot()` — —
 - `workspace_list_artifacts(session_id)` — —
@@ -589,6 +832,10 @@ mullm/
 - `workroom_get(workroom_id)` — —
 - `workroom_export(workroom_id)` — Pełna zawartość workroom (wątek, ledger, odpowiedź) — pole text do schowka.
 - `workroom_run(workroom_id, body)` — —
+- `routing_feedback_post(body)` — Ocena odpowiedzi asystenta (powiązana z turn_id z routing).
+- `routing_feedback_list(session_id, limit)` — —
+- `routing_learnings(limit)` — Agregat ocen → propozycje user_expectations i otwarte tickety poprawy.
+- `routing_improvements(status, limit)` — —
 - `api_resource_areas()` — —
 - `api_role_scopes()` — —
 - `access_matrix_get()` — —
@@ -698,155 +945,37 @@ mullm/
 - `list_resources(request, limit)` — —
 - `build_resource_uri(adapter, path)` — —
 - `upload_resource(request, file, classification)` — Zapisuje plik w localfs (chat/) i rejestruje zasób + RAG ingest.
+- `propact_cmd()` — —
 - `run_shell_command(command, timeout_seconds)` — —
 - `main()` — —
-- `sessionId()` — —
-- `currentDraft()` — —
-- `selectedTaskId()` — —
-- `pendingClarify()` — —
-- `artifactFullCache()` — —
-- `selectedArtifactId()` — —
-- `ticketWebUrl()` — —
-- `ticketUri()` — —
-- `toast()` — —
-- `api()` — —
-- `r()` — —
-- `data()` — —
-- `detail()` — —
-- `ensureSession()` — —
-- `loadTickets()` — —
-- `refreshWorkspace()` — —
-- `state()` — —
-- `t()` — —
-- `filterTasks()` — —
-- `q()` — —
-- `loadTicketDetail()` — —
-- `selectTicket()` — —
-- `renderTicketDetail()` — —
-- `renderEmptyTicketDetail()` — —
-- `ticketStatus()` — —
-- `key()` — —
-- `ticketDetailHtml()` — —
-- `status()` — —
-- `bindTicketDetailActions()` — —
-- `confirmTicket()` — —
-- `archiveTicket()` — —
-- `initRouting()` — —
-- `deep()` — —
-- `m()` — —
-- `id()` — —
-- `m2()` — —
-- `renderContext()` — —
-- `setInputValue()` — —
-- `renderTextList()` — —
-- `renderDraft()` — —
-- `renderClarify()` — —
-- `fields()` — —
-- `req()` — —
-- `collectClarifyValues()` — —
-- `fd()` — —
-- `routingTraceRows()` — —
-- `seen()` — —
-- `assistantIdx()` — —
-- `renderRoutingPolicy()` — —
-- `saveSessionAgent()` — —
-- `agentId()` — —
-- `renderRoutingTrace()` — —
-- `rows()` — —
-- `pct()` — —
-- `codes()` — —
-- `label()` — —
-- `n2()` — —
-- `n2html()` — —
-- `routingTraceText()` — —
-- `formatChatContent()` — —
-- `renderChat()` — —
-- `items()` — —
-- `meta()` — —
-- `appendMsg()` — —
-- `cacheArtifactFull()` — —
-- `syncArtifacts()` — —
-- `clearArtifactPreview()` — —
-- `renderArtifactList()` — —
-- `active()` — —
-- `when()` — —
-- `selectArtifact()` — —
-- `art()` — —
-- `showArtifactPreview()` — —
-- `preferredArtifactTab()` — —
-- `updateArtifactPreviewTabs()` — —
-- `hasText()` — —
-- `hasJson()` — —
-- `updateArtifactTab()` — —
-- `renderArtifactPreviewBody()` — —
-- `downloadArtifact()` — —
-- `name()` — —
-- `url()` — —
-- `link()` — —
-- `msgRoleLabel()` — —
-- `formatNlp2dslBadge()` — —
-- `action()` — —
-- `src()` — —
-- `auth()` — —
-- `formatRouteBadge()` — —
-- `ms()` — —
-- `fb()` — —
-- `appendRouteBadge()` — —
-- `badge()` — —
-- `appendMsgTo()` — —
-- `div()` — —
-- `raw()` — —
-- `head()` — —
-- `copyBtn()` — —
-- `body()` — —
-- `renderTasks()` — —
-- `sk()` — —
-- `stClass()` — —
-- `color()` — —
-- `renderFileChips()` — —
-- `escapeHtml()` — —
-- `saveContextFromForm()` — —
-- `syncContextNote()` — —
-- `uploadFiles()` — —
-- `sendChat()` — —
-- `input()` — —
-- `chatInput()` — —
-- `uploadPendingChatFiles()` — —
-- `appendPendingChatInput()` — —
-- `formValuesText()` — —
-- `clearChatInput()` — —
-- `chatPayload()` — —
-- `handleChatResponse()` — —
-- `showFileListToast()` — —
-- `showRoutingToast()` — —
-- `focusCreatedTicket()` — —
-- `setChatSending()` — —
-- `resetChatFiles()` — —
-- `createFromDraft()` — —
-- `draft()` — —
-- `ensureDraftFromInput()` — —
-- `text()` — —
-- `drafted()` — —
-- `submitDraft()` — —
-- `draftCreated()` — —
-- `finishDraftCreation()` — —
-- `tid()` — —
-- `openTicketDialogFromDraft()` — —
-- `d()` — —
-- `copyText()` — —
-- `ta()` — —
-- `routingLineFromMsgEl()` — —
-- `buildChatTextFromDom()` — —
-- `routeLine()` — —
-- `copyChatToClipboard()` — —
-- `copyChatViewToClipboard()` — —
-- `copyLogsToClipboard()` — —
-- `bindCopyChatButtons()` — —
-- `handlerFull()` — —
-- `handlerView()` — —
-- `note()` — —
-- `submitTaskForm()` — —
-- `wait()` — —
+- `backend_url()` — —
+- `backend_candidates()` — —
+- `health()` — —
+- `chat_start(text)` — —
+- `chat_message(conversation_id, text)` — —
+- `orient(text)` — Orientacja zapytania (file_list / shell / workflow) — lokalnie w nlp2dsl.
+- `nlp_service_candidates()` — —
+- `orient_direct(text)` — Orientacja — cienki wrapper; logika w app.routing.orientation_provider.
+- `form_to_prompt(form, values)` — —
+- `primary_action(dsl)` — —
+- `step_config(dsl)` — —
+- `routing_from_response(resp)` — IntentDecision z nlp2dsl (pole routing w ConversationResponse).
+- `intent_routing_policy_flags(routing)` — Mapuje routing nlp2dsl → policy_flags RouteDecision (PR-C / observability).
+- `merge_intent_into_policy_flags(policy_flags, routing)` — —
+- `handle_turn()` — Pipeline ingress z routing_policy.yaml (rag_probe → rules → agent_shell → nlp2dsl → rag_answer).
+- `new_trace()` — —
+- `append_step(trace, step)` — —
+- `match_user_expectations(message, policy)` — —
+- `build_rules_rule_nodes(message)` — Kaskada reguł prompt_router (bez LLM) — węzły do drzewa.
+- `explain_pipeline(message)` — Symulacja drzewa decyzji (bez wykonania handlerów file_list/shell/nlp2dsl).
+- `align_tree_to_route(tree, actual_route)` — Dopasuj symulację do faktycznej trasy wykonanej w turze.
+- `record_live_step(trace)` — —
+- `route_from_orientation(orient)` — —
+- `cache_key(session_id, message)` — —
+- `get_cached_orient(session_id, message)` — —
+- `set_cached_orient(session_id, message, orient)` — —
+- `clear_cache()` — Tylko dla testów.
+- `orient_message(text)` — —
 
 
 ## Project Structure
@@ -878,28 +1007,39 @@ mullm/
 📄 `docs.README`
 📄 `docs.agent-orchestration`
 📄 `docs.architecture`
+📄 `docs.architecture-service-integrations`
 📄 `docs.domain`
 📄 `docs.e2e-chat-routing`
 📄 `docs.events`
 📄 `docs.multi-agent-workroom`
 📄 `docs.observability`
 📄 `docs.prompt-router`
+📄 `docs.quality-intract-propact`
 📄 `docs.roadmap-90d`
+📄 `docs.routing-feedback-loop`
+📄 `docs.ticket-queues-and-planfile`
 📄 `docs.workspace-conductor`
 📄 `docs.workspace-simple`
 📄 `docs.workspace-ui`
 📄 `goal`
+📄 `integrations.README`
 📄 `integrations.nlp2cmd.agent_manifest`
+📄 `integrations.nlp2cmd.schemas`
 📄 `integrations.nlp2dsl.agent_manifest`
 📄 `integrations.nlp2dsl.mullm_registry`
 📄 `integrations.nlp2dsl.patch_startup`
+📄 `intract`
 📄 `planfile`
 📄 `prefact`
 📄 `project`
 📄 `pytest`
 📄 `requirements-dev`
+📄 `requirements-quality`
 📄 `scripts.e2e-chat-routing`
+📄 `scripts.run-propact-pact` (1 functions)
 📄 `scripts.test`
+📄 `scripts.test-quality`
+📄 `scripts.wait-for-web`
 📄 `services.orchestrator.Dockerfile`
 📦 `services.orchestrator.app.access`
 📦 `services.orchestrator.app.access.adapters` (1 functions)
@@ -985,35 +1125,47 @@ mullm/
 📦 `services.web.app`
 📄 `services.web.app.access_matrix` (19 functions)
 📦 `services.web.app.agent_plugins`
-📄 `services.web.app.agent_plugins.nlp2cmd_plugin` (4 functions, 1 classes)
+📄 `services.web.app.agent_plugins.nlp2cmd_plugin` (5 functions, 1 classes)
 📄 `services.web.app.agent_plugins.nlp2dsl_plugin` (2 functions, 1 classes)
-📄 `services.web.app.agent_plugins.protocol` (2 functions, 2 classes)
-📄 `services.web.app.agent_plugins.registry` (6 functions)
+📄 `services.web.app.agent_plugins.protocol` (3 functions, 2 classes)
+📄 `services.web.app.agent_plugins.registry` (7 functions)
 📄 `services.web.app.agent_workroom` (33 functions, 2 classes)
 📦 `services.web.app.api`
 📄 `services.web.app.api.access_routes` (6 functions)
 📄 `services.web.app.api.agents_routes` (1 functions)
-📄 `services.web.app.api.chat_routes` (12 functions)
+📄 `services.web.app.api.chat_routes` (13 functions)
 📄 `services.web.app.api.config`
-📄 `services.web.app.api.models` (11 classes)
-📄 `services.web.app.api.router_routes` (2 functions)
-📄 `services.web.app.api.task_routes` (18 functions)
+📄 `services.web.app.api.feedback_routes` (4 functions)
+📄 `services.web.app.api.models` (12 classes)
+📄 `services.web.app.api.router_routes` (6 functions)
+📄 `services.web.app.api.task_routes` (19 functions)
 📄 `services.web.app.api.workroom_routes` (5 functions)
 📄 `services.web.app.api.workspace_routes` (5 functions)
 📄 `services.web.app.api_routes`
-📄 `services.web.app.chat` (76 functions)
-📄 `services.web.app.conductor` (53 functions, 1 classes)
+📄 `services.web.app.chat` (82 functions)
+📄 `services.web.app.conductor` (60 functions, 1 classes)
+📄 `services.web.app.local_orient` (6 functions, 1 classes)
 📄 `services.web.app.main` (5 functions)
-📄 `services.web.app.nlp2dsl_bridge` (12 functions)
-📄 `services.web.app.prompt_router` (25 functions, 1 classes)
+📄 `services.web.app.nlp2dsl_bridge` (15 functions)
+📄 `services.web.app.planfile_bridge` (6 functions)
+📄 `services.web.app.prompt_router` (44 functions, 1 classes)
 📄 `services.web.app.resource_areas` (5 functions)
-📄 `services.web.app.routing_policy` (11 functions, 2 classes)
+📦 `services.web.app.routing`
+📄 `services.web.app.routing.decision` (4 functions, 1 classes)
+📄 `services.web.app.routing.execution_resolver` (1 functions)
+📄 `services.web.app.routing.ingress_cache` (5 functions)
+📄 `services.web.app.routing.orientation_provider` (3 functions)
+📄 `services.web.app.routing_feedback` (18 functions, 1 classes)
+📄 `services.web.app.routing_policy` (12 functions, 2 classes)
+📄 `services.web.app.routing_schemas` (9 functions, 4 classes)
+📄 `services.web.app.routing_trace` (29 functions, 3 classes)
 📄 `services.web.app.static.access` (25 functions)
-📄 `services.web.app.static.app` (28 functions)
+📄 `services.web.app.static.app` (32 functions)
 📄 `services.web.app.static.workroom` (33 functions)
-📄 `services.web.app.static.workspace` (178 functions)
+📄 `services.web.app.static.workspace` (218 functions)
+📄 `services.web.app.ticket_schemas` (4 functions, 4 classes)
 📄 `services.web.app.tickets` (4 functions)
-📄 `services.web.app.workspace` (98 functions, 2 classes)
+📄 `services.web.app.workspace` (100 functions, 2 classes)
 📄 `services.web.data.routing_policy`
 📄 `services.web.package`
 📄 `services.web.pytest`

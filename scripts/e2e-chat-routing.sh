@@ -6,6 +6,10 @@ set -euo pipefail
 BASE="${MULLM_E2E_BASE_URL:-http://127.0.0.1:3003}"
 BASE="${BASE%/}"
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+chmod +x "${SCRIPT_DIR}/wait-for-web.sh"
+MULLM_E2E_BASE_URL="${BASE}" "${SCRIPT_DIR}/wait-for-web.sh"
+
 echo "== health =="
 curl -fsS "${BASE}/health" | jq .
 
@@ -14,7 +18,10 @@ AGENTS_JSON=$(curl -fsS "${BASE}/api/agents/status")
 echo "${AGENTS_JSON}" | jq '.agents[] | {id, healthy, executor_agent_id}'
 
 echo "== routing/policy (ingress) =="
-curl -fsS "${BASE}/api/routing/policy" | jq '{ingress_order, agents: .agents.by_route}'
+curl -fsS "${BASE}/api/routing/policy?reload=true" | jq '{ingress_order, by_route: .agents.by_route, agent_plugins}'
+
+echo "== routing/schemas (Pydantic bundle) =="
+curl -fsS "${BASE}/api/routing/schemas" | jq '{bundle_id, nlp2cmd: (.nlp2cmd | keys), openrouter: (.openrouter_classifier | keys)}'
 
 echo "== session =="
 SID=$(curl -fsS -X POST "${BASE}/api/chat/session" -H 'Content-Type: application/json' -d '{}' | jq -r .session_id)

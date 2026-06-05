@@ -15,9 +15,19 @@ INTRACT_SRC = Path(
 ) / "src"
 
 
+def _intract_cli_ready() -> bool:
+    if not (INTRACT_SRC / "intract").is_dir():
+        return False
+    try:
+        import typer  # noqa: F401
+    except ImportError:
+        return False
+    return True
+
+
 @pytest.mark.skipif(
-    not (INTRACT_SRC / "intract").is_dir(),
-    reason="Intract not found (set INTRACT_ROOT)",
+    not _intract_cli_ready(),
+    reason="Intract missing or typer not installed (pip install -r requirements-quality.txt)",
 )
 def test_intract_validate_routing_contracts() -> None:
     env = os.environ.copy()

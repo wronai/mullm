@@ -588,11 +588,88 @@ body {
 .routing-trace-panel {
   flex: 0 0 auto;
   border-bottom: 1px solid var(--border);
-  max-height: 22%;
+  max-height: 32%;
   display: flex;
   flex-direction: column;
   min-height: 0;
 }
+.routing-decision-tree {
+  overflow-y: auto;
+  padding: 0.25rem 0.45rem 0.35rem;
+  font-size: 0.66rem;
+  font-family: ui-monospace, monospace;
+  line-height: 1.4;
+  max-height: 42%;
+  min-height: 4rem;
+}
+.routing-subhead {
+  border-top: 1px solid var(--border);
+  font-weight: 500;
+}
+.dt-step {
+  margin: 0.15rem 0 0.35rem;
+  padding-left: 0.35rem;
+  border-left: 2px solid var(--border);
+}
+.dt-step.selected { border-left-color: var(--accent); }
+.dt-step.skipped { opacity: 0.55; }
+.dt-step-head {
+  display: flex;
+  gap: 0.35rem;
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+.dt-step-name { color: var(--accent); font-weight: 600; }
+.dt-status {
+  font-size: 0.58rem;
+  text-transform: uppercase;
+  color: var(--accent2);
+}
+.dt-summary { color: var(--muted); flex: 1 1 100%; }
+.dt-rules, .dt-checks { margin: 0.2rem 0 0 0.5rem; padding: 0; list-style: none; }
+.dt-rules li.passed::before { content: "✓ "; color: var(--accent2); }
+.dt-rules li.failed::before { content: "○ "; color: var(--muted); }
+.dt-expect {
+  margin-top: 0.35rem;
+  padding: 0.3rem 0.4rem;
+  background: rgba(90, 140, 255, 0.08);
+  border-radius: 6px;
+  font-size: 0.62rem;
+}
+.routing-learnings {
+  padding: 0.3rem 0.45rem;
+  font-size: 0.62rem;
+  border-bottom: 1px solid var(--border);
+}
+.learn-stats { color: var(--accent2); font-weight: 600; }
+.learn-prop { color: var(--muted); margin-top: 0.15rem; }
+.msg-feedback {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  align-items: flex-start;
+  margin-top: 0.35rem;
+  padding-top: 0.25rem;
+  border-top: 1px dashed var(--border);
+}
+.msg-feedback-form {
+  display: none;
+  flex: 1 1 100%;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-top: 0.25rem;
+}
+.msg-feedback-form.open { display: flex; }
+.msg-feedback-form select,
+.msg-feedback-form textarea {
+  font-size: 0.72rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: inherit;
+  padding: 0.25rem;
+}
+.fb-btn { font-size: 0.75rem; padding: 0.1rem 0.35rem; }
 .routing-head {
   display: flex;
   align-items: center;

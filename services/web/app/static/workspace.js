@@ -64,6 +64,8 @@
     renderContext(state.context);
     currentDraft = state.draft || null;
     renderRoutingTrace(state.events, state.history);
+    renderDecisionTreeFromHistory(state.history);
+    renderLearningsSummary();
     renderRoutingPolicy(state.routing_policy, state.context);
     renderChat(state.history);
     syncArtifacts(state.artifacts || [], null);
@@ -160,6 +162,7 @@
         <button type="button" class="btn ghost btn-sm" id="btn-copy-uri">Kopiuj URI</button>
         <button type="button" class="btn ghost btn-sm" id="btn-copy-url">Kopiuj URL</button>
         ${status.key !== "archived" ? '<button type="button" class="btn ghost btn-sm" id="btn-archive-ticket">Archiwizuj</button>' : ""}
+        <button type="button" class="btn ghost btn-sm" id="btn-unlink-ticket" title="Usuń URI ticketu z kontekstu sesji (nie kasuje ticketa)">Odepnij z sesji</button>
       </div>
     `;
   }
@@ -175,6 +178,9 @@
       confirmTicket(t.task_id).catch((e) => toast(e.message, false))
     );
     $("btn-archive-ticket")?.addEventListener("click", () => archiveTicket(t.task_id));
+    $("btn-unlink-ticket")?.addEventListener("click", () =>
+      unlinkTicket(t.task_id).catch((e) => toast(e.message, false))
+    );
   }
 
   async function confirmTicket(taskId) {
@@ -185,6 +191,17 @@
       body: JSON.stringify({ session_id: sessionId }),
     });
     toast("Ticket uruchomiony", true);
+    await refreshWorkspace();
+  }
+
+  async function unlinkTicket(taskId) {
+    await ensureSession();
+    await api(`/api/tickets/${encodeURIComponent(taskId)}/unlink`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ session_id: sessionId }),
+    });
+    toast("Ticket odpięty od kontekstu sesji", true);
     await refreshWorkspace();
   }
 
@@ -324,6 +341,100 @@
     });
     await refreshWorkspace();
     toast(agentId ? `Agent: ${agentId}` : "Agent: auto z polityki", true);
+  }
+
+  function lastDecisionTree(history) {
+    let tree = null;
+    (history || []).forEach((m) => {
+      if (m.role === "assistant" && m.routing?.decision_tree) {
+        tree = m.routing.decision_tree;
+      }
+    });
+    return tree;
+  }
+
+  function renderExpectations(tree) {
+    return (tree.matched_expectations || [])
+      .map(
+        (e) =>
+          `<div class="dt-expect"><strong>${escapeHtml(e.id || "")}</strong> → ${escapeHtml(e.route || "")}<br>${escapeHtml(e.standard || "")}</div>`
+      )
+      .join("");
+  }
+
+  function renderRuleNodes(s) {
+    return (s.rule_nodes || [])
+      .map((n) => {
+        const pass = n.passed ? "passed" : "failed";
+        return `<li class="${pass}">${escapeHtml(n.label || n.id)} — ${escapeHtml(n.detail || "")}</li>`;
+      })
+      .join("");
+  }
+
+  function renderChecks(s) {
+    return (s.checks || [])
+      .map(
+        (c) =>
+          `<li class="${c.passed ? "passed" : "failed"}">${escapeHtml(c.label || c.id)}</li>`
+      )
+      .join("");
+  }
+
+  function renderStep(s) {
+    const cls = `dt-step ${escapeHtml(s.status || "")}`;
+    const rules = renderRuleNodes(s);
+    const checks = renderChecks(s);
+    return `<div class="${cls}">
+      <div class="dt-step-head">
+        <span class="dt-step-name">${escapeHtml(s.step)}</span>
+        <span class="dt-status">${escapeHtml(s.status)}</span>
+      </div>
+      <div class="dt-summary">${escapeHtml(s.summary || "")}</div>
+      ${rules ? `<ul class="dt-rules">${rules}</ul>` : ""}
+      ${checks ? `<ul class="dt-checks">${checks}</ul>` : ""}
+    </div>`;
+  }
+
+  function renderSteps(tree) {
+    return tree.steps.map(renderStep).join("");
+  }
+
+  function renderPrinciples(tree) {
+    return (tree.principles || [])
+      .slice(0, 2)
+      .map((p) => `<div class="dt-summary">• ${escapeHtml(p)}</div>`)
+      .join("");
+  }
+
+  function renderDecisionTree(tree) {
+    const el = $("routing-decision-tree");
+    if (!el) return;
+    if (!tree?.steps?.length) {
+      el.innerHTML = '<div class="rt-empty">Brak drzewa — wyślij wiadomość lub ?</div>';
+      el.classList.add("muted");
+      return;
+    }
+    el.classList.remove("muted");
+    const expectHtml = renderExpectations(tree);
+    const stepsHtml = renderSteps(tree);
+    const principles = renderPrinciples(tree);
+    el.innerHTML = `${expectHtml}${stepsHtml}${principles}`;
+  }
+
+  function renderDecisionTreeFromHistory(history) {
+    renderDecisionTree(lastDecisionTree(history));
+  }
+
+  async function fetchRoutingExplain(message) {
+    const mode = $("chat-mode")?.value || "discuss";
+    const useRag = $("use-rag")?.checked !== false;
+    const q = new URLSearchParams({
+      message,
+      mode,
+      use_rag: String(useRag),
+      session_id: sessionId || "",
+    });
+    return api(`/api/routing/explain?${q}`);
   }
 
   function renderRoutingTrace(events, history) {
@@ -617,6 +728,121 @@
     div.appendChild(badge);
   }
 
+  const ROUTE_OPTIONS = [
+    "mullm_file_list",
+    "mullm_shell",
+    "nlp2cmd_shell",
+    "nlp2dsl",
+    "rag",
+    "workroom_hint",
+    "unknown",
+  ];
+
+  async function submitRoutingFeedback(turnId, rating, extra = {}) {
+    await ensureSession();
+    const body = {
+      session_id: sessionId,
+      turn_id: turnId,
+      rating,
+      expected_route: extra.expected_route || null,
+      expected_reply_hint: extra.expected_reply_hint || "",
+      improvement_notes: extra.improvement_notes || "",
+      tags: extra.tags || [],
+    };
+    const res = await api("/api/routing/feedback", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    await refreshWorkspace();
+    if (res.improvement_ticket) {
+      toast(`Ticket poprawy: ${res.improvement_ticket.ticket_id.slice(0, 8)}…`, true);
+    } else {
+      toast("Dzięki — ocena zapisana", true);
+    }
+    return res;
+  }
+
+  function appendFeedbackBar(div, routing) {
+    const turnId = routing?.turn_id;
+    if (!turnId) return;
+    const bar = document.createElement("div");
+    bar.className = "msg-feedback";
+    bar.dataset.turnId = turnId;
+
+    const mkBtn = (label, rating, title) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "btn ghost btn-sm fb-btn";
+      b.textContent = label;
+      b.title = title;
+      b.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (rating === "bad") {
+          form.classList.toggle("open");
+          return;
+        }
+        submitRoutingFeedback(turnId, rating).catch((err) => toast(err.message, false));
+      });
+      return b;
+    };
+
+    bar.appendChild(mkBtn("👍", "good", "Dobra odpowiedź"));
+    bar.appendChild(mkBtn("～", "partial", "Częściowo OK"));
+    bar.appendChild(mkBtn("👎", "bad", "Do poprawy — rozwiń formularz"));
+
+    const form = document.createElement("div");
+    form.className = "msg-feedback-form";
+    const routeSel = document.createElement("select");
+    routeSel.innerHTML =
+      '<option value="">— oczekiwana trasa —</option>' +
+      ROUTE_OPTIONS.map((r) => `<option value="${r}">${r}</option>`).join("");
+    const hint = document.createElement("textarea");
+    hint.placeholder = "Czego oczekiwałeś w odpowiedzi?";
+    hint.rows = 2;
+    const notes = document.createElement("textarea");
+    notes.placeholder = "Co poprawić w systemie (dla ticketa ewolucji)?";
+    notes.rows = 2;
+    const send = document.createElement("button");
+    send.type = "button";
+    send.className = "btn btn-sm";
+    send.textContent = "Wyślij ocenę";
+    send.addEventListener("click", () => {
+      submitRoutingFeedback(turnId, "bad", {
+        expected_route: routeSel.value || null,
+        expected_reply_hint: hint.value.trim(),
+        improvement_notes: notes.value.trim(),
+        tags: routeSel.value ? ["user_reported"] : [],
+      }).catch((err) => toast(err.message, false));
+    });
+    form.append(routeSel, hint, notes, send);
+    bar.appendChild(form);
+    div.appendChild(bar);
+  }
+
+  async function renderLearningsSummary() {
+    const el = $("routing-learnings");
+    if (!el) return;
+    try {
+      const data = await api("/api/routing/learnings?limit=5");
+      const st = data.stats || {};
+      const open = st.open_improvement_tickets || 0;
+      const neg = st.negative_total || 0;
+      const props = (data.proposals || []).slice(0, 2);
+      let html = `<div class="learn-stats">Oceny: ${neg} do poprawy · tickety: ${open}</div>`;
+      props.forEach((p) => {
+        html += `<div class="learn-prop">${escapeHtml(p.suggested_route || "")} ← „${escapeHtml((p.match_phrases || [])[0] || "")}” (${p.evidence_count})</div>`;
+      });
+      if (!props.length && !open) {
+        html += '<div class="muted">Brak propozycji — oceń odpowiedzi 👍/👎</div>';
+      }
+      el.innerHTML = html;
+      el.classList.remove("muted");
+    } catch {
+      el.textContent = "Learnings niedostępne";
+    }
+  }
+
   function appendMsgTo(box, role, content, meta, scroll, rawContent, routing) {
     const div = document.createElement("div");
     div.className =
@@ -655,6 +881,7 @@
     }
     if (role === "assistant" && routing) {
       appendRouteBadge(div, routing);
+      appendFeedbackBar(div, routing);
       try {
         div.dataset.routing = JSON.stringify(routing);
       } catch {
@@ -827,6 +1054,8 @@
     if (!data.clarify) pendingClarify = null;
     renderContext(data.context);
     renderRoutingTrace(data.events, data.history);
+    renderDecisionTreeFromHistory(data.history);
+    renderLearningsSummary();
     showRoutingToast(data.routing);
     focusCreatedTicket(data.task);
   }
@@ -1043,15 +1272,33 @@
   $("btn-save-agent")?.addEventListener("click", () =>
     saveSessionAgent().catch((e) => toast(e.message, false))
   );
+  $("btn-routing-explain")?.addEventListener("click", async () => {
+    const msg = ($("chat-input")?.value || "").trim();
+    if (!msg) {
+      toast("Wpisz wiadomość w czacie", false);
+      return;
+    }
+    try {
+      await ensureSession();
+      const tree = await fetchRoutingExplain(msg);
+      renderDecisionTree(tree);
+      toast(`Podgląd: ${tree.selected_step || tree.final_route || "?"}`, true);
+    } catch (e) {
+      toast(e.message, false);
+    }
+  });
   $("btn-routing-copy")?.addEventListener("click", async () => {
     await ensureSession();
     const state = await api(`/api/workspace/state?session_id=${encodeURIComponent(sessionId)}`);
-    const text = routingTraceText(state.events, state.history);
+    const tree = lastDecisionTree(state.history);
+    const text = tree
+      ? JSON.stringify(tree, null, 2)
+      : routingTraceText(state.events, state.history);
     if (!text) {
       toast("Brak trace routingu", false);
       return;
     }
-    await copyText(text, "Routing trace");
+    await copyText(text, "Drzewo decyzji / trace");
   });
   $("btn-refresh")?.addEventListener("click", () => refreshWorkspace().catch((e) => toast(e.message, false)));
   $("btn-artifacts-refresh")?.addEventListener("click", () =>

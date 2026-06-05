@@ -84,8 +84,16 @@ _SHELL_NL_INTENT = re.compile(
     r"proces(y|ów)?|port\s+\d|wi[eę]ksze\s+ni[żz]|rozmiar\s+plik|"
     r"chmod|npm\s|pip\s|curl\s|wget\s|df\s|du\s-|free\s|htop|"
     r"grep\s|kill\s|ping\s|systemctl|journalctl|"
+    r"zainstaluj|install|apt(?:-get)?\s+install|"
     r"sprawd[zź]\s+(?!plik)|policz\s+|"
     r"znajd[zź]\s+(?!plik)|poka[zż]\s+(?!plik))",
+)
+
+_NLP2CMD_RUN_RE = re.compile(
+    r"(?i)(wejd[zź]\s+na\s+|otw[oó]rz\s+|narysuj|rysuj|"
+    r"jspaint|firefox|thunderbird|chrome|chromium|"
+    r"minimizuj|zminimalizuj|desktop|przegl[aą]dark|"
+    r"canvas|\.app\b|https?://|www\.)",
 )
 
 
@@ -102,6 +110,23 @@ def is_shell_nl_intent(message: str) -> bool:
     if _shell_prefix(text):
         return False
     return bool(_SHELL_NL_INTENT.search(text))
+
+
+def is_nlp2cmd_candidate(message: str) -> bool:
+    """
+    Zapytanie do przetłumaczenia przez nlp2cmd (shell lub tryb -r / multi-step).
+    Wyklucza listę plików, workflow clarify i jawny prefix run/exec.
+    """
+    text = (message or "").strip()
+    if not text or is_file_list_intent(text) or is_continue_intent(text):
+        return False
+    from app.prompt_router import _shell_prefix
+
+    if _shell_prefix(text):
+        return False
+    if is_shell_nl_intent(text):
+        return True
+    return bool(_NLP2CMD_RUN_RE.search(text))
 
 
 def _has_list_word(text: str, *, english: bool = False) -> bool:
@@ -365,18 +390,47 @@ def _append_uploaded_session_files(lines: list[str], scope_files: list[str]) -> 
         lines.append("  • (brak — użyj 📎 Załącz plik)")
 
 
+def _get_user_context_parts(scope_uris: list[str]) -> tuple[list[str], list[str]]:
+    tickets = [u for u in scope_uris if (u or "").startswith("mullm://ticket/")]
+    other = [
+        u
+        for u in scope_uris
+        if not _uri_is_user_resource(u) and not (u or "").startswith("mullm://ticket/")
+    ]
+    return tickets, other
+
+
+def _append_tickets_context(lines: list[str], tickets: list[str]) -> None:
+    if not tickets:
+        return
+    n = len(tickets)
+    lines.append(
+        f"Powiązane tickety shell ({n}) — to nie pliki; szczegóły w panelu ◎"
+        + (f" (ostatni: `{tickets[-1].split('/')[-1][:8]}…`)" if n == 1 else "")
+    )
+
+
+def _append_other_context(lines: list[str], other: list[str]) -> None:
+    if not other:
+        return
+    lines.append("Inny kontekst sesji (nie plik użytkownika):")
+    for uri in other:
+        lines.append(f"  • {uri}")
+
+
 def _append_user_context_only(
     lines: list[str],
     list_scope: str,
     scope_uris: list[str],
 ) -> None:
-    if list_scope == "user":
-        ctx_only = [u for u in scope_uris if not _uri_is_user_resource(u)]
-        if ctx_only:
-            lines.append("")
-            lines.append("Powiązany kontekst (nie plik użytkownika):")
-            for uri in ctx_only:
-                lines.append(f"  • {uri}")
+    if list_scope != "user":
+        return
+    tickets, other = _get_user_context_parts(scope_uris)
+    if not tickets and not other:
+        return
+    lines.append("")
+    _append_tickets_context(lines, tickets)
+    _append_other_context(lines, other)
 
 
 def _append_scope_uris(
@@ -907,6 +961,95 @@ def _attach_trace_response(
     out["incident"] = last_payload.get("incident")
     out["retrieval_trace_id"] = last_payload.get("retrieval_trace_id")
     out["trace_steps"] = last_payload.get("trace_steps")
+
+
+async def fetch_task_state(task_id: str) -> dict[str, Any] | None:
+    """Stan zadania z orchestratora (projekcja z eventów)."""
+    async with httpx.AsyncClient(timeout=10.0) as client:
+        try:
+            resp = await client.get(f"{_orch()}/api/queries/tasks/{task_id}")
+        except httpx.HTTPError:
+            return None
+        if resp.status_code != 200:
+            return None
+        body = resp.json()
+        state = body.get("state") if isinstance(body.get("state"), dict) else body
+        return state if isinstance(state, dict) else None
+
+
+async def _fetch_task_from_projector(task_id: str) -> dict[str, Any] | None:
+    async with httpx.AsyncClient(timeout=8.0) as client:
+        try:
+            resp = await client.get(f"{_projector()}/projections/tasks", params={"limit": 100})
+        except httpx.HTTPError:
+            return None
+        if resp.status_code != 200:
+            return None
+        for item in resp.json().get("items") or []:
+            if str(item.get("task_id")) == task_id:
+                status = str(item.get("status") or "").lower()
+                if status in ("completed", "failed"):
+                    return {
+                        "status": status,
+                        "result": item.get("result") if isinstance(item.get("result"), dict) else {},
+                        "error": item.get("error"),
+                    }
+        return None
+
+
+def _normalize_terminal_state(raw: dict[str, Any] | None) -> dict[str, Any] | None:
+    if not raw:
+        return None
+    status = str(raw.get("status") or "").lower()
+    if status not in ("completed", "failed"):
+        return None
+    result = raw.get("result")
+    if isinstance(result, dict) and isinstance(result.get("result"), dict):
+        result = result["result"]
+    return {
+        "status": status,
+        "result": result if isinstance(result, dict) else {},
+        "error": raw.get("error"),
+    }
+
+
+def _terminal_has_payload(terminal: dict[str, Any]) -> bool:
+    if terminal.get("status") == "failed":
+        return bool(terminal.get("error"))
+    result = terminal.get("result")
+    if not isinstance(result, dict):
+        return False
+    return any(
+        (result.get(k) or "").strip()
+        for k in ("stdout", "stderr")
+    ) or result.get("exit_code") is not None
+
+
+async def wait_for_task_terminal(
+    task_id: str,
+    *,
+    timeout: float = 20.0,
+    poll_interval: float = 0.4,
+) -> dict[str, Any] | None:
+    """Czeka na completed/failed (orchestrator + fallback projector)."""
+    import asyncio
+    import time
+
+    deadline = time.monotonic() + max(0.5, timeout)
+    while time.monotonic() < deadline:
+        state = await fetch_task_state(task_id)
+        terminal = _normalize_terminal_state(state)
+        if terminal and (
+            terminal.get("status") == "failed" or _terminal_has_payload(terminal)
+        ):
+            return terminal
+        projected = _normalize_terminal_state(await _fetch_task_from_projector(task_id))
+        if projected and (
+            projected.get("status") == "failed" or _terminal_has_payload(projected)
+        ):
+            return projected
+        await asyncio.sleep(poll_interval)
+    return _normalize_terminal_state(await fetch_task_state(task_id))
 
 
 async def create_task(

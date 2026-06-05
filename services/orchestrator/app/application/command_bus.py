@@ -27,6 +27,7 @@ from app.domain.value_objects import (
     Priority,
     ResourceId,
     TaskId,
+    TaskStatus,
     WorkflowId,
     WorkflowStatus,
 )
@@ -156,6 +157,15 @@ class CommandBus:
         )
         if assign_result:
             result["auto_assign"] = assign_result
+        elif data.get("shell_command"):
+            await self._publish(
+                "task.assigned.shell",
+                {
+                    "task_id": str(task.task_id),
+                    "agent_id": agent_id or "shell_agent",
+                    "command": data["shell_command"],
+                },
+            )
         return result
 
     async def _assign_task(
@@ -291,6 +301,64 @@ class CommandBus:
             records.extend(idle_records)
 
         return self._result(task_id, records)
+
+    async def complete_task_from_shell(
+        self,
+        *,
+        payload: dict[str, Any],
+        command_id: str,
+        metadata: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        task_id = payload["task_id"]
+        agent_id = str(payload.get("agent_id") or "shell_agent")
+        await self._ensure_shell_task_ready(task_id, agent_id, command_id=command_id)
+        return await self.handle(
+            command_type="CompleteTask",
+            command_id=command_id,
+            data={"task_id": task_id, "result": payload},
+            metadata=metadata,
+        )
+
+    async def fail_task_from_shell(
+        self,
+        *,
+        payload: dict[str, Any],
+        command_id: str,
+        error: str,
+        metadata: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        task_id = payload["task_id"]
+        agent_id = str(payload.get("agent_id") or "shell_agent")
+        await self._ensure_shell_task_ready(task_id, agent_id, command_id=command_id)
+        return await self.handle(
+            command_type="FailTask",
+            command_id=command_id,
+            data={"task_id": task_id, "error": error},
+            metadata=metadata,
+        )
+
+    async def _ensure_shell_task_ready(
+        self,
+        task_id: str,
+        agent_id: str,
+        *,
+        command_id: str,
+    ) -> None:
+        """Broadcast NATS może dotrzeć przed AssignTask — przygotuj stan pod CompleteTask."""
+        task = await self._load_task(task_id)
+        if task.status == TaskStatus.PENDING:
+            await self.handle(
+                command_type="AssignTask",
+                command_id=f"{command_id}-shell-assign",
+                data={"task_id": task_id, "agent_id": agent_id},
+            )
+        task = await self._load_task(task_id)
+        if task.status == TaskStatus.ASSIGNED:
+            await self.handle(
+                command_type="StartTask",
+                command_id=f"{command_id}-shell-start",
+                data={"task_id": task_id},
+            )
 
     async def _register_agent(
         self,

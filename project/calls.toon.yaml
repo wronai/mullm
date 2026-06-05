@@ -1,221 +1,51 @@
 # code2llm call graph | /home/tom/github/wronai/mullm
-# generated in 0.37s
-# nodes: 422 | edges: 500 | modules: 57
-# CC̄=2.8
+# generated in 0.32s
+# nodes: 364 | edges: 500 | modules: 28
+# CC̄=3.0
 
 HUBS[20]:
-  services.orchestrator.app.incidents.pipeline._rag_failure_result
-    CC=4  in:1  out:46  total:47
-  services.web.app.static.workspace.api
-    CC=6  in:21  out:4  total:25
   services.web.app.static.workspace.toast
-    CC=3  in:23  out:2  total:25
-  services.orchestrator.app.api.commands._dispatch
-    CC=4  in:14  out:9  total:23
+    CC=3  in:35  out:2  total:37
+  services.web.app.workspace.get_or_create
+    CC=3  in:26  out:5  total:31
+  services.web.app.static.workspace.api
+    CC=6  in:26  out:4  total:30
+  services.web.app.routing_feedback.aggregate_learnings
+    CC=11  in:0  out:28  total:28
   services.web.app.static.workspace.refreshWorkspace
-    CC=8  in:8  out:15  total:23
-  services.orchestrator.app.api.rag.search
-    CC=3  in:0  out:22  total:22
-  services.orchestrator.app.observability.export.format_logs_text
-    CC=7  in:1  out:19  total:20
-  services.orchestrator.app.application.command_bus.CommandBus._create_task
-    CC=6  in:0  out:20  total:20
-  services.orchestrator.app.observability.rag_diagnostics.RagDiagnostics.run
-    CC=3  in:0  out:20  total:20
-  services.orchestrator.app.api.access.upload_resource
-    CC=4  in:0  out:19  total:19
-  services.orchestrator.app.observability.export._nfo_counts
-    CC=9  in:2  out:17  total:19
-  services.orchestrator.app.observability.export._append_nfo
-    CC=7  in:1  out:17  total:18
-  services.projector.app.main._row_to_dict
-    CC=3  in:12  out:5  total:17
+    CC=8  in:10  out:17  total:27
+  services.web.app.local_orient.orient_query
+    CC=13  in:2  out:21  total:23
+  services.web.app.routing_trace.explain_pipeline
+    CC=22  in:0  out:22  total:22
+  services.web.app.routing_trace.build_rules_rule_nodes
+    CC=7  in:1  out:20  total:21
+  services.web.app.static.workspace.escapeHtml
+    CC=1  in:19  out:2  total:21
+  services.web.app.routing_policy._parse_policy
+    CC=10  in:1  out:18  total:19
+  services.web.app.prompt_router._build_decision
+    CC=3  in:11  out:7  total:18
+  services.web.app.static.workspace.ensureSession
+    CC=2  in:14  out:3  total:17
   services.web.app.static.workspace.selectTicket
     CC=5  in:6  out:11  total:17
-  services.orchestrator.app.observability.logging.log_event
-    CC=3  in:6  out:10  total:16
-  services.web.src.main.App
-    CC=6  in:0  out:16  total:16
-  services.orchestrator.app.application.command_bus.CommandBus._register_resource
-    CC=5  in:0  out:16  total:16
-  services.orchestrator.app.observability.rag_pipeline.RagPipeline.ask
-    CC=5  in:0  out:15  total:15
-  services.web.app.static.workspace.ensureSession
-    CC=2  in:12  out:3  total:15
-  services.web.app.static.app.text
-    CC=16  in:0  out:15  total:15
+  services.web.app.routing_feedback.record_feedback
+    CC=7  in:0  out:17  total:17
+  services.projector.app.main._row_to_dict
+    CC=3  in:12  out:5  total:17
+  services.web.app.routing_trace.match_user_expectations
+    CC=8  in:2  out:13  total:15
+  services.web.app.static.workspace.sendChat
+    CC=4  in:0  out:14  total:14
+  services.web.app.static.workspace.appendMsgTo
+    CC=14  in:2  out:12  total:14
+  services.web.app.static.workspace.submitRoutingFeedback
+    CC=6  in:8  out:6  total:14
+  services.web.app.prompt_router._candidate
+    CC=1  in:14  out:0  total:14
 
 MODULES:
-  agents.shell-agent.app.executor  [1 funcs]
-    run_shell_command  CC=4  out:3
-  agents.shell-agent.app.nats_consumer  [1 funcs]
-    handle_message  CC=4  out:8
-  services.orchestrator.app.access.adapters  [1 funcs]
-    get_adapter  CC=2  out:5
-  services.orchestrator.app.access.transport  [3 funcs]
-    copy  CC=4  out:10
-    fetch  CC=1  out:4
-    probe  CC=1  out:4
-  services.orchestrator.app.access.uri  [2 funcs]
-    build_uri  CC=2  out:1
-    parse_uri  CC=6  out:9
-  services.orchestrator.app.api.access  [3 funcs]
-    build_resource_uri  CC=1  out:2
-    register_resource  CC=2  out:6
-    upload_resource  CC=4  out:19
-  services.orchestrator.app.api.commands  [15 funcs]
-    _dispatch  CC=4  out:9
-    activate_plugin  CC=1  out:3
-    activate_workflow_version  CC=1  out:3
-    approve_request  CC=2  out:2
-    approve_workflow_version  CC=1  out:3
-    create_approval  CC=1  out:3
-    expire_approval  CC=1  out:2
-    install_plugin  CC=1  out:3
-    propose_plugin  CC=1  out:3
-    propose_workflow_version  CC=1  out:3
-  services.orchestrator.app.api.queries  [8 funcs]
-    _aggregate_state  CC=2  out:1
-    _event_to_dict  CC=2  out:10
-    _matches_task_filters  CC=5  out:2
-    _task_list_item  CC=3  out:2
-    get_agent  CC=6  out:7
-    get_task  CC=6  out:7
-    get_workflow  CC=6  out:7
-    list_tasks  CC=4  out:8
-  services.orchestrator.app.api.rag  [2 funcs]
-    ask  CC=1  out:6
-    search  CC=3  out:22
-  services.orchestrator.app.application.command_bus  [9 funcs]
-    _activate_plugin  CC=1  out:4
-    _activate_workflow_version  CC=3  out:6
-    _approve_request  CC=3  out:6
-    _create_task  CC=6  out:20
-    _record_task_outcome  CC=5  out:5
-    _register_resource  CC=5  out:16
-    _rollback_plugin  CC=1  out:5
-    _rollback_workflow_version  CC=1  out:5
-    _task_outcome_payload  CC=5  out:5
-  services.orchestrator.app.application.sagas.approval_gate  [5 funcs]
-    _is_skipped  CC=3  out:3
-    _required_approval_id  CC=2  out:2
-    _validate_approval_events  CC=5  out:7
-    ensure_approval  CC=3  out:6
-    follow_up_after_grant  CC=5  out:3
-  services.orchestrator.app.application.sagas.task_routing  [4 funcs]
-    _agent_matches  CC=4  out:3
-    _agent_route_state  CC=4  out:2
-    maybe_auto_assign  CC=5  out:6
-    pick_idle_agent  CC=4  out:4
-  services.orchestrator.app.config  [1 funcs]
-    model_post_init  CC=1  out:2
-  services.orchestrator.app.domain.aggregates.agent  [1 funcs]
-    heartbeat  CC=1  out:3
-  services.orchestrator.app.domain.aggregates.task  [10 funcs]
-    __init__  CC=4  out:5
-    apply  CC=2  out:5
-    assign_to_agent  CC=2  out:4
-    complete  CC=2  out:4
-    fail  CC=2  out:4
-    start  CC=3  out:5
-    _event_data  CC=2  out:3
-    _event_timestamp  CC=3  out:5
-    _event_type  CC=1  out:1
-    _utc_now  CC=1  out:1
-  services.orchestrator.app.evolution.policy_engine  [3 funcs]
-    validate_activation_metrics  CC=5  out:8
-    _activation_metrics_row  CC=1  out:1
-    _has_enough_activation_samples  CC=3  out:4
-  services.orchestrator.app.incidents.pipeline  [5 funcs]
-    handle_rag_failure  CC=2  out:9
-    _rag_failure_events  CC=3  out:7
-    _rag_failure_result  CC=4  out:46
-    _rag_root_cause  CC=5  out:7
-    classify_rag_error  CC=3  out:5
-  services.orchestrator.app.infrastructure.eventstore  [4 funcs]
-    _record_from_row  CC=1  out:3
-    append  CC=6  out:15
-    _loads_json  CC=3  out:3
-    _utc_now  CC=1  out:1
-  services.orchestrator.app.infrastructure.eventstore_esdb  [2 funcs]
-    __init__  CC=1  out:1
-    _parse_esdb_uri  CC=4  out:6
-  services.orchestrator.app.infrastructure.eventstore_factory  [4 funcs]
-    _dual_backend  CC=2  out:5
-    _eventstoredb_backend  CC=1  out:3
-    _require_eventstore_url  CC=2  out:1
-    build_event_store  CC=5  out:5
-  services.orchestrator.app.observability.context  [6 funcs]
-    get_chat_session_id  CC=1  out:1
-    get_correlation_id  CC=1  out:1
-    get_retrieval_trace_id  CC=1  out:1
-    new_correlation_id  CC=1  out:2
-    new_retrieval_trace_id  CC=1  out:1
-    observability_context  CC=5  out:8
-  services.orchestrator.app.observability.export  [12 funcs]
-    _append_incident_feed  CC=4  out:8
-    _append_incidents  CC=5  out:13
-    _append_nfo  CC=7  out:17
-    _append_rag_health  CC=6  out:13
-    _append_rag_snapshots  CC=3  out:5
-    _append_workspace_session  CC=5  out:10
-    _build_nfo_package  CC=2  out:8
-    _nfo_counts  CC=9  out:17
-    _nfo_errors  CC=5  out:6
-    _nfo_package_version  CC=1  out:2
-  services.orchestrator.app.observability.incidents  [1 funcs]
-    classify_rag_failure  CC=3  out:5
-  services.orchestrator.app.observability.logging  [2 funcs]
-    _emit_nfo_event  CC=3  out:2
-    log_event  CC=3  out:10
-  services.orchestrator.app.observability.middleware  [1 funcs]
-    dispatch  CC=3  out:5
-  services.orchestrator.app.observability.rag_diagnostics  [5 funcs]
-    run  CC=3  out:20
-    _checks_with_status  CC=3  out:1
-    _log_diagnostics_result  CC=2  out:2
-    _overall_status  CC=3  out:2
-    _primary_incident_code  CC=3  out:2
-  services.orchestrator.app.observability.rag_pipeline  [6 funcs]
-    _empty_result_payload  CC=1  out:3
-    _exception_payload  CC=1  out:6
-    _llm_error_payload  CC=2  out:6
-    _step_recorder  CC=1  out:4
-    ask  CC=5  out:15
-    _result_with_trace  CC=1  out:0
-  services.orchestrator.app.rag.chunking  [2 funcs]
-    _overlapping_chunks  CC=4  out:7
-    chunk_text  CC=4  out:3
-  services.orchestrator.app.rag.indexer  [5 funcs]
-    ingest_resource  CC=2  out:12
-    _chunks_for_body  CC=2  out:2
-    _failed_result  CC=1  out:1
-    _indexed_result  CC=1  out:1
-    _packed_chunks  CC=3  out:1
-  services.orchestrator.app.rag.openrouter  [5 funcs]
-    __init__  CC=2  out:3
-    chat  CC=4  out:6
-    _chat_response_error  CC=2  out:1
-    _chat_result  CC=6  out:4
-    normalize_openrouter_model  CC=3  out:3
-  services.orchestrator.app.rag.retriever  [6 funcs]
-    ask  CC=5  out:7
-    _context_from_hits  CC=2  out:1
-    _fragment_fallback_answer  CC=3  out:4
-    _no_hits_answer  CC=1  out:0
-    _rag_messages  CC=1  out:0
-    _unconfigured_answer  CC=1  out:0
-  services.orchestrator.app.rag.store  [15 funcs]
-    _keyword_fallback  CC=3  out:3
-    _vector_search  CC=3  out:2
-    list_documents  CC=2  out:2
-    search  CC=5  out:5
-    _chunk_hit  CC=2  out:5
-    _cosine  CC=5  out:5
-    _keyword_hits  CC=3  out:5
-    _keyword_score  CC=4  out:4
-    _parse_embedding  CC=5  out:6
-    _query_tokens  CC=3  out:3
   services.projector.app.main  [13 funcs]
     _row_to_dict  CC=3  out:5
     agent_fleet  CC=3  out:4
@@ -272,6 +102,8 @@ MODULES:
     _matrix_path  CC=2  out:4
     _merge_bool_matrix  CC=5  out:5
     _merged_bool_row  CC=3  out:3
+  services.web.app.agent_plugins.registry  [1 funcs]
+    analyze_shell_nl  CC=4  out:5
   services.web.app.agent_workroom  [27 funcs]
     _add_permission  CC=1  out:1
     _append_workroom_ledger  CC=5  out:6
@@ -283,44 +115,86 @@ MODULES:
     _record_file_list_result  CC=1  out:2
     _record_shell_result  CC=2  out:3
     _register_file_list_artifact  CC=2  out:3
-  services.web.app.api.chat_routes  [6 funcs]
-    _form_only_chat_message  CC=2  out:4
-    _form_only_message  CC=3  out:2
-    _update_nlp_conversation  CC=2  out:1
-    _upload_one_file  CC=5  out:8
-    chat_message  CC=3  out:7
-    upload_files  CC=3  out:7
-  services.web.app.api.router_routes  [1 funcs]
-    routing_policy_get  CC=1  out:3
-  services.web.app.api.task_routes  [10 funcs]
-    _archived_ids  CC=2  out:3
-    _assert_confirmable_task  CC=3  out:3
-    _assign_ticket  CC=3  out:3
-    _confirmable_task_and_agent  CC=2  out:5
-    _filter_tickets_view  CC=4  out:2
-    _first_idle_agent_id  CC=5  out:4
-    _task_from_board  CC=5  out:4
-    confirm_ticket  CC=5  out:9
-    get_ticket  CC=4  out:7
-    list_tickets  CC=3  out:6
-  services.web.app.api.workroom_routes  [3 funcs]
-    _workroom_or_404  CC=2  out:2
-    workroom_export  CC=1  out:5
-    workroom_get  CC=1  out:3
-  services.web.app.conductor  [1 funcs]
-    handle_turn  CC=2  out:5
+  services.web.app.local_orient  [2 funcs]
+    _is_file_list_query  CC=5  out:8
+    orient_query  CC=13  out:21
+  services.web.app.nlp2dsl_bridge  [10 funcs]
+    _post_json  CC=4  out:6
+    backend_candidates  CC=4  out:6
+    backend_url  CC=1  out:1
+    chat_message  CC=1  out:1
+    chat_start  CC=1  out:1
+    health  CC=4  out:3
+    intent_routing_policy_flags  CC=7  out:9
+    merge_intent_into_policy_flags  CC=2  out:2
+    orient  CC=2  out:1
+    orient_direct  CC=1  out:2
+  services.web.app.planfile_bridge  [5 funcs]
+    _build_create_cmd  CC=3  out:6
+    _improvement_files  CC=3  out:3
+    _parse_created_id  CC=7  out:7
+    planfile_project_path  CC=5  out:7
+    sync_improvement_ticket  CC=9  out:9
+  services.web.app.prompt_router  [41 funcs]
+    _build_decision  CC=3  out:7
+    _candidate  CC=1  out:0
+    _command_looks_like_host_list  CC=3  out:3
+    _decision_from_expectations  CC=5  out:10
+    _decision_from_nlp2cmd  CC=5  out:8
+    _default_discuss_decision  CC=1  out:3
+    _default_route_decision  CC=2  out:2
+    _direct_route_decision  CC=3  out:5
+    _empty_route_decision  CC=1  out:2
+    _explicit_registry_list  CC=3  out:2
   services.web.app.resource_areas  [5 funcs]
     _area_policy_decision  CC=5  out:0
     _matrix_access_decision  CC=3  out:1
     agent_may_access  CC=4  out:5
     list_areas  CC=2  out:1
     list_groups  CC=1  out:0
-  services.web.app.routing_policy  [1 funcs]
+  services.web.app.routing.orientation_provider  [1 funcs]
+    orient_message  CC=8  out:10
+  services.web.app.routing_feedback  [16 funcs]
+    _append_jsonl  CC=1  out:3
+    _build_feedback_tags  CC=8  out:3
+    _create_improvement_ticket  CC=2  out:9
+    _feedback_path  CC=1  out:2
+    _find_turn_context  CC=9  out:9
+    _improvements_path  CC=1  out:2
+    _maybe_sync_planfile  CC=6  out:10
+    _now_iso  CC=1  out:2
+    _read_jsonl_tail  CC=5  out:6
+    _resolve_feedback_inputs  CC=6  out:4
+  services.web.app.routing_policy  [8 funcs]
+    _parse_agents  CC=4  out:9
+    _parse_mode_overrides  CC=2  out:3
+    _parse_policy  CC=10  out:18
+    _parse_rag_probe  CC=1  out:13
+    _policy_path  CC=2  out:5
+    _valid_ingress_order  CC=5  out:1
+    _valid_override_steps  CC=6  out:4
     load_policy  CC=5  out:6
-  services.web.app.static.access  [14 funcs]
+  services.web.app.routing_schemas  [6 funcs]
+    build_nlp2cmd_request  CC=1  out:3
+    llm_classifier_json_schema  CC=1  out:1
+    llm_system_prompt_with_schema  CC=1  out:2
+    parse_llm_classifier  CC=3  out:2
+    routing_analysis_use_explain  CC=1  out:3
+    schemas_bundle  CC=1  out:4
+  services.web.app.routing_trace  [15 funcs]
+    _build_rag_probe_checks  CC=2  out:5
+    _check_rag_probe_skipped  CC=8  out:2
+    _default_principles  CC=1  out:0
+    _evaluate_rag_probe_hits  CC=3  out:4
+    _explain_rag_probe  CC=6  out:11
+    _explain_rules_step  CC=3  out:10
+    _file_list_checks  CC=2  out:11
+    _is_expectation_hit  CC=13  out:10
+    _node_file_list  CC=5  out:2
+    append_step  CC=3  out:2
+  services.web.app.static.access  [13 funcs]
     api  CC=5  out:3
     checked  CC=2  out:1
-    data  CC=2  out:1
     escapeHtml  CC=1  out:2
     id  CC=2  out:2
     load  CC=3  out:4
@@ -328,15 +202,8 @@ MODULES:
     renderAll  CC=1  out:2
     renderHumanAgentMatrix  CC=11  out:4
     res  CC=1  out:1
-  services.web.app.static.app  [7 funcs]
-    appendMessage  CC=2  out:2
-    ensureSession  CC=3  out:4
-    escapeHtml  CC=1  out:2
-    renderHistory  CC=7  out:2
-    rowTask  CC=6  out:2
-    text  CC=16  out:15
-    uploadFiles  CC=8  out:5
-  services.web.app.static.workroom  [22 funcs]
+    resetAll  CC=1  out:3
+  services.web.app.static.workroom  [21 funcs]
     api  CC=5  out:3
     buildFallbackExport  CC=12  out:8
     buildLedgerExport  CC=7  out:5
@@ -347,31 +214,24 @@ MODULES:
     ensureWorkroom  CC=4  out:4
     escapeHtml  CC=1  out:2
     lastState  CC=3  out:2
-  services.web.app.static.workspace  [98 funcs]
+  services.web.app.static.workspace  [123 funcs]
     agentId  CC=2  out:2
     api  CC=6  out:4
+    appendFeedbackBar  CC=9  out:13
     appendMsg  CC=2  out:1
-    appendMsgTo  CC=14  out:11
+    appendMsgTo  CC=14  out:12
     appendPendingChatInput  CC=2  out:2
     appendRouteBadge  CC=3  out:4
     archiveTicket  CC=2  out:5
-    bindCopyChatButtons  CC=5  out:5
-    bindTicketDetailActions  CC=8  out:7
-    buildChatTextFromDom  CC=14  out:11
+    b  CC=3  out:5
+    bar  CC=3  out:6
   services.web.app.tickets  [4 funcs]
     enrich_task  CC=4  out:6
     status_meta  CC=3  out:2
     ticket_uri  CC=1  out:0
     ticket_web_path  CC=1  out:0
-  services.web.src.main  [8 funcs]
-    App  CC=6  out:16
-    createTask  CC=2  out:5
-    created  CC=1  out:1
-    fetchJson  CC=3  out:4
-    metrics  CC=4  out:6
-    postJson  CC=2  out:5
-    refresh  CC=4  out:6
-    taskMetrics  CC=1  out:2
+  services.web.app.workspace  [1 funcs]
+    get_or_create  CC=3  out:5
 
 EDGES:
   services.projector.app.main.operational_feed → services.projector.app.main._row_to_dict
@@ -420,7 +280,7 @@ EDGES:
   services.projector.app.projections.incidents._checks_payload → services.projector.app.projections.incidents._checks_list_payload
   services.projector.app.projections.incidents._checks_list_payload → services.projector.app.projections.incidents._check_payload
   services.projector.app.projections.incidents._root_cause → services.projector.app.projections.incidents._error_code
-  services.web.app.resource_areas.agent_may_access → services.web.app.resource_areas._matrix_access_decision
-  services.web.app.resource_areas.agent_may_access → services.web.app.resource_areas._area_policy_decision
-  services.web.app.resource_areas._matrix_access_decision → services.web.app.access_matrix.agent_may_access_resource
-  services.web.app.agent_workroom._plan_steps → services.web.app.agent_workroom._extract_shell
+  services.web.app.local_orient.orient_query → services.web.app.local_orient._is_file_list_query
+  services.web.app.routing_feedback._feedback_path → services.web.app.routing_feedback.feedback_dir
+  services.web.app.routing_feedback._improvements_path → services.web.app.routing_feedback.feedback_dir
+  services.web.app.routing_feedback._resolve_feedback_inputs → services.web.app.routing_feedback._find_turn_context

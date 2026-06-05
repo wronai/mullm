@@ -17,7 +17,7 @@ SUMD - Structured Unified Markdown Descriptor for AI-aware project refactorizati
 - **name**: `mullm`
 - **version**: `0.0.0`
 - **ecosystem**: SUMD + DOQL + testql + taskfile
-- **generated_from**: requirements-dev.txt, Makefile, testql(2), app.doql.less, goal.yaml, .env.example, docker-compose.yml, project/(5 analysis files)
+- **generated_from**: requirements-dev.txt, requirements-quality.txt, Makefile, testql(2), app.doql.less, goal.yaml, .env.example, docker-compose.yml, project/(5 analysis files)
 
 ## Architecture
 
@@ -395,13 +395,33 @@ workflow[name="test"] {
 workflow[name="test-web"] {
   trigger: manual;
   step-1: run cmd=pip install -q -r requirements-dev.txt -r services/web/requirements.txt;
-  step-2: run cmd=pytest -c services/web/pytest.ini services/web/tests -q;
+  step-2: run cmd=[ -f requirements-quality.txt ] && pip install -q -r requirements-quality.txt || true;
+  step-3: run cmd=pytest -c services/web/pytest.ini services/web/tests -q;
 }
 
 workflow[name="test-e2e-live"] {
   trigger: manual;
   step-1: run cmd=pip install -q -r requirements-dev.txt -r services/web/requirements.txt;
-  step-2: run cmd=MULLM_E2E=1 pytest -c services/web/pytest.ini services/web/tests/test_e2e_live_stack.py -v;
+  step-2: run cmd=chmod +x scripts/wait-for-web.sh;
+  step-3: run cmd=./scripts/wait-for-web.sh;
+  step-4: run cmd=MULLM_E2E=1 pytest -c services/web/pytest.ini services/web/tests/test_e2e_live_stack.py -v;
+}
+
+workflow[name="test-quality"] {
+  trigger: manual;
+  step-1: run cmd=chmod +x scripts/test-quality.sh;
+  step-2: run cmd=./scripts/test-quality.sh;
+}
+
+workflow[name="test-quality-deps"] {
+  trigger: manual;
+  step-1: run cmd=pip install -q -r requirements-dev.txt -r services/web/requirements.txt -r requirements-quality.txt;
+}
+
+workflow[name="propact-pact"] {
+  trigger: manual;
+  step-1: run cmd=chmod +x scripts/run-propact-pact.sh;
+  step-2: run cmd=./scripts/run-propact-pact.sh;
 }
 
 workflow[name="mullm-cli"] {
@@ -487,240 +507,70 @@ environment[name="local"] {
 
 ## Call Graph
 
-*422 nodes · 500 edges · 57 modules · CC̄=2.8*
+*381 nodes · 500 edges · 25 modules · CC̄=2.9*
 
 ### Hubs (by degree)
 
 | Function | CC | in | out | total |
 |----------|----|----|-----|-------|
-| `_rag_failure_result` *(in services.orchestrator.app.incidents.pipeline)* | 4 | 1 | 46 | **47** |
-| `api` *(in services.web.app.static.workspace)* | 6 | 21 | 4 | **25** |
-| `toast` *(in services.web.app.static.workspace)* | 3 | 23 | 2 | **25** |
-| `_dispatch` *(in services.orchestrator.app.api.commands)* | 4 | 14 | 9 | **23** |
-| `refreshWorkspace` *(in services.web.app.static.workspace)* | 8 | 8 | 15 | **23** |
-| `search` *(in services.orchestrator.app.api.rag)* | 3 | 0 | 22 | **22** |
-| `format_logs_text` *(in services.orchestrator.app.observability.export)* | 7 | 1 | 19 | **20** |
-| `_create_task` *(in services.orchestrator.app.application.command_bus.CommandBus)* | 6 | 0 | 20 | **20** |
+| `toast` *(in services.web.app.static.workspace)* | 3 | 35 | 2 | **37** |
+| `get_or_create` *(in services.web.app.workspace)* | 3 | 26 | 5 | **31** |
+| `api` *(in services.web.app.static.workspace)* | 6 | 26 | 4 | **30** |
+| `aggregate_learnings` *(in services.web.app.routing_feedback)* | 11 ⚠ | 0 | 28 | **28** |
+| `refreshWorkspace` *(in services.web.app.static.workspace)* | 8 | 10 | 17 | **27** |
+| `_nfo_counts` *(in services.web.app.workspace)* | 1 | 2 | 20 | **22** |
+| `_append_export_sections` *(in services.web.app.workspace)* | 2 | 1 | 21 | **22** |
+| `escapeHtml` *(in services.web.app.static.workspace)* | 1 | 19 | 2 | **21** |
 
 ```toon markpact:analysis path=project/calls.toon.yaml
 # code2llm call graph | /home/tom/github/wronai/mullm
-# generated in 0.37s
-# nodes: 422 | edges: 500 | modules: 57
-# CC̄=2.8
+# generated in 0.20s
+# nodes: 381 | edges: 500 | modules: 25
+# CC̄=2.9
 
 HUBS[20]:
-  services.orchestrator.app.incidents.pipeline._rag_failure_result
-    CC=4  in:1  out:46  total:47
-  services.web.app.static.workspace.api
-    CC=6  in:21  out:4  total:25
   services.web.app.static.workspace.toast
-    CC=3  in:23  out:2  total:25
-  services.orchestrator.app.api.commands._dispatch
-    CC=4  in:14  out:9  total:23
+    CC=3  in:35  out:2  total:37
+  services.web.app.workspace.get_or_create
+    CC=3  in:26  out:5  total:31
+  services.web.app.static.workspace.api
+    CC=6  in:26  out:4  total:30
+  services.web.app.routing_feedback.aggregate_learnings
+    CC=11  in:0  out:28  total:28
   services.web.app.static.workspace.refreshWorkspace
-    CC=8  in:8  out:15  total:23
-  services.orchestrator.app.api.rag.search
-    CC=3  in:0  out:22  total:22
-  services.orchestrator.app.observability.export.format_logs_text
-    CC=7  in:1  out:19  total:20
-  services.orchestrator.app.application.command_bus.CommandBus._create_task
-    CC=6  in:0  out:20  total:20
-  services.orchestrator.app.observability.rag_diagnostics.RagDiagnostics.run
-    CC=3  in:0  out:20  total:20
-  services.orchestrator.app.api.access.upload_resource
-    CC=4  in:0  out:19  total:19
-  services.orchestrator.app.observability.export._nfo_counts
-    CC=9  in:2  out:17  total:19
-  services.orchestrator.app.observability.export._append_nfo
+    CC=8  in:10  out:17  total:27
+  services.web.app.workspace._nfo_counts
+    CC=1  in:2  out:20  total:22
+  services.web.app.workspace._append_export_sections
+    CC=2  in:1  out:21  total:22
+  services.web.app.static.workspace.escapeHtml
+    CC=1  in:19  out:2  total:21
+  services.web.app.workspace._append_nfo_section
     CC=7  in:1  out:17  total:18
-  services.projector.app.main._row_to_dict
-    CC=3  in:12  out:5  total:17
+  services.web.app.prompt_router._build_decision
+    CC=3  in:11  out:7  total:18
+  services.web.app.workspace.export_debug_logs
+    CC=2  in:0  out:18  total:18
+  services.web.app.routing_feedback.record_feedback
+    CC=7  in:0  out:17  total:17
   services.web.app.static.workspace.selectTicket
     CC=5  in:6  out:11  total:17
-  services.orchestrator.app.observability.logging.log_event
-    CC=3  in:6  out:10  total:16
-  services.web.src.main.App
-    CC=6  in:0  out:16  total:16
-  services.orchestrator.app.application.command_bus.CommandBus._register_resource
-    CC=5  in:0  out:16  total:16
-  services.orchestrator.app.observability.rag_pipeline.RagPipeline.ask
-    CC=5  in:0  out:15  total:15
+  services.projector.app.main._row_to_dict
+    CC=3  in:12  out:5  total:17
   services.web.app.static.workspace.ensureSession
-    CC=2  in:12  out:3  total:15
-  services.web.app.static.app.text
-    CC=16  in:0  out:15  total:15
+    CC=2  in:14  out:3  total:17
+  services.web.app.routing_trace.match_user_expectations
+    CC=8  in:2  out:13  total:15
+  services.web.app.workspace._list_section
+    CC=2  in:13  out:2  total:15
+  services.web.app.static.workspace.renderTasks
+    CC=12  in:6  out:8  total:14
+  services.web.app.static.workspace.appendMsgTo
+    CC=14  in:2  out:12  total:14
+  services.web.app.workspace._routing_optional_parts
+    CC=4  in:1  out:13  total:14
 
 MODULES:
-  agents.shell-agent.app.executor  [1 funcs]
-    run_shell_command  CC=4  out:3
-  agents.shell-agent.app.nats_consumer  [1 funcs]
-    handle_message  CC=4  out:8
-  services.orchestrator.app.access.adapters  [1 funcs]
-    get_adapter  CC=2  out:5
-  services.orchestrator.app.access.transport  [3 funcs]
-    copy  CC=4  out:10
-    fetch  CC=1  out:4
-    probe  CC=1  out:4
-  services.orchestrator.app.access.uri  [2 funcs]
-    build_uri  CC=2  out:1
-    parse_uri  CC=6  out:9
-  services.orchestrator.app.api.access  [3 funcs]
-    build_resource_uri  CC=1  out:2
-    register_resource  CC=2  out:6
-    upload_resource  CC=4  out:19
-  services.orchestrator.app.api.commands  [15 funcs]
-    _dispatch  CC=4  out:9
-    activate_plugin  CC=1  out:3
-    activate_workflow_version  CC=1  out:3
-    approve_request  CC=2  out:2
-    approve_workflow_version  CC=1  out:3
-    create_approval  CC=1  out:3
-    expire_approval  CC=1  out:2
-    install_plugin  CC=1  out:3
-    propose_plugin  CC=1  out:3
-    propose_workflow_version  CC=1  out:3
-  services.orchestrator.app.api.queries  [8 funcs]
-    _aggregate_state  CC=2  out:1
-    _event_to_dict  CC=2  out:10
-    _matches_task_filters  CC=5  out:2
-    _task_list_item  CC=3  out:2
-    get_agent  CC=6  out:7
-    get_task  CC=6  out:7
-    get_workflow  CC=6  out:7
-    list_tasks  CC=4  out:8
-  services.orchestrator.app.api.rag  [2 funcs]
-    ask  CC=1  out:6
-    search  CC=3  out:22
-  services.orchestrator.app.application.command_bus  [9 funcs]
-    _activate_plugin  CC=1  out:4
-    _activate_workflow_version  CC=3  out:6
-    _approve_request  CC=3  out:6
-    _create_task  CC=6  out:20
-    _record_task_outcome  CC=5  out:5
-    _register_resource  CC=5  out:16
-    _rollback_plugin  CC=1  out:5
-    _rollback_workflow_version  CC=1  out:5
-    _task_outcome_payload  CC=5  out:5
-  services.orchestrator.app.application.sagas.approval_gate  [5 funcs]
-    _is_skipped  CC=3  out:3
-    _required_approval_id  CC=2  out:2
-    _validate_approval_events  CC=5  out:7
-    ensure_approval  CC=3  out:6
-    follow_up_after_grant  CC=5  out:3
-  services.orchestrator.app.application.sagas.task_routing  [4 funcs]
-    _agent_matches  CC=4  out:3
-    _agent_route_state  CC=4  out:2
-    maybe_auto_assign  CC=5  out:6
-    pick_idle_agent  CC=4  out:4
-  services.orchestrator.app.config  [1 funcs]
-    model_post_init  CC=1  out:2
-  services.orchestrator.app.domain.aggregates.agent  [1 funcs]
-    heartbeat  CC=1  out:3
-  services.orchestrator.app.domain.aggregates.task  [10 funcs]
-    __init__  CC=4  out:5
-    apply  CC=2  out:5
-    assign_to_agent  CC=2  out:4
-    complete  CC=2  out:4
-    fail  CC=2  out:4
-    start  CC=3  out:5
-    _event_data  CC=2  out:3
-    _event_timestamp  CC=3  out:5
-    _event_type  CC=1  out:1
-    _utc_now  CC=1  out:1
-  services.orchestrator.app.evolution.policy_engine  [3 funcs]
-    validate_activation_metrics  CC=5  out:8
-    _activation_metrics_row  CC=1  out:1
-    _has_enough_activation_samples  CC=3  out:4
-  services.orchestrator.app.incidents.pipeline  [5 funcs]
-    handle_rag_failure  CC=2  out:9
-    _rag_failure_events  CC=3  out:7
-    _rag_failure_result  CC=4  out:46
-    _rag_root_cause  CC=5  out:7
-    classify_rag_error  CC=3  out:5
-  services.orchestrator.app.infrastructure.eventstore  [4 funcs]
-    _record_from_row  CC=1  out:3
-    append  CC=6  out:15
-    _loads_json  CC=3  out:3
-    _utc_now  CC=1  out:1
-  services.orchestrator.app.infrastructure.eventstore_esdb  [2 funcs]
-    __init__  CC=1  out:1
-    _parse_esdb_uri  CC=4  out:6
-  services.orchestrator.app.infrastructure.eventstore_factory  [4 funcs]
-    _dual_backend  CC=2  out:5
-    _eventstoredb_backend  CC=1  out:3
-    _require_eventstore_url  CC=2  out:1
-    build_event_store  CC=5  out:5
-  services.orchestrator.app.observability.context  [6 funcs]
-    get_chat_session_id  CC=1  out:1
-    get_correlation_id  CC=1  out:1
-    get_retrieval_trace_id  CC=1  out:1
-    new_correlation_id  CC=1  out:2
-    new_retrieval_trace_id  CC=1  out:1
-    observability_context  CC=5  out:8
-  services.orchestrator.app.observability.export  [12 funcs]
-    _append_incident_feed  CC=4  out:8
-    _append_incidents  CC=5  out:13
-    _append_nfo  CC=7  out:17
-    _append_rag_health  CC=6  out:13
-    _append_rag_snapshots  CC=3  out:5
-    _append_workspace_session  CC=5  out:10
-    _build_nfo_package  CC=2  out:8
-    _nfo_counts  CC=9  out:17
-    _nfo_errors  CC=5  out:6
-    _nfo_package_version  CC=1  out:2
-  services.orchestrator.app.observability.incidents  [1 funcs]
-    classify_rag_failure  CC=3  out:5
-  services.orchestrator.app.observability.logging  [2 funcs]
-    _emit_nfo_event  CC=3  out:2
-    log_event  CC=3  out:10
-  services.orchestrator.app.observability.middleware  [1 funcs]
-    dispatch  CC=3  out:5
-  services.orchestrator.app.observability.rag_diagnostics  [5 funcs]
-    run  CC=3  out:20
-    _checks_with_status  CC=3  out:1
-    _log_diagnostics_result  CC=2  out:2
-    _overall_status  CC=3  out:2
-    _primary_incident_code  CC=3  out:2
-  services.orchestrator.app.observability.rag_pipeline  [6 funcs]
-    _empty_result_payload  CC=1  out:3
-    _exception_payload  CC=1  out:6
-    _llm_error_payload  CC=2  out:6
-    _step_recorder  CC=1  out:4
-    ask  CC=5  out:15
-    _result_with_trace  CC=1  out:0
-  services.orchestrator.app.rag.chunking  [2 funcs]
-    _overlapping_chunks  CC=4  out:7
-    chunk_text  CC=4  out:3
-  services.orchestrator.app.rag.indexer  [5 funcs]
-    ingest_resource  CC=2  out:12
-    _chunks_for_body  CC=2  out:2
-    _failed_result  CC=1  out:1
-    _indexed_result  CC=1  out:1
-    _packed_chunks  CC=3  out:1
-  services.orchestrator.app.rag.openrouter  [5 funcs]
-    __init__  CC=2  out:3
-    chat  CC=4  out:6
-    _chat_response_error  CC=2  out:1
-    _chat_result  CC=6  out:4
-    normalize_openrouter_model  CC=3  out:3
-  services.orchestrator.app.rag.retriever  [6 funcs]
-    ask  CC=5  out:7
-    _context_from_hits  CC=2  out:1
-    _fragment_fallback_answer  CC=3  out:4
-    _no_hits_answer  CC=1  out:0
-    _rag_messages  CC=1  out:0
-    _unconfigured_answer  CC=1  out:0
-  services.orchestrator.app.rag.store  [15 funcs]
-    _keyword_fallback  CC=3  out:3
-    _vector_search  CC=3  out:2
-    list_documents  CC=2  out:2
-    search  CC=5  out:5
-    _chunk_hit  CC=2  out:5
-    _cosine  CC=5  out:5
-    _keyword_hits  CC=3  out:5
-    _keyword_score  CC=4  out:4
-    _parse_embedding  CC=5  out:6
-    _query_tokens  CC=3  out:3
   services.projector.app.main  [13 funcs]
     _row_to_dict  CC=3  out:5
     agent_fleet  CC=3  out:4
@@ -777,6 +627,8 @@ MODULES:
     _matrix_path  CC=2  out:4
     _merge_bool_matrix  CC=5  out:5
     _merged_bool_row  CC=3  out:3
+  services.web.app.agent_plugins.registry  [1 funcs]
+    analyze_shell_nl  CC=4  out:5
   services.web.app.agent_workroom  [27 funcs]
     _add_permission  CC=1  out:1
     _append_workroom_ledger  CC=5  out:6
@@ -788,44 +640,56 @@ MODULES:
     _record_file_list_result  CC=1  out:2
     _record_shell_result  CC=2  out:3
     _register_file_list_artifact  CC=2  out:3
-  services.web.app.api.chat_routes  [6 funcs]
-    _form_only_chat_message  CC=2  out:4
-    _form_only_message  CC=3  out:2
-    _update_nlp_conversation  CC=2  out:1
-    _upload_one_file  CC=5  out:8
-    chat_message  CC=3  out:7
-    upload_files  CC=3  out:7
-  services.web.app.api.router_routes  [1 funcs]
-    routing_policy_get  CC=1  out:3
-  services.web.app.api.task_routes  [10 funcs]
-    _archived_ids  CC=2  out:3
-    _assert_confirmable_task  CC=3  out:3
-    _assign_ticket  CC=3  out:3
-    _confirmable_task_and_agent  CC=2  out:5
-    _filter_tickets_view  CC=4  out:2
-    _first_idle_agent_id  CC=5  out:4
-    _task_from_board  CC=5  out:4
-    confirm_ticket  CC=5  out:9
-    get_ticket  CC=4  out:7
-    list_tickets  CC=3  out:6
-  services.web.app.api.workroom_routes  [3 funcs]
-    _workroom_or_404  CC=2  out:2
-    workroom_export  CC=1  out:5
-    workroom_get  CC=1  out:3
   services.web.app.conductor  [1 funcs]
-    handle_turn  CC=2  out:5
+    handle_turn  CC=2  out:7
+  services.web.app.planfile_bridge  [5 funcs]
+    _build_create_cmd  CC=3  out:6
+    _improvement_files  CC=3  out:3
+    _parse_created_id  CC=7  out:7
+    planfile_project_path  CC=5  out:7
+    sync_improvement_ticket  CC=9  out:9
+  services.web.app.prompt_router  [41 funcs]
+    _build_decision  CC=3  out:7
+    _candidate  CC=1  out:0
+    _command_looks_like_host_list  CC=3  out:3
+    _decision_from_expectations  CC=5  out:10
+    _decision_from_nlp2cmd  CC=5  out:8
+    _default_discuss_decision  CC=1  out:3
+    _default_route_decision  CC=2  out:2
+    _direct_route_decision  CC=3  out:5
+    _empty_route_decision  CC=1  out:2
+    _explicit_registry_list  CC=3  out:2
   services.web.app.resource_areas  [5 funcs]
     _area_policy_decision  CC=5  out:0
     _matrix_access_decision  CC=3  out:1
     agent_may_access  CC=4  out:5
     list_areas  CC=2  out:1
     list_groups  CC=1  out:0
+  services.web.app.routing_feedback  [16 funcs]
+    _append_jsonl  CC=1  out:3
+    _build_feedback_tags  CC=8  out:3
+    _create_improvement_ticket  CC=2  out:9
+    _feedback_path  CC=1  out:2
+    _find_turn_context  CC=9  out:9
+    _improvements_path  CC=1  out:2
+    _maybe_sync_planfile  CC=6  out:10
+    _now_iso  CC=1  out:2
+    _read_jsonl_tail  CC=5  out:6
+    _resolve_feedback_inputs  CC=6  out:4
   services.web.app.routing_policy  [1 funcs]
     load_policy  CC=5  out:6
-  services.web.app.static.access  [14 funcs]
+  services.web.app.routing_schemas  [6 funcs]
+    build_nlp2cmd_request  CC=1  out:3
+    llm_classifier_json_schema  CC=1  out:1
+    llm_system_prompt_with_schema  CC=1  out:2
+    parse_llm_classifier  CC=3  out:2
+    routing_analysis_use_explain  CC=1  out:3
+    schemas_bundle  CC=1  out:4
+  services.web.app.routing_trace  [1 funcs]
+    match_user_expectations  CC=8  out:13
+  services.web.app.static.access  [13 funcs]
     api  CC=5  out:3
     checked  CC=2  out:1
-    data  CC=2  out:1
     escapeHtml  CC=1  out:2
     id  CC=2  out:2
     load  CC=3  out:4
@@ -833,50 +697,34 @@ MODULES:
     renderAll  CC=1  out:2
     renderHumanAgentMatrix  CC=11  out:4
     res  CC=1  out:1
-  services.web.app.static.app  [7 funcs]
-    appendMessage  CC=2  out:2
-    ensureSession  CC=3  out:4
-    escapeHtml  CC=1  out:2
-    renderHistory  CC=7  out:2
-    rowTask  CC=6  out:2
-    text  CC=16  out:15
-    uploadFiles  CC=8  out:5
-  services.web.app.static.workroom  [22 funcs]
-    api  CC=5  out:3
-    buildFallbackExport  CC=12  out:8
-    buildLedgerExport  CC=7  out:5
-    copyText  CC=2  out:7
-    copyWorkroomAll  CC=3  out:5
-    copyWorkroomLogs  CC=4  out:6
-    data  CC=1  out:1
-    ensureWorkroom  CC=4  out:4
-    escapeHtml  CC=1  out:2
-    lastState  CC=3  out:2
-  services.web.app.static.workspace  [98 funcs]
+    resetAll  CC=1  out:3
+  services.web.app.static.workspace  [100 funcs]
     agentId  CC=2  out:2
     api  CC=6  out:4
+    appendFeedbackBar  CC=9  out:13
     appendMsg  CC=2  out:1
-    appendMsgTo  CC=14  out:11
+    appendMsgTo  CC=14  out:12
     appendPendingChatInput  CC=2  out:2
     appendRouteBadge  CC=3  out:4
     archiveTicket  CC=2  out:5
-    bindCopyChatButtons  CC=5  out:5
-    bindTicketDetailActions  CC=8  out:7
-    buildChatTextFromDom  CC=14  out:11
+    b  CC=3  out:5
+    bar  CC=3  out:6
   services.web.app.tickets  [4 funcs]
     enrich_task  CC=4  out:6
     status_meta  CC=3  out:2
     ticket_uri  CC=1  out:0
     ticket_web_path  CC=1  out:0
-  services.web.src.main  [8 funcs]
-    App  CC=6  out:16
-    createTask  CC=2  out:5
-    created  CC=1  out:1
-    fetchJson  CC=3  out:4
-    metrics  CC=4  out:6
-    postJson  CC=2  out:5
-    refresh  CC=4  out:6
-    taskMetrics  CC=1  out:2
+  services.web.app.workspace  [95 funcs]
+    _append_candidate_routes  CC=3  out:3
+    _append_chat_export_draft  CC=3  out:6
+    _append_chat_export_message  CC=6  out:13
+    _append_chat_export_trace  CC=3  out:4
+    _append_context_collections  CC=4  out:9
+    _append_context_scalars  CC=3  out:2
+    _append_context_section  CC=4  out:7
+    _append_draft_section  CC=3  out:7
+    _append_export_sections  CC=2  out:21
+    _append_history_message  CC=6  out:11
 
 EDGES:
   services.projector.app.main.operational_feed → services.projector.app.main._row_to_dict
@@ -925,10 +773,10 @@ EDGES:
   services.projector.app.projections.incidents._checks_payload → services.projector.app.projections.incidents._checks_list_payload
   services.projector.app.projections.incidents._checks_list_payload → services.projector.app.projections.incidents._check_payload
   services.projector.app.projections.incidents._root_cause → services.projector.app.projections.incidents._error_code
-  services.web.app.resource_areas.agent_may_access → services.web.app.resource_areas._matrix_access_decision
-  services.web.app.resource_areas.agent_may_access → services.web.app.resource_areas._area_policy_decision
-  services.web.app.resource_areas._matrix_access_decision → services.web.app.access_matrix.agent_may_access_resource
-  services.web.app.agent_workroom._plan_steps → services.web.app.agent_workroom._extract_shell
+  services.web.app.routing_feedback._feedback_path → services.web.app.routing_feedback.feedback_dir
+  services.web.app.routing_feedback._improvements_path → services.web.app.routing_feedback.feedback_dir
+  services.web.app.routing_feedback._resolve_feedback_inputs → services.web.app.routing_feedback._find_turn_context
+  services.web.app.routing_feedback.record_feedback → services.web.app.routing_feedback._resolve_feedback_inputs
 ```
 
 ## Test Contracts
@@ -957,223 +805,53 @@ EDGES:
 
 ```toon markpact:analysis path=project/calls.toon.yaml
 # code2llm call graph | /home/tom/github/wronai/mullm
-# generated in 0.37s
-# nodes: 422 | edges: 500 | modules: 57
-# CC̄=2.8
+# generated in 0.20s
+# nodes: 381 | edges: 500 | modules: 25
+# CC̄=2.9
 
 HUBS[20]:
-  services.orchestrator.app.incidents.pipeline._rag_failure_result
-    CC=4  in:1  out:46  total:47
-  services.web.app.static.workspace.api
-    CC=6  in:21  out:4  total:25
   services.web.app.static.workspace.toast
-    CC=3  in:23  out:2  total:25
-  services.orchestrator.app.api.commands._dispatch
-    CC=4  in:14  out:9  total:23
+    CC=3  in:35  out:2  total:37
+  services.web.app.workspace.get_or_create
+    CC=3  in:26  out:5  total:31
+  services.web.app.static.workspace.api
+    CC=6  in:26  out:4  total:30
+  services.web.app.routing_feedback.aggregate_learnings
+    CC=11  in:0  out:28  total:28
   services.web.app.static.workspace.refreshWorkspace
-    CC=8  in:8  out:15  total:23
-  services.orchestrator.app.api.rag.search
-    CC=3  in:0  out:22  total:22
-  services.orchestrator.app.observability.export.format_logs_text
-    CC=7  in:1  out:19  total:20
-  services.orchestrator.app.application.command_bus.CommandBus._create_task
-    CC=6  in:0  out:20  total:20
-  services.orchestrator.app.observability.rag_diagnostics.RagDiagnostics.run
-    CC=3  in:0  out:20  total:20
-  services.orchestrator.app.api.access.upload_resource
-    CC=4  in:0  out:19  total:19
-  services.orchestrator.app.observability.export._nfo_counts
-    CC=9  in:2  out:17  total:19
-  services.orchestrator.app.observability.export._append_nfo
+    CC=8  in:10  out:17  total:27
+  services.web.app.workspace._nfo_counts
+    CC=1  in:2  out:20  total:22
+  services.web.app.workspace._append_export_sections
+    CC=2  in:1  out:21  total:22
+  services.web.app.static.workspace.escapeHtml
+    CC=1  in:19  out:2  total:21
+  services.web.app.workspace._append_nfo_section
     CC=7  in:1  out:17  total:18
-  services.projector.app.main._row_to_dict
-    CC=3  in:12  out:5  total:17
+  services.web.app.prompt_router._build_decision
+    CC=3  in:11  out:7  total:18
+  services.web.app.workspace.export_debug_logs
+    CC=2  in:0  out:18  total:18
+  services.web.app.routing_feedback.record_feedback
+    CC=7  in:0  out:17  total:17
   services.web.app.static.workspace.selectTicket
     CC=5  in:6  out:11  total:17
-  services.orchestrator.app.observability.logging.log_event
-    CC=3  in:6  out:10  total:16
-  services.web.src.main.App
-    CC=6  in:0  out:16  total:16
-  services.orchestrator.app.application.command_bus.CommandBus._register_resource
-    CC=5  in:0  out:16  total:16
-  services.orchestrator.app.observability.rag_pipeline.RagPipeline.ask
-    CC=5  in:0  out:15  total:15
+  services.projector.app.main._row_to_dict
+    CC=3  in:12  out:5  total:17
   services.web.app.static.workspace.ensureSession
-    CC=2  in:12  out:3  total:15
-  services.web.app.static.app.text
-    CC=16  in:0  out:15  total:15
+    CC=2  in:14  out:3  total:17
+  services.web.app.routing_trace.match_user_expectations
+    CC=8  in:2  out:13  total:15
+  services.web.app.workspace._list_section
+    CC=2  in:13  out:2  total:15
+  services.web.app.static.workspace.renderTasks
+    CC=12  in:6  out:8  total:14
+  services.web.app.static.workspace.appendMsgTo
+    CC=14  in:2  out:12  total:14
+  services.web.app.workspace._routing_optional_parts
+    CC=4  in:1  out:13  total:14
 
 MODULES:
-  agents.shell-agent.app.executor  [1 funcs]
-    run_shell_command  CC=4  out:3
-  agents.shell-agent.app.nats_consumer  [1 funcs]
-    handle_message  CC=4  out:8
-  services.orchestrator.app.access.adapters  [1 funcs]
-    get_adapter  CC=2  out:5
-  services.orchestrator.app.access.transport  [3 funcs]
-    copy  CC=4  out:10
-    fetch  CC=1  out:4
-    probe  CC=1  out:4
-  services.orchestrator.app.access.uri  [2 funcs]
-    build_uri  CC=2  out:1
-    parse_uri  CC=6  out:9
-  services.orchestrator.app.api.access  [3 funcs]
-    build_resource_uri  CC=1  out:2
-    register_resource  CC=2  out:6
-    upload_resource  CC=4  out:19
-  services.orchestrator.app.api.commands  [15 funcs]
-    _dispatch  CC=4  out:9
-    activate_plugin  CC=1  out:3
-    activate_workflow_version  CC=1  out:3
-    approve_request  CC=2  out:2
-    approve_workflow_version  CC=1  out:3
-    create_approval  CC=1  out:3
-    expire_approval  CC=1  out:2
-    install_plugin  CC=1  out:3
-    propose_plugin  CC=1  out:3
-    propose_workflow_version  CC=1  out:3
-  services.orchestrator.app.api.queries  [8 funcs]
-    _aggregate_state  CC=2  out:1
-    _event_to_dict  CC=2  out:10
-    _matches_task_filters  CC=5  out:2
-    _task_list_item  CC=3  out:2
-    get_agent  CC=6  out:7
-    get_task  CC=6  out:7
-    get_workflow  CC=6  out:7
-    list_tasks  CC=4  out:8
-  services.orchestrator.app.api.rag  [2 funcs]
-    ask  CC=1  out:6
-    search  CC=3  out:22
-  services.orchestrator.app.application.command_bus  [9 funcs]
-    _activate_plugin  CC=1  out:4
-    _activate_workflow_version  CC=3  out:6
-    _approve_request  CC=3  out:6
-    _create_task  CC=6  out:20
-    _record_task_outcome  CC=5  out:5
-    _register_resource  CC=5  out:16
-    _rollback_plugin  CC=1  out:5
-    _rollback_workflow_version  CC=1  out:5
-    _task_outcome_payload  CC=5  out:5
-  services.orchestrator.app.application.sagas.approval_gate  [5 funcs]
-    _is_skipped  CC=3  out:3
-    _required_approval_id  CC=2  out:2
-    _validate_approval_events  CC=5  out:7
-    ensure_approval  CC=3  out:6
-    follow_up_after_grant  CC=5  out:3
-  services.orchestrator.app.application.sagas.task_routing  [4 funcs]
-    _agent_matches  CC=4  out:3
-    _agent_route_state  CC=4  out:2
-    maybe_auto_assign  CC=5  out:6
-    pick_idle_agent  CC=4  out:4
-  services.orchestrator.app.config  [1 funcs]
-    model_post_init  CC=1  out:2
-  services.orchestrator.app.domain.aggregates.agent  [1 funcs]
-    heartbeat  CC=1  out:3
-  services.orchestrator.app.domain.aggregates.task  [10 funcs]
-    __init__  CC=4  out:5
-    apply  CC=2  out:5
-    assign_to_agent  CC=2  out:4
-    complete  CC=2  out:4
-    fail  CC=2  out:4
-    start  CC=3  out:5
-    _event_data  CC=2  out:3
-    _event_timestamp  CC=3  out:5
-    _event_type  CC=1  out:1
-    _utc_now  CC=1  out:1
-  services.orchestrator.app.evolution.policy_engine  [3 funcs]
-    validate_activation_metrics  CC=5  out:8
-    _activation_metrics_row  CC=1  out:1
-    _has_enough_activation_samples  CC=3  out:4
-  services.orchestrator.app.incidents.pipeline  [5 funcs]
-    handle_rag_failure  CC=2  out:9
-    _rag_failure_events  CC=3  out:7
-    _rag_failure_result  CC=4  out:46
-    _rag_root_cause  CC=5  out:7
-    classify_rag_error  CC=3  out:5
-  services.orchestrator.app.infrastructure.eventstore  [4 funcs]
-    _record_from_row  CC=1  out:3
-    append  CC=6  out:15
-    _loads_json  CC=3  out:3
-    _utc_now  CC=1  out:1
-  services.orchestrator.app.infrastructure.eventstore_esdb  [2 funcs]
-    __init__  CC=1  out:1
-    _parse_esdb_uri  CC=4  out:6
-  services.orchestrator.app.infrastructure.eventstore_factory  [4 funcs]
-    _dual_backend  CC=2  out:5
-    _eventstoredb_backend  CC=1  out:3
-    _require_eventstore_url  CC=2  out:1
-    build_event_store  CC=5  out:5
-  services.orchestrator.app.observability.context  [6 funcs]
-    get_chat_session_id  CC=1  out:1
-    get_correlation_id  CC=1  out:1
-    get_retrieval_trace_id  CC=1  out:1
-    new_correlation_id  CC=1  out:2
-    new_retrieval_trace_id  CC=1  out:1
-    observability_context  CC=5  out:8
-  services.orchestrator.app.observability.export  [12 funcs]
-    _append_incident_feed  CC=4  out:8
-    _append_incidents  CC=5  out:13
-    _append_nfo  CC=7  out:17
-    _append_rag_health  CC=6  out:13
-    _append_rag_snapshots  CC=3  out:5
-    _append_workspace_session  CC=5  out:10
-    _build_nfo_package  CC=2  out:8
-    _nfo_counts  CC=9  out:17
-    _nfo_errors  CC=5  out:6
-    _nfo_package_version  CC=1  out:2
-  services.orchestrator.app.observability.incidents  [1 funcs]
-    classify_rag_failure  CC=3  out:5
-  services.orchestrator.app.observability.logging  [2 funcs]
-    _emit_nfo_event  CC=3  out:2
-    log_event  CC=3  out:10
-  services.orchestrator.app.observability.middleware  [1 funcs]
-    dispatch  CC=3  out:5
-  services.orchestrator.app.observability.rag_diagnostics  [5 funcs]
-    run  CC=3  out:20
-    _checks_with_status  CC=3  out:1
-    _log_diagnostics_result  CC=2  out:2
-    _overall_status  CC=3  out:2
-    _primary_incident_code  CC=3  out:2
-  services.orchestrator.app.observability.rag_pipeline  [6 funcs]
-    _empty_result_payload  CC=1  out:3
-    _exception_payload  CC=1  out:6
-    _llm_error_payload  CC=2  out:6
-    _step_recorder  CC=1  out:4
-    ask  CC=5  out:15
-    _result_with_trace  CC=1  out:0
-  services.orchestrator.app.rag.chunking  [2 funcs]
-    _overlapping_chunks  CC=4  out:7
-    chunk_text  CC=4  out:3
-  services.orchestrator.app.rag.indexer  [5 funcs]
-    ingest_resource  CC=2  out:12
-    _chunks_for_body  CC=2  out:2
-    _failed_result  CC=1  out:1
-    _indexed_result  CC=1  out:1
-    _packed_chunks  CC=3  out:1
-  services.orchestrator.app.rag.openrouter  [5 funcs]
-    __init__  CC=2  out:3
-    chat  CC=4  out:6
-    _chat_response_error  CC=2  out:1
-    _chat_result  CC=6  out:4
-    normalize_openrouter_model  CC=3  out:3
-  services.orchestrator.app.rag.retriever  [6 funcs]
-    ask  CC=5  out:7
-    _context_from_hits  CC=2  out:1
-    _fragment_fallback_answer  CC=3  out:4
-    _no_hits_answer  CC=1  out:0
-    _rag_messages  CC=1  out:0
-    _unconfigured_answer  CC=1  out:0
-  services.orchestrator.app.rag.store  [15 funcs]
-    _keyword_fallback  CC=3  out:3
-    _vector_search  CC=3  out:2
-    list_documents  CC=2  out:2
-    search  CC=5  out:5
-    _chunk_hit  CC=2  out:5
-    _cosine  CC=5  out:5
-    _keyword_hits  CC=3  out:5
-    _keyword_score  CC=4  out:4
-    _parse_embedding  CC=5  out:6
-    _query_tokens  CC=3  out:3
   services.projector.app.main  [13 funcs]
     _row_to_dict  CC=3  out:5
     agent_fleet  CC=3  out:4
@@ -1230,6 +908,8 @@ MODULES:
     _matrix_path  CC=2  out:4
     _merge_bool_matrix  CC=5  out:5
     _merged_bool_row  CC=3  out:3
+  services.web.app.agent_plugins.registry  [1 funcs]
+    analyze_shell_nl  CC=4  out:5
   services.web.app.agent_workroom  [27 funcs]
     _add_permission  CC=1  out:1
     _append_workroom_ledger  CC=5  out:6
@@ -1241,44 +921,56 @@ MODULES:
     _record_file_list_result  CC=1  out:2
     _record_shell_result  CC=2  out:3
     _register_file_list_artifact  CC=2  out:3
-  services.web.app.api.chat_routes  [6 funcs]
-    _form_only_chat_message  CC=2  out:4
-    _form_only_message  CC=3  out:2
-    _update_nlp_conversation  CC=2  out:1
-    _upload_one_file  CC=5  out:8
-    chat_message  CC=3  out:7
-    upload_files  CC=3  out:7
-  services.web.app.api.router_routes  [1 funcs]
-    routing_policy_get  CC=1  out:3
-  services.web.app.api.task_routes  [10 funcs]
-    _archived_ids  CC=2  out:3
-    _assert_confirmable_task  CC=3  out:3
-    _assign_ticket  CC=3  out:3
-    _confirmable_task_and_agent  CC=2  out:5
-    _filter_tickets_view  CC=4  out:2
-    _first_idle_agent_id  CC=5  out:4
-    _task_from_board  CC=5  out:4
-    confirm_ticket  CC=5  out:9
-    get_ticket  CC=4  out:7
-    list_tickets  CC=3  out:6
-  services.web.app.api.workroom_routes  [3 funcs]
-    _workroom_or_404  CC=2  out:2
-    workroom_export  CC=1  out:5
-    workroom_get  CC=1  out:3
   services.web.app.conductor  [1 funcs]
-    handle_turn  CC=2  out:5
+    handle_turn  CC=2  out:7
+  services.web.app.planfile_bridge  [5 funcs]
+    _build_create_cmd  CC=3  out:6
+    _improvement_files  CC=3  out:3
+    _parse_created_id  CC=7  out:7
+    planfile_project_path  CC=5  out:7
+    sync_improvement_ticket  CC=9  out:9
+  services.web.app.prompt_router  [41 funcs]
+    _build_decision  CC=3  out:7
+    _candidate  CC=1  out:0
+    _command_looks_like_host_list  CC=3  out:3
+    _decision_from_expectations  CC=5  out:10
+    _decision_from_nlp2cmd  CC=5  out:8
+    _default_discuss_decision  CC=1  out:3
+    _default_route_decision  CC=2  out:2
+    _direct_route_decision  CC=3  out:5
+    _empty_route_decision  CC=1  out:2
+    _explicit_registry_list  CC=3  out:2
   services.web.app.resource_areas  [5 funcs]
     _area_policy_decision  CC=5  out:0
     _matrix_access_decision  CC=3  out:1
     agent_may_access  CC=4  out:5
     list_areas  CC=2  out:1
     list_groups  CC=1  out:0
+  services.web.app.routing_feedback  [16 funcs]
+    _append_jsonl  CC=1  out:3
+    _build_feedback_tags  CC=8  out:3
+    _create_improvement_ticket  CC=2  out:9
+    _feedback_path  CC=1  out:2
+    _find_turn_context  CC=9  out:9
+    _improvements_path  CC=1  out:2
+    _maybe_sync_planfile  CC=6  out:10
+    _now_iso  CC=1  out:2
+    _read_jsonl_tail  CC=5  out:6
+    _resolve_feedback_inputs  CC=6  out:4
   services.web.app.routing_policy  [1 funcs]
     load_policy  CC=5  out:6
-  services.web.app.static.access  [14 funcs]
+  services.web.app.routing_schemas  [6 funcs]
+    build_nlp2cmd_request  CC=1  out:3
+    llm_classifier_json_schema  CC=1  out:1
+    llm_system_prompt_with_schema  CC=1  out:2
+    parse_llm_classifier  CC=3  out:2
+    routing_analysis_use_explain  CC=1  out:3
+    schemas_bundle  CC=1  out:4
+  services.web.app.routing_trace  [1 funcs]
+    match_user_expectations  CC=8  out:13
+  services.web.app.static.access  [13 funcs]
     api  CC=5  out:3
     checked  CC=2  out:1
-    data  CC=2  out:1
     escapeHtml  CC=1  out:2
     id  CC=2  out:2
     load  CC=3  out:4
@@ -1286,50 +978,34 @@ MODULES:
     renderAll  CC=1  out:2
     renderHumanAgentMatrix  CC=11  out:4
     res  CC=1  out:1
-  services.web.app.static.app  [7 funcs]
-    appendMessage  CC=2  out:2
-    ensureSession  CC=3  out:4
-    escapeHtml  CC=1  out:2
-    renderHistory  CC=7  out:2
-    rowTask  CC=6  out:2
-    text  CC=16  out:15
-    uploadFiles  CC=8  out:5
-  services.web.app.static.workroom  [22 funcs]
-    api  CC=5  out:3
-    buildFallbackExport  CC=12  out:8
-    buildLedgerExport  CC=7  out:5
-    copyText  CC=2  out:7
-    copyWorkroomAll  CC=3  out:5
-    copyWorkroomLogs  CC=4  out:6
-    data  CC=1  out:1
-    ensureWorkroom  CC=4  out:4
-    escapeHtml  CC=1  out:2
-    lastState  CC=3  out:2
-  services.web.app.static.workspace  [98 funcs]
+    resetAll  CC=1  out:3
+  services.web.app.static.workspace  [100 funcs]
     agentId  CC=2  out:2
     api  CC=6  out:4
+    appendFeedbackBar  CC=9  out:13
     appendMsg  CC=2  out:1
-    appendMsgTo  CC=14  out:11
+    appendMsgTo  CC=14  out:12
     appendPendingChatInput  CC=2  out:2
     appendRouteBadge  CC=3  out:4
     archiveTicket  CC=2  out:5
-    bindCopyChatButtons  CC=5  out:5
-    bindTicketDetailActions  CC=8  out:7
-    buildChatTextFromDom  CC=14  out:11
+    b  CC=3  out:5
+    bar  CC=3  out:6
   services.web.app.tickets  [4 funcs]
     enrich_task  CC=4  out:6
     status_meta  CC=3  out:2
     ticket_uri  CC=1  out:0
     ticket_web_path  CC=1  out:0
-  services.web.src.main  [8 funcs]
-    App  CC=6  out:16
-    createTask  CC=2  out:5
-    created  CC=1  out:1
-    fetchJson  CC=3  out:4
-    metrics  CC=4  out:6
-    postJson  CC=2  out:5
-    refresh  CC=4  out:6
-    taskMetrics  CC=1  out:2
+  services.web.app.workspace  [95 funcs]
+    _append_candidate_routes  CC=3  out:3
+    _append_chat_export_draft  CC=3  out:6
+    _append_chat_export_message  CC=6  out:13
+    _append_chat_export_trace  CC=3  out:4
+    _append_context_collections  CC=4  out:9
+    _append_context_scalars  CC=3  out:2
+    _append_context_section  CC=4  out:7
+    _append_draft_section  CC=3  out:7
+    _append_export_sections  CC=2  out:21
+    _append_history_message  CC=6  out:11
 
 EDGES:
   services.projector.app.main.operational_feed → services.projector.app.main._row_to_dict
@@ -1378,26 +1054,26 @@ EDGES:
   services.projector.app.projections.incidents._checks_payload → services.projector.app.projections.incidents._checks_list_payload
   services.projector.app.projections.incidents._checks_list_payload → services.projector.app.projections.incidents._check_payload
   services.projector.app.projections.incidents._root_cause → services.projector.app.projections.incidents._error_code
-  services.web.app.resource_areas.agent_may_access → services.web.app.resource_areas._matrix_access_decision
-  services.web.app.resource_areas.agent_may_access → services.web.app.resource_areas._area_policy_decision
-  services.web.app.resource_areas._matrix_access_decision → services.web.app.access_matrix.agent_may_access_resource
-  services.web.app.agent_workroom._plan_steps → services.web.app.agent_workroom._extract_shell
+  services.web.app.routing_feedback._feedback_path → services.web.app.routing_feedback.feedback_dir
+  services.web.app.routing_feedback._improvements_path → services.web.app.routing_feedback.feedback_dir
+  services.web.app.routing_feedback._resolve_feedback_inputs → services.web.app.routing_feedback._find_turn_context
+  services.web.app.routing_feedback.record_feedback → services.web.app.routing_feedback._resolve_feedback_inputs
 ```
 
 ### Code Analysis (`project/analysis.toon.yaml`)
 
 ```toon markpact:analysis path=project/analysis.toon.yaml
-# code2llm | 171f 25533L | python:109,md:20,json:11,yaml:8,txt:6,javascript:5,shell:4,ini:2,yml:1 | 2026-06-04
-# generated in 0.08s
-# CC̅=2.8 | critical:1/1141 | dups:0 | cycles:0
+# code2llm | 189f 29599L | python:116,md:25,json:12,yaml:9,txt:7,shell:7,javascript:5,ini:2,yml:1 | 2026-06-05
+# generated in 0.06s
+# CC̅=2.9 | critical:1/1305 | dups:0 | cycles:0
 
 HEALTH[1]:
-  🟡 CC    text CC=16 (limit:15)
+  🟡 CC    explain_pipeline CC=16 (limit:15)
 
 REFACTOR[1]:
   1. split 1 high-CC methods  (CC>15)
 
-PIPELINES[512]:
+PIPELINES[562]:
   [1] Src [lifespan]: lifespan → project_event → _normalize_event → _event_payload
       PURITY: 100% pure
   [2] Src [health_check]: health_check
@@ -1478,37 +1154,39 @@ PIPELINES[512]:
       PURITY: 100% pure
   [40] Src [_handle_agent_marked_idle]: _handle_agent_marked_idle
       PURITY: 100% pure
-  [41] Src [add_ledger]: add_ledger
+  [41] Src [record_feedback]: record_feedback → _resolve_feedback_inputs → _find_turn_context
       PURITY: 100% pure
-  [42] Src [agent_say]: agent_say
+  [42] Src [list_feedback]: list_feedback → _read_jsonl_tail
       PURITY: 100% pure
-  [43] Src [to_dict]: to_dict
+  [43] Src [aggregate_learnings]: aggregate_learnings → _read_jsonl_tail
       PURITY: 100% pure
-  [44] Src [create_workroom]: create_workroom
+  [44] Src [new_turn_id]: new_turn_id
       PURITY: 100% pure
-  [45] Src [format_workroom_export]: format_workroom_export → _workroom_export_header
+  [45] Src [add_event]: add_event
       PURITY: 100% pure
-  [46] Src [run_workroom]: run_workroom → get_workroom
+  [46] Src [get_artifact]: get_artifact → get_session
       PURITY: 100% pure
-  [47] Src [_run_analyze_workroom_step]: _run_analyze_workroom_step → _run_analyze_step
+  [47] Src [workspace_state]: workspace_state → get_or_create → new_session
       PURITY: 100% pure
-  [48] Src [_run_files_workroom_step]: _run_files_workroom_step → _run_files_step → agent_may_access → _matrix_access_decision → ...(3 more)
+  [48] Src [propose_task_draft]: propose_task_draft → build_task_payload → get_or_create → new_session
       PURITY: 100% pure
-  [49] Src [_run_shell_workroom_step]: _run_shell_workroom_step → _run_shell_step → _extract_shell
+  [49] Src [handle_chat_message]: handle_chat_message → get_or_create → new_session
       PURITY: 100% pure
-  [50] Src [_run_summarize_workroom_step]: _run_summarize_workroom_step → _run_summarize_step
+  [50] Src [create_task_from_draft]: create_task_from_draft → create_task_immediate → get_or_create → new_session
       PURITY: 100% pure
 
 LAYERS:
-  services/                       CC̄=2.8    ←in:0  →out:0
-  │ !! workspace                 1409L  2C   98m  CC=7      ←2
-  │ !! conductor                 1178L  1C   53m  CC=6      ←2
-  │ !! workspace.js              1153L  0C  147m  CC=14     ←1
-  │ !! chat                       982L  0C   76m  CC=6      ←0
-  │ !! command_bus                980L  1C   44m  CC=6      ←0
+  services/                       CC̄=2.9    ←in:0  →out:0
+  │ !! conductor                 1525L  1C   61m  CC=11     ←2
+  │ !! workspace                 1438L  2C  100m  CC=7      ←6
+  │ !! workspace.js              1401L  0C  183m  CC=14     ←3
+  │ !! chat                      1071L  0C   82m  CC=9      ←0
+  │ !! command_bus                989L  1C   44m  CC=8      ←0
+  │ !! prompt_router              926L  1C   44m  CC=13     ←1
+  │ !! routing_trace              739L  3C   29m  CC=16     ←1
   │ !! agent_workroom             642L  2C   33m  CC=6      ←0
   │ !! incidents                  580L  2C   40m  CC=6      ←2
-  │ prompt_router              488L  1C   25m  CC=6      ←1
+  │ routing_feedback           412L  1C   18m  CC=11     ←0
   │ pipeline                   405L  1C   10m  CC=5      ←0
   │ export                     397L  0C   23m  CC=9      ←1
   │ commands                   379L  14C   23m  CC=4      ←0
@@ -1522,24 +1200,27 @@ LAYERS:
   │ access_matrix              248L  0C   19m  CC=6      ←1
   │ task                       244L  1C   20m  CC=4      ←0
   │ rag_diagnostics            222L  1C   12m  CC=6      ←0
+  │ local_orient               207L  1C    6m  CC=13     ←2
+  │ app.js                     206L  0C   22m  CC=8      ←0
   │ queries                    204L  4C    9m  CC=6      ←0
   │ evaluation                 202L  1C   10m  CC=6      ←0
   │ main                       195L  0C    5m  CC=6      ←0
-  │ !! app.js                     193L  0C   19m  CC=16     ←0
+  │ nlp2dsl_bridge             194L  0C   15m  CC=7      ←0
+  │ task_routes                190L  0C   19m  CC=6      ←0
   │ eventstore_esdb            186L  1C    8m  CC=4      ←0
-  │ task_routes                185L  0C   18m  CC=6      ←0
   │ eventstore                 182L  2C    9m  CC=6      ←3
+  │ routing_policy             182L  2C   12m  CC=10     ←3
+  │ chat_routes                181L  0C   13m  CC=5      ←0
   │ resource_areas             171L  0C    5m  CC=5      ←1
-  │ chat_routes                168L  0C   12m  CC=5      ←0
+  │ routing_schemas            171L  4C    9m  CC=4      ←2
   │ workflows                  167L  7C    0m  CC=0.0    ←0
   │ access.js                  157L  0C   21m  CC=11     ←2
-  │ routing_policy             155L  2C   11m  CC=6      ←2
   │ task_board                 153L  0C    7m  CC=3      ←1
   │ approval_gate              146L  1C    6m  CC=5      ←1
   │ workflow                   144L  1C    9m  CC=3      ←0
+  │ ticket_schemas             143L  4C    4m  CC=5      ←1
   │ rag                        142L  2C    6m  CC=3      ←0
   │ access                     136L  3C    8m  CC=4      ←0
-  │ nlp2dsl_bridge             133L  0C   12m  CC=6      ←1
   │ tasks                      133L  5C    0m  CC=0.0    ←0
   │ resources                  132L  5C    0m  CC=0.0    ←0
   │ policy_engine              131L  2C   10m  CC=6      ←0
@@ -1549,41 +1230,44 @@ LAYERS:
   │ plugins                    118L  5C    0m  CC=0.0    ←0
   │ indexer                    115L  1C    8m  CC=5      ←0
   │ observability              112L  1C    5m  CC=3      ←0
+  │ nlp2cmd_plugin             110L  1C    5m  CC=9      ←0
+  │ routing_policy.yaml        106L  0C    0m  CC=0.0    ←0
   │ main                       104L  0C    5m  CC=1      ←0
   │ evolution                  104L  2C    5m  CC=4      ←0
   │ retriever                  103L  1C    8m  CC=5      ←0
   │ __init__                   103L  0C    0m  CC=0.0    ←0
+  │ planfile_bridge            102L  0C    6m  CC=9      ←1
   │ resource                   100L  1C    6m  CC=3      ←0
   │ agent_fleet                 97L  0C    5m  CC=3      ←1
   │ plugin                      97L  2C    7m  CC=2      ←0
   │ approval                    97L  2C    6m  CC=2      ←0
+  │ registry                    95L  0C    7m  CC=4      ←3
   │ agents                      95L  4C    0m  CC=0.0    ←0
   │ postgres                    92L  1C    7m  CC=5      ←0
   │ catalog                     92L  1C    6m  CC=4      ←0
-  │ nlp2cmd_plugin              92L  1C    4m  CC=7      ←0
+  │ models                      91L  12C    0m  CC=0.0    ←0
+  │ router_routes               87L  0C    6m  CC=9      ←0
   │ __init__                    85L  11C    2m  CC=4      ←0
   │ agent                       83L  1C    7m  CC=2      ←0
   │ base                        81L  1C    7m  CC=3      ←0
   │ workspace_routes            80L  0C    5m  CC=2      ←0
-  │ models                      80L  11C    0m  CC=0.0    ←0
   │ approval_requests           79L  0C    1m  CC=6      ←1
   │ transport                   77L  1C    7m  CC=4      ←0
   │ experiments                 76L  1C    4m  CC=2      ←0
-  │ registry                    73L  0C    6m  CC=3      ←2
   │ localfs                     71L  1C    5m  CC=4      ←0
   │ operational_feed            70L  0C    3m  CC=6      ←1
   │ eventstore_factory          66L  0C    4m  CC=5      ←1
   │ task_routing                66L  0C    4m  CC=5      ←1
+  │ protocol                    63L  2C    3m  CC=4      ←0
   │ context                     59L  0C    6m  CC=5      ←7
   │ logging                     59L  0C    2m  CC=3      ←4
   │ eventstore_dual             57L  1C    5m  CC=2      ←0
   │ db                          56L  1C    6m  CC=4      ←0
   │ workroom_routes             54L  0C    5m  CC=2      ←0
   │ config                      54L  1C    1m  CC=1      ←0
-  │ routing_policy.yaml         52L  0C    0m  CC=0.0    ←0
+  │ feedback_routes             51L  0C    4m  CC=2      ←0
   │ nats_bus                    49L  1C    5m  CC=4      ←0
   │ http_adapter                49L  1C    4m  CC=3      ←0
-  │ protocol                    48L  2C    2m  CC=1      ←0
   │ workflow_versions           47L  0C    1m  CC=5      ←1
   │ dispatcher                  47L  0C    4m  CC=4      ←2
   │ access_routes               46L  0C    6m  CC=1      ←0
@@ -1592,10 +1276,9 @@ LAYERS:
   │ plugin_catalog              42L  0C    1m  CC=5      ←1
   │ catalog                     41L  0C    7m  CC=1      ←0
   │ base                        33L  2C    3m  CC=1      ←0
-  │ router_routes               32L  0C    2m  CC=1      ←0
   │ chunking                    30L  0C    2m  CC=4      ←1
   │ Dockerfile                  27L  0C    0m  CC=0.0    ←0
-  │ api_routes                  23L  0C    0m  CC=0.0    ←0
+  │ api_routes                  25L  0C    0m  CC=0.0    ←0
   │ nlp2dsl_plugin              22L  1C    2m  CC=1      ←0
   │ __init__                    22L  0C    0m  CC=0.0    ←0
   │ Dockerfile                  21L  0C    0m  CC=0.0    ←0
@@ -1608,7 +1291,7 @@ LAYERS:
   │ __init__                    14L  0C    0m  CC=0.0    ←0
   │ agents_routes               13L  0C    1m  CC=1      ←0
   │ __init__                    12L  0C    0m  CC=0.0    ←0
-  │ Dockerfile                   7L  0C    0m  CC=0.0    ←0
+  │ Dockerfile                   8L  0C    0m  CC=0.0    ←0
   │ requirements.txt             7L  0C    0m  CC=0.0    ←0
   │ __init__                     6L  0C    0m  CC=0.0    ←0
   │ requirements.txt             5L  0C    0m  CC=0.0    ←0
@@ -1628,27 +1311,40 @@ LAYERS:
   │ Dockerfile                  14L  0C    0m  CC=0.0    ←0
   │ requirements.txt             1L  0C    0m  CC=0.0    ←0
   │
+  scripts/                        CC̄=0.0    ←in:0  →out:0
+  │ e2e-chat-routing.sh         79L  0C    0m  CC=0.0    ←0
+  │ run-propact-pact.sh         71L  0C    1m  CC=0.0    ←0
+  │ test-quality.sh             62L  0C    0m  CC=0.0    ←0
+  │ wait-for-web.sh             22L  0C    0m  CC=0.0    ←0
+  │ test.sh                     13L  0C    0m  CC=0.0    ←0
+  │
   ./                              CC̄=0.0    ←in:0  →out:0
   │ !! planfile.yaml             1319L  0C    0m  CC=0.0    ←0
   │ !! goal.yaml                  509L  0C    0m  CC=0.0    ←0
-  │ CHANGELOG.md               329L  0C    0m  CC=0.0    ←0
-  │ TODO.md                    258L  0C    0m  CC=0.0    ←0
-  │ docker-compose.yml         220L  0C    0m  CC=0.0    ←0
+  │ CHANGELOG.md               366L  0C    0m  CC=0.0    ←0
+  │ TODO.md                    241L  0C    0m  CC=0.0    ←0
+  │ docker-compose.yml         229L  0C    0m  CC=0.0    ←0
   │ README.md                  213L  0C    0m  CC=0.0    ←0
-  │ Makefile                   122L  0C    0m  CC=0.0    ←0
+  │ Makefile                   137L  0C    0m  CC=0.0    ←0
   │ prefact.yaml                94L  0C    0m  CC=0.0    ←0
+  │ intract.yaml                74L  0C    0m  CC=0.0    ←0
   │ project.sh                  52L  0C    0m  CC=0.0    ←0
+  │ requirements-dev.txt         7L  0C    0m  CC=0.0    ←0
   │ pytest.ini                   7L  0C    0m  CC=0.0    ←0
-  │ requirements-dev.txt         5L  0C    0m  CC=0.0    ←0
+  │ requirements-quality.txt     4L  0C    0m  CC=0.0    ←0
   │ tree.sh                      1L  0C    0m  CC=0.0    ←0
   │
   docs/                           CC̄=0.0    ←in:0  →out:0
-  │ !! README.md                 1019L  0C    0m  CC=0.0    ←0
+  │ !! README.md                 1181L  0C    0m  CC=0.0    ←0
+  │ e2e-chat-routing.md        140L  0C    0m  CC=0.0    ←0
   │ prompt-router.md           136L  0C    0m  CC=0.0    ←0
-  │ e2e-chat-routing.md        104L  0C    0m  CC=0.0    ←0
   │ multi-agent-workroom.md     88L  0C    0m  CC=0.0    ←0
   │ roadmap-90d.md              83L  0C    0m  CC=0.0    ←0
-  │ agent-orchestration.md      58L  0C    0m  CC=0.0    ←0
+  │ agent-orchestration.md      69L  0C    0m  CC=0.0    ←0
+  │ architecture-service-integrations.md    66L  0C    0m  CC=0.0    ←0
+  │ routing-feedback-loop.md    66L  0C    0m  CC=0.0    ←0
+  │ quality-intract-propact.md    58L  0C    0m  CC=0.0    ←0
+  │ ticket-queues-and-planfile.md    55L  0C    0m  CC=0.0    ←0
   │ observability.md            50L  0C    0m  CC=0.0    ←0
   │ architecture.md             46L  0C    0m  CC=0.0    ←0
   │ workspace-conductor.md      43L  0C    0m  CC=0.0    ←0
@@ -1662,10 +1358,6 @@ LAYERS:
   │ 3.md                       291L  0C    0m  CC=0.0    ←0
   │ 2.md                       187L  0C    0m  CC=0.0    ←0
   │ 1.md                       142L  0C    0m  CC=0.0    ←0
-  │
-  scripts/                        CC̄=0.0    ←in:0  →out:0
-  │ e2e-chat-routing.sh         71L  0C    0m  CC=0.0    ←0
-  │ test.sh                     13L  0C    0m  CC=0.0    ←0
   │
   testql-scenarios/               CC̄=0.0    ←in:0  →out:0
   │ generated-api-smoke.testql.toon.yaml    40L  0C    0m  CC=0.0    ←0
@@ -1685,19 +1377,22 @@ LAYERS:
   │
   integrations/                   CC̄=0.0    ←in:0  →out:0
   │ mullm_registry              32L  0C    0m  CC=0.0    ←0
-  │ agent_manifest.yaml         22L  0C    0m  CC=0.0    ←0
+  │ schemas.json                30L  0C    0m  CC=0.0    ←0
+  │ agent_manifest.yaml         23L  0C    0m  CC=0.0    ←0
   │ agent_manifest.yaml         17L  0C    0m  CC=0.0    ←0
+  │ README.md                   12L  0C    0m  CC=0.0    ←0
   │ patch_startup                7L  0C    0m  CC=0.0    ←0
   │
   ── zero ──
      services/web/app/__init__.py              0L
 
 COUPLING:
-                         services.orchestrator     services.projector           services.web
-  services.orchestrator                     ──                      1                      1
-     services.projector                     ←1                     ──                       
-           services.web                     ←1                                            ──
+                         services.orchestrator           services.web     services.projector
+  services.orchestrator                     ──                      5                      1
+           services.web                     ←5                     ──                         hub
+     services.projector                     ←1                                            ──
   CYCLES: none
+  HUB: services.web/ (fan-in=5)
 
 EXTERNAL:
   validation: run `vallm batch .` → validation.toon
@@ -1707,26 +1402,26 @@ EXTERNAL:
 ### Duplication (`project/duplication.toon.yaml`)
 
 ```toon markpact:analysis path=project/duplication.toon.yaml
-# redup/duplication | 30 groups | 116f 16842L | 2026-06-04
+# redup/duplication | 35 groups | 123f 19808L | 2026-06-05
 
 SUMMARY:
-  files_scanned: 116
-  total_lines:   16842
-  dup_groups:    30
-  dup_fragments: 79
-  saved_lines:   619
-  scan_ms:       3372
+  files_scanned: 123
+  total_lines:   19808
+  dup_groups:    35
+  dup_fragments: 90
+  saved_lines:   674
+  scan_ms:       2717
 
 HOTSPOTS[7] (files with most duplication):
-  services/projector/app/main.py  dup=217L  groups=2  frags=12  (1.3%)
-  services/orchestrator/app/observability/export.py  dup=161L  groups=4  frags=8  (1.0%)
-  services/orchestrator/app/api/commands.py  dup=105L  groups=1  frags=7  (0.6%)
-  services/web/app/conductor.py  dup=64L  groups=2  frags=5  (0.4%)
-  services/orchestrator/app/api/queries.py  dup=60L  groups=1  frags=3  (0.4%)
+  services/projector/app/main.py  dup=217L  groups=2  frags=12  (1.1%)
+  services/orchestrator/app/observability/export.py  dup=161L  groups=4  frags=8  (0.8%)
+  services/orchestrator/app/api/commands.py  dup=105L  groups=1  frags=7  (0.5%)
+  services/web/app/conductor.py  dup=64L  groups=2  frags=5  (0.3%)
+  services/orchestrator/app/api/queries.py  dup=60L  groups=1  frags=3  (0.3%)
+  services/web/app/nlp2dsl_bridge.py  dup=36L  groups=1  frags=2  (0.2%)
   services/web/app/agent_workroom.py  dup=36L  groups=2  frags=4  (0.2%)
-  services/web/app/workspace.py  dup=33L  groups=3  frags=3  (0.2%)
 
-DUPLICATES[30] (ranked by impact):
+DUPLICATES[35] (ranked by impact):
   [fc5b148fddf5c532] !! STRU  task_board  L=26 N=5 saved=104 sim=1.00
       services/projector/app/main.py:94-119  (task_board)
       services/projector/app/main.py:123-148  (agent_fleet)
@@ -1757,24 +1452,28 @@ DUPLICATES[30] (ranked by impact):
       services/orchestrator/app/api/queries.py:29-48  (get_task)
       services/orchestrator/app/api/queries.py:52-71  (get_agent)
       services/orchestrator/app/api/queries.py:75-94  (get_workflow)
+  [e6484eb2e73fb4fc] ! STRU  backend_candidates  L=18 N=3 saved=36 sim=1.00
+      services/web/app/agent_plugins/nlp2cmd_plugin.py:21-38  (backend_candidates)
+      services/web/app/nlp2dsl_bridge.py:19-36  (backend_candidates)
+      services/web/app/nlp2dsl_bridge.py:73-90  (nlp_service_candidates)
   [dd30f40d83785484] ! STRU  _safe_fetch_incidents  L=17 N=3 saved=34 sim=1.00
       services/orchestrator/app/observability/export.py:250-266  (_safe_fetch_incidents)
       services/orchestrator/app/observability/export.py:302-318  (_safe_fetch_incident_feed)
       services/orchestrator/app/observability/export.py:352-368  (_safe_fetch_rag_snapshots)
   [b487de8e81871639]   STRU  _nlp2dsl_continue_decision  L=10 N=3 saved=20 sim=1.00
-      services/web/app/conductor.py:431-440  (_nlp2dsl_continue_decision)
-      services/web/app/conductor.py:443-452  (_mullm_continue_clarify_decision)
-      services/web/app/conductor.py:528-537  (_rag_probe_decision)
+      services/web/app/conductor.py:774-783  (_nlp2dsl_continue_decision)
+      services/web/app/conductor.py:786-795  (_mullm_continue_clarify_decision)
+      services/web/app/conductor.py:871-880  (_rag_probe_decision)
   [cbbb67a75ff65ca7]   STRU  transfer_resource  L=9 N=3 saved=18 sim=1.00
       services/orchestrator/app/api/access.py:49-57  (transfer_resource)
       services/orchestrator/app/api/evolution.py:84-92  (propose_change)
       services/orchestrator/app/api/evolution.py:96-104  (shadow_workflow)
   [707ff8ed8b0c1bdf]   STRU  _append_nfo  L=17 N=2 saved=17 sim=1.00
       services/orchestrator/app/observability/export.py:88-104  (_append_nfo)
-      services/web/app/workspace.py:952-971  (_append_nfo_section)
+      services/web/app/workspace.py:955-974  (_append_nfo_section)
   [3fe0219ba048af7c]   STRU  _execute_file_list_route  L=17 N=2 saved=17 sim=1.00
-      services/web/app/conductor.py:126-142  (_execute_file_list_route)
-      services/web/app/conductor.py:280-296  (_execute_rag_route)
+      services/web/app/conductor.py:140-156  (_execute_file_list_route)
+      services/web/app/conductor.py:418-434  (_execute_rag_route)
   [aa890be89093e6d5]   STRU  data  L=6 N=3 saved=12 sim=1.00
       services/orchestrator/app/domain/events/plugins.py:48-53  (data)
       services/orchestrator/app/domain/events/plugins.py:69-74  (data)
@@ -1797,12 +1496,15 @@ DUPLICATES[30] (ranked by impact):
   [454ed159e8c7ebbf]   STRU  _run_analyze_step  L=7 N=2 saved=7 sim=1.00
       services/web/app/agent_workroom.py:422-428  (_run_analyze_step)
       services/web/app/agent_workroom.py:603-609  (_run_summarize_step)
+  [c438d6044e10a938]   STRU  parse_nlp2cmd_response  L=7 N=2 saved=7 sim=1.00
+      services/web/app/routing_schemas.py:120-126  (parse_nlp2cmd_response)
+      services/web/app/routing_schemas.py:129-135  (parse_llm_classifier)
   [1fb3398c7c69da23]   EXAC  data  L=6 N=2 saved=6 sim=1.00
       services/orchestrator/app/domain/events/incidents.py:227-232  (data)
       services/orchestrator/app/domain/events/incidents.py:249-254  (data)
   [bcc6214a4a9b2b8c]   EXAC  clamp_log_export_limit  L=6 N=2 saved=6 sim=1.00
       services/orchestrator/app/observability/export.py:37-42  (clamp_log_export_limit)
-      services/web/app/workspace.py:692-697  (clamp_log_export_limit)
+      services/web/app/workspace.py:695-700  (clamp_log_export_limit)
   [9a129a96b21d1689]   EXAC  _checks_list_payload  L=6 N=2 saved=6 sim=1.00
       services/orchestrator/app/observability/incidents.py:508-513  (_checks_list_payload)
       services/projector/app/projections/incidents.py:288-293  (_checks_list_payload)
@@ -1813,8 +1515,8 @@ DUPLICATES[30] (ranked by impact):
       services/web/app/access_matrix.py:61-66  (_empty_agent_resource)
       services/web/app/access_matrix.py:69-72  (_empty_human_agent)
   [bd20ef24149cc1ac]   STRU  _incident_trace_part  L=6 N=2 saved=6 sim=1.00
-      services/web/app/chat.py:578-583  (_incident_trace_part)
-      services/web/app/chat.py:594-599  (_incident_fallback_part)
+      services/web/app/chat.py:609-614  (_incident_trace_part)
+      services/web/app/chat.py:625-630  (_incident_fallback_part)
   [0344e427af6677d5]   STRU  probe_uri  L=5 N=2 saved=5 sim=1.00
       services/orchestrator/app/api/access.py:61-65  (probe_uri)
       services/orchestrator/app/api/access.py:69-73  (fetch_uri)
@@ -1827,17 +1529,26 @@ DUPLICATES[30] (ranked by impact):
   [87cc9c48b4d7af20]   STRU  fetch  L=5 N=2 saved=5 sim=1.00
       services/orchestrator/app/infrastructure/postgres.py:67-71  (fetch)
       services/projector/app/db.py:39-43  (fetch)
-  [49d1d03e6ce392a1]   STRU  _default_chat_reply  L=5 N=2 saved=5 sim=1.00
-      services/web/app/chat.py:847-851  (_default_chat_reply)
-      services/web/app/prompt_router.py:381-388  (_llm_system_prompt)
+  [d6dcf24fe1d352d6]   STRU  _nlp2cmd_min_confidence  L=5 N=2 saved=5 sim=1.00
+      services/web/app/prompt_router.py:541-545  (_nlp2cmd_min_confidence)
+      services/web/app/prompt_router.py:556-560  (_local_min_confidence)
+  [529be22a4705ecaf]   STRU  feedback_dir  L=5 N=2 saved=5 sim=1.00
+      services/web/app/routing_feedback.py:62-66  (feedback_dir)
+      services/web/app/routing_policy.py:93-97  (_policy_path)
   [9cf59ab30a3c0ba7]   EXAC  disconnect  L=4 N=2 saved=4 sim=1.00
       services/orchestrator/app/infrastructure/postgres.py:56-59  (disconnect)
       services/projector/app/db.py:28-31  (disconnect)
+  [734df5e9c9a59d8b]   STRU  _feedback_path  L=4 N=2 saved=4 sim=1.00
+      services/web/app/routing_feedback.py:69-72  (_feedback_path)
+      services/web/app/routing_feedback.py:75-78  (_improvements_path)
   [a45a0af197a0ec34]   EXAC  __init__  L=3 N=2 saved=3 sim=1.00
       services/orchestrator/app/infrastructure/postgres.py:46-48  (__init__)
       services/projector/app/db.py:18-20  (__init__)
+  [c89d26a3db18ab2e]   STRU  routing_schemas_get  L=3 N=2 saved=3 sim=1.00
+      services/web/app/api/router_routes.py:34-36  (routing_schemas_get)
+      services/web/app/api/router_routes.py:40-42  (ticket_schemas_get)
 
-REFACTOR[30] (ranked by priority):
+REFACTOR[35] (ranked by priority):
   [1] ○ extract_function   → services/projector/app/utils/task_board.py
       WHY: 5 occurrences of 26-line block across 1 files — saves 104 lines
       FILES: services/projector/app/main.py
@@ -1853,83 +1564,98 @@ REFACTOR[30] (ranked by priority):
   [5] ○ extract_function   → services/orchestrator/app/api/utils/get_task.py
       WHY: 3 occurrences of 20-line block across 1 files — saves 40 lines
       FILES: services/orchestrator/app/api/queries.py
-  [6] ○ extract_function   → services/orchestrator/app/observability/utils/_safe_fetch_incidents.py
+  [6] ○ extract_function   → services/web/app/utils/backend_candidates.py
+      WHY: 3 occurrences of 18-line block across 2 files — saves 36 lines
+      FILES: services/web/app/agent_plugins/nlp2cmd_plugin.py, services/web/app/nlp2dsl_bridge.py
+  [7] ○ extract_function   → services/orchestrator/app/observability/utils/_safe_fetch_incidents.py
       WHY: 3 occurrences of 17-line block across 1 files — saves 34 lines
       FILES: services/orchestrator/app/observability/export.py
-  [7] ○ extract_function   → services/web/app/utils/_nlp2dsl_continue_decision.py
+  [8] ○ extract_function   → services/web/app/utils/_nlp2dsl_continue_decision.py
       WHY: 3 occurrences of 10-line block across 1 files — saves 20 lines
       FILES: services/web/app/conductor.py
-  [8] ○ extract_function   → services/orchestrator/app/api/utils/transfer_resource.py
+  [9] ○ extract_function   → services/orchestrator/app/api/utils/transfer_resource.py
       WHY: 3 occurrences of 9-line block across 2 files — saves 18 lines
       FILES: services/orchestrator/app/api/access.py, services/orchestrator/app/api/evolution.py
-  [9] ○ extract_function   → services/utils/_append_nfo.py
+  [10] ○ extract_function   → services/utils/_append_nfo.py
       WHY: 2 occurrences of 17-line block across 2 files — saves 17 lines
       FILES: services/orchestrator/app/observability/export.py, services/web/app/workspace.py
-  [10] ○ extract_function   → services/web/app/utils/_execute_file_list_route.py
+  [11] ○ extract_function   → services/web/app/utils/_execute_file_list_route.py
       WHY: 2 occurrences of 17-line block across 1 files — saves 17 lines
       FILES: services/web/app/conductor.py
-  [11] ○ extract_function   → services/orchestrator/app/domain/events/utils/data.py
+  [12] ○ extract_function   → services/orchestrator/app/domain/events/utils/data.py
       WHY: 3 occurrences of 6-line block across 1 files — saves 12 lines
       FILES: services/orchestrator/app/domain/events/plugins.py
-  [12] ○ extract_function   → services/orchestrator/app/api/utils/list_resources.py
+  [13] ○ extract_function   → services/orchestrator/app/api/utils/list_resources.py
       WHY: 2 occurrences of 11-line block across 2 files — saves 11 lines
       FILES: services/orchestrator/app/api/access.py, services/orchestrator/app/api/evolution.py
-  [13] ○ extract_function   → services/web/app/utils/_run_analyze_workroom_step.py
+  [14] ○ extract_function   → services/web/app/utils/_run_analyze_workroom_step.py
       WHY: 2 occurrences of 11-line block across 1 files — saves 11 lines
       FILES: services/web/app/agent_workroom.py
-  [14] ○ extract_function   → services/projector/app/projections/utils/project_agent_fleet.py
+  [15] ○ extract_function   → services/projector/app/projections/utils/project_agent_fleet.py
       WHY: 2 occurrences of 10-line block across 2 files — saves 10 lines
       FILES: services/projector/app/projections/agent_fleet.py, services/projector/app/projections/resource_registry.py
-  [15] ○ extract_function   → services/web/app/utils/_projector.py
+  [16] ○ extract_function   → services/web/app/utils/_projector.py
       WHY: 2 occurrences of 7-line block across 2 files — saves 7 lines
       FILES: services/web/app/chat.py, services/web/app/workspace.py
-  [16] ○ extract_function   → services/web/app/utils/agent_may_access_resource.py
+  [17] ○ extract_function   → services/web/app/utils/agent_may_access_resource.py
       WHY: 2 occurrences of 7-line block across 1 files — saves 7 lines
       FILES: services/web/app/access_matrix.py
-  [17] ○ extract_function   → services/web/app/utils/_run_analyze_step.py
+  [18] ○ extract_function   → services/web/app/utils/_run_analyze_step.py
       WHY: 2 occurrences of 7-line block across 1 files — saves 7 lines
       FILES: services/web/app/agent_workroom.py
-  [18] ○ extract_function   → services/orchestrator/app/domain/events/utils/data.py
+  [19] ○ extract_function   → services/web/app/utils/parse_nlp2cmd_response.py
+      WHY: 2 occurrences of 7-line block across 1 files — saves 7 lines
+      FILES: services/web/app/routing_schemas.py
+  [20] ○ extract_function   → services/orchestrator/app/domain/events/utils/data.py
       WHY: 2 occurrences of 6-line block across 1 files — saves 6 lines
       FILES: services/orchestrator/app/domain/events/incidents.py
-  [19] ○ extract_function   → services/utils/clamp_log_export_limit.py
+  [21] ○ extract_function   → services/utils/clamp_log_export_limit.py
       WHY: 2 occurrences of 6-line block across 2 files — saves 6 lines
       FILES: services/orchestrator/app/observability/export.py, services/web/app/workspace.py
-  [20] ○ extract_function   → services/utils/_checks_list_payload.py
+  [22] ○ extract_function   → services/utils/_checks_list_payload.py
       WHY: 2 occurrences of 6-line block across 2 files — saves 6 lines
       FILES: services/orchestrator/app/observability/incidents.py, services/projector/app/projections/incidents.py
-  [21] ○ extract_function   → services/orchestrator/app/domain/events/utils/data.py
+  [23] ○ extract_function   → services/orchestrator/app/domain/events/utils/data.py
       WHY: 2 occurrences of 6-line block across 1 files — saves 6 lines
       FILES: services/orchestrator/app/domain/events/workflows.py
-  [22] ○ extract_function   → services/web/app/utils/_empty_agent_resource.py
+  [24] ○ extract_function   → services/web/app/utils/_empty_agent_resource.py
       WHY: 2 occurrences of 6-line block across 1 files — saves 6 lines
       FILES: services/web/app/access_matrix.py
-  [23] ○ extract_function   → services/web/app/utils/_incident_trace_part.py
+  [25] ○ extract_function   → services/web/app/utils/_incident_trace_part.py
       WHY: 2 occurrences of 6-line block across 1 files — saves 6 lines
       FILES: services/web/app/chat.py
-  [24] ○ extract_function   → services/orchestrator/app/api/utils/probe_uri.py
+  [26] ○ extract_function   → services/orchestrator/app/api/utils/probe_uri.py
       WHY: 2 occurrences of 5-line block across 1 files — saves 5 lines
       FILES: services/orchestrator/app/api/access.py
-  [25] ○ extract_function   → services/utils/connect.py
+  [27] ○ extract_function   → services/utils/connect.py
       WHY: 2 occurrences of 5-line block across 2 files — saves 5 lines
       FILES: services/orchestrator/app/infrastructure/postgres.py, services/projector/app/db.py
-  [26] ○ extract_function   → services/utils/execute.py
+  [28] ○ extract_function   → services/utils/execute.py
       WHY: 2 occurrences of 5-line block across 2 files — saves 5 lines
       FILES: services/orchestrator/app/infrastructure/postgres.py, services/projector/app/db.py
-  [27] ○ extract_function   → services/utils/fetch.py
+  [29] ○ extract_function   → services/utils/fetch.py
       WHY: 2 occurrences of 5-line block across 2 files — saves 5 lines
       FILES: services/orchestrator/app/infrastructure/postgres.py, services/projector/app/db.py
-  [28] ○ extract_function   → services/web/app/utils/_default_chat_reply.py
+  [30] ○ extract_function   → services/web/app/utils/_nlp2cmd_min_confidence.py
+      WHY: 2 occurrences of 5-line block across 1 files — saves 5 lines
+      FILES: services/web/app/prompt_router.py
+  [31] ○ extract_function   → services/web/app/utils/feedback_dir.py
       WHY: 2 occurrences of 5-line block across 2 files — saves 5 lines
-      FILES: services/web/app/chat.py, services/web/app/prompt_router.py
-  [29] ○ extract_function   → services/utils/disconnect.py
+      FILES: services/web/app/routing_feedback.py, services/web/app/routing_policy.py
+  [32] ○ extract_function   → services/utils/disconnect.py
       WHY: 2 occurrences of 4-line block across 2 files — saves 4 lines
       FILES: services/orchestrator/app/infrastructure/postgres.py, services/projector/app/db.py
-  [30] ○ extract_function   → services/utils/__init__.py
+  [33] ○ extract_function   → services/web/app/utils/_feedback_path.py
+      WHY: 2 occurrences of 4-line block across 1 files — saves 4 lines
+      FILES: services/web/app/routing_feedback.py
+  [34] ○ extract_function   → services/utils/__init__.py
       WHY: 2 occurrences of 3-line block across 2 files — saves 3 lines
       FILES: services/orchestrator/app/infrastructure/postgres.py, services/projector/app/db.py
+  [35] ○ extract_function   → services/web/app/api/utils/routing_schemas_get.py
+      WHY: 2 occurrences of 3-line block across 1 files — saves 3 lines
+      FILES: services/web/app/api/router_routes.py
 
-QUICK_WINS[23] (low risk, high savings — do first):
+QUICK_WINS[25] (low risk, high savings — do first):
   [1] extract_function   saved=104L  → services/projector/app/utils/task_board.py
       FILES: main.py
   [2] extract_function   saved=90L  → services/orchestrator/app/api/utils/create_task.py
@@ -1940,68 +1666,68 @@ QUICK_WINS[23] (low risk, high savings — do first):
       FILES: export.py
   [5] extract_function   saved=40L  → services/orchestrator/app/api/utils/get_task.py
       FILES: queries.py
-  [6] extract_function   saved=34L  → services/orchestrator/app/observability/utils/_safe_fetch_incidents.py
+  [6] extract_function   saved=36L  → services/web/app/utils/backend_candidates.py
+      FILES: nlp2cmd_plugin.py, nlp2dsl_bridge.py
+  [7] extract_function   saved=34L  → services/orchestrator/app/observability/utils/_safe_fetch_incidents.py
       FILES: export.py
-  [7] extract_function   saved=20L  → services/web/app/utils/_nlp2dsl_continue_decision.py
+  [8] extract_function   saved=20L  → services/web/app/utils/_nlp2dsl_continue_decision.py
       FILES: conductor.py
-  [8] extract_function   saved=18L  → services/orchestrator/app/api/utils/transfer_resource.py
+  [9] extract_function   saved=18L  → services/orchestrator/app/api/utils/transfer_resource.py
       FILES: access.py, evolution.py
-  [9] extract_function   saved=17L  → services/utils/_append_nfo.py
+  [10] extract_function   saved=17L  → services/utils/_append_nfo.py
       FILES: export.py, workspace.py
-  [10] extract_function   saved=17L  → services/web/app/utils/_execute_file_list_route.py
-      FILES: conductor.py
 
-EFFORT_ESTIMATE (total ≈ 21.7h):
+EFFORT_ESTIMATE (total ≈ 23.5h):
   hard   task_board                          saved=104L  ~208min
   hard   create_task                         saved=90L  ~180min
   hard   operational_feed                    saved=84L  ~168min
   hard   _fetch_incidents                    saved=62L  ~186min
   medium get_task                            saved=40L  ~80min
+  medium backend_candidates                  saved=36L  ~72min
   medium _safe_fetch_incidents               saved=34L  ~68min
   medium _nlp2dsl_continue_decision          saved=20L  ~40min
   medium transfer_resource                   saved=18L  ~36min
   medium _append_nfo                         saved=17L  ~34min
-  medium _execute_file_list_route            saved=17L  ~34min
-  ... +20 more (~266min)
+  ... +25 more (~338min)
 
 METRICS-TARGET:
-  dup_groups:  30 → 0
-  saved_lines: 619 lines recoverable
+  dup_groups:  35 → 0
+  saved_lines: 674 lines recoverable
 ```
 
 ### Evolution / Churn (`project/evolution.toon.yaml`)
 
 ```toon markpact:analysis path=project/evolution.toon.yaml
-# code2llm/evolution | 1141 func | 90f | 2026-06-04
-# generated in 0.01s
+# code2llm/evolution | 1304 func | 97f | 2026-06-05
+# generated in 0.00s
 
 NEXT[4] (ranked by impact):
-  [1] !! SPLIT           services/web/app/workspace.py
-      WHY: 1409L, 2 classes, max CC=7
-      EFFORT: ~4h  IMPACT: 9863
+  [1] !! SPLIT           services/web/app/static/workspace.js
+      WHY: 1401L, 0 classes, max CC=14
+      EFFORT: ~4h  IMPACT: 19614
 
   [2] !! SPLIT           services/web/app/conductor.py
-      WHY: 1178L, 1 classes, max CC=6
-      EFFORT: ~4h  IMPACT: 7068
+      WHY: 1525L, 1 classes, max CC=11
+      EFFORT: ~4h  IMPACT: 16775
 
-  [3] !  SPLIT-FUNC      text  CC=16  fan=15
+  [3] !! SPLIT           services/web/app/workspace.py
+      WHY: 1438L, 2 classes, max CC=7
+      EFFORT: ~4h  IMPACT: 10066
+
+  [4] !  SPLIT-FUNC      explain_pipeline  CC=16  fan=15
       WHY: CC=16 exceeds 15
       EFFORT: ~1h  IMPACT: 240
 
-  [4] !! SPLIT           planfile.yaml
-      WHY: 1319L, 0 classes, max CC=0
-      EFFORT: ~4h  IMPACT: 0
-
 
 RISKS[3]:
-  ⚠ Splitting services/web/app/workspace.py may break 98 import paths
-  ⚠ Splitting planfile.yaml may break 0 import paths
-  ⚠ Splitting services/web/app/conductor.py may break 53 import paths
+  ⚠ Splitting services/web/app/conductor.py may break 61 import paths
+  ⚠ Splitting services/web/app/workspace.py may break 100 import paths
+  ⚠ Splitting services/web/app/static/workspace.js may break 183 import paths
 
 METRICS-TARGET:
-  CC̄:          2.8 → ≤2.0
+  CC̄:          2.9 → ≤2.0
   max-CC:      16 → ≤8
-  god-modules: 10 → 0
+  god-modules: 12 → 0
   high-CC(≥15): 1 → ≤0
   hub-types:   0 → ≤0
 
@@ -2030,7 +1756,7 @@ PATTERNS (language parser shared logic):
     - Standardized FunctionInfo/ClassInfo models
 
 HISTORY:
-  prev CC̄=2.9 → now CC̄=2.8
+  prev CC̄=2.9 → now CC̄=2.9
 ```
 
 ## Intent

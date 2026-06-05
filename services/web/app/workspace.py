@@ -70,6 +70,7 @@ class WorkspaceSession:
     events: list[dict[str, Any]] = field(default_factory=list)
     artifacts: list[dict[str, Any]] = field(default_factory=list)
     nlp2dsl_conversation_id: str | None = None
+    nlp2dsl_status: str | None = None
 
     def add_event(self, event_type: str, summary: str, **extra: Any) -> None:
         self.events.append(
@@ -328,12 +329,17 @@ def _resolved_task_agent(
     agent_id: str | None,
     shell_command: str | None,
 ) -> str | None:
-    from app.routing_policy import load_policy
+    """Zwraca konkretny agent_id NATS lub None (auto_assign → shell-agent-a/b).
 
-    resolved_agent = agent_id or session.context.agent_id or None
-    if not resolved_agent and shell_command:
-        return load_policy().agent_for_route("mullm_shell")
-    return resolved_agent
+    Etykieta polityki ``shell_agent`` to executor w UI/trace, nie ID subskrybenta NATS.
+    """
+    if agent_id:
+        return agent_id
+    if session.context.agent_id:
+        return session.context.agent_id
+    if shell_command:
+        return None
+    return None
 
 
 async def handle_chat_message(
@@ -495,6 +501,8 @@ async def _conductor_outcome(
     )
     if outcome.get("nlp2dsl_conversation_id"):
         session.nlp2dsl_conversation_id = outcome["nlp2dsl_conversation_id"]
+    if outcome.get("nlp2dsl_status"):
+        session.nlp2dsl_status = str(outcome["nlp2dsl_status"])
     return outcome
 
 
@@ -1168,7 +1176,13 @@ def _routing_nlp2dsl_parts(routing: dict[str, Any]) -> list[str]:
     parts = ["nlp2dsl: invoked"] if routing.get("nlp2dsl_invoked") else []
     nlp2dsl = routing.get("nlp2dsl")
     if nlp2dsl:
-        action = nlp2dsl.get("action") or nlp2dsl.get("intent") or "?"
+        action = (
+            nlp2dsl.get("action")
+            or nlp2dsl.get("suggested_action")
+            or nlp2dsl.get("intent")
+            or nlp2dsl.get("category")
+            or "?"
+        )
         parts.append(f"nlp2dsl_action: {action}")
     return parts
 
@@ -1386,6 +1400,32 @@ def link_ticket(session_id: str, task_id: str | None) -> dict[str, Any]:
         uri = f"mullm://ticket/{task_id}"
         if uri not in session.context.uris:
             session.context.uris.append(uri)
+    return session.context.to_dict()
+
+
+def unlink_ticket(session_id: str, task_id: str) -> dict[str, Any]:
+    session = get_or_create(session_id)
+    uri = f"mullm://ticket/{task_id}"
+    if uri in session.context.uris:
+        session.context.uris.remove(uri)
+    if session.context.linked_ticket_id == task_id:
+        session.context.linked_ticket_id = None
+    session.add_event("TicketUnlinked", f"Ticket {task_id[:8]}… odpięty od kontekstu")
+    return session.context.to_dict()
+
+
+def clear_ticket_uris(session_id: str) -> dict[str, Any]:
+    session = get_or_create(session_id)
+    before = len(session.context.uris)
+    session.context.uris = [
+        u for u in session.context.uris if not (u or "").startswith("mullm://ticket/")
+    ]
+    removed = before - len(session.context.uris)
+    session.context.linked_ticket_id = None
+    session.add_event(
+        "TicketContextCleared",
+        f"Usunięto {removed} URI ticketów z kontekstu sesji",
+    )
     return session.context.to_dict()
 
 

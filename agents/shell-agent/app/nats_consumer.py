@@ -34,7 +34,7 @@ class ShellAgent:
     async def handle_message(self, msg) -> None:
         payload = json.loads(msg.data.decode())
         assigned_agent = payload.get("agent_id")
-        if assigned_agent and assigned_agent != self.agent_id:
+        if assigned_agent and assigned_agent not in (self.agent_id, "shell_agent"):
             return
 
         result = run_shell_command(payload["command"], timeout_seconds=self.timeout_seconds)

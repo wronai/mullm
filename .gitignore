@@ -354,6 +354,9 @@ _archive/
 # Claude Code per-user settings
 .claude/auth.json
 
+# Mullm routing feedback (runtime JSONL)
+services/web/data/routing_feedback/*.jsonl
+
 # Koru local runtime cache
 .planfile/.koru/
 

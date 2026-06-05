@@ -71,6 +71,17 @@ class WorkroomMessage(BaseModel):
     wait_for_confirmation: bool = False
 
 
+class RoutingFeedbackBody(BaseModel):
+    session_id: str
+    turn_id: str
+    rating: str  # good | partial | bad
+    expected_route: str | None = None
+    expected_reply_hint: str = ""
+    improvement_notes: str = ""
+    tags: list[str] | None = None
+    user_message: str | None = None
+
+
 class AccessMatrixBody(BaseModel):
     resources: list[dict[str, Any]] | None = None
     agents: list[dict[str, Any]] | None = None

@@ -1,23 +1,23 @@
-# redup/duplication | 30 groups | 116f 16842L | 2026-06-04
+# redup/duplication | 35 groups | 128f 20185L | 2026-06-05
 
 SUMMARY:
-  files_scanned: 116
-  total_lines:   16842
-  dup_groups:    30
-  dup_fragments: 79
-  saved_lines:   619
-  scan_ms:       3372
+  files_scanned: 128
+  total_lines:   20185
+  dup_groups:    35
+  dup_fragments: 90
+  saved_lines:   674
+  scan_ms:       2783
 
 HOTSPOTS[7] (files with most duplication):
-  services/projector/app/main.py  dup=217L  groups=2  frags=12  (1.3%)
-  services/orchestrator/app/observability/export.py  dup=161L  groups=4  frags=8  (1.0%)
-  services/orchestrator/app/api/commands.py  dup=105L  groups=1  frags=7  (0.6%)
-  services/web/app/conductor.py  dup=64L  groups=2  frags=5  (0.4%)
-  services/orchestrator/app/api/queries.py  dup=60L  groups=1  frags=3  (0.4%)
+  services/projector/app/main.py  dup=217L  groups=2  frags=12  (1.1%)
+  services/orchestrator/app/observability/export.py  dup=161L  groups=4  frags=8  (0.8%)
+  services/orchestrator/app/api/commands.py  dup=105L  groups=1  frags=7  (0.5%)
+  services/web/app/conductor.py  dup=64L  groups=2  frags=5  (0.3%)
+  services/orchestrator/app/api/queries.py  dup=60L  groups=1  frags=3  (0.3%)
+  services/web/app/nlp2dsl_bridge.py  dup=36L  groups=1  frags=2  (0.2%)
   services/web/app/agent_workroom.py  dup=36L  groups=2  frags=4  (0.2%)
-  services/web/app/workspace.py  dup=33L  groups=3  frags=3  (0.2%)
 
-DUPLICATES[30] (ranked by impact):
+DUPLICATES[35] (ranked by impact):
   [fc5b148fddf5c532] !! STRU  task_board  L=26 N=5 saved=104 sim=1.00
       services/projector/app/main.py:94-119  (task_board)
       services/projector/app/main.py:123-148  (agent_fleet)
@@ -48,24 +48,28 @@ DUPLICATES[30] (ranked by impact):
       services/orchestrator/app/api/queries.py:29-48  (get_task)
       services/orchestrator/app/api/queries.py:52-71  (get_agent)
       services/orchestrator/app/api/queries.py:75-94  (get_workflow)
+  [e6484eb2e73fb4fc] ! STRU  backend_candidates  L=18 N=3 saved=36 sim=1.00
+      services/web/app/agent_plugins/nlp2cmd_plugin.py:21-38  (backend_candidates)
+      services/web/app/nlp2dsl_bridge.py:19-36  (backend_candidates)
+      services/web/app/nlp2dsl_bridge.py:73-90  (nlp_service_candidates)
   [dd30f40d83785484] ! STRU  _safe_fetch_incidents  L=17 N=3 saved=34 sim=1.00
       services/orchestrator/app/observability/export.py:250-266  (_safe_fetch_incidents)
       services/orchestrator/app/observability/export.py:302-318  (_safe_fetch_incident_feed)
       services/orchestrator/app/observability/export.py:352-368  (_safe_fetch_rag_snapshots)
   [b487de8e81871639]   STRU  _nlp2dsl_continue_decision  L=10 N=3 saved=20 sim=1.00
-      services/web/app/conductor.py:431-440  (_nlp2dsl_continue_decision)
-      services/web/app/conductor.py:443-452  (_mullm_continue_clarify_decision)
-      services/web/app/conductor.py:528-537  (_rag_probe_decision)
+      services/web/app/conductor.py:733-742  (_nlp2dsl_continue_decision)
+      services/web/app/conductor.py:745-754  (_mullm_continue_clarify_decision)
+      services/web/app/conductor.py:830-839  (_rag_probe_decision)
   [cbbb67a75ff65ca7]   STRU  transfer_resource  L=9 N=3 saved=18 sim=1.00
       services/orchestrator/app/api/access.py:49-57  (transfer_resource)
       services/orchestrator/app/api/evolution.py:84-92  (propose_change)
       services/orchestrator/app/api/evolution.py:96-104  (shadow_workflow)
   [707ff8ed8b0c1bdf]   STRU  _append_nfo  L=17 N=2 saved=17 sim=1.00
       services/orchestrator/app/observability/export.py:88-104  (_append_nfo)
-      services/web/app/workspace.py:952-971  (_append_nfo_section)
+      services/web/app/workspace.py:960-979  (_append_nfo_section)
   [3fe0219ba048af7c]   STRU  _execute_file_list_route  L=17 N=2 saved=17 sim=1.00
-      services/web/app/conductor.py:126-142  (_execute_file_list_route)
-      services/web/app/conductor.py:280-296  (_execute_rag_route)
+      services/web/app/conductor.py:148-164  (_execute_file_list_route)
+      services/web/app/conductor.py:427-443  (_execute_rag_route)
   [aa890be89093e6d5]   STRU  data  L=6 N=3 saved=12 sim=1.00
       services/orchestrator/app/domain/events/plugins.py:48-53  (data)
       services/orchestrator/app/domain/events/plugins.py:69-74  (data)
@@ -88,12 +92,15 @@ DUPLICATES[30] (ranked by impact):
   [454ed159e8c7ebbf]   STRU  _run_analyze_step  L=7 N=2 saved=7 sim=1.00
       services/web/app/agent_workroom.py:422-428  (_run_analyze_step)
       services/web/app/agent_workroom.py:603-609  (_run_summarize_step)
+  [c438d6044e10a938]   STRU  parse_nlp2cmd_response  L=7 N=2 saved=7 sim=1.00
+      services/web/app/routing_schemas.py:120-126  (parse_nlp2cmd_response)
+      services/web/app/routing_schemas.py:129-135  (parse_llm_classifier)
   [1fb3398c7c69da23]   EXAC  data  L=6 N=2 saved=6 sim=1.00
       services/orchestrator/app/domain/events/incidents.py:227-232  (data)
       services/orchestrator/app/domain/events/incidents.py:249-254  (data)
   [bcc6214a4a9b2b8c]   EXAC  clamp_log_export_limit  L=6 N=2 saved=6 sim=1.00
       services/orchestrator/app/observability/export.py:37-42  (clamp_log_export_limit)
-      services/web/app/workspace.py:692-697  (clamp_log_export_limit)
+      services/web/app/workspace.py:700-705  (clamp_log_export_limit)
   [9a129a96b21d1689]   EXAC  _checks_list_payload  L=6 N=2 saved=6 sim=1.00
       services/orchestrator/app/observability/incidents.py:508-513  (_checks_list_payload)
       services/projector/app/projections/incidents.py:288-293  (_checks_list_payload)
@@ -104,8 +111,8 @@ DUPLICATES[30] (ranked by impact):
       services/web/app/access_matrix.py:61-66  (_empty_agent_resource)
       services/web/app/access_matrix.py:69-72  (_empty_human_agent)
   [bd20ef24149cc1ac]   STRU  _incident_trace_part  L=6 N=2 saved=6 sim=1.00
-      services/web/app/chat.py:578-583  (_incident_trace_part)
-      services/web/app/chat.py:594-599  (_incident_fallback_part)
+      services/web/app/chat.py:609-614  (_incident_trace_part)
+      services/web/app/chat.py:625-630  (_incident_fallback_part)
   [0344e427af6677d5]   STRU  probe_uri  L=5 N=2 saved=5 sim=1.00
       services/orchestrator/app/api/access.py:61-65  (probe_uri)
       services/orchestrator/app/api/access.py:69-73  (fetch_uri)
@@ -118,17 +125,26 @@ DUPLICATES[30] (ranked by impact):
   [87cc9c48b4d7af20]   STRU  fetch  L=5 N=2 saved=5 sim=1.00
       services/orchestrator/app/infrastructure/postgres.py:67-71  (fetch)
       services/projector/app/db.py:39-43  (fetch)
-  [49d1d03e6ce392a1]   STRU  _default_chat_reply  L=5 N=2 saved=5 sim=1.00
-      services/web/app/chat.py:847-851  (_default_chat_reply)
-      services/web/app/prompt_router.py:381-388  (_llm_system_prompt)
+  [d6dcf24fe1d352d6]   STRU  _nlp2cmd_min_confidence  L=5 N=2 saved=5 sim=1.00
+      services/web/app/prompt_router.py:541-545  (_nlp2cmd_min_confidence)
+      services/web/app/prompt_router.py:556-560  (_local_min_confidence)
+  [529be22a4705ecaf]   STRU  feedback_dir  L=5 N=2 saved=5 sim=1.00
+      services/web/app/routing_feedback.py:62-66  (feedback_dir)
+      services/web/app/routing_policy.py:93-97  (_policy_path)
   [9cf59ab30a3c0ba7]   EXAC  disconnect  L=4 N=2 saved=4 sim=1.00
       services/orchestrator/app/infrastructure/postgres.py:56-59  (disconnect)
       services/projector/app/db.py:28-31  (disconnect)
+  [734df5e9c9a59d8b]   STRU  _feedback_path  L=4 N=2 saved=4 sim=1.00
+      services/web/app/routing_feedback.py:69-72  (_feedback_path)
+      services/web/app/routing_feedback.py:75-78  (_improvements_path)
   [a45a0af197a0ec34]   EXAC  __init__  L=3 N=2 saved=3 sim=1.00
       services/orchestrator/app/infrastructure/postgres.py:46-48  (__init__)
       services/projector/app/db.py:18-20  (__init__)
+  [c89d26a3db18ab2e]   STRU  routing_schemas_get  L=3 N=2 saved=3 sim=1.00
+      services/web/app/api/router_routes.py:34-36  (routing_schemas_get)
+      services/web/app/api/router_routes.py:40-42  (ticket_schemas_get)
 
-REFACTOR[30] (ranked by priority):
+REFACTOR[35] (ranked by priority):
   [1] ○ extract_function   → services/projector/app/utils/task_board.py
       WHY: 5 occurrences of 26-line block across 1 files — saves 104 lines
       FILES: services/projector/app/main.py
@@ -144,83 +160,98 @@ REFACTOR[30] (ranked by priority):
   [5] ○ extract_function   → services/orchestrator/app/api/utils/get_task.py
       WHY: 3 occurrences of 20-line block across 1 files — saves 40 lines
       FILES: services/orchestrator/app/api/queries.py
-  [6] ○ extract_function   → services/orchestrator/app/observability/utils/_safe_fetch_incidents.py
+  [6] ○ extract_function   → services/web/app/utils/backend_candidates.py
+      WHY: 3 occurrences of 18-line block across 2 files — saves 36 lines
+      FILES: services/web/app/agent_plugins/nlp2cmd_plugin.py, services/web/app/nlp2dsl_bridge.py
+  [7] ○ extract_function   → services/orchestrator/app/observability/utils/_safe_fetch_incidents.py
       WHY: 3 occurrences of 17-line block across 1 files — saves 34 lines
       FILES: services/orchestrator/app/observability/export.py
-  [7] ○ extract_function   → services/web/app/utils/_nlp2dsl_continue_decision.py
+  [8] ○ extract_function   → services/web/app/utils/_nlp2dsl_continue_decision.py
       WHY: 3 occurrences of 10-line block across 1 files — saves 20 lines
       FILES: services/web/app/conductor.py
-  [8] ○ extract_function   → services/orchestrator/app/api/utils/transfer_resource.py
+  [9] ○ extract_function   → services/orchestrator/app/api/utils/transfer_resource.py
       WHY: 3 occurrences of 9-line block across 2 files — saves 18 lines
       FILES: services/orchestrator/app/api/access.py, services/orchestrator/app/api/evolution.py
-  [9] ○ extract_function   → services/utils/_append_nfo.py
+  [10] ○ extract_function   → services/utils/_append_nfo.py
       WHY: 2 occurrences of 17-line block across 2 files — saves 17 lines
       FILES: services/orchestrator/app/observability/export.py, services/web/app/workspace.py
-  [10] ○ extract_function   → services/web/app/utils/_execute_file_list_route.py
+  [11] ○ extract_function   → services/web/app/utils/_execute_file_list_route.py
       WHY: 2 occurrences of 17-line block across 1 files — saves 17 lines
       FILES: services/web/app/conductor.py
-  [11] ○ extract_function   → services/orchestrator/app/domain/events/utils/data.py
+  [12] ○ extract_function   → services/orchestrator/app/domain/events/utils/data.py
       WHY: 3 occurrences of 6-line block across 1 files — saves 12 lines
       FILES: services/orchestrator/app/domain/events/plugins.py
-  [12] ○ extract_function   → services/orchestrator/app/api/utils/list_resources.py
+  [13] ○ extract_function   → services/orchestrator/app/api/utils/list_resources.py
       WHY: 2 occurrences of 11-line block across 2 files — saves 11 lines
       FILES: services/orchestrator/app/api/access.py, services/orchestrator/app/api/evolution.py
-  [13] ○ extract_function   → services/web/app/utils/_run_analyze_workroom_step.py
+  [14] ○ extract_function   → services/web/app/utils/_run_analyze_workroom_step.py
       WHY: 2 occurrences of 11-line block across 1 files — saves 11 lines
       FILES: services/web/app/agent_workroom.py
-  [14] ○ extract_function   → services/projector/app/projections/utils/project_agent_fleet.py
+  [15] ○ extract_function   → services/projector/app/projections/utils/project_agent_fleet.py
       WHY: 2 occurrences of 10-line block across 2 files — saves 10 lines
       FILES: services/projector/app/projections/agent_fleet.py, services/projector/app/projections/resource_registry.py
-  [15] ○ extract_function   → services/web/app/utils/_projector.py
+  [16] ○ extract_function   → services/web/app/utils/_projector.py
       WHY: 2 occurrences of 7-line block across 2 files — saves 7 lines
       FILES: services/web/app/chat.py, services/web/app/workspace.py
-  [16] ○ extract_function   → services/web/app/utils/agent_may_access_resource.py
+  [17] ○ extract_function   → services/web/app/utils/agent_may_access_resource.py
       WHY: 2 occurrences of 7-line block across 1 files — saves 7 lines
       FILES: services/web/app/access_matrix.py
-  [17] ○ extract_function   → services/web/app/utils/_run_analyze_step.py
+  [18] ○ extract_function   → services/web/app/utils/_run_analyze_step.py
       WHY: 2 occurrences of 7-line block across 1 files — saves 7 lines
       FILES: services/web/app/agent_workroom.py
-  [18] ○ extract_function   → services/orchestrator/app/domain/events/utils/data.py
+  [19] ○ extract_function   → services/web/app/utils/parse_nlp2cmd_response.py
+      WHY: 2 occurrences of 7-line block across 1 files — saves 7 lines
+      FILES: services/web/app/routing_schemas.py
+  [20] ○ extract_function   → services/orchestrator/app/domain/events/utils/data.py
       WHY: 2 occurrences of 6-line block across 1 files — saves 6 lines
       FILES: services/orchestrator/app/domain/events/incidents.py
-  [19] ○ extract_function   → services/utils/clamp_log_export_limit.py
+  [21] ○ extract_function   → services/utils/clamp_log_export_limit.py
       WHY: 2 occurrences of 6-line block across 2 files — saves 6 lines
       FILES: services/orchestrator/app/observability/export.py, services/web/app/workspace.py
-  [20] ○ extract_function   → services/utils/_checks_list_payload.py
+  [22] ○ extract_function   → services/utils/_checks_list_payload.py
       WHY: 2 occurrences of 6-line block across 2 files — saves 6 lines
       FILES: services/orchestrator/app/observability/incidents.py, services/projector/app/projections/incidents.py
-  [21] ○ extract_function   → services/orchestrator/app/domain/events/utils/data.py
+  [23] ○ extract_function   → services/orchestrator/app/domain/events/utils/data.py
       WHY: 2 occurrences of 6-line block across 1 files — saves 6 lines
       FILES: services/orchestrator/app/domain/events/workflows.py
-  [22] ○ extract_function   → services/web/app/utils/_empty_agent_resource.py
+  [24] ○ extract_function   → services/web/app/utils/_empty_agent_resource.py
       WHY: 2 occurrences of 6-line block across 1 files — saves 6 lines
       FILES: services/web/app/access_matrix.py
-  [23] ○ extract_function   → services/web/app/utils/_incident_trace_part.py
+  [25] ○ extract_function   → services/web/app/utils/_incident_trace_part.py
       WHY: 2 occurrences of 6-line block across 1 files — saves 6 lines
       FILES: services/web/app/chat.py
-  [24] ○ extract_function   → services/orchestrator/app/api/utils/probe_uri.py
+  [26] ○ extract_function   → services/orchestrator/app/api/utils/probe_uri.py
       WHY: 2 occurrences of 5-line block across 1 files — saves 5 lines
       FILES: services/orchestrator/app/api/access.py
-  [25] ○ extract_function   → services/utils/connect.py
+  [27] ○ extract_function   → services/utils/connect.py
       WHY: 2 occurrences of 5-line block across 2 files — saves 5 lines
       FILES: services/orchestrator/app/infrastructure/postgres.py, services/projector/app/db.py
-  [26] ○ extract_function   → services/utils/execute.py
+  [28] ○ extract_function   → services/utils/execute.py
       WHY: 2 occurrences of 5-line block across 2 files — saves 5 lines
       FILES: services/orchestrator/app/infrastructure/postgres.py, services/projector/app/db.py
-  [27] ○ extract_function   → services/utils/fetch.py
+  [29] ○ extract_function   → services/utils/fetch.py
       WHY: 2 occurrences of 5-line block across 2 files — saves 5 lines
       FILES: services/orchestrator/app/infrastructure/postgres.py, services/projector/app/db.py
-  [28] ○ extract_function   → services/web/app/utils/_default_chat_reply.py
+  [30] ○ extract_function   → services/web/app/utils/_nlp2cmd_min_confidence.py
+      WHY: 2 occurrences of 5-line block across 1 files — saves 5 lines
+      FILES: services/web/app/prompt_router.py
+  [31] ○ extract_function   → services/web/app/utils/feedback_dir.py
       WHY: 2 occurrences of 5-line block across 2 files — saves 5 lines
-      FILES: services/web/app/chat.py, services/web/app/prompt_router.py
-  [29] ○ extract_function   → services/utils/disconnect.py
+      FILES: services/web/app/routing_feedback.py, services/web/app/routing_policy.py
+  [32] ○ extract_function   → services/utils/disconnect.py
       WHY: 2 occurrences of 4-line block across 2 files — saves 4 lines
       FILES: services/orchestrator/app/infrastructure/postgres.py, services/projector/app/db.py
-  [30] ○ extract_function   → services/utils/__init__.py
+  [33] ○ extract_function   → services/web/app/utils/_feedback_path.py
+      WHY: 2 occurrences of 4-line block across 1 files — saves 4 lines
+      FILES: services/web/app/routing_feedback.py
+  [34] ○ extract_function   → services/utils/__init__.py
       WHY: 2 occurrences of 3-line block across 2 files — saves 3 lines
       FILES: services/orchestrator/app/infrastructure/postgres.py, services/projector/app/db.py
+  [35] ○ extract_function   → services/web/app/api/utils/routing_schemas_get.py
+      WHY: 2 occurrences of 3-line block across 1 files — saves 3 lines
+      FILES: services/web/app/api/router_routes.py
 
-QUICK_WINS[23] (low risk, high savings — do first):
+QUICK_WINS[25] (low risk, high savings — do first):
   [1] extract_function   saved=104L  → services/projector/app/utils/task_board.py
       FILES: main.py
   [2] extract_function   saved=90L  → services/orchestrator/app/api/utils/create_task.py
@@ -231,30 +262,30 @@ QUICK_WINS[23] (low risk, high savings — do first):
       FILES: export.py
   [5] extract_function   saved=40L  → services/orchestrator/app/api/utils/get_task.py
       FILES: queries.py
-  [6] extract_function   saved=34L  → services/orchestrator/app/observability/utils/_safe_fetch_incidents.py
+  [6] extract_function   saved=36L  → services/web/app/utils/backend_candidates.py
+      FILES: nlp2cmd_plugin.py, nlp2dsl_bridge.py
+  [7] extract_function   saved=34L  → services/orchestrator/app/observability/utils/_safe_fetch_incidents.py
       FILES: export.py
-  [7] extract_function   saved=20L  → services/web/app/utils/_nlp2dsl_continue_decision.py
+  [8] extract_function   saved=20L  → services/web/app/utils/_nlp2dsl_continue_decision.py
       FILES: conductor.py
-  [8] extract_function   saved=18L  → services/orchestrator/app/api/utils/transfer_resource.py
+  [9] extract_function   saved=18L  → services/orchestrator/app/api/utils/transfer_resource.py
       FILES: access.py, evolution.py
-  [9] extract_function   saved=17L  → services/utils/_append_nfo.py
+  [10] extract_function   saved=17L  → services/utils/_append_nfo.py
       FILES: export.py, workspace.py
-  [10] extract_function   saved=17L  → services/web/app/utils/_execute_file_list_route.py
-      FILES: conductor.py
 
-EFFORT_ESTIMATE (total ≈ 21.7h):
+EFFORT_ESTIMATE (total ≈ 23.5h):
   hard   task_board                          saved=104L  ~208min
   hard   create_task                         saved=90L  ~180min
   hard   operational_feed                    saved=84L  ~168min
   hard   _fetch_incidents                    saved=62L  ~186min
   medium get_task                            saved=40L  ~80min
+  medium backend_candidates                  saved=36L  ~72min
   medium _safe_fetch_incidents               saved=34L  ~68min
   medium _nlp2dsl_continue_decision          saved=20L  ~40min
   medium transfer_resource                   saved=18L  ~36min
   medium _append_nfo                         saved=17L  ~34min
-  medium _execute_file_list_route            saved=17L  ~34min
-  ... +20 more (~266min)
+  ... +25 more (~338min)
 
 METRICS-TARGET:
-  dup_groups:  30 → 0
-  saved_lines: 619 lines recoverable
+  dup_groups:  35 → 0
+  saved_lines: 674 lines recoverable

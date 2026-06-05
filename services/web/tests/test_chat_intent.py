@@ -84,8 +84,9 @@ def test_format_user_scope_title():
     )
     assert "Pliki użytkownika" in text
     assert "upload.pdf" in text
-    assert "Powiązany kontekst" in text
-    assert "mullm://ticket/abc" in text
+    assert "tickety shell" in text
+    assert "panelu ◎" in text
+    assert "mullm://ticket/abc" not in text
 
 
 def test_dedupe_rag_documents_by_uri():

@@ -11,7 +11,10 @@ INTRACT_DIR="${INTRACT_ROOT:-/home/tom/github/semcod/intract}"
 PROPACT_DIR="${PROPACT_ROOT:-/home/tom/github/pactown-com/propact}"
 
 echo "== 1/4 pytest (services/web) =="
-pip install -q -r requirements-dev.txt -r services/web/requirements.txt 2>/dev/null || true
+pip install -q -r requirements-dev.txt -r services/web/requirements.txt
+if [ -f requirements-quality.txt ]; then
+  pip install -q -r requirements-quality.txt
+fi
 pytest -c services/web/pytest.ini services/web/tests \
   --ignore=services/web/tests/test_api_routes.py \
   --ignore=services/web/tests/test_e2e_live_stack.py \
@@ -41,16 +44,14 @@ fi
 echo "== 4/4 propact pact (optional) =="
 if curl -fsS --max-time 3 "${BASE}/health" >/dev/null 2>&1; then
   if command -v propact >/dev/null 2>&1; then
-    propact tests/pacts/mullm-chat.md \
-      --openapi tests/pacts/mullm-openapi.json \
-      --base-url "${BASE}" \
-      --error-mode strict || echo "WARN: propact exited non-zero (check README.response.md)"
-  elif [ -f "${PROPACT_DIR}/src/propact/enhanced.py" ]; then
+    chmod +x scripts/run-propact-pact.sh
+    ./scripts/run-propact-pact.sh || echo "WARN: propact pact failed (see *.response.md)"
+  elif [ -f "${PROPACT_DIR}/src/propact/cli.py" ]; then
     PYTHONPATH="${PROPACT_DIR}/src${PYTHONPATH:+:${PYTHONPATH}}" \
-      python -m propact.cli.main tests/pacts/mullm-chat.md \
+      python -m propact.cli run tests/pacts/mullm-health.md \
       --openapi "${ROOT}/tests/pacts/mullm-openapi.json" \
-      --base-url "${BASE}" 2>/dev/null \
-      || echo "SKIP propact: CLI entry failed (pip install propact)"
+      --base-url "${BASE}" --method GET 2>/dev/null \
+      || echo "SKIP propact: run failed"
   else
     echo "SKIP propact: not installed (pip install propact[semantic])"
   fi

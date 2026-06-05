@@ -6,6 +6,10 @@ from app.routing_policy import load_policy
 
 def test_load_default_policy():
     policy = load_policy(reload=True)
+    assert "nlp2dsl_resume" in policy.ingress_order
+    assert "nlp2dsl_orient" in policy.ingress_order
+    assert policy.ingress_order.index("nlp2dsl_resume") < policy.ingress_order.index("nlp2dsl_orient")
+    assert policy.ingress_order.index("nlp2dsl_orient") < policy.ingress_order.index("rules")
     assert "rag_probe" in policy.ingress_order
     assert policy.ingress_order.index("rag_probe") < policy.ingress_order.index("rules")
     assert "agent_shell" in policy.ingress_order
@@ -13,6 +17,10 @@ def test_load_default_policy():
     assert policy.ingress_order.index("agent_shell") < policy.ingress_order.index("nlp2dsl")
     assert policy.agent_for_route("mullm_file_list") == "files_agent"
     assert policy.agent_for_route("nlp2cmd_shell") == "shell_agent"
+    assert any(p.get("id") == "nlp2cmd" for p in policy.agent_plugins)
+    d = policy.to_dict()
+    assert d["agent_plugins"]
+    assert d["agents"]["by_route"]["mullm_file_list"] == "files_agent"
 
 
 def test_session_agent_overrides_route():

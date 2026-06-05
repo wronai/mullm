@@ -5,37 +5,42 @@
 
 - **Project**: /home/tom/github/wronai/mullm
 - **Primary Language**: python
-- **Languages**: python: 109, md: 20, json: 11, yaml: 8, txt: 6
+- **Languages**: python: 121, md: 25, json: 12, yaml: 9, txt: 7
 - **Analysis Mode**: static
-- **Total Functions**: 1141
-- **Total Classes**: 143
-- **Modules**: 171
-- **Entry Points**: 593
+- **Total Functions**: 1322
+- **Total Classes**: 158
+- **Modules**: 194
+- **Entry Points**: 667
 
 ## Architecture by Module
 
 ### services.web.app.static.workspace
-- **Functions**: 178
+- **Functions**: 218
 - **File**: `workspace.js`
 
 ### services.web.app.workspace
-- **Functions**: 98
+- **Functions**: 100
 - **Classes**: 2
 - **File**: `workspace.py`
 
 ### services.web.app.chat
-- **Functions**: 76
+- **Functions**: 84
 - **File**: `chat.py`
 
 ### services.web.app.conductor
-- **Functions**: 53
+- **Functions**: 60
 - **Classes**: 1
 - **File**: `conductor.py`
 
 ### services.orchestrator.app.application.command_bus
-- **Functions**: 44
+- **Functions**: 47
 - **Classes**: 1
 - **File**: `command_bus.py`
+
+### services.web.app.prompt_router
+- **Functions**: 44
+- **Classes**: 1
+- **File**: `prompt_router.py`
 
 ### services.orchestrator.app.observability.incidents
 - **Functions**: 40
@@ -52,30 +57,30 @@
 - **File**: `workroom.js`
 
 ### services.web.app.static.app
-- **Functions**: 28
+- **Functions**: 32
 - **File**: `app.js`
+
+### services.web.app.routing_trace
+- **Functions**: 29
+- **Classes**: 3
+- **File**: `routing_trace.py`
 
 ### services.web.app.static.access
 - **Functions**: 25
 - **File**: `access.js`
 
-### services.web.app.prompt_router
-- **Functions**: 25
-- **Classes**: 1
-- **File**: `prompt_router.py`
-
 ### services.web.src.main
 - **Functions**: 23
 - **File**: `main.jsx`
+
+### services.orchestrator.app.observability.export
+- **Functions**: 23
+- **File**: `export.py`
 
 ### services.orchestrator.app.api.commands
 - **Functions**: 23
 - **Classes**: 14
 - **File**: `commands.py`
-
-### services.orchestrator.app.observability.export
-- **Functions**: 23
-- **File**: `export.py`
 
 ### services.orchestrator.app.rag.store
 - **Functions**: 21
@@ -96,12 +101,8 @@
 - **File**: `access_matrix.py`
 
 ### services.web.app.api.task_routes
-- **Functions**: 18
+- **Functions**: 19
 - **File**: `task_routes.py`
-
-### services.projector.app.main
-- **Functions**: 15
-- **File**: `main.py`
 
 ## Key Entry Points
 
@@ -110,17 +111,26 @@ Main execution flows into the system:
 ### services.orchestrator.app.infrastructure.eventstore_esdb.EsdbEventStore.append
 - **Calls**: self._client.append_to_stream, list, max, enumerate, asyncio.to_thread, list, getattr, callable
 
+### services.web.app.routing_feedback.aggregate_learnings
+> Propozycje ewolucji polityki z zebranych ocen (do przeglądu operatora).
+- **Calls**: services.web.app.routing_feedback._read_jsonl_tail, services.web.app.routing_feedback.list_improvement_tickets, services.web.app.routing_feedback._feedback_path, f.get, f.get, sorted, proposals.append, services.web.app.routing_feedback._now_iso
+
 ### services.orchestrator.app.main.lifespan
 - **Calls**: NATSBus, PostgresConnection, ArchitectureCatalog, PolicyEngine, EvaluationEngine, ExperimentManager, TransportService, OpenRouterClient
 
 ### services.orchestrator.app.application.command_bus.CommandBus._request_transfer
 - **Calls**: str, Resource, resource.request_transfer, resource.get_uncommitted_events, resource.mark_events_committed, Resource, outcome.get, self._result
 
-### services.orchestrator.app.api.rag.search
-- **Calls**: router.post, services.orchestrator.app.observability.context.new_retrieval_trace_id, steps.append, services.orchestrator.app.observability.context.observability_context, step, step, step, None.isoformat
-
 ### services.orchestrator.app.application.command_bus.CommandBus._create_task
 - **Calls**: data.get, Task.create, task.mark_events_committed, self._result, task.assign_to_agent, self._append_and_publish, str, services.orchestrator.app.application.sagas.task_routing.maybe_auto_assign
+
+### services.web.app.routing_trace.explain_pipeline
+> Symulacja drzewa decyzji (bez wykonania handlerów file_list/shell/nlp2dsl).
+Opcjonalnie probe RAG gdy session_id podany.
+- **Calls**: routing_policy.load_policy, services.web.app.routing_trace.new_trace, services.web.app.routing_trace.match_user_expectations, trace.to_dict, services.web.app.routing_trace.append_step, rules_decision.to_dict, services.web.app.routing_trace.append_step, TraceStep
+
+### services.orchestrator.app.api.rag.search
+- **Calls**: router.post, services.orchestrator.app.observability.context.new_retrieval_trace_id, steps.append, services.orchestrator.app.observability.context.observability_context, step, step, step, None.isoformat
 
 ### services.orchestrator.app.observability.rag_diagnostics.RagDiagnostics.run
 - **Calls**: services.orchestrator.app.observability.context.get_correlation_id, checks.append, checks.append, checks.append, checks.append, services.orchestrator.app.observability.rag_diagnostics._overall_status, services.orchestrator.app.observability.rag_diagnostics._primary_incident_code, services.orchestrator.app.observability.rag_diagnostics._log_diagnostics_result
@@ -133,8 +143,14 @@ Main execution flows into the system:
 > Zbiera logi sesji + orchestrator + feed do kopiowania do schowka.
 - **Calls**: services.web.app.workspace.clamp_log_export_limit, services.web.app.workspace.get_or_create, services.web.app.workspace._debug_export_base, services.web.app.workspace._emit_nfo_event, services.web.app.workspace._build_nfo_package, services.web.app.workspace._format_export_text, services.web.app.workspace._emit_nfo_event, httpx.AsyncClient
 
+### services.web.app.routing_feedback.record_feedback
+- **Calls**: services.web.app.routing_feedback._resolve_feedback_inputs, services.web.app.routing_feedback._build_feedback_tags, RoutingFeedbackRecord, services.web.app.routing_feedback._append_jsonl, services.web.app.workspace.get_or_create, session.add_event, record.to_dict, ValueError
+
 ### services.web.app.main.dashboard
 - **Calls**: app.get, templates.TemplateResponse, httpx.AsyncClient, _fetch, _fetch, _fetch, _fetch, _fetch
+
+### services.web.app.routing.decision.OrientationDecision.from_dict
+- **Calls**: str, str, cls, data.get, data.get, data.get, float, list
 
 ### services.web.src.main.App
 - **Calls**: services.web.src.main.useState, services.web.src.main.useMemo, services.web.src.main.taskMetrics, services.web.src.main.setError, services.web.src.main.all, services.web.src.main.fetchJson, services.web.src.main.setTasks, services.web.src.main.setAgents
@@ -142,23 +158,27 @@ Main execution flows into the system:
 ### services.orchestrator.app.application.command_bus.CommandBus._register_resource
 - **Calls**: services.orchestrator.app.access.uri.parse_uri, Resource.register, resource.mark_events_committed, self._result, self._append_and_publish, str, data.get, data.get
 
-### services.web.app.static.app.text
-- **Calls**: services.web.app.static.app.ensureSession, services.web.app.static.app.uploadFiles, services.web.app.static.app.map, services.web.app.static.app.join, services.web.app.static.app.appendMessage, services.web.app.static.app.trim, services.web.app.static.app.slice, services.web.app.static.app.fetch
-
 ### services.orchestrator.app.infrastructure.eventstore.EventStore.append
 - **Calls**: int, self.postgres.fetchrow, str, getattr, getattr, getattr, callable, records.append
 
 ### services.orchestrator.app.observability.rag_pipeline.RagPipeline.ask
 - **Calls**: services.orchestrator.app.observability.context.get_correlation_id, self._step_recorder, step, step, step, services.orchestrator.app.observability.rag_pipeline._result_with_trace, services.orchestrator.app.observability.context.get_retrieval_trace_id, services.orchestrator.app.observability.context.new_retrieval_trace_id
 
+### services.web.app.static.workspace.sendChat
+- **Calls**: services.web.app.static.workspace.chatInput, services.web.app.static.workspace.setChatSending, services.web.app.static.workspace.ensureSession, services.web.app.static.workspace.uploadPendingChatFiles, services.web.app.static.workspace.appendPendingChatInput, services.web.app.static.workspace.clearChatInput, services.web.app.static.workspace.api, services.web.app.static.workspace.stringify
+
 ### services.orchestrator.app.infrastructure.eventstore_esdb.EsdbEventStore.get_events_for_aggregate
 - **Calls**: enumerate, asyncio.to_thread, list, json.loads, json.loads, records.append, self._client.get_stream, recorded_event.data.decode
+
+### services.web.app.chat.wait_for_task_terminal
+> Czeka na completed/failed (orchestrator + fallback projector).
+- **Calls**: services.web.app.chat._normalize_terminal_state, time.monotonic, max, time.monotonic, services.web.app.chat._normalize_terminal_state, services.web.app.chat._normalize_terminal_state, services.web.app.chat.fetch_task_state, asyncio.sleep
 
 ### services.orchestrator.app.application.command_bus.CommandBus._assign_task
 - **Calls**: task.assign_to_agent, task.mark_events_committed, self._result, self._load_task, AgentId, self._append_and_publish, self._append_and_publish, data.get
 
-### services.web.app.static.workspace.sendChat
-- **Calls**: services.web.app.static.workspace.chatInput, services.web.app.static.workspace.setChatSending, services.web.app.static.workspace.ensureSession, services.web.app.static.workspace.uploadPendingChatFiles, services.web.app.static.workspace.appendPendingChatInput, services.web.app.static.workspace.clearChatInput, services.web.app.static.workspace.api, services.web.app.static.workspace.stringify
+### services.orchestrator.app.access.adapters.localfs.LocalFsAdapter.fetch
+- **Calls**: self._resolve, path.is_dir, AdapterResult, None.join, AdapterResult, path.read_bytes, AdapterResult, sorted
 
 ### services.orchestrator.app.application.command_bus.CommandBus._fail_task
 - **Calls**: task.fail, task.mark_events_committed, self._result, self._load_task, self._record_task_outcome, self._append_and_publish, records.extend, task.get_uncommitted_events
@@ -169,37 +189,22 @@ Main execution flows into the system:
 ### services.orchestrator.app.application.command_bus.CommandBus._propose_change
 - **Calls**: ChangeProposed, self._result, data.get, str, self._append_and_publish, uuid4, data.get, data.get
 
-### services.orchestrator.app.access.adapters.localfs.LocalFsAdapter.fetch
-- **Calls**: self._resolve, path.is_dir, AdapterResult, None.join, AdapterResult, path.read_bytes, AdapterResult, sorted
-
 ### services.projector.app.projections.incidents._handle_incident_detected
 - **Calls**: db.execute, payload.get, services.projector.app.projections.incidents._error_code, payload.get, payload.get, json.dumps, payload.get, payload.get
-
-### services.orchestrator.app.rag.indexer.RagIndexer.ingest_resource
-- **Calls**: self.store.upsert_document_pending, services.orchestrator.app.rag.indexer._chunks_for_body, services.orchestrator.app.rag.indexer._packed_chunks, services.orchestrator.app.rag.indexer._indexed_result, self._fetch_body, self._embed_chunks, self.store.replace_chunks, self.store.mark_indexed
-
-### services.orchestrator.app.application.command_bus.CommandBus._complete_task
-- **Calls**: task.complete, task.mark_events_committed, self._result, self._load_task, self._record_task_outcome, self._append_and_publish, records.extend, task.get_uncommitted_events
-
-### services.orchestrator.app.observability.rag_diagnostics.RagDiagnostics._recommendations
-- **Calls**: None.get, recs.append, None.get, recs.append, None.get, recs.append, None.get, recs.append
 
 ### services.web.app.api.workspace_routes.workspace_file_list_export
 > Lista plików jako artefakt (text + json).
 scope: all|user|system|session|rag — lub wyciągany z message (np. „lista plikow usera”).
 - **Calls**: router.get, workspace_service.get_or_create, chat_service.filter_file_inventory, chat_service.format_file_list_reply, chat_service.build_file_list_artifact, message.strip, chat_service.file_list_scope, chat_service.fetch_file_inventory
 
-### services.projector.app.main.lifespan
-- **Calls**: Database, app.state.db.connect, NATS, app.state.db.disconnect, app.state.nats.drain, nats.connect, json.loads, nats.subscribe
+### services.orchestrator.app.rag.indexer.RagIndexer.ingest_resource
+- **Calls**: self.store.upsert_document_pending, services.orchestrator.app.rag.indexer._chunks_for_body, services.orchestrator.app.rag.indexer._packed_chunks, services.orchestrator.app.rag.indexer._indexed_result, self._fetch_body, self._embed_chunks, self.store.replace_chunks, self.store.mark_indexed
 
-### services.orchestrator.app.infrastructure.postgres.PostgresConnection._run_schema_migrations
-- **Calls**: Path, os.getenv, schema_dir.exists, sorted, self.pool.acquire, schema_dir.glob, self.execute, None.strip
+### services.orchestrator.app.observability.rag_diagnostics.RagDiagnostics._recommendations
+- **Calls**: None.get, recs.append, None.get, recs.append, None.get, recs.append, None.get, recs.append
 
-### services.orchestrator.app.access.adapters.localfs.LocalFsAdapter.copy_to_local
-- **Calls**: self._resolve, Path, dest.parent.mkdir, src.is_dir, AdapterResult, shutil.copytree, shutil.copy2, AdapterResult
-
-### services.web.app.workspace.handle_chat_message
-- **Calls**: services.web.app.workspace.get_or_create, None.strip, session.add_event, services.web.app.workspace._attach_ticket_context, outcome.get, services.web.app.workspace._record_chat_outcome, services.web.app.workspace._record_task_outcome, services.web.app.workspace._chat_response
+### services.orchestrator.app.application.command_bus.CommandBus._complete_task
+- **Calls**: task.complete, task.mark_events_committed, self._result, self._load_task, self._record_task_outcome, self._append_and_publish, records.extend, task.get_uncommitted_events
 
 ## Process Flows
 
@@ -210,21 +215,24 @@ Key execution flows identified:
 append [services.orchestrator.app.infrastructure.eventstore_esdb.EsdbEventStore]
 ```
 
-### Flow 2: lifespan
+### Flow 2: aggregate_learnings
+```
+aggregate_learnings [services.web.app.routing_feedback]
+  └─> _read_jsonl_tail
+  └─> list_improvement_tickets
+      └─> _read_jsonl_tail
+      └─> _improvements_path
+          └─> feedback_dir
+```
+
+### Flow 3: lifespan
 ```
 lifespan [services.orchestrator.app.main]
 ```
 
-### Flow 3: _request_transfer
+### Flow 4: _request_transfer
 ```
 _request_transfer [services.orchestrator.app.application.command_bus.CommandBus]
-```
-
-### Flow 4: search
-```
-search [services.orchestrator.app.api.rag]
-  └─ →> new_retrieval_trace_id
-  └─ →> observability_context
 ```
 
 ### Flow 5: _create_task
@@ -232,18 +240,34 @@ search [services.orchestrator.app.api.rag]
 _create_task [services.orchestrator.app.application.command_bus.CommandBus]
 ```
 
-### Flow 6: run
+### Flow 6: explain_pipeline
+```
+explain_pipeline [services.web.app.routing_trace]
+  └─> new_trace
+      └─> _default_principles
+  └─> match_user_expectations
+      └─> _is_expectation_hit
+```
+
+### Flow 7: search
+```
+search [services.orchestrator.app.api.rag]
+  └─ →> new_retrieval_trace_id
+  └─ →> observability_context
+```
+
+### Flow 8: run
 ```
 run [services.orchestrator.app.observability.rag_diagnostics.RagDiagnostics]
   └─ →> get_correlation_id
 ```
 
-### Flow 7: upload_resource
+### Flow 9: upload_resource
 ```
 upload_resource [services.orchestrator.app.api.access]
 ```
 
-### Flow 8: export_debug_logs
+### Flow 10: export_debug_logs
 ```
 export_debug_logs [services.web.app.workspace]
   └─> clamp_log_export_limit
@@ -251,21 +275,11 @@ export_debug_logs [services.web.app.workspace]
       └─> new_session
 ```
 
-### Flow 9: dashboard
-```
-dashboard [services.web.app.main]
-```
-
-### Flow 10: App
-```
-App [services.web.src.main]
-```
-
 ## Key Classes
 
 ### services.orchestrator.app.application.command_bus.CommandBus
-- **Methods**: 43
-- **Key Methods**: services.orchestrator.app.application.command_bus.CommandBus.__init__, services.orchestrator.app.application.command_bus.CommandBus.handle, services.orchestrator.app.application.command_bus.CommandBus.handle_envelope, services.orchestrator.app.application.command_bus.CommandBus._create_task, services.orchestrator.app.application.command_bus.CommandBus._assign_task, services.orchestrator.app.application.command_bus.CommandBus._start_task, services.orchestrator.app.application.command_bus.CommandBus._complete_task, services.orchestrator.app.application.command_bus.CommandBus._fail_task, services.orchestrator.app.application.command_bus.CommandBus._register_agent, services.orchestrator.app.application.command_bus.CommandBus._agent_heartbeat
+- **Methods**: 46
+- **Key Methods**: services.orchestrator.app.application.command_bus.CommandBus.__init__, services.orchestrator.app.application.command_bus.CommandBus.handle, services.orchestrator.app.application.command_bus.CommandBus.handle_envelope, services.orchestrator.app.application.command_bus.CommandBus._create_task, services.orchestrator.app.application.command_bus.CommandBus._assign_task, services.orchestrator.app.application.command_bus.CommandBus._start_task, services.orchestrator.app.application.command_bus.CommandBus._complete_task, services.orchestrator.app.application.command_bus.CommandBus._fail_task, services.orchestrator.app.application.command_bus.CommandBus.complete_task_from_shell, services.orchestrator.app.application.command_bus.CommandBus.fail_task_from_shell
 
 ### services.orchestrator.app.evolution.catalog.ArchitectureCatalog
 > Samopiszący katalog architektury mullm (domains, events, capabilities, policies).
@@ -292,6 +306,12 @@ App [services.web.src.main]
 - **Methods**: 8
 - **Key Methods**: services.orchestrator.app.observability.rag_diagnostics.RagDiagnostics.run, services.orchestrator.app.observability.rag_diagnostics.RagDiagnostics._check_postgres, services.orchestrator.app.observability.rag_diagnostics.RagDiagnostics._check_rag_tables, services.orchestrator.app.observability.rag_diagnostics.RagDiagnostics._check_openrouter_config, services.orchestrator.app.observability.rag_diagnostics.RagDiagnostics._check_embedding, services.orchestrator.app.observability.rag_diagnostics.RagDiagnostics._check_search, services.orchestrator.app.observability.rag_diagnostics.RagDiagnostics._recommendations, services.orchestrator.app.observability.rag_diagnostics.RagDiagnostics._snapshot
 
+### services.web.app.agent_plugins.protocol.AgentPlugin
+> Plugin łączący Mullm z usługą agenta (HTTP/CLI w sibling repo).
+- **Methods**: 7
+- **Key Methods**: services.web.app.agent_plugins.protocol.AgentPlugin.plugin_id, services.web.app.agent_plugins.protocol.AgentPlugin.title, services.web.app.agent_plugins.protocol.AgentPlugin.executor_agent_id, services.web.app.agent_plugins.protocol.AgentPlugin.ingress_steps, services.web.app.agent_plugins.protocol.AgentPlugin.route_kinds, services.web.app.agent_plugins.protocol.AgentPlugin.health, services.web.app.agent_plugins.protocol.AgentPlugin.translate_shell
+- **Inherits**: Protocol
+
 ### services.orchestrator.app.infrastructure.postgres.PostgresConnection
 - **Methods**: 7
 - **Key Methods**: services.orchestrator.app.infrastructure.postgres.PostgresConnection.__init__, services.orchestrator.app.infrastructure.postgres.PostgresConnection.connect, services.orchestrator.app.infrastructure.postgres.PostgresConnection.disconnect, services.orchestrator.app.infrastructure.postgres.PostgresConnection.execute, services.orchestrator.app.infrastructure.postgres.PostgresConnection.fetch, services.orchestrator.app.infrastructure.postgres.PostgresConnection.fetchrow, services.orchestrator.app.infrastructure.postgres.PostgresConnection._run_schema_migrations
@@ -311,10 +331,6 @@ App [services.web.src.main]
 - **Methods**: 7
 - **Key Methods**: services.orchestrator.app.access.transport.TransportService.__init__, services.orchestrator.app.access.transport.TransportService._sandbox_dir, services.orchestrator.app.access.transport.TransportService.probe, services.orchestrator.app.access.transport.TransportService.fetch, services.orchestrator.app.access.transport.TransportService.copy, services.orchestrator.app.access.transport.TransportService.package_to_sandbox, services.orchestrator.app.access.transport.TransportService._result_dict
 
-### services.orchestrator.app.domain.aggregates.plugin.Plugin
-- **Methods**: 7
-- **Key Methods**: services.orchestrator.app.domain.aggregates.plugin.Plugin.propose, services.orchestrator.app.domain.aggregates.plugin.Plugin.validate, services.orchestrator.app.domain.aggregates.plugin.Plugin.install, services.orchestrator.app.domain.aggregates.plugin.Plugin.activate, services.orchestrator.app.domain.aggregates.plugin.Plugin.rollback, services.orchestrator.app.domain.aggregates.plugin.Plugin.get_uncommitted_events, services.orchestrator.app.domain.aggregates.plugin.Plugin.mark_events_committed
-
 ### services.orchestrator.app.evolution.policy_engine.PolicyEngine
 > Reguły first — AI proponuje tylko w granicach polityk z katalogu.
 - **Methods**: 7
@@ -325,11 +341,9 @@ App [services.web.src.main]
 - **Methods**: 7
 - **Key Methods**: services.orchestrator.app.evolution.evaluation.EvaluationEngine.__init__, services.orchestrator.app.evolution.evaluation.EvaluationEngine.record_task_outcome, services.orchestrator.app.evolution.evaluation.EvaluationEngine._upsert_metrics, services.orchestrator.app.evolution.evaluation.EvaluationEngine._current_metrics_row, services.orchestrator.app.evolution.evaluation.EvaluationEngine._update_metrics, services.orchestrator.app.evolution.evaluation.EvaluationEngine._insert_metrics, services.orchestrator.app.evolution.evaluation.EvaluationEngine.should_auto_rollback
 
-### services.web.app.agent_plugins.protocol.AgentPlugin
-> Plugin łączący Mullm z usługą agenta (HTTP/CLI w sibling repo).
+### services.orchestrator.app.domain.aggregates.plugin.Plugin
 - **Methods**: 7
-- **Key Methods**: services.web.app.agent_plugins.protocol.AgentPlugin.plugin_id, services.web.app.agent_plugins.protocol.AgentPlugin.title, services.web.app.agent_plugins.protocol.AgentPlugin.executor_agent_id, services.web.app.agent_plugins.protocol.AgentPlugin.ingress_steps, services.web.app.agent_plugins.protocol.AgentPlugin.route_kinds, services.web.app.agent_plugins.protocol.AgentPlugin.health, services.web.app.agent_plugins.protocol.AgentPlugin.translate_shell
-- **Inherits**: Protocol
+- **Key Methods**: services.orchestrator.app.domain.aggregates.plugin.Plugin.propose, services.orchestrator.app.domain.aggregates.plugin.Plugin.validate, services.orchestrator.app.domain.aggregates.plugin.Plugin.install, services.orchestrator.app.domain.aggregates.plugin.Plugin.activate, services.orchestrator.app.domain.aggregates.plugin.Plugin.rollback, services.orchestrator.app.domain.aggregates.plugin.Plugin.get_uncommitted_events, services.orchestrator.app.domain.aggregates.plugin.Plugin.mark_events_committed
 
 ### services.projector.app.db.Database
 - **Methods**: 6
@@ -355,39 +369,33 @@ App [services.web.src.main]
 
 Key functions that process and transform data:
 
+### services.web.app.routing_policy._parse_policy
+- **Output to**: services.web.app.routing_policy._parse_agents, RoutingPolicy, data.get, data.get, isinstance
+
+### services.web.app.routing_policy._parse_user_expectations
+- **Output to**: isinstance, isinstance, item.get, out.append, dict
+
+### services.web.app.routing_policy._parse_agents
+- **Output to**: dict, str, bool, raw_agents.get, str
+
+### services.web.app.routing_policy._parse_mode_overrides
+- **Output to**: overrides.items, services.web.app.routing_policy._valid_override_steps, str
+
+### services.web.app.routing_policy._parse_rag_probe
+- **Output to**: RagProbeSettings, bool, int, int, bool
+
+### services.web.app.planfile_bridge._parse_created_id
+- **Output to**: stdout.splitlines, line.strip, None.split, line.replace, any
+
 ### services.web.app.agent_workroom.format_workroom_export
 > Pełna treść workroom do schowka (wątek + ledger + odpowiedź).
 - **Output to**: services.web.app.agent_workroom._workroom_export_header, services.web.app.agent_workroom._append_workroom_thread, services.web.app.agent_workroom._append_workroom_ledger, services.web.app.agent_workroom._append_workroom_result, None.strip
 
-### services.orchestrator.app.infrastructure.eventstore_esdb._parse_esdb_uri
-- **Output to**: uri.strip, normalized.startswith, normalized.startswith, normalized.startswith, normalized.removeprefix
+### services.web.app.routing_schemas.parse_nlp2cmd_response
+- **Output to**: isinstance, Nlp2CmdQueryResponse.model_validate
 
-### services.orchestrator.app.rag.store._parse_embedding
-- **Output to**: None.get, isinstance, isinstance, json.loads, services.orchestrator.app.rag.store._row_dict
-
-### services.orchestrator.app.application.command_bus.CommandBus._validate_workflow_version
-- **Output to**: workflow.validate_version, self._load_workflow, self._persist_workflow
-
-### services.orchestrator.app.application.command_bus.CommandBus._validate_plugin
-- **Output to**: plugin.validate, self._load_plugin, self._persist_plugin
-
-### services.orchestrator.app.application.sagas.approval_gate._validate_approval_events
-- **Output to**: ValueError, ValueError, last.get, ValueError, first.get
-
-### services.orchestrator.app.access.uri.parse_uri
-- **Output to**: uri.removeprefix, body.split, MullmUri, uri.startswith, ValueError
-
-### services.orchestrator.app.domain.aggregates.plugin.Plugin.validate
-- **Output to**: self._events.append, ValueError, PluginValidated
-
-### services.orchestrator.app.domain.aggregates.workflow.Workflow.validate_version
-- **Output to**: self._events.append, ValueError, WorkflowVersionValidated
-
-### services.orchestrator.app.api.commands.validate_workflow_version
-- **Output to**: router.post, services.orchestrator.app.api.commands._dispatch, command.model_dump
-
-### services.orchestrator.app.api.commands.validate_plugin
-- **Output to**: router.post, services.orchestrator.app.api.commands._dispatch, command.model_dump
+### services.web.app.routing_schemas.parse_llm_classifier
+- **Output to**: isinstance, LlmRouteClassifierOutput.model_validate
 
 ### services.web.app.static.workspace.formatChatContent
 - **Output to**: services.web.app.static.workspace.String, services.web.app.static.workspace.replace, services.web.app.static.workspace.trim
@@ -397,6 +405,22 @@ Key functions that process and transform data:
 
 ### services.web.app.static.workspace.formatRouteBadge
 - **Output to**: services.web.app.static.workspace.round, services.web.app.static.workspace.slice, services.web.app.static.workspace.join, services.web.app.static.workspace.filter, services.web.app.static.workspace.push
+
+### services.web.app.agent_plugins.protocol.ShellTranslation.from_validated_analysis
+> Z NlpCommandAnalysis (routing_schemas).
+- **Output to**: analysis.to_policy_flags, cls, str, float, str
+
+### services.orchestrator.app.infrastructure.eventstore_esdb._parse_esdb_uri
+- **Output to**: uri.strip, normalized.startswith, normalized.startswith, normalized.startswith, normalized.removeprefix
+
+### services.orchestrator.app.rag.store._parse_embedding
+- **Output to**: None.get, isinstance, isinstance, json.loads, services.orchestrator.app.rag.store._row_dict
+
+### services.orchestrator.app.application.sagas.approval_gate._validate_approval_events
+- **Output to**: ValueError, ValueError, last.get, ValueError, first.get
+
+### services.orchestrator.app.access.uri.parse_uri
+- **Output to**: uri.removeprefix, body.split, MullmUri, uri.startswith, ValueError
 
 ### services.orchestrator.app.evolution.policy_engine.PolicyEngine.validate_command
 - **Output to**: self.rule_for, self._validate_environment, self._validate_manifest, self._validate_auto_risk
@@ -414,24 +438,14 @@ Key functions that process and transform data:
 > Sprawdza min_success_rate przed aktywacją workflow.
 - **Output to**: self.rule_for, rule.get, services.orchestrator.app.evolution.policy_engine._activation_metrics_row, services.orchestrator.app.evolution.policy_engine._has_enough_activation_samples, float
 
+### services.orchestrator.app.domain.aggregates.plugin.Plugin.validate
+- **Output to**: self._events.append, ValueError, PluginValidated
+
+### services.orchestrator.app.domain.aggregates.workflow.Workflow.validate_version
+- **Output to**: self._events.append, ValueError, WorkflowVersionValidated
+
 ### services.orchestrator.app.observability.export.format_logs_text
 - **Output to**: services.orchestrator.app.observability.export._append_nfo, services.orchestrator.app.observability.export._append_rag_health, services.orchestrator.app.observability.export._append_incidents, services.orchestrator.app.observability.export._append_incident_feed, services.orchestrator.app.observability.export._append_rag_snapshots
-
-### services.web.app.workspace.format_chat_export_text
-> Transkrypt czatu do schowka (rozmowa + routing pod odpowiedziami AI).
-- **Output to**: chat_service.get_history, services.web.app.workspace._append_chat_export_trace, services.web.app.workspace._append_chat_export_draft, services.web.app.workspace._append_chat_export_message, services.web.app.workspace._collect_routing_trace
-
-### services.web.app.workspace._format_export_text
-- **Output to**: services.web.app.workspace._export_header, services.web.app.workspace._append_export_sections, services.web.app.workspace._append_orchestrator_error, lines.extend, None.join
-
-### services.web.app.workspace._format_routing_line
-- **Output to**: routing.get, services.web.app.workspace._routing_base_parts, inner.extend, services.web.app.workspace._routing_optional_parts, None.join
-
-### services.web.app.workspace._format_candidate_route
-- **Output to**: int, None.join, candidate.get, candidate.get, candidate.get
-
-### services.web.app.routing_policy._parse_policy
-- **Output to**: services.web.app.routing_policy._parse_agents, RoutingPolicy, data.get, data.get, int
 
 ## Behavioral Patterns
 
@@ -460,45 +474,45 @@ Key functions that process and transform data:
 Functions exposed as public API (no underscore prefix):
 
 - `services.orchestrator.app.infrastructure.eventstore_esdb.EsdbEventStore.append` - 30 calls
+- `services.web.app.routing_feedback.aggregate_learnings` - 28 calls
 - `services.orchestrator.app.main.lifespan` - 27 calls
+- `services.web.app.routing_trace.explain_pipeline` - 22 calls
 - `services.orchestrator.app.api.rag.search` - 22 calls
+- `services.web.app.local_orient.orient_query` - 21 calls
+- `services.web.app.routing_trace.build_rules_rule_nodes` - 20 calls
 - `services.orchestrator.app.observability.rag_diagnostics.RagDiagnostics.run` - 20 calls
-- `services.orchestrator.app.api.access.upload_resource` - 19 calls
 - `services.orchestrator.app.observability.export.format_logs_text` - 19 calls
+- `services.orchestrator.app.api.access.upload_resource` - 19 calls
 - `services.web.app.workspace.export_debug_logs` - 18 calls
+- `services.web.app.routing_feedback.record_feedback` - 17 calls
 - `services.web.app.main.dashboard` - 17 calls
+- `services.web.app.static.workspace.refreshWorkspace` - 17 calls
+- `services.web.app.routing.decision.OrientationDecision.from_dict` - 16 calls
 - `services.web.src.main.App` - 16 calls
 - `services.web.app.chat.format_file_list_reply` - 16 calls
-- `services.web.app.static.app.text` - 15 calls
 - `services.orchestrator.app.infrastructure.eventstore.EventStore.append` - 15 calls
 - `services.orchestrator.app.observability.rag_pipeline.RagPipeline.ask` - 15 calls
-- `services.web.app.static.workspace.refreshWorkspace` - 15 calls
-- `services.orchestrator.app.infrastructure.eventstore_esdb.EsdbEventStore.get_events_for_aggregate` - 14 calls
 - `services.web.app.static.workspace.sendChat` - 14 calls
+- `services.orchestrator.app.infrastructure.eventstore_esdb.EsdbEventStore.get_events_for_aggregate` - 14 calls
+- `services.web.app.chat.wait_for_task_terminal` - 14 calls
+- `services.web.app.routing_trace.match_user_expectations` - 13 calls
+- `services.web.app.static.workspace.appendFeedbackBar` - 13 calls
 - `services.orchestrator.app.access.adapters.localfs.LocalFsAdapter.fetch` - 13 calls
+- `services.web.app.static.workspace.appendMsgTo` - 12 calls
+- `services.web.app.api.workspace_routes.workspace_file_list_export` - 12 calls
 - `services.orchestrator.app.rag.indexer.RagIndexer.ingest_resource` - 12 calls
 - `services.orchestrator.app.observability.export.build_orchestrator_bundle` - 12 calls
-- `services.web.app.api.workspace_routes.workspace_file_list_export` - 12 calls
 - `services.projector.app.main.lifespan` - 11 calls
 - `services.web.app.access_matrix.load_state` - 11 calls
-- `services.orchestrator.app.access.adapters.localfs.LocalFsAdapter.copy_to_local` - 11 calls
 - `services.web.app.static.workspace.selectTicket` - 11 calls
 - `services.web.app.static.workspace.renderRoutingTrace` - 11 calls
-- `services.web.app.static.workspace.appendMsgTo` - 11 calls
+- `services.web.app.static.workspace.handleChatResponse` - 11 calls
 - `services.web.app.static.workspace.buildChatTextFromDom` - 11 calls
+- `services.web.app.agent_plugins.protocol.ShellTranslation.from_validated_analysis` - 11 calls
+- `services.web.app.agent_plugins.nlp2cmd_plugin.Nlp2CmdPlugin.analyze_shell_nl` - 11 calls
+- `services.orchestrator.app.access.adapters.localfs.LocalFsAdapter.copy_to_local` - 11 calls
 - `services.web.app.workspace.register_artifact` - 11 calls
 - `services.web.app.workspace.artifact_summaries` - 11 calls
-- `services.web.app.workspace.handle_chat_message` - 11 calls
-- `services.web.app.workspace.fetch_live_board` - 11 calls
-- `services.projector.app.projections.operational_feed.project_operational_feed` - 10 calls
-- `services.orchestrator.app.rag.openrouter.OpenRouterClient.embed` - 10 calls
-- `services.orchestrator.app.access.transport.TransportService.copy` - 10 calls
-- `services.orchestrator.app.access.adapters.localfs.LocalFsAdapter.probe` - 10 calls
-- `services.web.app.static.workspace.renderArtifactList` - 10 calls
-- `services.orchestrator.app.observability.logging.log_event` - 10 calls
-- `services.projector.app.projections.approval_requests.project_approval_requests` - 9 calls
-- `services.projector.app.projections.dispatcher.project_event` - 9 calls
-- `services.web.app.agent_workroom.run_workroom` - 9 calls
 
 ## System Interactions
 
@@ -511,6 +525,10 @@ graph TD
     append --> max
     append --> enumerate
     append --> to_thread
+    aggregate_learnings --> _read_jsonl_tail
+    aggregate_learnings --> list_improvement_tic
+    aggregate_learnings --> _feedback_path
+    aggregate_learnings --> get
     lifespan --> NATSBus
     lifespan --> PostgresConnection
     lifespan --> ArchitectureCatalog
@@ -521,21 +539,17 @@ graph TD
     _request_transfer --> request_transfer
     _request_transfer --> get_uncommitted_even
     _request_transfer --> mark_events_committe
-    search --> post
-    search --> new_retrieval_trace_
-    search --> append
-    search --> observability_contex
-    search --> step
     _create_task --> get
     _create_task --> create
     _create_task --> mark_events_committe
     _create_task --> _result
     _create_task --> assign_to_agent
-    run --> get_correlation_id
-    run --> append
-    upload_resource --> post
-    upload_resource --> File
-    upload_resource --> getenv
+    explain_pipeline --> load_policy
+    explain_pipeline --> new_trace
+    explain_pipeline --> match_user_expectati
+    explain_pipeline --> to_dict
+    explain_pipeline --> append_step
+    search --> post
 ```
 
 ## Reverse Engineering Guidelines

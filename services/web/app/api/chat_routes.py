@@ -7,7 +7,13 @@ from fastapi import APIRouter, File, Form, HTTPException, UploadFile
 
 from app import workspace as workspace_service
 from app.api.config import ORCHESTRATOR_URL
-from app.api.models import ChatMessage, ChatSessionStart, ContextAttachBody, TaskDraftRequest
+from app.api.models import (
+    ChatMessage,
+    ChatSessionStart,
+    ContextAttachBody,
+    SessionRef,
+    TaskDraftRequest,
+)
 
 router = APIRouter()
 
@@ -79,6 +85,8 @@ async def _form_only_chat_message(session, body: ChatMessage) -> dict[str, Any]:
 def _update_nlp_conversation(session, outcome: dict[str, Any]) -> None:
     if outcome.get("nlp2dsl_conversation_id"):
         session.nlp2dsl_conversation_id = outcome["nlp2dsl_conversation_id"]
+    if outcome.get("nlp2dsl_status"):
+        session.nlp2dsl_status = str(outcome["nlp2dsl_status"])
 
 
 @router.post("/tasks/draft")
@@ -101,6 +109,11 @@ async def context_attach(body: ContextAttachBody):
         filename=body.filename,
     )
     return {"context": ctx}
+
+
+@router.post("/context/clear-tickets")
+async def context_clear_tickets(body: SessionRef):
+    return {"context": workspace_service.clear_ticket_uris(body.session_id)}
 
 
 @router.post("/files/upload")

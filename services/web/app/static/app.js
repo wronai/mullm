@@ -69,44 +69,57 @@
     return data.items || [];
   }
 
+  function updateFileList(uploaded) {
+    if (uploaded.length && els.fileList) {
+      els.fileList.textContent =
+        "Pliki: " +
+        uploaded.map((u) => (u.ok ? u.filename + " ✓" : u.filename + " ✗")).join(", ");
+    }
+  }
+
+  async function postChatMessage(text) {
+    const body = {
+      session_id: sessionId,
+      message: text,
+      use_rag: els.useRag?.checked !== false,
+      create_task: els.createTaskOnSend?.checked === true,
+      shell_command: els.shellFromChat?.value?.trim() || null,
+      task_title: text.slice(0, 80),
+    };
+    const r = await fetch("/api/chat/message", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.detail || "chat error");
+    return data;
+  }
+
+  async function handleSendMessage(text) {
+    await ensureSession();
+    const uploaded = await uploadFiles();
+    updateFileList(uploaded);
+    appendMessage("user", text);
+    els.input.value = "";
+
+    const data = await postChatMessage(text);
+    sessionId = data.session_id;
+    localStorage.setItem(sessionKey, sessionId);
+    renderHistory(data.history || []);
+    if (data.task?.ok) {
+      toast(els.taskToast, "Utworzono zadanie: " + data.task.task_id, true);
+      refreshTables();
+    }
+    if (els.files) els.files.value = "";
+  }
+
   els.send?.addEventListener("click", async () => {
     const text = (els.input?.value || "").trim();
     if (!text) return;
     els.send.disabled = true;
     try {
-      await ensureSession();
-      const uploaded = await uploadFiles();
-      if (uploaded.length && els.fileList) {
-        els.fileList.textContent =
-          "Pliki: " +
-          uploaded.map((u) => (u.ok ? u.filename + " ✓" : u.filename + " ✗")).join(", ");
-      }
-      appendMessage("user", text);
-      els.input.value = "";
-
-      const body = {
-        session_id: sessionId,
-        message: text,
-        use_rag: els.useRag?.checked !== false,
-        create_task: els.createTaskOnSend?.checked === true,
-        shell_command: els.shellFromChat?.value?.trim() || null,
-        task_title: text.slice(0, 80),
-      };
-      const r = await fetch("/api/chat/message", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-      const data = await r.json();
-      if (!r.ok) throw new Error(data.detail || "chat error");
-      sessionId = data.session_id;
-      localStorage.setItem(sessionKey, sessionId);
-      renderHistory(data.history || []);
-      if (data.task?.ok) {
-        toast(els.taskToast, "Utworzono zadanie: " + data.task.task_id, true);
-        refreshTables();
-      }
-      if (els.files) els.files.value = "";
+      await handleSendMessage(text);
     } catch (e) {
       appendMessage("assistant", "Błąd: " + e.message);
     } finally {

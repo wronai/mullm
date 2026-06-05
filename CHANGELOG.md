@@ -116,6 +116,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.10] - 2026-06-05
+
+### Docs
+- Update SUMD.md
+- Update SUMR.md
+- Update TODO.md
+- Update docs/README.md
+- Update docs/agent-orchestration.md
+- Update docs/architecture-service-integrations.md
+- Update docs/e2e-chat-routing.md
+- Update docs/quality-intract-propact.md
+- Update docs/routing-feedback-loop.md
+- Update docs/ticket-queues-and-planfile.md
+- ... and 3 more files
+
+### Test
+- Update tests/pacts/mullm-chat.md
+- Update tests/pacts/mullm-health.md
+- Update tests/pacts/mullm-health.response.md
+
+### Other
+- Update .env.example
+- Update .gitignore
+- Update Makefile
+- Update agents/shell-agent/app/nats_consumer.py
+- Update app.doql.less
+- Update docker/nlp2cmd-service.Dockerfile
+- Update integrations/nlp2cmd/agent_manifest.yaml
+- Update integrations/nlp2cmd/schemas.json
+- Update project/analysis.toon.yaml
+- Update project/calls.mmd
+- ... and 80 more files
+
 ## [0.0.9] - 2026-06-04
 
 ### Docs

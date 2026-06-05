@@ -1,0 +1,41 @@
+name: test-quality
+
+on:
+  push:
+    paths:
+      - "services/web/**"
+      - "intract.yaml"
+      - "scripts/**"
+      - "docker/**"
+      - "docker-compose.yml"
+  pull_request:
+    paths:
+      - "services/web/**"
+      - "intract.yaml"
+      - "scripts/**"
+      - "docker/**"
+      - "docker-compose.yml"
+
+jobs:
+  unit-intract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install test deps
+        run: pip install -r requirements-dev.txt -r services/web/requirements.txt
+      - name: pytest (web)
+        run: |
+          pytest -c services/web/pytest.ini services/web/tests \
+            --ignore=services/web/tests/test_api_routes.py \
+            --ignore=services/web/tests/test_e2e_live_stack.py -q
+      - name: intract validate (optional)
+        run: |
+          pip install intract 2>/dev/null || true
+          if python -c "import intract" 2>/dev/null; then
+            python -m intract validate . --manifest intract.yaml
+          else
+            echo "SKIP intract — install from semcod/intract in CI when published"
+          fi

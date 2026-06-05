@@ -23,7 +23,7 @@ Mullm - Multi-Agent Learning and Labor Management
 - **name**: `mullm`
 - **version**: `0.0.0`
 - **ecosystem**: SUMD + DOQL + testql + taskfile
-- **generated_from**: requirements-dev.txt, Makefile, testql(2), app.doql.less, goal.yaml, .env.example, docker-compose.yml, project/(3 analysis files)
+- **generated_from**: requirements-dev.txt, requirements-quality.txt, Makefile, testql(2), app.doql.less, goal.yaml, .env.example, docker-compose.yml, project/(3 analysis files)
 
 ## Architecture
 
@@ -401,13 +401,33 @@ workflow[name="test"] {
 workflow[name="test-web"] {
   trigger: manual;
   step-1: run cmd=pip install -q -r requirements-dev.txt -r services/web/requirements.txt;
-  step-2: run cmd=pytest -c services/web/pytest.ini services/web/tests -q;
+  step-2: run cmd=[ -f requirements-quality.txt ] && pip install -q -r requirements-quality.txt || true;
+  step-3: run cmd=pytest -c services/web/pytest.ini services/web/tests -q;
 }
 
 workflow[name="test-e2e-live"] {
   trigger: manual;
   step-1: run cmd=pip install -q -r requirements-dev.txt -r services/web/requirements.txt;
-  step-2: run cmd=MULLM_E2E=1 pytest -c services/web/pytest.ini services/web/tests/test_e2e_live_stack.py -v;
+  step-2: run cmd=chmod +x scripts/wait-for-web.sh;
+  step-3: run cmd=./scripts/wait-for-web.sh;
+  step-4: run cmd=MULLM_E2E=1 pytest -c services/web/pytest.ini services/web/tests/test_e2e_live_stack.py -v;
+}
+
+workflow[name="test-quality"] {
+  trigger: manual;
+  step-1: run cmd=chmod +x scripts/test-quality.sh;
+  step-2: run cmd=./scripts/test-quality.sh;
+}
+
+workflow[name="test-quality-deps"] {
+  trigger: manual;
+  step-1: run cmd=pip install -q -r requirements-dev.txt -r services/web/requirements.txt -r requirements-quality.txt;
+}
+
+workflow[name="propact-pact"] {
+  trigger: manual;
+  step-1: run cmd=chmod +x scripts/run-propact-pact.sh;
+  step-2: run cmd=./scripts/run-propact-pact.sh;
 }
 
 workflow[name="mullm-cli"] {
@@ -606,6 +626,12 @@ pip install -e .[dev]
 - `httpx==0.27.2`
 - `fastapi==0.104.1`
 - `starlette==0.27.0`
+- `anyio>=3.7.1,<4.0.0`
+
+#### `requirements-quality.txt`
+
+- `typer>=0.12.0,<1.0`
+- `rich>=13.0`
 
 ### Docker Compose (`docker-compose.yml`)
 
@@ -618,7 +644,7 @@ pip install -e .[dev]
 - **nlp2dsl-nlp** image=`{'context': '../nlp2dsl/nlp-service'}` ports: `${MULLM_NLP2DSL_NLP_HOST_PORT:-8012}:8002`
 - **nlp2dsl-backend** image=`{'context': '../nlp2dsl/backend'}` ports: `${MULLM_NLP2DSL_BACKEND_HOST_PORT:-8010}:8000`
 - **nlp2dsl-worker** image=`{'context': '../nlp2dsl/worker'}`
-- **nlp2cmd** image=`{'context': '../nlp2cmd', 'dockerfile': 'Dockerfile', 'target': 'runtime'}` ports: `${MULLM_NLP2CMD_HOST_PORT:-8020}:8000`
+- **nlp2cmd** image=`{'context': '..', 'dockerfile': 'mullm/docker/nlp2cmd-service.Dockerfile'}` ports: `${MULLM_NLP2CMD_HOST_PORT:-8020}:8000`
 - **web** image=`{'context': './services/web', 'dockerfile': 'Dockerfile'}` ports: `${MULLM_WEB_HOST_PORT}:${MULLM_WEB_PORT}`
 - **shell-agent-a** image=`{'context': './agents/shell-agent', 'dockerfile': 'Dockerfile'}`
 - **shell-agent-b** image=`{'context': './agents/shell-agent', 'dockerfile': 'Dockerfile'}`
@@ -678,6 +704,10 @@ pip install -e .[dev]
 | `MULLM_NLP2CMD_HOST_PORT` | `8020` | Uruchom: NLP2CMD=1 make up  lub  make nlp2cmd-up |
 | `NLP2CMD_BACKEND_URL` | `http://localhost:8020` |  |
 | `MULLM_NLP2CMD_BACKEND_URL` | `http://nlp2cmd:8000` |  |
+| `PROMPT_ROUTER_MODE` | `auto` | auto = hybrid gdy nlp2cmd/OpenRouter dostępne; rules = tylko regex; llm = reguły+LLM |
+| `MULLM_ROUTING_NLP2CMD` | `1` |  |
+| `MULLM_ROUTING_NLP2CMD_MIN_CONFIDENCE` | `0.65` |  |
+| `MULLM_SHELL_WAIT_SECONDS` | `20` | Czekaj na stdout shell w tej samej odpowiedzi czatu (0 = tylko ticket, wynik w ◎) |
 | `CATALOG_PATH` | `*(not set)*` | --- App --- |
 | `ENVIRONMENT` | `development` |  |
 | `EVENT_STORE_BACKEND` | `postgres` |  |
@@ -709,6 +739,9 @@ pip install -e .[dev]
 - `test`
 - `test-web`
 - `test-e2e-live`
+- `test-quality`
+- `test-quality-deps`
+- `propact-pact`
 - `mullm-cli`
 - `smoke`
 - `ensure-env`
@@ -723,23 +756,26 @@ pip install -e .[dev]
 ### `project/map.toon.yaml`
 
 ```toon markpact:analysis path=project/map.toon.yaml
-# mullm | 172f 24003L | python:158,css:5,shell:4,javascript:4,less:1 | 2026-06-04
-# stats: 828 func | 153 cls | 172 mod | CC̄=2.8 | critical:3 | cycles:0
-# alerts[5]: CC test_incident_recorder_publishes_projectable_events=14; CC test_projector_get_routes_are_unique=11; CC test_format_export_text_uses_log_limit_for_verbose_sections=10; CC _nfo_counts=9; CC test_live_nlp2cmd_shell_nl=9
-# hotspots[5]: _rag_failure_result fan=27; lifespan fan=21; upload_resource fan=17; search fan=15; _append_export_sections fan=15
+# mullm | 198f 28712L | python:181,shell:7,css:5,javascript:4,less:1 | 2026-06-05
+# stats: 997 func | 168 cls | 198 mod | CC̄=3.1 | critical:15 | cycles:0
+# alerts[5]: CC explain_pipeline=16; CC test_load_default_policy=15; CC test_incident_recorder_publishes_projectable_events=14; CC orient_query=13; CC _should_prefer_nlp2cmd_over_rules=13
+# hotspots[5]: _rag_failure_result fan=27; lifespan fan=21; upload_resource fan=17; aggregate_learnings fan=16; search fan=15
 # evolution: baseline
 # Keys: M=modules, D=details, i=imports, e=exports, c=classes, f=functions, m=methods
-M[172]:
+M[198]:
   agents/shell-agent/app/__init__.py,2
   agents/shell-agent/app/executor.py,49
   agents/shell-agent/app/main.py,27
   agents/shell-agent/app/nats_consumer.py,48
-  app.doql.less,454
+  app.doql.less,474
   integrations/nlp2dsl/mullm_registry.py,33
   integrations/nlp2dsl/patch_startup.py,8
   project.sh,53
-  scripts/e2e-chat-routing.sh,72
+  scripts/e2e-chat-routing.sh,80
+  scripts/run-propact-pact.sh,72
+  scripts/test-quality.sh,63
   scripts/test.sh,14
+  scripts/wait-for-web.sh,23
   services/orchestrator/app/__init__.py,2
   services/orchestrator/app/access/__init__.py,5
   services/orchestrator/app/access/adapters/__init__.py,18
@@ -757,7 +793,7 @@ M[172]:
   services/orchestrator/app/api/queries.py,205
   services/orchestrator/app/api/rag.py,143
   services/orchestrator/app/application/__init__.py,2
-  services/orchestrator/app/application/command_bus.py,981
+  services/orchestrator/app/application/command_bus.py,990
   services/orchestrator/app/application/sagas/__init__.py,15
   services/orchestrator/app/application/sagas/approval_gate.py,147
   services/orchestrator/app/application/sagas/task_routing.py,67
@@ -832,55 +868,78 @@ M[172]:
   services/web/app/__init__.py,1
   services/web/app/access_matrix.py,249
   services/web/app/agent_plugins/__init__.py,20
-  services/web/app/agent_plugins/nlp2cmd_plugin.py,93
+  services/web/app/agent_plugins/nlp2cmd_plugin.py,111
   services/web/app/agent_plugins/nlp2dsl_plugin.py,23
-  services/web/app/agent_plugins/protocol.py,49
-  services/web/app/agent_plugins/registry.py,74
+  services/web/app/agent_plugins/protocol.py,64
+  services/web/app/agent_plugins/registry.py,96
   services/web/app/agent_workroom.py,643
   services/web/app/api/__init__.py,2
   services/web/app/api/access_routes.py,47
   services/web/app/api/agents_routes.py,14
-  services/web/app/api/chat_routes.py,169
+  services/web/app/api/chat_routes.py,182
   services/web/app/api/config.py,17
-  services/web/app/api/models.py,81
-  services/web/app/api/router_routes.py,33
-  services/web/app/api/task_routes.py,186
+  services/web/app/api/feedback_routes.py,52
+  services/web/app/api/models.py,92
+  services/web/app/api/router_routes.py,88
+  services/web/app/api/task_routes.py,191
   services/web/app/api/workroom_routes.py,55
   services/web/app/api/workspace_routes.py,81
-  services/web/app/api_routes.py,24
-  services/web/app/chat.py,983
-  services/web/app/conductor.py,1179
+  services/web/app/api_routes.py,26
+  services/web/app/chat.py,1072
+  services/web/app/conductor.py,1486
+  services/web/app/local_orient.py,208
   services/web/app/main.py,105
-  services/web/app/nlp2dsl_bridge.py,134
-  services/web/app/prompt_router.py,489
+  services/web/app/nlp2dsl_bridge.py,175
+  services/web/app/planfile_bridge.py,103
+  services/web/app/prompt_router.py,927
   services/web/app/resource_areas.py,172
-  services/web/app/routing_policy.py,156
+  services/web/app/routing/__init__.py,14
+  services/web/app/routing/decision.py,101
+  services/web/app/routing/execution_resolver.py,91
+  services/web/app/routing/ingress_cache.py,44
+  services/web/app/routing/orientation_provider.py,82
+  services/web/app/routing_feedback.py,413
+  services/web/app/routing_policy.py,183
+  services/web/app/routing_schemas.py,172
+  services/web/app/routing_trace.py,740
   services/web/app/static/access.css,84
   services/web/app/static/access.js,158
   services/web/app/static/app.css,200
-  services/web/app/static/app.js,194
+  services/web/app/static/app.js,207
   services/web/app/static/workroom.css,87
   services/web/app/static/workroom.js,269
-  services/web/app/static/workspace.css,779
-  services/web/app/static/workspace.js,1155
+  services/web/app/static/workspace.css,856
+  services/web/app/static/workspace.js,1402
+  services/web/app/ticket_schemas.py,144
   services/web/app/tickets.py,46
-  services/web/app/workspace.py,1410
+  services/web/app/workspace.py,1439
   services/web/src/styles.css,287
-  services/web/tests/conftest.py,76
+  services/web/tests/conftest.py,84
   services/web/tests/test_access_matrix.py,38
   services/web/tests/test_agent_plugins.py,47
   services/web/tests/test_agent_workroom.py,73
-  services/web/tests/test_api_routes.py,21
+  services/web/tests/test_api_routes.py,23
   services/web/tests/test_artifacts.py,191
-  services/web/tests/test_chat_intent.py,126
-  services/web/tests/test_conductor_ingress.py,83
+  services/web/tests/test_chat_intent.py,127
+  services/web/tests/test_conductor_ingress.py,102
+  services/web/tests/test_context_tickets.py,40
   services/web/tests/test_continue_intent.py,38
-  services/web/tests/test_e2e_chat_api.py,168
-  services/web/tests/test_e2e_live_stack.py,137
+  services/web/tests/test_e2e_chat_api.py,231
+  services/web/tests/test_e2e_live_stack.py,204
+  services/web/tests/test_intract_contracts.py,56
+  services/web/tests/test_local_orient.py,14
   services/web/tests/test_nlp2dsl_bridge.py,44
-  services/web/tests/test_prompt_router.py,63
-  services/web/tests/test_routing_policy.py,34
+  services/web/tests/test_nlp2dsl_orient.py,122
+  services/web/tests/test_nlp2dsl_resume.py,74
+  services/web/tests/test_prompt_router.py,76
+  services/web/tests/test_prompt_router_hybrid.py,110
+  services/web/tests/test_routing_contract.py,102
+  services/web/tests/test_routing_explain.py,48
+  services/web/tests/test_routing_feedback.py,76
+  services/web/tests/test_routing_policy.py,42
+  services/web/tests/test_routing_schemas.py,78
   services/web/tests/test_shell_nl_intent.py,15
+  services/web/tests/test_ticket_schemas.py,40
   tests/conftest.py,354
   tests/test_access_fabric.py,62
   tests/test_agent_aggregate.py,33
@@ -1517,7 +1576,7 @@ D:
   services/web/app/agent_plugins/__init__.py:
   services/web/app/agent_plugins/nlp2cmd_plugin.py:
     e: backend_candidates,_translation_from_response,Nlp2CmdPlugin
-    Nlp2CmdPlugin: health(0),translate_shell(1)
+    Nlp2CmdPlugin: health(0),translate_shell(1),analyze_shell_nl(1)
     backend_candidates()
     _translation_from_response(data)
   services/web/app/agent_plugins/nlp2dsl_plugin.py:
@@ -1525,15 +1584,16 @@ D:
     Nlp2DslPlugin: health(0),translate_shell(1)
   services/web/app/agent_plugins/protocol.py:
     e: ShellTranslation,AgentPlugin
-    ShellTranslation:  # Wynik tłumaczenia NL → polecenie shell (bez wykonania).
+    ShellTranslation: from_validated_analysis(2)  # Wynik tłumaczenia NL → polecenie shell (bez wykonania).
     AgentPlugin: plugin_id(0),title(0),executor_agent_id(0),ingress_steps(0),route_kinds(0),health(0),translate_shell(1)  # Plugin łączący Mullm z usługą agenta (HTTP/CLI w sibling rep
   services/web/app/agent_plugins/registry.py:
-    e: bootstrap,list_plugins,get_plugin,plugins_for_ingress_step,agents_status,translate_shell_nl
+    e: bootstrap,list_plugins,get_plugin,plugins_for_ingress_step,agents_status,analyze_shell_nl,translate_shell_nl
     bootstrap()
     list_plugins()
     get_plugin(plugin_id)
     plugins_for_ingress_step(step)
     agents_status()
+    analyze_shell_nl(message)
     translate_shell_nl(message)
   services/web/app/agent_workroom.py:
     e: create_workroom,get_workroom,_plan_steps,_build_file_list_for_goal,format_workroom_export,_workroom_export_header,_append_workroom_thread,_append_workroom_ledger,_append_workroom_result,_extract_shell,run_workroom,_reset_workroom,_start_plan,_workspace_scope,_run_workroom_step,_run_analyze_workroom_step,_run_files_workroom_step,_run_shell_workroom_step,_run_summarize_workroom_step,_run_analyze_step,_run_files_step,_add_permission,_record_file_list_result,_register_file_list_artifact,_run_shell_step,_record_shell_result,_run_summarize_step,_finish_workroom,workroom_catalog,LedgerEntry,WorkroomSession
@@ -1581,7 +1641,7 @@ D:
     e: agents_status_get
     agents_status_get()
   services/web/app/api/chat_routes.py:
-    e: start_chat_session,get_chat_session,workspace_state,chat_message,_form_only_message,_form_only_chat_message,_update_nlp_conversation,task_draft,context_attach,upload_files,_upload_one_file,board_snapshot
+    e: start_chat_session,get_chat_session,workspace_state,chat_message,_form_only_message,_form_only_chat_message,_update_nlp_conversation,task_draft,context_attach,context_clear_tickets,upload_files,_upload_one_file,board_snapshot
     start_chat_session(body)
     get_chat_session(session_id)
     workspace_state(session_id)
@@ -1591,12 +1651,19 @@ D:
     _update_nlp_conversation(session;outcome)
     task_draft(body)
     context_attach(body)
+    context_clear_tickets(body)
     upload_files(session_id;files;classification)
     _upload_one_file(client;upload)
     board_snapshot()
   services/web/app/api/config.py:
+  services/web/app/api/feedback_routes.py:
+    e: routing_feedback_post,routing_feedback_list,routing_learnings,routing_improvements
+    routing_feedback_post(body)
+    routing_feedback_list(session_id;limit)
+    routing_learnings(limit)
+    routing_improvements(status;limit)
   services/web/app/api/models.py:
-    e: ChatSessionStart,ChatMessage,TaskDraftRequest,CreateTaskBody,CreateFromDraftBody,ConfirmTicketBody,SessionRef,ContextAttachBody,WorkroomStart,WorkroomMessage,AccessMatrixBody
+    e: ChatSessionStart,ChatMessage,TaskDraftRequest,CreateTaskBody,CreateFromDraftBody,ConfirmTicketBody,SessionRef,ContextAttachBody,WorkroomStart,WorkroomMessage,RoutingFeedbackBody,AccessMatrixBody
     ChatSessionStart:
     ChatMessage:
     TaskDraftRequest:
@@ -1607,13 +1674,18 @@ D:
     ContextAttachBody:
     WorkroomStart:
     WorkroomMessage:
+    RoutingFeedbackBody:
     AccessMatrixBody:
   services/web/app/api/router_routes.py:
-    e: router_decide,routing_policy_get
+    e: router_decide,routing_schemas_get,ticket_schemas_get,routing_policy_get,routing_explain,routing_trace_last
     router_decide(message;mode;use_rag)
+    routing_schemas_get()
+    ticket_schemas_get()
     routing_policy_get(reload)
+    routing_explain(message;mode;use_rag;session_id)
+    routing_trace_last(session_id)
   services/web/app/api/task_routes.py:
-    e: create_task,create_task_from_draft,create_and_run_task,list_tickets,ticket_statuses,get_ticket,confirm_ticket,archive_ticket,link_ticket,_archived_ids,_filter_tickets_view,_is_archived_ticket,_is_active_ticket,_confirmable_task_and_agent,_task_from_board,_assert_confirmable_task,_first_idle_agent_id,_assign_ticket
+    e: create_task,create_task_from_draft,create_and_run_task,list_tickets,ticket_statuses,get_ticket,confirm_ticket,archive_ticket,link_ticket,unlink_ticket,_archived_ids,_filter_tickets_view,_is_archived_ticket,_is_active_ticket,_confirmable_task_and_agent,_task_from_board,_assert_confirmable_task,_first_idle_agent_id,_assign_ticket
     create_task(body)
     create_task_from_draft(body)
     create_and_run_task(body)
@@ -1623,6 +1695,7 @@ D:
     confirm_ticket(task_id;body)
     archive_ticket(task_id;body)
     link_ticket(task_id;body)
+    unlink_ticket(task_id;body)
     _archived_ids(session_id)
     _filter_tickets_view(items;view)
     _is_archived_ticket(item)
@@ -1648,7 +1721,7 @@ D:
     workspace_logs_export(session_id;limit)
   services/web/app/api_routes.py:
   services/web/app/chat.py:
-    e: _orch,_projector,is_continue_intent,is_file_list_intent,is_shell_nl_intent,_has_list_word,_looks_like_misspelled_file_list,_has_polish_file_list_words,_has_english_file_list_words,_has_user_files_phrase,file_list_scope,_system_scope_requested,_user_scope_requested,_rag_scope_requested,_session_scope_requested,_uri_is_user_resource,_uri_is_system_resource,filter_file_inventory,_filtered_resources,_filter_rows_by_scope,_rows_matching_uri,_rows_in_session_scope,_dedupe_rows_by_uri,_row_dedupe_key,fetch_file_inventory,_fetch_inventory_rows,format_file_list_reply,_safe_list,_list_scope_value,_append_session_files,_append_uploaded_session_files,_append_user_context_only,_append_scope_uris,_format_scope_uri,_append_resource_rows,_format_resource_row,_empty_resource_hint,_append_rag_rows,_rag_rows_label,_format_rag_doc_row,_append_file_list_errors,_append_file_list_tip,build_file_list_artifact,new_session_id,get_history,_append,stamp_last_assistant_routing,_format_history,_format_incident,_incident_detail_parts,_incident_message_part,_incident_trace_part,_incident_correlation_part,_incident_fallback_part,handle_message,_file_list_answer,probe_rag,_ask_rag,_rag_headers,_rag_query,_answer_from_rag_payload,_sources_fallback_answer,_source_preview,_rag_backend_fallback,_rag_search_fallback,_rag_unavailable_answer,_rag_diagnostics_hint,_default_chat_reply,_message_response,_response_intent,_attach_inventory_response,_attach_trace_response,create_task,_task_create_payload,_apply_task_agent,_apply_task_shell
+    e: _orch,_projector,is_continue_intent,is_file_list_intent,is_shell_nl_intent,_has_list_word,_looks_like_misspelled_file_list,_has_polish_file_list_words,_has_english_file_list_words,_has_user_files_phrase,file_list_scope,_system_scope_requested,_user_scope_requested,_rag_scope_requested,_session_scope_requested,_uri_is_user_resource,_uri_is_system_resource,filter_file_inventory,_filtered_resources,_filter_rows_by_scope,_rows_matching_uri,_rows_in_session_scope,_dedupe_rows_by_uri,_row_dedupe_key,fetch_file_inventory,_fetch_inventory_rows,format_file_list_reply,_safe_list,_list_scope_value,_append_session_files,_append_uploaded_session_files,_get_user_context_parts,_append_tickets_context,_append_other_context,_append_user_context_only,_append_scope_uris,_format_scope_uri,_append_resource_rows,_format_resource_row,_empty_resource_hint,_append_rag_rows,_rag_rows_label,_format_rag_doc_row,_append_file_list_errors,_append_file_list_tip,build_file_list_artifact,new_session_id,get_history,_append,stamp_last_assistant_routing,_format_history,_format_incident,_incident_detail_parts,_incident_message_part,_incident_trace_part,_incident_correlation_part,_incident_fallback_part,handle_message,_file_list_answer,probe_rag,_ask_rag,_rag_headers,_rag_query,_answer_from_rag_payload,_sources_fallback_answer,_source_preview,_rag_backend_fallback,_rag_search_fallback,_rag_unavailable_answer,_rag_diagnostics_hint,_default_chat_reply,_message_response,_response_intent,_attach_inventory_response,_attach_trace_response,fetch_task_state,_fetch_task_from_projector,wait_for_task_terminal,create_task,_task_create_payload,_apply_task_agent,_apply_task_shell
     _orch()
     _projector()
     is_continue_intent(message)
@@ -1680,6 +1753,9 @@ D:
     _list_scope_value(inventory;list_scope)
     _append_session_files(lines;list_scope;scope_files;scope_uris)
     _append_uploaded_session_files(lines;scope_files)
+    _get_user_context_parts(scope_uris)
+    _append_tickets_context(lines;tickets)
+    _append_other_context(lines;other)
     _append_user_context_only(lines;list_scope;scope_uris)
     _append_scope_uris(lines;list_scope;scope_uris)
     _format_scope_uri(uri)
@@ -1721,12 +1797,15 @@ D:
     _response_intent(inventory;use_rag)
     _attach_inventory_response(out;answer;inventory;session_id)
     _attach_trace_response(out;last_payload)
+    fetch_task_state(task_id)
+    _fetch_task_from_projector(task_id)
+    wait_for_task_terminal(task_id)
     create_task()
     _task_create_payload()
     _apply_task_agent(payload;agent_id)
     _apply_task_shell(payload;shell_command;wait_for_confirmation;agent_id)
   services/web/app/conductor.py:
-    e: _merge_nlp2dsl_routing,_attach_routing,_enrich_decision,_rag_answer_turn,_execute_rules_route,_execute_file_list_route,_execute_shell_route,_missing_shell_response,_create_shell_task,_apply_nlp2cmd_decision,_shell_route_response,_shell_task_reply,_execute_rag_route,handle_turn,_message_with_form_values,_run_ingress_pipeline,_rag_probe_step,_rag_probe_enabled,_rag_probe_should_answer,_rag_probe_answer,_should_skip_rag_probe,_nlp2dsl_continue_decision,_mullm_continue_clarify_decision,_continue_clarify_reply,_try_continue_turn,_rag_probe_decision,_rules_step,_should_skip_nlp2dsl_step,_nlp2cmd_ingress_decision,_agent_shell_step,_nlp2dsl_step,_rag_answer_step,_rag_pipeline_decision,_fallback_routed_turn,_decide_default_route,_nlp2dsl_turn,_nlp2dsl_status_turn,_call_nlp2dsl,_nlp_output_base,_in_progress_turn,_ready_turn,_ready_action_payload,_system_file_list_payload,_shell_task_payload,_shell_clarify_payload,_ticket_payload,_task_reply,_closed_turn,_append_turn,_mullm_file_list_turn,_fallback_turn,_local_clarify,_extract_shell,TurnState
+    e: _merge_nlp2dsl_routing,_attach_routing,_enrich_decision,_rag_answer_turn,_execute_rules_route,_execute_file_list_route,_execute_shell_route,_missing_shell_response,_shell_wait_seconds,_create_shell_task,_translation_from_policy_flags,_apply_nlp2cmd_decision,_shell_route_response,_shell_task_reply,_format_shell_terminal,_execute_rag_route,handle_turn,_message_with_form_values,_attach_decision_tree,_should_interrupt_nlp2dsl_resume,_nlp2dsl_orient_step,_nlp2dsl_resume_step,_run_ingress_pipeline,_rag_probe_step,_rag_probe_enabled,_rag_probe_should_answer,_rag_probe_answer,_should_skip_rag_probe,_nlp2dsl_continue_decision,_mullm_continue_clarify_decision,_continue_clarify_reply,_try_continue_turn,_rag_probe_decision,_rules_step,_should_skip_nlp2dsl_step,_nlp2cmd_ingress_decision,_agent_shell_step,_nlp2dsl_step,_rag_answer_step,_rag_pipeline_decision,_fallback_routed_turn,_decide_default_route,_nlp2dsl_turn,_nlp2dsl_status_turn,_call_nlp2dsl,_nlp_output_base,_in_progress_turn,_ready_turn,_ready_action_payload,_system_file_list_payload,_shell_task_payload,_shell_clarify_payload,_ticket_payload,_task_reply,_closed_turn,_append_turn,_mullm_file_list_turn,_fallback_turn,_local_clarify,_extract_shell,TurnState
     TurnState:
     _merge_nlp2dsl_routing(out;nlp_routing;decision)
     _attach_routing(session_id;out;decision)
@@ -1736,13 +1815,20 @@ D:
     _execute_file_list_route()
     _execute_shell_route()
     _missing_shell_response(session_id;decision)
+    _shell_wait_seconds()
     _create_shell_task(session_id)
+    _translation_from_policy_flags(decision)
     _apply_nlp2cmd_decision(decision;translation)
     _shell_route_response(session_id;message;decision;result)
     _shell_task_reply(result;agent)
+    _format_shell_terminal(state)
     _execute_rag_route()
     handle_turn()
     _message_with_form_values(message;form_values)
+    _attach_decision_tree(out)
+    _should_interrupt_nlp2dsl_resume(state)
+    _nlp2dsl_orient_step(state)
+    _nlp2dsl_resume_step(state)
     _run_ingress_pipeline(state)
     _rag_probe_step(state)
     _rag_probe_enabled(state)
@@ -1781,6 +1867,14 @@ D:
     _fallback_turn()
     _local_clarify(message)
     _extract_shell(text)
+  services/web/app/local_orient.py:
+    e: _has_registry_hint,_has_host_hint,_is_file_list_query,_file_list_scope,orient_query,OrientationResult
+    OrientationResult: to_dict(0)
+    _has_registry_hint(text)
+    _has_host_hint(text)
+    _is_file_list_query(text)
+    _file_list_scope(text)
+    orient_query(text)
   services/web/app/main.py:
     e: health,workspace_home,agent_workroom_page,access_matrix_page,dashboard
     health()
@@ -1789,12 +1883,15 @@ D:
     access_matrix_page(request)
     dashboard(request)
   services/web/app/nlp2dsl_bridge.py:
-    e: backend_url,backend_candidates,health,chat_start,chat_message,_post_json,form_to_prompt,primary_action,step_config,routing_from_response,intent_routing_policy_flags,merge_intent_into_policy_flags
+    e: backend_url,backend_candidates,health,chat_start,chat_message,orient,nlp_service_candidates,orient_direct,_post_json,form_to_prompt,primary_action,step_config,routing_from_response,intent_routing_policy_flags,merge_intent_into_policy_flags
     backend_url()
     backend_candidates()
     health()
     chat_start(text)
     chat_message(conversation_id;text)
+    orient(text)
+    nlp_service_candidates()
+    orient_direct(text)
     _post_json(path;payload)
     form_to_prompt(form;values)
     primary_action(dsl)
@@ -1802,8 +1899,16 @@ D:
     routing_from_response(resp)
     intent_routing_policy_flags(routing)
     merge_intent_into_policy_flags(policy_flags;routing)
+  services/web/app/planfile_bridge.py:
+    e: planfile_sync_enabled,planfile_project_path,sync_improvement_ticket,_build_create_cmd,_improvement_files,_parse_created_id
+    planfile_sync_enabled()
+    planfile_project_path()
+    sync_improvement_ticket(ticket)
+    _build_create_cmd(ticket)
+    _improvement_files(ticket)
+    _parse_created_id(stdout)
   services/web/app/prompt_router.py:
-    e: _candidate,_build_decision,_shell_prefix,decide_route_rules,_router_flags,_empty_route_decision,_direct_route_decision,_default_route_decision,_mode_route_decision,_file_list_route_decision,_shell_route_decision,_default_discuss_decision,_fallback_mode_decision,decide_route_llm,_llm_classifier_data,_llm_classifier_payload,_llm_system_prompt,_normalize_router_model,_extract_llm_json,_llm_decision_from_data,_llm_route,decide_route,_merged_llm_decision,record_route_event,RouteDecision
+    e: _candidate,_build_decision,_shell_prefix,decide_route_rules,_router_flags,_empty_route_decision,_direct_route_decision,_default_route_decision,_mode_route_decision,_file_list_route_decision,_shell_route_decision,_shell_nl_route_decision,_default_discuss_decision,_fallback_mode_decision,decide_route_llm,_llm_classifier_data,_llm_classifier_payload,_normalize_router_model,_extract_llm_json,_llm_decision_from_data,_llm_route,_explicit_registry_list,_registry_scope_requested,_host_filesystem_list_requested,_command_looks_like_host_list,_nlp2cmd_min_confidence,_routing_use_nlp2cmd,_local_min_confidence,_local_confidence_sufficient,_match_expectations_local,_decision_from_expectations,_safe_analyze_shell_nl,_gather_local_analyses,_pick_local_winner,_resolve_local_decision,_decision_from_nlp2cmd,_should_prefer_nlp2cmd_over_rules,_resolve_router_mode,decide_route_local_first,decide_route_hybrid,decide_route,_merged_llm_decision,record_route_event,RouteDecision
     RouteDecision: to_dict(0)  # Audytowalna decyzja routingu (ingress Mullm BFF).
     _candidate(route;handler;intent;confidence;reason_codes)
     _build_decision(chosen)
@@ -1816,16 +1921,35 @@ D:
     _mode_route_decision(chat_mode;flags)
     _file_list_route_decision(text;flags)
     _shell_route_decision(text;flags)
+    _shell_nl_route_decision(text;flags)
     _default_discuss_decision(flags)
     _fallback_mode_decision(chat_mode;flags)
     decide_route_llm(message)
     _llm_classifier_data(api_key;model;message)
     _llm_classifier_payload(model;message)
-    _llm_system_prompt()
     _normalize_router_model(model)
     _extract_llm_json(content)
     _llm_decision_from_data(data)
     _llm_route(route)
+    _explicit_registry_list(message)
+    _registry_scope_requested(message)
+    _host_filesystem_list_requested(message)
+    _command_looks_like_host_list(command)
+    _nlp2cmd_min_confidence()
+    _routing_use_nlp2cmd()
+    _local_min_confidence()
+    _local_confidence_sufficient(decision)
+    _match_expectations_local(message)
+    _decision_from_expectations(message;expectations;rules)
+    _safe_analyze_shell_nl(message)
+    _gather_local_analyses(message)
+    _pick_local_winner(pool)
+    _resolve_local_decision(message)
+    _decision_from_nlp2cmd(message;translation)
+    _should_prefer_nlp2cmd_over_rules(message;translation;rules)
+    _resolve_router_mode()
+    decide_route_local_first(message)
+    decide_route_hybrid(message)
     decide_route(message)
     _merged_llm_decision(rules;llm)
     record_route_event(session_id;decision)
@@ -1836,18 +1960,109 @@ D:
     agent_may_access(role_id;area_id;action)
     _area_policy_decision(policy;area_id;action)
     _matrix_access_decision(role_id;area_id;action)
+  services/web/app/routing/__init__.py:
+  services/web/app/routing/decision.py:
+    e: OrientationDecision
+    OrientationDecision: from_dict(2),to_dict(0),is_actionable(0),shell_translation_source(0)
+  services/web/app/routing/execution_resolver.py:
+    e: route_from_orientation
+    route_from_orientation(orient)
+  services/web/app/routing/ingress_cache.py:
+    e: _normalize_text,cache_key,get_cached_orient,set_cached_orient,clear_cache
+    _normalize_text(text)
+    cache_key(session_id;message)
+    get_cached_orient(session_id;message)
+    set_cached_orient(session_id;message;orient)
+    clear_cache()
+  services/web/app/routing/orientation_provider.py:
+    e: _orient_remote,_orient_timeout,orient_message
+    _orient_remote(text)
+    _orient_timeout()
+    orient_message(text)
+  services/web/app/routing_feedback.py:
+    e: feedback_dir,_feedback_path,_improvements_path,_now_iso,_find_turn_context,_resolve_feedback_inputs,_build_feedback_tags,record_feedback,_create_improvement_ticket,_maybe_sync_planfile,_suggest_actions,list_feedback,list_improvement_tickets,aggregate_learnings,_append_jsonl,_read_jsonl_tail,new_turn_id,RoutingFeedbackRecord
+    RoutingFeedbackRecord: to_dict(0)
+    feedback_dir()
+    _feedback_path()
+    _improvements_path()
+    _now_iso()
+    _find_turn_context(session_id;turn_id)
+    _resolve_feedback_inputs(session_id;turn_id;user_message;routing;decision_tree)
+    _build_feedback_tags(rating;actual_route;expected_route;improvement_notes;tags)
+    record_feedback()
+    _create_improvement_ticket()
+    _maybe_sync_planfile(ticket)
+    _suggest_actions()
+    list_feedback()
+    list_improvement_tickets()
+    aggregate_learnings()
+    _append_jsonl(path;obj)
+    _read_jsonl_tail(path)
+    new_turn_id()
   services/web/app/routing_policy.py:
-    e: _policy_path,_parse_policy,_parse_agents,_valid_ingress_order,_parse_mode_overrides,_valid_override_steps,_parse_rag_probe,load_policy,RagProbeSettings,RoutingPolicy
+    e: _policy_path,_parse_policy,_parse_user_expectations,_parse_agents,_valid_ingress_order,_parse_mode_overrides,_valid_override_steps,_parse_rag_probe,load_policy,RagProbeSettings,RoutingPolicy
     RagProbeSettings:
     RoutingPolicy: ingress_for_mode(1),agent_for_route(1),to_dict(0)
     _policy_path()
     _parse_policy(data;path)
+    _parse_user_expectations(raw)
     _parse_agents(raw_agents)
     _valid_ingress_order(raw_order)
     _parse_mode_overrides(overrides)
     _valid_override_steps(spec)
     _parse_rag_probe(raw)
     load_policy()
+  services/web/app/routing_schemas.py:
+    e: routing_analysis_use_explain,build_nlp2cmd_request,parse_nlp2cmd_response,parse_llm_classifier,llm_classifier_json_schema,llm_system_prompt_with_schema,schemas_bundle,Nlp2CmdQueryRequest,Nlp2CmdQueryResponse,LlmRouteClassifierOutput,NlpCommandAnalysis
+    Nlp2CmdQueryRequest:  # Zgodne z nlp2cmd.service.QueryRequest.
+    Nlp2CmdQueryResponse: command_text(0)  # Zgodne z nlp2cmd.service.QueryResponse.
+    LlmRouteClassifierOutput:  # JSON z OpenRouter (PROMPT_ROUTER_MODE llm/hybrid).
+    NlpCommandAnalysis: to_shell_translation(0),to_policy_flags(0)  # Walidowany wynik analizy NL (nlp2cmd) używany przez router M
+    routing_analysis_use_explain()
+    build_nlp2cmd_request(message)
+    parse_nlp2cmd_response(data)
+    parse_llm_classifier(data)
+    llm_classifier_json_schema()
+    llm_system_prompt_with_schema()
+    schemas_bundle()
+  services/web/app/routing_trace.py:
+    e: new_trace,append_step,_is_expectation_hit,match_user_expectations,_node_empty,_node_mode_override,_node_continue,_node_file_list,_node_shell_prefix,_node_shell_nl,_node_default_discuss,build_rules_rule_nodes,_file_list_checks,_default_principles,explain_pipeline,_build_rag_probe_checks,_check_rag_probe_skipped,_evaluate_rag_probe_hits,_explain_rag_probe,_explain_rules_step,_explain_agent_shell,_explain_nlp2dsl,_explain_rag_answer,_orient_category_to_route,align_tree_to_route,record_live_step,TraceCheck,TraceStep,DecisionTree
+    TraceCheck: to_dict(0)
+    TraceStep: to_dict(0)
+    DecisionTree: to_dict(0)
+    new_trace()
+    append_step(trace;step)
+    _is_expectation_hit(text;spec)
+    match_user_expectations(message;policy)
+    _node_empty(passed)
+    _node_mode_override(chat_mode;passed)
+    _node_continue()
+    _node_file_list(text;file_list)
+    _node_shell_prefix(shell_prefix)
+    _node_shell_nl(shell_nl)
+    _node_default_discuss()
+    build_rules_rule_nodes(message)
+    _file_list_checks(text)
+    _default_principles()
+    explain_pipeline(message)
+    _build_rag_probe_checks(use_rag;rp;skip_file;skip_shell;skip_nl)
+    _check_rag_probe_skipped(use_rag;rp;skip_file;skip_shell;skip_nl;checks)
+    _evaluate_rag_probe_hits(rp;hits;checks)
+    _explain_rag_probe(text)
+    _explain_rules_step(text)
+    _explain_agent_shell(text)
+    _explain_nlp2dsl(text)
+    _explain_rag_answer()
+    _orient_category_to_route(category)
+    align_tree_to_route(tree;actual_route)
+    record_live_step(trace)
+  services/web/app/ticket_schemas.py:
+    e: schemas_bundle,MullmTicketRef,ExecutionTicketCreate,ImprovementTicket,WorkflowTicketRef
+    MullmTicketRef:  # Wspólny nagłówek odniesienia (URI + źródło).
+    ExecutionTicketCreate:  # POST orchestrator /api/commands/tasks (CreateTask).
+    ImprovementTicket: planfile_title(0),planfile_description(0),planfile_labels(0)  # mullm.routing.improvement_ticket.v1 (routing feedback).
+    WorkflowTicketRef:  # nlp2dsl — rozmowa workflow (nie UUID orchestratora).
+    schemas_bundle()
   services/web/app/tickets.py:
     e: ticket_uri,ticket_web_path,status_meta,enrich_task
     ticket_uri(task_id)
@@ -1855,7 +2070,7 @@ D:
     status_meta(status)
     enrich_task(row)
   services/web/app/workspace.py:
-    e: _orch,_projector,new_session,get_session,get_or_create,_artifact_title,register_artifact,artifact_summaries,get_artifact,workspace_state,attach_context,_apply_context_scalars,_append_unique,_extract_ticket,_extract_shell_command,build_task_payload,propose_task_draft,create_task_immediate,_resolved_task_agent,handle_chat_message,_attach_ticket_context,_dispatch_chat_mode,_create_task_from_message,_task_chat_outcome,_task_result_reply,_search_context_outcome,_conductor_outcome,_record_chat_outcome,_register_outcome_artifact,_record_file_list_event,_record_rag_trace_event,_record_rag_incident_event,_record_task_outcome,_chat_response,create_task_from_draft,create_and_run,format_chat_export_text,_append_chat_export_message,_append_chat_export_trace,_append_chat_export_draft,clamp_log_export_limit,export_debug_logs,_debug_export_base,_attach_orchestrator_debug_export,_merge_orchestrator_debug_payload,_attach_operational_feed,_filter_operational_feed,_format_export_text,_export_header,_append_export_sections,_list_section,_dict_section,_visible_log_limit,_nfo_package_version,_emit_nfo_event,_build_nfo_package,_nfo_counts,_nfo_errors,_append_nfo_section,_append_orchestrator_error,_trace_event_row,_trace_message_row,_routing_fingerprint,_append_context_section,_append_context_scalars,_append_context_collections,_append_inventory_section,_append_resource_inventory,_append_rag_inventory,_append_history_section,_append_history_message,_format_routing_line,_routing_base_parts,_routing_optional_parts,_routing_fallback_parts,_routing_shell_plugin_parts,_routing_nlp2dsl_parts,_append_routing_trace_section,_append_routing_trace_decision,_append_candidate_routes,_format_candidate_route,_collect_routing_trace,_append_unique_trace_row,_append_draft_section,_append_session_events_section,_event_extra,_event_extra_parts,_routing_event_extra,_append_rag_health_section,_append_incidents_section,_append_rag_snapshots_section,_session_rag_snapshots,_append_operational_feed_section,archive_task,link_ticket,fetch_live_board,WorkspaceContext,WorkspaceSession
+    e: _orch,_projector,new_session,get_session,get_or_create,_artifact_title,register_artifact,artifact_summaries,get_artifact,workspace_state,attach_context,_apply_context_scalars,_append_unique,_extract_ticket,_extract_shell_command,build_task_payload,propose_task_draft,create_task_immediate,_resolved_task_agent,handle_chat_message,_attach_ticket_context,_dispatch_chat_mode,_create_task_from_message,_task_chat_outcome,_task_result_reply,_search_context_outcome,_conductor_outcome,_record_chat_outcome,_register_outcome_artifact,_record_file_list_event,_record_rag_trace_event,_record_rag_incident_event,_record_task_outcome,_chat_response,create_task_from_draft,create_and_run,format_chat_export_text,_append_chat_export_message,_append_chat_export_trace,_append_chat_export_draft,clamp_log_export_limit,export_debug_logs,_debug_export_base,_attach_orchestrator_debug_export,_merge_orchestrator_debug_payload,_attach_operational_feed,_filter_operational_feed,_format_export_text,_export_header,_append_export_sections,_list_section,_dict_section,_visible_log_limit,_nfo_package_version,_emit_nfo_event,_build_nfo_package,_nfo_counts,_nfo_errors,_append_nfo_section,_append_orchestrator_error,_trace_event_row,_trace_message_row,_routing_fingerprint,_append_context_section,_append_context_scalars,_append_context_collections,_append_inventory_section,_append_resource_inventory,_append_rag_inventory,_append_history_section,_append_history_message,_format_routing_line,_routing_base_parts,_routing_optional_parts,_routing_fallback_parts,_routing_shell_plugin_parts,_routing_nlp2dsl_parts,_append_routing_trace_section,_append_routing_trace_decision,_append_candidate_routes,_format_candidate_route,_collect_routing_trace,_append_unique_trace_row,_append_draft_section,_append_session_events_section,_event_extra,_event_extra_parts,_routing_event_extra,_append_rag_health_section,_append_incidents_section,_append_rag_snapshots_section,_session_rag_snapshots,_append_operational_feed_section,archive_task,link_ticket,unlink_ticket,clear_ticket_uris,fetch_live_board,WorkspaceContext,WorkspaceSession
     WorkspaceContext: to_dict(0)
     WorkspaceSession: add_event(2)
     _orch()
@@ -1953,9 +2168,12 @@ D:
     _append_operational_feed_section(lines;feed)
     archive_task(session_id;task_id)
     link_ticket(session_id;task_id)
+    unlink_ticket(session_id;task_id)
+    clear_ticket_uris(session_id)
     fetch_live_board()
   services/web/tests/conftest.py:
-    e: fake_file_inventory,patch_file_inventory,patch_nlp2dsl_down,patch_nlp2cmd_translate,patch_shell_task
+    e: _deterministic_routing_env,fake_file_inventory,patch_file_inventory,patch_nlp2dsl_down,patch_nlp2cmd_translate,patch_shell_task
+    _deterministic_routing_env(monkeypatch)
     fake_file_inventory()
     patch_file_inventory(monkeypatch;fake_file_inventory)
     patch_nlp2dsl_down(monkeypatch)
@@ -2011,53 +2229,123 @@ D:
     test_dedupe_rag_documents_by_uri()
     test_handle_message_file_list_builds_artifact(monkeypatch)
   services/web/tests/test_conductor_ingress.py:
-    e: test_file_list_pipeline_skips_nlp2dsl,test_agent_shell_uses_nlp2cmd_not_nlp2dsl
-    test_file_list_pipeline_skips_nlp2dsl(monkeypatch)
+    e: test_orient_host_file_list_skips_nlp2dsl_chat,test_registry_file_list_via_orient,test_agent_shell_uses_nlp2cmd_not_nlp2dsl
+    test_orient_host_file_list_skips_nlp2dsl_chat(monkeypatch)
+    test_registry_file_list_via_orient(monkeypatch;patch_file_inventory)
     test_agent_shell_uses_nlp2cmd_not_nlp2dsl(monkeypatch;patch_nlp2cmd_translate;patch_nlp2dsl_down)
+  services/web/tests/test_context_tickets.py:
+    e: test_unlink_ticket_removes_uri_and_linked_id,test_unlink_ticket_keeps_other_uris,test_clear_ticket_uris_removes_all_ticket_uris
+    test_unlink_ticket_removes_uri_and_linked_id()
+    test_unlink_ticket_keeps_other_uris()
+    test_clear_ticket_uris_removes_all_ticket_uris()
   services/web/tests/test_continue_intent.py:
     e: test_is_continue_intent,test_continue_without_nlp_session_clarifies
     test_is_continue_intent()
     test_continue_without_nlp_session_clarifies(monkeypatch)
   services/web/tests/test_e2e_chat_api.py:
     e: api_client,_start_session,_chat,TestE2EChatRoutingApi
-    TestE2EChatRoutingApi: test_file_list_full_api_path(3),test_file_list_does_not_use_shell_for_home_directory(3),test_router_file_list_is_not_shell_decide(1),test_router_run_ls_home_is_shell(1),test_continue_clarify_not_unknown(3),test_router_decide_dry_run_file_list(1),test_routing_policy_endpoint(1),test_agents_status_endpoint(1),test_shell_nl_uses_nlp2cmd_plugin(4)  # Scenariusze z exportu workspace (file list, kontynuuj).
+    TestE2EChatRoutingApi: test_host_file_list_via_orient(2),test_registry_file_list_full_api_path(3),test_file_list_registry_scope_stays_mullm_file_list(3),test_router_file_list_rules_mode(1),test_router_run_ls_home_is_shell(1),test_continue_clarify_not_unknown(3),test_router_decide_dry_run_file_list(1),test_routing_feedback_on_turn(3),test_routing_explain_file_list_tree(2),test_routing_schemas_endpoint(1),test_routing_policy_endpoint(1),test_agents_status_endpoint(1),test_shell_nl_uses_nlp2cmd_plugin(4)  # Scenariusze z exportu workspace (file list, kontynuuj).
     api_client()
     _start_session(client)
     _chat(client;session_id;message)
   services/web/tests/test_e2e_live_stack.py:
-    e: http,test_live_health,test_live_file_list_chat,test_live_file_list_not_shell_route,test_live_shell_route_for_run_ls_home,test_live_router_decide,test_live_agents_status_lists_plugins,test_live_nlp2cmd_shell_nl
+    e: _wait_for_web_ready,_live_stack_ready,http,test_live_health,test_live_file_list_chat,test_live_file_list_host_or_registry,test_live_shell_route_for_run_ls_home,test_live_router_decide,test_live_routing_explain_file_list,test_live_chat_includes_decision_tree,test_live_routing_policy_has_routes,test_live_agents_status_lists_plugins,test_live_nlp2cmd_shell_nl
+    _wait_for_web_ready()
+    _live_stack_ready()
     http()
     test_live_health(http)
     test_live_file_list_chat(http)
-    test_live_file_list_not_shell_route(http)
+    test_live_file_list_host_or_registry(http)
     test_live_shell_route_for_run_ls_home(http)
     test_live_router_decide(http)
+    test_live_routing_explain_file_list(http)
+    test_live_chat_includes_decision_tree(http)
+    test_live_routing_policy_has_routes(http)
     test_live_agents_status_lists_plugins(http)
     test_live_nlp2cmd_shell_nl(http)
+  services/web/tests/test_intract_contracts.py:
+    e: _intract_cli_ready,test_intract_validate_routing_contracts
+    _intract_cli_ready()
+    test_intract_validate_routing_contracts()
+  services/web/tests/test_local_orient.py:
+    e: test_lista_plikow_usera_host,test_registry_hint
+    test_lista_plikow_usera_host()
+    test_registry_hint()
   services/web/tests/test_nlp2dsl_bridge.py:
     e: test_routing_from_response,test_intent_routing_policy_flags,test_merge_intent_into_policy_flags
     test_routing_from_response()
     test_intent_routing_policy_flags()
     test_merge_intent_into_policy_flags()
+  services/web/tests/test_nlp2dsl_orient.py:
+    e: test_orient_step_host_file_list,test_orient_step_registry_file_list,test_orient_local_fallback_host_list,test_orient_registry_falls_through_rules_when_unknown_category
+    test_orient_step_host_file_list(monkeypatch)
+    test_orient_step_registry_file_list(monkeypatch;patch_file_inventory)
+    test_orient_local_fallback_host_list(monkeypatch;patch_file_inventory)
+    test_orient_registry_falls_through_rules_when_unknown_category(monkeypatch;patch_file_inventory)
+  services/web/tests/test_nlp2dsl_resume.py:
+    e: test_nlp2dsl_resume_step_continues_conversation,test_nlp2dsl_resume_skipped_for_file_list
+    test_nlp2dsl_resume_step_continues_conversation(monkeypatch)
+    test_nlp2dsl_resume_skipped_for_file_list(monkeypatch)
   services/web/tests/test_prompt_router.py:
-    e: test_file_list_routes,test_shell_route,test_discuss_defaults_nlp2dsl,test_search_context_rag,test_route_decision_to_dict,test_decide_route_sets_timing
+    e: test_file_list_routes,test_file_list_registry_scope_higher_confidence,test_shell_route,test_discuss_defaults_nlp2dsl,test_search_context_rag,test_route_decision_to_dict,test_extract_llm_json_handles_none_and_empty,test_decide_route_sets_timing
     test_file_list_routes(msg;scope)
+    test_file_list_registry_scope_higher_confidence()
     test_shell_route()
     test_discuss_defaults_nlp2dsl()
     test_search_context_rag()
     test_route_decision_to_dict()
+    test_extract_llm_json_handles_none_and_empty()
     test_decide_route_sets_timing()
+  services/web/tests/test_prompt_router_hybrid.py:
+    e: _analysis,test_hybrid_nlp2cmd_prefers_shell_over_file_list,test_hybrid_prefers_host_shell_for_lista_plikow_usera,test_hybrid_keeps_file_list_when_registry_hint,test_hybrid_without_nlp2cmd_falls_back_expectations,test_local_sufficient_skips_openrouter,test_shell_nl_rules_local_route
+    _analysis(command;confidence)
+    test_hybrid_nlp2cmd_prefers_shell_over_file_list(monkeypatch)
+    test_hybrid_prefers_host_shell_for_lista_plikow_usera(monkeypatch)
+    test_hybrid_keeps_file_list_when_registry_hint(monkeypatch)
+    test_hybrid_without_nlp2cmd_falls_back_expectations(monkeypatch)
+    test_local_sufficient_skips_openrouter(monkeypatch)
+    test_shell_nl_rules_local_route(monkeypatch)
+  services/web/tests/test_routing_contract.py:
+    e: test_orientation_decision_from_dict,test_route_from_orientation_registry,test_route_from_orientation_shell_builtin,test_route_from_orientation_shell_nl_pending,test_orient_message_uses_cache
+    test_orientation_decision_from_dict()
+    test_route_from_orientation_registry()
+    test_route_from_orientation_shell_builtin()
+    test_route_from_orientation_shell_nl_pending()
+    test_orient_message_uses_cache()
+  services/web/tests/test_routing_explain.py:
+    e: test_explain_file_list_usera_selects_rules,test_explain_disk_space_agent_shell,test_align_file_list_route
+    test_explain_file_list_usera_selects_rules(monkeypatch)
+    test_explain_disk_space_agent_shell()
+    test_align_file_list_route()
+  services/web/tests/test_routing_feedback.py:
+    e: feedback_store,test_record_good_feedback,test_record_bad_creates_improvement_ticket,test_aggregate_learnings_proposes_expectation
+    feedback_store(tmp_path;monkeypatch)
+    test_record_good_feedback(feedback_store)
+    test_record_bad_creates_improvement_ticket(feedback_store)
+    test_aggregate_learnings_proposes_expectation(feedback_store)
   services/web/tests/test_routing_policy.py:
     e: test_load_default_policy,test_session_agent_overrides_route,test_mode_override_rag_only,test_policy_to_dict
     test_load_default_policy()
     test_session_agent_overrides_route()
     test_mode_override_rag_only()
     test_policy_to_dict()
+  services/web/tests/test_routing_schemas.py:
+    e: test_schemas_bundle_has_all_libraries,test_parse_nlp2cmd_response_rejects_invalid,test_parse_llm_classifier_valid_and_invalid,test_llm_prompt_embeds_json_schema,test_nlp_analysis_to_policy_flags
+    test_schemas_bundle_has_all_libraries()
+    test_parse_nlp2cmd_response_rejects_invalid()
+    test_parse_llm_classifier_valid_and_invalid()
+    test_llm_prompt_embeds_json_schema()
+    test_nlp_analysis_to_policy_flags()
   services/web/tests/test_shell_nl_intent.py:
     e: test_file_list_not_shell_nl,test_shell_nl_disk_intent,test_run_prefix_not_shell_nl
     test_file_list_not_shell_nl()
     test_shell_nl_disk_intent()
     test_run_prefix_not_shell_nl()
+  services/web/tests/test_ticket_schemas.py:
+    e: test_ticket_schemas_bundle,test_improvement_planfile_cmd,test_sync_disabled_without_env
+    test_ticket_schemas_bundle()
+    test_improvement_planfile_cmd()
+    test_sync_disabled_without_env()
   tests/conftest.py:
     e: fake_postgres,fake_bus,event_store,catalog,command_bus,sample_command_id,orchestrator_app,api_client,FakeRow,InMemoryPostgres,FakeMessageBus
     FakeRow: __getitem__(1),get(2),keys(0)
@@ -2188,12 +2476,15 @@ project_file('agents/shell-agent/app/__init__.py', 2, 'python').
 project_file('agents/shell-agent/app/executor.py', 49, 'python').
 project_file('agents/shell-agent/app/main.py', 27, 'python').
 project_file('agents/shell-agent/app/nats_consumer.py', 48, 'python').
-project_file('app.doql.less', 454, 'less').
+project_file('app.doql.less', 474, 'less').
 project_file('integrations/nlp2dsl/mullm_registry.py', 33, 'python').
 project_file('integrations/nlp2dsl/patch_startup.py', 8, 'python').
 project_file('project.sh', 53, 'shell').
-project_file('scripts/e2e-chat-routing.sh', 72, 'shell').
+project_file('scripts/e2e-chat-routing.sh', 80, 'shell').
+project_file('scripts/run-propact-pact.sh', 72, 'shell').
+project_file('scripts/test-quality.sh', 63, 'shell').
 project_file('scripts/test.sh', 14, 'shell').
+project_file('scripts/wait-for-web.sh', 23, 'shell').
 project_file('services/orchestrator/app/__init__.py', 2, 'python').
 project_file('services/orchestrator/app/access/__init__.py', 5, 'python').
 project_file('services/orchestrator/app/access/adapters/__init__.py', 18, 'python').
@@ -2211,7 +2502,7 @@ project_file('services/orchestrator/app/api/observability.py', 113, 'python').
 project_file('services/orchestrator/app/api/queries.py', 205, 'python').
 project_file('services/orchestrator/app/api/rag.py', 143, 'python').
 project_file('services/orchestrator/app/application/__init__.py', 2, 'python').
-project_file('services/orchestrator/app/application/command_bus.py', 981, 'python').
+project_file('services/orchestrator/app/application/command_bus.py', 990, 'python').
 project_file('services/orchestrator/app/application/sagas/__init__.py', 15, 'python').
 project_file('services/orchestrator/app/application/sagas/approval_gate.py', 147, 'python').
 project_file('services/orchestrator/app/application/sagas/task_routing.py', 67, 'python').
@@ -2286,55 +2577,78 @@ project_file('services/projector/app/projections/workflow_versions.py', 48, 'pyt
 project_file('services/web/app/__init__.py', 1, 'python').
 project_file('services/web/app/access_matrix.py', 249, 'python').
 project_file('services/web/app/agent_plugins/__init__.py', 20, 'python').
-project_file('services/web/app/agent_plugins/nlp2cmd_plugin.py', 93, 'python').
+project_file('services/web/app/agent_plugins/nlp2cmd_plugin.py', 111, 'python').
 project_file('services/web/app/agent_plugins/nlp2dsl_plugin.py', 23, 'python').
-project_file('services/web/app/agent_plugins/protocol.py', 49, 'python').
-project_file('services/web/app/agent_plugins/registry.py', 74, 'python').
+project_file('services/web/app/agent_plugins/protocol.py', 64, 'python').
+project_file('services/web/app/agent_plugins/registry.py', 96, 'python').
 project_file('services/web/app/agent_workroom.py', 643, 'python').
 project_file('services/web/app/api/__init__.py', 2, 'python').
 project_file('services/web/app/api/access_routes.py', 47, 'python').
 project_file('services/web/app/api/agents_routes.py', 14, 'python').
-project_file('services/web/app/api/chat_routes.py', 169, 'python').
+project_file('services/web/app/api/chat_routes.py', 182, 'python').
 project_file('services/web/app/api/config.py', 17, 'python').
-project_file('services/web/app/api/models.py', 81, 'python').
-project_file('services/web/app/api/router_routes.py', 33, 'python').
-project_file('services/web/app/api/task_routes.py', 186, 'python').
+project_file('services/web/app/api/feedback_routes.py', 52, 'python').
+project_file('services/web/app/api/models.py', 92, 'python').
+project_file('services/web/app/api/router_routes.py', 88, 'python').
+project_file('services/web/app/api/task_routes.py', 191, 'python').
 project_file('services/web/app/api/workroom_routes.py', 55, 'python').
 project_file('services/web/app/api/workspace_routes.py', 81, 'python').
-project_file('services/web/app/api_routes.py', 24, 'python').
-project_file('services/web/app/chat.py', 983, 'python').
-project_file('services/web/app/conductor.py', 1179, 'python').
+project_file('services/web/app/api_routes.py', 26, 'python').
+project_file('services/web/app/chat.py', 1072, 'python').
+project_file('services/web/app/conductor.py', 1486, 'python').
+project_file('services/web/app/local_orient.py', 208, 'python').
 project_file('services/web/app/main.py', 105, 'python').
-project_file('services/web/app/nlp2dsl_bridge.py', 134, 'python').
-project_file('services/web/app/prompt_router.py', 489, 'python').
+project_file('services/web/app/nlp2dsl_bridge.py', 175, 'python').
+project_file('services/web/app/planfile_bridge.py', 103, 'python').
+project_file('services/web/app/prompt_router.py', 927, 'python').
 project_file('services/web/app/resource_areas.py', 172, 'python').
-project_file('services/web/app/routing_policy.py', 156, 'python').
+project_file('services/web/app/routing/__init__.py', 14, 'python').
+project_file('services/web/app/routing/decision.py', 101, 'python').
+project_file('services/web/app/routing/execution_resolver.py', 91, 'python').
+project_file('services/web/app/routing/ingress_cache.py', 44, 'python').
+project_file('services/web/app/routing/orientation_provider.py', 82, 'python').
+project_file('services/web/app/routing_feedback.py', 413, 'python').
+project_file('services/web/app/routing_policy.py', 183, 'python').
+project_file('services/web/app/routing_schemas.py', 172, 'python').
+project_file('services/web/app/routing_trace.py', 740, 'python').
 project_file('services/web/app/static/access.css', 84, 'css').
 project_file('services/web/app/static/access.js', 158, 'javascript').
 project_file('services/web/app/static/app.css', 200, 'css').
-project_file('services/web/app/static/app.js', 194, 'javascript').
+project_file('services/web/app/static/app.js', 207, 'javascript').
 project_file('services/web/app/static/workroom.css', 87, 'css').
 project_file('services/web/app/static/workroom.js', 269, 'javascript').
-project_file('services/web/app/static/workspace.css', 779, 'css').
-project_file('services/web/app/static/workspace.js', 1155, 'javascript').
+project_file('services/web/app/static/workspace.css', 856, 'css').
+project_file('services/web/app/static/workspace.js', 1402, 'javascript').
+project_file('services/web/app/ticket_schemas.py', 144, 'python').
 project_file('services/web/app/tickets.py', 46, 'python').
-project_file('services/web/app/workspace.py', 1410, 'python').
+project_file('services/web/app/workspace.py', 1439, 'python').
 project_file('services/web/src/styles.css', 287, 'css').
-project_file('services/web/tests/conftest.py', 76, 'python').
+project_file('services/web/tests/conftest.py', 84, 'python').
 project_file('services/web/tests/test_access_matrix.py', 38, 'python').
 project_file('services/web/tests/test_agent_plugins.py', 47, 'python').
 project_file('services/web/tests/test_agent_workroom.py', 73, 'python').
-project_file('services/web/tests/test_api_routes.py', 21, 'python').
+project_file('services/web/tests/test_api_routes.py', 23, 'python').
 project_file('services/web/tests/test_artifacts.py', 191, 'python').
-project_file('services/web/tests/test_chat_intent.py', 126, 'python').
-project_file('services/web/tests/test_conductor_ingress.py', 83, 'python').
+project_file('services/web/tests/test_chat_intent.py', 127, 'python').
+project_file('services/web/tests/test_conductor_ingress.py', 102, 'python').
+project_file('services/web/tests/test_context_tickets.py', 40, 'python').
 project_file('services/web/tests/test_continue_intent.py', 38, 'python').
-project_file('services/web/tests/test_e2e_chat_api.py', 168, 'python').
-project_file('services/web/tests/test_e2e_live_stack.py', 137, 'python').
+project_file('services/web/tests/test_e2e_chat_api.py', 231, 'python').
+project_file('services/web/tests/test_e2e_live_stack.py', 204, 'python').
+project_file('services/web/tests/test_intract_contracts.py', 56, 'python').
+project_file('services/web/tests/test_local_orient.py', 14, 'python').
 project_file('services/web/tests/test_nlp2dsl_bridge.py', 44, 'python').
-project_file('services/web/tests/test_prompt_router.py', 63, 'python').
-project_file('services/web/tests/test_routing_policy.py', 34, 'python').
+project_file('services/web/tests/test_nlp2dsl_orient.py', 122, 'python').
+project_file('services/web/tests/test_nlp2dsl_resume.py', 74, 'python').
+project_file('services/web/tests/test_prompt_router.py', 76, 'python').
+project_file('services/web/tests/test_prompt_router_hybrid.py', 110, 'python').
+project_file('services/web/tests/test_routing_contract.py', 102, 'python').
+project_file('services/web/tests/test_routing_explain.py', 48, 'python').
+project_file('services/web/tests/test_routing_feedback.py', 76, 'python').
+project_file('services/web/tests/test_routing_policy.py', 42, 'python').
+project_file('services/web/tests/test_routing_schemas.py', 78, 'python').
 project_file('services/web/tests/test_shell_nl_intent.py', 15, 'python').
+project_file('services/web/tests/test_ticket_schemas.py', 40, 'python').
 project_file('tests/conftest.py', 354, 'python').
 project_file('tests/test_access_fabric.py', 62, 'python').
 project_file('tests/test_agent_aggregate.py', 33, 'python').
@@ -2679,7 +2993,8 @@ python_function('services/web/app/agent_plugins/registry.py', 'list_plugins', 0,
 python_function('services/web/app/agent_plugins/registry.py', 'get_plugin', 1, 1, 2).
 python_function('services/web/app/agent_plugins/registry.py', 'plugins_for_ingress_step', 1, 3, 2).
 python_function('services/web/app/agent_plugins/registry.py', 'agents_status', 0, 2, 4).
-python_function('services/web/app/agent_plugins/registry.py', 'translate_shell_nl', 1, 3, 3).
+python_function('services/web/app/agent_plugins/registry.py', 'analyze_shell_nl', 1, 4, 5).
+python_function('services/web/app/agent_plugins/registry.py', 'translate_shell_nl', 1, 4, 5).
 python_function('services/web/app/agent_workroom.py', 'create_workroom', 0, 1, 2).
 python_function('services/web/app/agent_workroom.py', 'get_workroom', 1, 1, 1).
 python_function('services/web/app/agent_workroom.py', '_plan_steps', 1, 5, 7).
@@ -2722,14 +3037,23 @@ python_function('services/web/app/api/chat_routes.py', 'workspace_state', 1, 1, 
 python_function('services/web/app/api/chat_routes.py', 'chat_message', 1, 3, 7).
 python_function('services/web/app/api/chat_routes.py', '_form_only_message', 1, 3, 2).
 python_function('services/web/app/api/chat_routes.py', '_form_only_chat_message', 2, 2, 3).
-python_function('services/web/app/api/chat_routes.py', '_update_nlp_conversation', 2, 2, 1).
+python_function('services/web/app/api/chat_routes.py', '_update_nlp_conversation', 2, 3, 2).
 python_function('services/web/app/api/chat_routes.py', 'task_draft', 1, 1, 2).
 python_function('services/web/app/api/chat_routes.py', 'context_attach', 1, 1, 2).
+python_function('services/web/app/api/chat_routes.py', 'context_clear_tickets', 1, 1, 2).
 python_function('services/web/app/api/chat_routes.py', 'upload_files', 3, 3, 6).
 python_function('services/web/app/api/chat_routes.py', '_upload_one_file', 2, 5, 5).
 python_function('services/web/app/api/chat_routes.py', 'board_snapshot', 0, 1, 2).
+python_function('services/web/app/api/feedback_routes.py', 'routing_feedback_post', 1, 2, 5).
+python_function('services/web/app/api/feedback_routes.py', 'routing_feedback_list', 2, 1, 2).
+python_function('services/web/app/api/feedback_routes.py', 'routing_learnings', 1, 1, 2).
+python_function('services/web/app/api/feedback_routes.py', 'routing_improvements', 2, 1, 2).
 python_function('services/web/app/api/router_routes.py', 'router_decide', 3, 1, 3).
+python_function('services/web/app/api/router_routes.py', 'routing_schemas_get', 0, 1, 2).
+python_function('services/web/app/api/router_routes.py', 'ticket_schemas_get', 0, 1, 2).
 python_function('services/web/app/api/router_routes.py', 'routing_policy_get', 1, 1, 3).
+python_function('services/web/app/api/router_routes.py', 'routing_explain', 4, 1, 2).
+python_function('services/web/app/api/router_routes.py', 'routing_trace_last', 1, 9, 4).
 python_function('services/web/app/api/task_routes.py', 'create_task', 1, 6, 7).
 python_function('services/web/app/api/task_routes.py', 'create_task_from_draft', 1, 2, 4).
 python_function('services/web/app/api/task_routes.py', 'create_and_run_task', 1, 2, 4).
@@ -2739,6 +3063,7 @@ python_function('services/web/app/api/task_routes.py', 'get_ticket', 2, 4, 5).
 python_function('services/web/app/api/task_routes.py', 'confirm_ticket', 2, 5, 8).
 python_function('services/web/app/api/task_routes.py', 'archive_ticket', 2, 1, 2).
 python_function('services/web/app/api/task_routes.py', 'link_ticket', 2, 1, 2).
+python_function('services/web/app/api/task_routes.py', 'unlink_ticket', 2, 1, 2).
 python_function('services/web/app/api/task_routes.py', '_archived_ids', 1, 2, 2).
 python_function('services/web/app/api/task_routes.py', '_filter_tickets_view', 2, 4, 2).
 python_function('services/web/app/api/task_routes.py', '_is_archived_ticket', 1, 1, 0).
@@ -2789,7 +3114,10 @@ python_function('services/web/app/chat.py', '_safe_list', 1, 2, 1).
 python_function('services/web/app/chat.py', '_list_scope_value', 2, 3, 1).
 python_function('services/web/app/chat.py', '_append_session_files', 4, 2, 4).
 python_function('services/web/app/chat.py', '_append_uploaded_session_files', 2, 3, 2).
-python_function('services/web/app/chat.py', '_append_user_context_only', 3, 6, 2).
+python_function('services/web/app/chat.py', '_get_user_context_parts', 1, 8, 2).
+python_function('services/web/app/chat.py', '_append_tickets_context', 2, 3, 3).
+python_function('services/web/app/chat.py', '_append_other_context', 2, 3, 1).
+python_function('services/web/app/chat.py', '_append_user_context_only', 3, 4, 4).
 python_function('services/web/app/chat.py', '_append_scope_uris', 3, 4, 3).
 python_function('services/web/app/chat.py', '_format_scope_uri', 1, 2, 1).
 python_function('services/web/app/chat.py', '_append_resource_rows', 3, 3, 6).
@@ -2830,25 +3158,35 @@ python_function('services/web/app/chat.py', '_message_response', 0, 1, 4).
 python_function('services/web/app/chat.py', '_response_intent', 2, 3, 0).
 python_function('services/web/app/chat.py', '_attach_inventory_response', 4, 4, 2).
 python_function('services/web/app/chat.py', '_attach_trace_response', 2, 2, 1).
+python_function('services/web/app/chat.py', 'fetch_task_state', 1, 5, 5).
+python_function('services/web/app/chat.py', '_fetch_task_from_projector', 1, 9, 7).
+python_function('services/web/app/chat.py', 'wait_for_task_terminal', 1, 6, 8).
 python_function('services/web/app/chat.py', 'create_task', 0, 3, 6).
 python_function('services/web/app/chat.py', '_task_create_payload', 0, 3, 2).
 python_function('services/web/app/chat.py', '_apply_task_agent', 2, 2, 0).
 python_function('services/web/app/chat.py', '_apply_task_shell', 4, 4, 0).
 python_function('services/web/app/conductor.py', '_merge_nlp2dsl_routing', 3, 3, 1).
-python_function('services/web/app/conductor.py', '_attach_routing', 3, 5, 5).
+python_function('services/web/app/conductor.py', '_attach_routing', 3, 12, 5).
 python_function('services/web/app/conductor.py', '_enrich_decision', 2, 3, 6).
 python_function('services/web/app/conductor.py', '_rag_answer_turn', 0, 1, 1).
 python_function('services/web/app/conductor.py', '_execute_rules_route', 0, 2, 2).
 python_function('services/web/app/conductor.py', '_execute_file_list_route', 0, 1, 3).
-python_function('services/web/app/conductor.py', '_execute_shell_route', 0, 4, 7).
-python_function('services/web/app/conductor.py', '_missing_shell_response', 2, 1, 3).
-python_function('services/web/app/conductor.py', '_create_shell_task', 1, 1, 1).
+python_function('services/web/app/conductor.py', '_execute_shell_route', 0, 8, 9).
+python_function('services/web/app/conductor.py', '_missing_shell_response', 2, 4, 8).
+python_function('services/web/app/conductor.py', '_shell_wait_seconds', 0, 3, 4).
+python_function('services/web/app/conductor.py', '_create_shell_task', 1, 6, 5).
+python_function('services/web/app/conductor.py', '_translation_from_policy_flags', 1, 7, 5).
 python_function('services/web/app/conductor.py', '_apply_nlp2cmd_decision', 2, 2, 4).
-python_function('services/web/app/conductor.py', '_shell_route_response', 4, 2, 6).
-python_function('services/web/app/conductor.py', '_shell_task_reply', 2, 5, 1).
+python_function('services/web/app/conductor.py', '_shell_route_response', 4, 3, 6).
+python_function('services/web/app/conductor.py', '_shell_task_reply', 2, 8, 4).
+python_function('services/web/app/conductor.py', '_format_shell_terminal', 1, 11, 7).
 python_function('services/web/app/conductor.py', '_execute_rag_route', 0, 1, 3).
-python_function('services/web/app/conductor.py', 'handle_turn', 0, 2, 5).
+python_function('services/web/app/conductor.py', 'handle_turn', 0, 2, 6).
 python_function('services/web/app/conductor.py', '_message_with_form_values', 2, 5, 2).
+python_function('services/web/app/conductor.py', '_attach_decision_tree', 1, 4, 7).
+python_function('services/web/app/conductor.py', '_should_interrupt_nlp2dsl_resume', 1, 4, 2).
+python_function('services/web/app/conductor.py', '_nlp2dsl_orient_step', 1, 5, 6).
+python_function('services/web/app/conductor.py', '_nlp2dsl_resume_step', 1, 6, 11).
 python_function('services/web/app/conductor.py', '_run_ingress_pipeline', 1, 4, 3).
 python_function('services/web/app/conductor.py', '_rag_probe_step', 1, 4, 6).
 python_function('services/web/app/conductor.py', '_rag_probe_enabled', 1, 3, 2).
@@ -2860,8 +3198,8 @@ python_function('services/web/app/conductor.py', '_mullm_continue_clarify_decisi
 python_function('services/web/app/conductor.py', '_continue_clarify_reply', 1, 3, 3).
 python_function('services/web/app/conductor.py', '_try_continue_turn', 1, 4, 13).
 python_function('services/web/app/conductor.py', '_rag_probe_decision', 0, 1, 1).
-python_function('services/web/app/conductor.py', '_rules_step', 1, 2, 4).
-python_function('services/web/app/conductor.py', '_should_skip_nlp2dsl_step', 1, 6, 5).
+python_function('services/web/app/conductor.py', '_rules_step', 1, 3, 5).
+python_function('services/web/app/conductor.py', '_should_skip_nlp2dsl_step', 1, 7, 3).
 python_function('services/web/app/conductor.py', '_nlp2cmd_ingress_decision', 1, 2, 2).
 python_function('services/web/app/conductor.py', '_agent_shell_step', 1, 3, 7).
 python_function('services/web/app/conductor.py', '_nlp2dsl_step', 1, 4, 8).
@@ -2887,6 +3225,11 @@ python_function('services/web/app/conductor.py', '_mullm_file_list_turn', 0, 1, 
 python_function('services/web/app/conductor.py', '_fallback_turn', 0, 4, 5).
 python_function('services/web/app/conductor.py', '_local_clarify', 1, 3, 3).
 python_function('services/web/app/conductor.py', '_extract_shell', 1, 3, 4).
+python_function('services/web/app/local_orient.py', '_has_registry_hint', 1, 2, 2).
+python_function('services/web/app/local_orient.py', '_has_host_hint', 1, 3, 2).
+python_function('services/web/app/local_orient.py', '_is_file_list_query', 1, 5, 4).
+python_function('services/web/app/local_orient.py', '_file_list_scope', 1, 5, 2).
+python_function('services/web/app/local_orient.py', 'orient_query', 1, 13, 10).
 python_function('services/web/app/main.py', 'health', 0, 1, 1).
 python_function('services/web/app/main.py', 'workspace_home', 2, 1, 2).
 python_function('services/web/app/main.py', 'agent_workroom_page', 1, 1, 2).
@@ -2897,35 +3240,63 @@ python_function('services/web/app/nlp2dsl_bridge.py', 'backend_candidates', 0, 4
 python_function('services/web/app/nlp2dsl_bridge.py', 'health', 0, 4, 3).
 python_function('services/web/app/nlp2dsl_bridge.py', 'chat_start', 1, 1, 1).
 python_function('services/web/app/nlp2dsl_bridge.py', 'chat_message', 2, 1, 1).
+python_function('services/web/app/nlp2dsl_bridge.py', 'orient', 1, 2, 1).
+python_function('services/web/app/nlp2dsl_bridge.py', 'nlp_service_candidates', 0, 4, 5).
+python_function('services/web/app/nlp2dsl_bridge.py', 'orient_direct', 1, 1, 2).
 python_function('services/web/app/nlp2dsl_bridge.py', '_post_json', 2, 4, 6).
 python_function('services/web/app/nlp2dsl_bridge.py', 'form_to_prompt', 2, 6, 4).
 python_function('services/web/app/nlp2dsl_bridge.py', 'primary_action', 1, 4, 1).
 python_function('services/web/app/nlp2dsl_bridge.py', 'step_config', 1, 5, 1).
 python_function('services/web/app/nlp2dsl_bridge.py', 'routing_from_response', 1, 2, 2).
-python_function('services/web/app/nlp2dsl_bridge.py', 'intent_routing_policy_flags', 1, 6, 2).
+python_function('services/web/app/nlp2dsl_bridge.py', 'intent_routing_policy_flags', 1, 7, 2).
 python_function('services/web/app/nlp2dsl_bridge.py', 'merge_intent_into_policy_flags', 2, 2, 2).
+python_function('services/web/app/planfile_bridge.py', 'planfile_sync_enabled', 0, 2, 3).
+python_function('services/web/app/planfile_bridge.py', 'planfile_project_path', 0, 5, 7).
+python_function('services/web/app/planfile_bridge.py', 'sync_improvement_ticket', 1, 9, 7).
+python_function('services/web/app/planfile_bridge.py', '_build_create_cmd', 1, 3, 5).
+python_function('services/web/app/planfile_bridge.py', '_improvement_files', 1, 3, 1).
+python_function('services/web/app/planfile_bridge.py', '_parse_created_id', 1, 7, 6).
 python_function('services/web/app/prompt_router.py', '_candidate', 5, 1, 0).
 python_function('services/web/app/prompt_router.py', '_build_decision', 1, 3, 5).
 python_function('services/web/app/prompt_router.py', '_shell_prefix', 1, 3, 5).
 python_function('services/web/app/prompt_router.py', 'decide_route_rules', 1, 4, 5).
 python_function('services/web/app/prompt_router.py', '_router_flags', 3, 2, 2).
 python_function('services/web/app/prompt_router.py', '_empty_route_decision', 1, 1, 2).
-python_function('services/web/app/prompt_router.py', '_direct_route_decision', 3, 3, 4).
+python_function('services/web/app/prompt_router.py', '_direct_route_decision', 3, 3, 5).
 python_function('services/web/app/prompt_router.py', '_default_route_decision', 2, 2, 2).
 python_function('services/web/app/prompt_router.py', '_mode_route_decision', 2, 3, 2).
-python_function('services/web/app/prompt_router.py', '_file_list_route_decision', 2, 2, 4).
+python_function('services/web/app/prompt_router.py', '_file_list_route_decision', 2, 5, 6).
 python_function('services/web/app/prompt_router.py', '_shell_route_decision', 2, 2, 3).
+python_function('services/web/app/prompt_router.py', '_shell_nl_route_decision', 2, 2, 3).
 python_function('services/web/app/prompt_router.py', '_default_discuss_decision', 1, 1, 2).
 python_function('services/web/app/prompt_router.py', '_fallback_mode_decision', 2, 1, 2).
 python_function('services/web/app/prompt_router.py', 'decide_route_llm', 1, 4, 4).
-python_function('services/web/app/prompt_router.py', '_llm_classifier_data', 3, 2, 5).
+python_function('services/web/app/prompt_router.py', '_llm_classifier_data', 3, 6, 7).
 python_function('services/web/app/prompt_router.py', '_llm_classifier_payload', 2, 1, 2).
-python_function('services/web/app/prompt_router.py', '_llm_system_prompt', 0, 1, 0).
 python_function('services/web/app/prompt_router.py', '_normalize_router_model', 1, 2, 2).
-python_function('services/web/app/prompt_router.py', '_extract_llm_json', 1, 2, 3).
-python_function('services/web/app/prompt_router.py', '_llm_decision_from_data', 1, 4, 6).
+python_function('services/web/app/prompt_router.py', '_extract_llm_json', 1, 4, 3).
+python_function('services/web/app/prompt_router.py', '_llm_decision_from_data', 1, 3, 6).
 python_function('services/web/app/prompt_router.py', '_llm_route', 1, 2, 0).
-python_function('services/web/app/prompt_router.py', 'decide_route', 1, 4, 7).
+python_function('services/web/app/prompt_router.py', '_explicit_registry_list', 1, 3, 2).
+python_function('services/web/app/prompt_router.py', '_registry_scope_requested', 1, 3, 2).
+python_function('services/web/app/prompt_router.py', '_host_filesystem_list_requested', 1, 4, 2).
+python_function('services/web/app/prompt_router.py', '_command_looks_like_host_list', 1, 3, 3).
+python_function('services/web/app/prompt_router.py', '_nlp2cmd_min_confidence', 0, 2, 2).
+python_function('services/web/app/prompt_router.py', '_routing_use_nlp2cmd', 0, 1, 3).
+python_function('services/web/app/prompt_router.py', '_local_min_confidence', 0, 2, 2).
+python_function('services/web/app/prompt_router.py', '_local_confidence_sufficient', 1, 4, 1).
+python_function('services/web/app/prompt_router.py', '_match_expectations_local', 1, 1, 2).
+python_function('services/web/app/prompt_router.py', '_decision_from_expectations', 3, 5, 5).
+python_function('services/web/app/prompt_router.py', '_safe_analyze_shell_nl', 1, 3, 2).
+python_function('services/web/app/prompt_router.py', '_gather_local_analyses', 1, 1, 4).
+python_function('services/web/app/prompt_router.py', '_pick_local_winner', 1, 1, 2).
+python_function('services/web/app/prompt_router.py', '_resolve_local_decision', 1, 7, 6).
+python_function('services/web/app/prompt_router.py', '_decision_from_nlp2cmd', 2, 5, 8).
+python_function('services/web/app/prompt_router.py', '_should_prefer_nlp2cmd_over_rules', 3, 13, 8).
+python_function('services/web/app/prompt_router.py', '_resolve_router_mode', 0, 5, 4).
+python_function('services/web/app/prompt_router.py', 'decide_route_local_first', 1, 8, 7).
+python_function('services/web/app/prompt_router.py', 'decide_route_hybrid', 1, 1, 1).
+python_function('services/web/app/prompt_router.py', 'decide_route', 1, 6, 5).
 python_function('services/web/app/prompt_router.py', '_merged_llm_decision', 2, 6, 1).
 python_function('services/web/app/prompt_router.py', 'record_route_event', 2, 1, 3).
 python_function('services/web/app/resource_areas.py', 'list_areas', 0, 2, 1).
@@ -2933,14 +3304,75 @@ python_function('services/web/app/resource_areas.py', 'list_groups', 0, 1, 0).
 python_function('services/web/app/resource_areas.py', 'agent_may_access', 3, 4, 3).
 python_function('services/web/app/resource_areas.py', '_area_policy_decision', 3, 5, 0).
 python_function('services/web/app/resource_areas.py', '_matrix_access_decision', 3, 3, 1).
+python_function('services/web/app/routing/execution_resolver.py', 'route_from_orientation', 1, 11, 6).
+python_function('services/web/app/routing/ingress_cache.py', '_normalize_text', 1, 2, 3).
+python_function('services/web/app/routing/ingress_cache.py', 'cache_key', 2, 1, 1).
+python_function('services/web/app/routing/ingress_cache.py', 'get_cached_orient', 2, 1, 2).
+python_function('services/web/app/routing/ingress_cache.py', 'set_cached_orient', 3, 1, 1).
+python_function('services/web/app/routing/ingress_cache.py', 'clear_cache', 0, 1, 1).
+python_function('services/web/app/routing/orientation_provider.py', '_orient_remote', 1, 6, 7).
+python_function('services/web/app/routing/orientation_provider.py', '_orient_timeout', 0, 2, 4).
+python_function('services/web/app/routing/orientation_provider.py', 'orient_message', 1, 8, 8).
+python_function('services/web/app/routing_feedback.py', 'feedback_dir', 0, 2, 4).
+python_function('services/web/app/routing_feedback.py', '_feedback_path', 0, 1, 2).
+python_function('services/web/app/routing_feedback.py', '_improvements_path', 0, 1, 2).
+python_function('services/web/app/routing_feedback.py', '_now_iso', 0, 1, 2).
+python_function('services/web/app/routing_feedback.py', '_find_turn_context', 2, 9, 4).
+python_function('services/web/app/routing_feedback.py', '_resolve_feedback_inputs', 5, 6, 3).
+python_function('services/web/app/routing_feedback.py', '_build_feedback_tags', 5, 8, 2).
+python_function('services/web/app/routing_feedback.py', 'record_feedback', 0, 7, 15).
+python_function('services/web/app/routing_feedback.py', '_create_improvement_ticket', 0, 2, 9).
+python_function('services/web/app/routing_feedback.py', '_maybe_sync_planfile', 1, 6, 4).
+python_function('services/web/app/routing_feedback.py', '_suggest_actions', 0, 7, 2).
+python_function('services/web/app/routing_feedback.py', 'list_feedback', 0, 4, 3).
+python_function('services/web/app/routing_feedback.py', 'list_improvement_tickets', 0, 4, 3).
+python_function('services/web/app/routing_feedback.py', 'aggregate_learnings', 0, 11, 16).
+python_function('services/web/app/routing_feedback.py', '_append_jsonl', 2, 1, 3).
+python_function('services/web/app/routing_feedback.py', '_read_jsonl_tail', 1, 5, 6).
+python_function('services/web/app/routing_feedback.py', 'new_turn_id', 0, 1, 2).
 python_function('services/web/app/routing_policy.py', '_policy_path', 0, 2, 4).
-python_function('services/web/app/routing_policy.py', '_parse_policy', 2, 5, 8).
+python_function('services/web/app/routing_policy.py', '_parse_policy', 2, 10, 11).
+python_function('services/web/app/routing_policy.py', '_parse_user_expectations', 1, 5, 4).
 python_function('services/web/app/routing_policy.py', '_parse_agents', 1, 4, 5).
 python_function('services/web/app/routing_policy.py', '_valid_ingress_order', 1, 5, 1).
 python_function('services/web/app/routing_policy.py', '_parse_mode_overrides', 1, 2, 3).
 python_function('services/web/app/routing_policy.py', '_valid_override_steps', 1, 6, 3).
 python_function('services/web/app/routing_policy.py', '_parse_rag_probe', 1, 1, 4).
 python_function('services/web/app/routing_policy.py', 'load_policy', 0, 5, 6).
+python_function('services/web/app/routing_schemas.py', 'routing_analysis_use_explain', 0, 1, 3).
+python_function('services/web/app/routing_schemas.py', 'build_nlp2cmd_request', 1, 1, 3).
+python_function('services/web/app/routing_schemas.py', 'parse_nlp2cmd_response', 1, 3, 2).
+python_function('services/web/app/routing_schemas.py', 'parse_llm_classifier', 1, 3, 2).
+python_function('services/web/app/routing_schemas.py', 'llm_classifier_json_schema', 0, 1, 1).
+python_function('services/web/app/routing_schemas.py', 'llm_system_prompt_with_schema', 0, 1, 2).
+python_function('services/web/app/routing_schemas.py', 'schemas_bundle', 0, 1, 2).
+python_function('services/web/app/routing_trace.py', 'new_trace', 0, 3, 5).
+python_function('services/web/app/routing_trace.py', 'append_step', 2, 3, 2).
+python_function('services/web/app/routing_trace.py', '_is_expectation_hit', 2, 13, 6).
+python_function('services/web/app/routing_trace.py', 'match_user_expectations', 2, 8, 9).
+python_function('services/web/app/routing_trace.py', '_node_empty', 1, 1, 0).
+python_function('services/web/app/routing_trace.py', '_node_mode_override', 2, 2, 0).
+python_function('services/web/app/routing_trace.py', '_node_continue', 0, 1, 0).
+python_function('services/web/app/routing_trace.py', '_node_file_list', 2, 5, 2).
+python_function('services/web/app/routing_trace.py', '_node_shell_prefix', 1, 3, 0).
+python_function('services/web/app/routing_trace.py', '_node_shell_nl', 1, 2, 0).
+python_function('services/web/app/routing_trace.py', '_node_default_discuss', 0, 1, 0).
+python_function('services/web/app/routing_trace.py', 'build_rules_rule_nodes', 1, 7, 14).
+python_function('services/web/app/routing_trace.py', '_file_list_checks', 1, 2, 7).
+python_function('services/web/app/routing_trace.py', '_default_principles', 0, 1, 0).
+python_function('services/web/app/routing_trace.py', 'explain_pipeline', 1, 16, 13).
+python_function('services/web/app/routing_trace.py', '_build_rag_probe_checks', 5, 2, 1).
+python_function('services/web/app/routing_trace.py', '_check_rag_probe_skipped', 6, 8, 1).
+python_function('services/web/app/routing_trace.py', '_evaluate_rag_probe_hits', 3, 3, 3).
+python_function('services/web/app/routing_trace.py', '_explain_rag_probe', 1, 6, 11).
+python_function('services/web/app/routing_trace.py', '_explain_rules_step', 1, 3, 6).
+python_function('services/web/app/routing_trace.py', '_explain_agent_shell', 1, 4, 6).
+python_function('services/web/app/routing_trace.py', '_explain_nlp2dsl', 1, 10, 9).
+python_function('services/web/app/routing_trace.py', '_explain_rag_answer', 0, 2, 3).
+python_function('services/web/app/routing_trace.py', '_orient_category_to_route', 1, 1, 1).
+python_function('services/web/app/routing_trace.py', 'align_tree_to_route', 2, 13, 2).
+python_function('services/web/app/routing_trace.py', 'record_live_step', 1, 3, 2).
+python_function('services/web/app/ticket_schemas.py', 'schemas_bundle', 0, 1, 1).
 python_function('services/web/app/tickets.py', 'ticket_uri', 1, 1, 0).
 python_function('services/web/app/tickets.py', 'ticket_web_path', 1, 1, 0).
 python_function('services/web/app/tickets.py', 'status_meta', 1, 3, 2).
@@ -2971,7 +3403,7 @@ python_function('services/web/app/workspace.py', '_create_task_from_message', 2,
 python_function('services/web/app/workspace.py', '_task_chat_outcome', 4, 1, 3).
 python_function('services/web/app/workspace.py', '_task_result_reply', 3, 4, 1).
 python_function('services/web/app/workspace.py', '_search_context_outcome', 4, 1, 1).
-python_function('services/web/app/workspace.py', '_conductor_outcome', 1, 2, 2).
+python_function('services/web/app/workspace.py', '_conductor_outcome', 1, 3, 3).
 python_function('services/web/app/workspace.py', '_record_chat_outcome', 2, 2, 5).
 python_function('services/web/app/workspace.py', '_register_outcome_artifact', 3, 2, 2).
 python_function('services/web/app/workspace.py', '_record_file_list_event', 2, 2, 2).
@@ -3040,7 +3472,10 @@ python_function('services/web/app/workspace.py', '_session_rag_snapshots', 1, 4,
 python_function('services/web/app/workspace.py', '_append_operational_feed_section', 2, 4, 3).
 python_function('services/web/app/workspace.py', 'archive_task', 2, 2, 3).
 python_function('services/web/app/workspace.py', 'link_ticket', 2, 3, 3).
+python_function('services/web/app/workspace.py', 'unlink_ticket', 2, 3, 4).
+python_function('services/web/app/workspace.py', 'clear_ticket_uris', 1, 4, 5).
 python_function('services/web/app/workspace.py', 'fetch_live_board', 0, 1, 5).
+python_function('services/web/tests/conftest.py', '_deterministic_routing_env', 1, 1, 3).
 python_function('services/web/tests/conftest.py', 'fake_file_inventory', 0, 1, 0).
 python_function('services/web/tests/conftest.py', 'patch_file_inventory', 2, 1, 1).
 python_function('services/web/tests/conftest.py', 'patch_nlp2dsl_down', 1, 1, 1).
@@ -3080,40 +3515,88 @@ python_function('services/web/tests/test_chat_intent.py', 'test_file_list_intent
 python_function('services/web/tests/test_chat_intent.py', 'test_file_list_scope_usera', 0, 5, 1).
 python_function('services/web/tests/test_chat_intent.py', 'test_filter_user_files', 0, 3, 3).
 python_function('services/web/tests/test_chat_intent.py', 'test_file_list_artifact', 0, 5, 2).
-python_function('services/web/tests/test_chat_intent.py', 'test_format_user_scope_title', 0, 5, 1).
+python_function('services/web/tests/test_chat_intent.py', 'test_format_user_scope_title', 0, 6, 1).
 python_function('services/web/tests/test_chat_intent.py', 'test_dedupe_rag_documents_by_uri', 0, 2, 2).
 python_function('services/web/tests/test_chat_intent.py', 'test_handle_message_file_list_builds_artifact', 1, 4, 2).
-python_function('services/web/tests/test_conductor_ingress.py', 'test_file_list_pipeline_skips_nlp2dsl', 1, 4, 4).
-python_function('services/web/tests/test_conductor_ingress.py', 'test_agent_shell_uses_nlp2cmd_not_nlp2dsl', 3, 7, 4).
+python_function('services/web/tests/test_conductor_ingress.py', 'test_orient_host_file_list_skips_nlp2dsl_chat', 1, 4, 5).
+python_function('services/web/tests/test_conductor_ingress.py', 'test_registry_file_list_via_orient', 2, 4, 4).
+python_function('services/web/tests/test_conductor_ingress.py', 'test_agent_shell_uses_nlp2cmd_not_nlp2dsl', 3, 9, 4).
+python_function('services/web/tests/test_context_tickets.py', 'test_unlink_ticket_removes_uri_and_linked_id', 0, 5, 3).
+python_function('services/web/tests/test_context_tickets.py', 'test_unlink_ticket_keeps_other_uris', 0, 3, 4).
+python_function('services/web/tests/test_context_tickets.py', 'test_clear_ticket_uris_removes_all_ticket_uris', 0, 3, 4).
 python_function('services/web/tests/test_continue_intent.py', 'test_is_continue_intent', 0, 6, 1).
 python_function('services/web/tests/test_continue_intent.py', 'test_continue_without_nlp_session_clarifies', 1, 4, 4).
-python_function('services/web/tests/test_e2e_chat_api.py', 'api_client', 0, 3, 3).
+python_function('services/web/tests/test_e2e_chat_api.py', 'api_client', 0, 3, 4).
 python_function('services/web/tests/test_e2e_chat_api.py', '_start_session', 1, 2, 2).
 python_function('services/web/tests/test_e2e_chat_api.py', '_chat', 3, 2, 2).
+python_function('services/web/tests/test_e2e_live_stack.py', '_wait_for_web_ready', 0, 7, 8).
+python_function('services/web/tests/test_e2e_live_stack.py', '_live_stack_ready', 0, 2, 3).
 python_function('services/web/tests/test_e2e_live_stack.py', 'http', 0, 1, 1).
 python_function('services/web/tests/test_e2e_live_stack.py', 'test_live_health', 1, 3, 2).
 python_function('services/web/tests/test_e2e_live_stack.py', 'test_live_file_list_chat', 1, 8, 4).
-python_function('services/web/tests/test_e2e_live_stack.py', 'test_live_file_list_not_shell_route', 1, 7, 4).
+python_function('services/web/tests/test_e2e_live_stack.py', 'test_live_file_list_host_or_registry', 1, 4, 3).
 python_function('services/web/tests/test_e2e_live_stack.py', 'test_live_shell_route_for_run_ls_home', 1, 2, 2).
 python_function('services/web/tests/test_e2e_live_stack.py', 'test_live_router_decide', 1, 3, 2).
+python_function('services/web/tests/test_e2e_live_stack.py', 'test_live_routing_explain_file_list', 1, 4, 3).
+python_function('services/web/tests/test_e2e_live_stack.py', 'test_live_chat_includes_decision_tree', 1, 4, 3).
+python_function('services/web/tests/test_e2e_live_stack.py', 'test_live_routing_policy_has_routes', 1, 9, 3).
 python_function('services/web/tests/test_e2e_live_stack.py', 'test_live_agents_status_lists_plugins', 1, 6, 2).
-python_function('services/web/tests/test_e2e_live_stack.py', 'test_live_nlp2cmd_shell_nl', 1, 9, 7).
+python_function('services/web/tests/test_e2e_live_stack.py', 'test_live_nlp2cmd_shell_nl', 1, 9, 5).
+python_function('services/web/tests/test_intract_contracts.py', '_intract_cli_ready', 0, 3, 1).
+python_function('services/web/tests/test_intract_contracts.py', 'test_intract_validate_routing_contracts', 0, 4, 7).
+python_function('services/web/tests/test_local_orient.py', 'test_lista_plikow_usera_host', 0, 3, 1).
+python_function('services/web/tests/test_local_orient.py', 'test_registry_hint', 0, 3, 1).
 python_function('services/web/tests/test_nlp2dsl_bridge.py', 'test_routing_from_response', 0, 3, 1).
 python_function('services/web/tests/test_nlp2dsl_bridge.py', 'test_intent_routing_policy_flags', 0, 4, 1).
 python_function('services/web/tests/test_nlp2dsl_bridge.py', 'test_merge_intent_into_policy_flags', 0, 3, 1).
-python_function('services/web/tests/test_prompt_router.py', 'test_file_list_routes', 2, 6, 2).
+python_function('services/web/tests/test_nlp2dsl_orient.py', 'test_orient_step_host_file_list', 1, 5, 3).
+python_function('services/web/tests/test_nlp2dsl_orient.py', 'test_orient_step_registry_file_list', 2, 3, 3).
+python_function('services/web/tests/test_nlp2dsl_orient.py', 'test_orient_local_fallback_host_list', 2, 5, 5).
+python_function('services/web/tests/test_nlp2dsl_orient.py', 'test_orient_registry_falls_through_rules_when_unknown_category', 2, 2, 3).
+python_function('services/web/tests/test_nlp2dsl_resume.py', 'test_nlp2dsl_resume_step_continues_conversation', 1, 4, 7).
+python_function('services/web/tests/test_nlp2dsl_resume.py', 'test_nlp2dsl_resume_skipped_for_file_list', 1, 2, 6).
+python_function('services/web/tests/test_prompt_router.py', 'test_file_list_routes', 2, 7, 2).
+python_function('services/web/tests/test_prompt_router.py', 'test_file_list_registry_scope_higher_confidence', 0, 3, 1).
 python_function('services/web/tests/test_prompt_router.py', 'test_shell_route', 0, 3, 1).
 python_function('services/web/tests/test_prompt_router.py', 'test_discuss_defaults_nlp2dsl', 0, 4, 2).
 python_function('services/web/tests/test_prompt_router.py', 'test_search_context_rag', 0, 3, 2).
 python_function('services/web/tests/test_prompt_router.py', 'test_route_decision_to_dict', 0, 3, 2).
+python_function('services/web/tests/test_prompt_router.py', 'test_extract_llm_json_handles_none_and_empty', 0, 4, 1).
 python_function('services/web/tests/test_prompt_router.py', 'test_decide_route_sets_timing', 0, 3, 1).
-python_function('services/web/tests/test_routing_policy.py', 'test_load_default_policy', 0, 8, 3).
+python_function('services/web/tests/test_prompt_router_hybrid.py', '_analysis', 2, 1, 3).
+python_function('services/web/tests/test_prompt_router_hybrid.py', 'test_hybrid_nlp2cmd_prefers_shell_over_file_list', 1, 5, 5).
+python_function('services/web/tests/test_prompt_router_hybrid.py', 'test_hybrid_prefers_host_shell_for_lista_plikow_usera', 1, 4, 5).
+python_function('services/web/tests/test_prompt_router_hybrid.py', 'test_hybrid_keeps_file_list_when_registry_hint', 1, 2, 4).
+python_function('services/web/tests/test_prompt_router_hybrid.py', 'test_hybrid_without_nlp2cmd_falls_back_expectations', 1, 3, 4).
+python_function('services/web/tests/test_prompt_router_hybrid.py', 'test_local_sufficient_skips_openrouter', 1, 2, 6).
+python_function('services/web/tests/test_prompt_router_hybrid.py', 'test_shell_nl_rules_local_route', 1, 3, 2).
+python_function('services/web/tests/test_routing_contract.py', 'test_orientation_decision_from_dict', 0, 5, 1).
+python_function('services/web/tests/test_routing_contract.py', 'test_route_from_orientation_registry', 0, 4, 2).
+python_function('services/web/tests/test_routing_contract.py', 'test_route_from_orientation_shell_builtin', 0, 4, 2).
+python_function('services/web/tests/test_routing_contract.py', 'test_route_from_orientation_shell_nl_pending', 0, 4, 2).
+python_function('services/web/tests/test_routing_contract.py', 'test_orient_message_uses_cache', 0, 5, 4).
+python_function('services/web/tests/test_routing_explain.py', 'test_explain_file_list_usera_selects_rules', 1, 8, 5).
+python_function('services/web/tests/test_routing_explain.py', 'test_explain_disk_space_agent_shell', 0, 5, 3).
+python_function('services/web/tests/test_routing_explain.py', 'test_align_file_list_route', 0, 5, 3).
+python_function('services/web/tests/test_routing_feedback.py', 'feedback_store', 2, 1, 2).
+python_function('services/web/tests/test_routing_feedback.py', 'test_record_good_feedback', 1, 4, 5).
+python_function('services/web/tests/test_routing_feedback.py', 'test_record_bad_creates_improvement_ticket', 1, 4, 5).
+python_function('services/web/tests/test_routing_feedback.py', 'test_aggregate_learnings_proposes_expectation', 1, 4, 6).
+python_function('services/web/tests/test_routing_policy.py', 'test_load_default_policy', 0, 15, 6).
 python_function('services/web/tests/test_routing_policy.py', 'test_session_agent_overrides_route', 0, 2, 2).
 python_function('services/web/tests/test_routing_policy.py', 'test_mode_override_rag_only', 0, 2, 2).
 python_function('services/web/tests/test_routing_policy.py', 'test_policy_to_dict', 0, 3, 2).
+python_function('services/web/tests/test_routing_schemas.py', 'test_schemas_bundle_has_all_libraries', 0, 6, 1).
+python_function('services/web/tests/test_routing_schemas.py', 'test_parse_nlp2cmd_response_rejects_invalid', 0, 7, 1).
+python_function('services/web/tests/test_routing_schemas.py', 'test_parse_llm_classifier_valid_and_invalid', 0, 5, 1).
+python_function('services/web/tests/test_routing_schemas.py', 'test_llm_prompt_embeds_json_schema', 0, 3, 1).
+python_function('services/web/tests/test_routing_schemas.py', 'test_nlp_analysis_to_policy_flags', 0, 6, 5).
 python_function('services/web/tests/test_shell_nl_intent.py', 'test_file_list_not_shell_nl', 0, 3, 2).
 python_function('services/web/tests/test_shell_nl_intent.py', 'test_shell_nl_disk_intent', 0, 2, 1).
 python_function('services/web/tests/test_shell_nl_intent.py', 'test_run_prefix_not_shell_nl', 0, 2, 1).
+python_function('services/web/tests/test_ticket_schemas.py', 'test_ticket_schemas_bundle', 0, 4, 1).
+python_function('services/web/tests/test_ticket_schemas.py', 'test_improvement_planfile_cmd', 0, 4, 2).
+python_function('services/web/tests/test_ticket_schemas.py', 'test_sync_disabled_without_env', 0, 2, 2).
 python_function('tests/conftest.py', 'fake_postgres', 0, 1, 1).
 python_function('tests/conftest.py', 'fake_bus', 0, 1, 1).
 python_function('tests/conftest.py', 'event_store', 1, 1, 1).
@@ -3251,7 +3734,7 @@ python_class('services/orchestrator/app/application/command_bus.py', 'CommandBus
 python_method('CommandBus', '__init__', 2, 1, 0).
 python_method('CommandBus', 'handle', 0, 4, 6).
 python_method('CommandBus', 'handle_envelope', 1, 4, 2).
-python_method('CommandBus', '_create_task', 4, 6, 11).
+python_method('CommandBus', '_create_task', 4, 8, 12).
 python_method('CommandBus', '_assign_task', 4, 3, 11).
 python_method('CommandBus', '_start_task', 4, 1, 6).
 python_method('CommandBus', '_complete_task', 4, 3, 11).
@@ -3641,11 +4124,13 @@ python_method('Database', 'fetch', 1, 2, 3).
 python_method('Database', '_run_schema_migrations', 0, 4, 10).
 python_class('services/web/app/agent_plugins/nlp2cmd_plugin.py', 'Nlp2CmdPlugin').
 python_method('Nlp2CmdPlugin', 'health', 0, 4, 3).
-python_method('Nlp2CmdPlugin', 'translate_shell', 1, 5, 7).
+python_method('Nlp2CmdPlugin', 'translate_shell', 1, 2, 2).
+python_method('Nlp2CmdPlugin', 'analyze_shell_nl', 1, 9, 11).
 python_class('services/web/app/agent_plugins/nlp2dsl_plugin.py', 'Nlp2DslPlugin').
 python_method('Nlp2DslPlugin', 'health', 0, 1, 1).
 python_method('Nlp2DslPlugin', 'translate_shell', 1, 1, 0).
 python_class('services/web/app/agent_plugins/protocol.py', 'ShellTranslation').
+python_method('ShellTranslation', 'from_validated_analysis', 2, 4, 6).
 python_class('services/web/app/agent_plugins/protocol.py', 'AgentPlugin').
 python_method('AgentPlugin', 'plugin_id', 0, 1, 0).
 python_method('AgentPlugin', 'title', 0, 1, 0).
@@ -3670,29 +4155,63 @@ python_class('services/web/app/api/models.py', 'SessionRef').
 python_class('services/web/app/api/models.py', 'ContextAttachBody').
 python_class('services/web/app/api/models.py', 'WorkroomStart').
 python_class('services/web/app/api/models.py', 'WorkroomMessage').
+python_class('services/web/app/api/models.py', 'RoutingFeedbackBody').
 python_class('services/web/app/api/models.py', 'AccessMatrixBody').
 python_class('services/web/app/conductor.py', 'TurnState').
+python_class('services/web/app/local_orient.py', 'OrientationResult').
+python_method('OrientationResult', 'to_dict', 0, 1, 0).
 python_class('services/web/app/prompt_router.py', 'RouteDecision').
 python_method('RouteDecision', 'to_dict', 0, 1, 1).
+python_class('services/web/app/routing/decision.py', 'OrientationDecision').
+python_method('OrientationDecision', 'from_dict', 2, 11, 5).
+python_method('OrientationDecision', 'to_dict', 0, 1, 1).
+python_method('OrientationDecision', 'is_actionable', 0, 1, 0).
+python_method('OrientationDecision', 'shell_translation_source', 0, 3, 0).
+python_class('services/web/app/routing_feedback.py', 'RoutingFeedbackRecord').
+python_method('RoutingFeedbackRecord', 'to_dict', 0, 1, 0).
 python_class('services/web/app/routing_policy.py', 'RagProbeSettings').
 python_class('services/web/app/routing_policy.py', 'RoutingPolicy').
 python_method('RoutingPolicy', 'ingress_for_mode', 1, 4, 2).
 python_method('RoutingPolicy', 'agent_for_route', 1, 4, 1).
 python_method('RoutingPolicy', 'to_dict', 0, 1, 0).
+python_class('services/web/app/routing_schemas.py', 'Nlp2CmdQueryRequest').
+python_class('services/web/app/routing_schemas.py', 'Nlp2CmdQueryResponse').
+python_method('Nlp2CmdQueryResponse', 'command_text', 0, 2, 1).
+python_class('services/web/app/routing_schemas.py', 'LlmRouteClassifierOutput').
+python_class('services/web/app/routing_schemas.py', 'NlpCommandAnalysis').
+python_method('NlpCommandAnalysis', 'to_shell_translation', 0, 1, 1).
+python_method('NlpCommandAnalysis', 'to_policy_flags', 0, 4, 2).
+python_class('services/web/app/routing_trace.py', 'TraceCheck').
+python_method('TraceCheck', 'to_dict', 0, 2, 0).
+python_class('services/web/app/routing_trace.py', 'TraceStep').
+python_method('TraceStep', 'to_dict', 0, 2, 1).
+python_class('services/web/app/routing_trace.py', 'DecisionTree').
+python_method('DecisionTree', 'to_dict', 0, 2, 1).
+python_class('services/web/app/ticket_schemas.py', 'MullmTicketRef').
+python_class('services/web/app/ticket_schemas.py', 'ExecutionTicketCreate').
+python_class('services/web/app/ticket_schemas.py', 'ImprovementTicket').
+python_method('ImprovementTicket', 'planfile_title', 0, 3, 0).
+python_method('ImprovementTicket', 'planfile_description', 0, 5, 3).
+python_method('ImprovementTicket', 'planfile_labels', 0, 3, 1).
+python_class('services/web/app/ticket_schemas.py', 'WorkflowTicketRef').
 python_class('services/web/app/workspace.py', 'WorkspaceContext').
 python_method('WorkspaceContext', 'to_dict', 0, 1, 0).
 python_class('services/web/app/workspace.py', 'WorkspaceSession').
 python_method('WorkspaceSession', 'add_event', 2, 2, 2).
 python_class('services/web/tests/test_e2e_chat_api.py', 'TestE2EChatRoutingApi').
-python_method('TestE2EChatRoutingApi', 'test_file_list_full_api_path', 3, 12, 5).
-python_method('TestE2EChatRoutingApi', 'test_file_list_does_not_use_shell_for_home_directory', 3, 10, 4).
-python_method('TestE2EChatRoutingApi', 'test_router_file_list_is_not_shell_decide', 1, 3, 2).
+python_method('TestE2EChatRoutingApi', 'test_host_file_list_via_orient', 2, 5, 4).
+python_method('TestE2EChatRoutingApi', 'test_registry_file_list_full_api_path', 3, 9, 4).
+python_method('TestE2EChatRoutingApi', 'test_file_list_registry_scope_stays_mullm_file_list', 3, 4, 3).
+python_method('TestE2EChatRoutingApi', 'test_router_file_list_rules_mode', 1, 3, 2).
 python_method('TestE2EChatRoutingApi', 'test_router_run_ls_home_is_shell', 1, 3, 2).
 python_method('TestE2EChatRoutingApi', 'test_continue_clarify_not_unknown', 3, 5, 3).
 python_method('TestE2EChatRoutingApi', 'test_router_decide_dry_run_file_list', 1, 4, 2).
+python_method('TestE2EChatRoutingApi', 'test_routing_feedback_on_turn', 3, 5, 5).
+python_method('TestE2EChatRoutingApi', 'test_routing_explain_file_list_tree', 2, 7, 5).
+python_method('TestE2EChatRoutingApi', 'test_routing_schemas_endpoint', 1, 5, 2).
 python_method('TestE2EChatRoutingApi', 'test_routing_policy_endpoint', 1, 7, 3).
 python_method('TestE2EChatRoutingApi', 'test_agents_status_endpoint', 1, 5, 2).
-python_method('TestE2EChatRoutingApi', 'test_shell_nl_uses_nlp2cmd_plugin', 4, 7, 3).
+python_method('TestE2EChatRoutingApi', 'test_shell_nl_uses_nlp2cmd_plugin', 4, 8, 3).
 python_class('tests/conftest.py', 'FakeRow').
 python_method('FakeRow', '__getitem__', 1, 1, 0).
 python_method('FakeRow', 'get', 2, 1, 1).
@@ -3721,6 +4240,9 @@ project_dependency('pytest-asyncio==0.24.0', 'requirements-dev.txt').
 project_dependency('httpx==0.27.2', 'requirements-dev.txt').
 project_dependency('fastapi==0.104.1', 'requirements-dev.txt').
 project_dependency('starlette==0.27.0', 'requirements-dev.txt').
+project_dependency('anyio>=3.7.1,<4.0.0', 'requirements-dev.txt').
+project_dependency('typer>=0.12.0,<1.0', 'requirements-quality.txt').
+project_dependency('rich>=13.0', 'requirements-quality.txt').
 
 % ── Makefile Targets ─────────────────────────────────────
 makefile_target('SHELL', '').
@@ -3736,6 +4258,9 @@ makefile_target('ps', '').
 makefile_target('test', '').
 makefile_target('test-web', '').
 makefile_target('test-e2e-live', '').
+makefile_target('test-quality', '').
+makefile_target('test-quality-deps', '').
+makefile_target('propact-pact', '').
 makefile_target('mullm-cli', '').
 makefile_target('smoke', '').
 makefile_target('ensure-env', '').
@@ -3798,6 +4323,10 @@ env_variable('MULLM_NLP2DSL_BACKEND_URL', 'http://nlp2dsl-backend:8000', '').
 env_variable('MULLM_NLP2CMD_HOST_PORT', '8020', 'Uruchom: NLP2CMD=1 make up  lub  make nlp2cmd-up').
 env_variable('NLP2CMD_BACKEND_URL', 'http://localhost:8020', '').
 env_variable('MULLM_NLP2CMD_BACKEND_URL', 'http://nlp2cmd:8000', '').
+env_variable('PROMPT_ROUTER_MODE', 'auto', 'auto = hybrid gdy nlp2cmd/OpenRouter dostępne; rules = tylko regex; llm = reguły+LLM').
+env_variable('MULLM_ROUTING_NLP2CMD', '1', '').
+env_variable('MULLM_ROUTING_NLP2CMD_MIN_CONFIDENCE', '0.65', '').
+env_variable('MULLM_SHELL_WAIT_SECONDS', '20', 'Czekaj na stdout shell w tej samej odpowiedzi czatu (0 = tylko ticket, wynik w ◎)').
 env_variable('CATALOG_PATH', '*(not set)*', '--- App ---').
 env_variable('ENVIRONMENT', 'development', '').
 env_variable('EVENT_STORE_BACKEND', 'postgres', '').
@@ -3839,10 +4368,21 @@ sumd_workflow('test', 'manual').
 sumd_workflow_step('test', 1, 'pytest -q').
 sumd_workflow('test-web', 'manual').
 sumd_workflow_step('test-web', 1, 'pip install -q -r requirements-dev.txt -r services/web/requirements.txt').
-sumd_workflow_step('test-web', 2, 'pytest -c services/web/pytest.ini services/web/tests -q').
+sumd_workflow_step('test-web', 2, '[ -f requirements-quality.txt ] && pip install -q -r requirements-quality.txt || true').
+sumd_workflow_step('test-web', 3, 'pytest -c services/web/pytest.ini services/web/tests -q').
 sumd_workflow('test-e2e-live', 'manual').
 sumd_workflow_step('test-e2e-live', 1, 'pip install -q -r requirements-dev.txt -r services/web/requirements.txt').
-sumd_workflow_step('test-e2e-live', 2, 'MULLM_E2E=1 pytest -c services/web/pytest.ini services/web/tests/test_e2e_live_stack.py -v').
+sumd_workflow_step('test-e2e-live', 2, 'chmod +x scripts/wait-for-web.sh').
+sumd_workflow_step('test-e2e-live', 3, './scripts/wait-for-web.sh').
+sumd_workflow_step('test-e2e-live', 4, 'MULLM_E2E=1 pytest -c services/web/pytest.ini services/web/tests/test_e2e_live_stack.py -v').
+sumd_workflow('test-quality', 'manual').
+sumd_workflow_step('test-quality', 1, 'chmod +x scripts/test-quality.sh').
+sumd_workflow_step('test-quality', 2, './scripts/test-quality.sh').
+sumd_workflow('test-quality-deps', 'manual').
+sumd_workflow_step('test-quality-deps', 1, 'pip install -q -r requirements-dev.txt -r services/web/requirements.txt -r requirements-quality.txt').
+sumd_workflow('propact-pact', 'manual').
+sumd_workflow_step('propact-pact', 1, 'chmod +x scripts/run-propact-pact.sh').
+sumd_workflow_step('propact-pact', 2, './scripts/run-propact-pact.sh').
 sumd_workflow('mullm-cli', 'manual').
 sumd_workflow_step('mullm-cli', 1, 'printf "Dodaj do PATH:\n  export PATH=\"$(CURDIR)/scripts:$$PATH\"\n"').
 sumd_workflow_step('mullm-cli', 2, 'printf "Potem: mullm chat send \"lista plikow usera\"\n"').
@@ -3886,240 +4426,70 @@ sumd_deploy_compose_file('docker-compose.yml').
 
 ## Call Graph
 
-*422 nodes · 500 edges · 57 modules · CC̄=2.8*
+*381 nodes · 500 edges · 25 modules · CC̄=2.9*
 
 ### Hubs (by degree)
 
 | Function | CC | in | out | total |
 |----------|----|----|-----|-------|
-| `_rag_failure_result` *(in services.orchestrator.app.incidents.pipeline)* | 4 | 1 | 46 | **47** |
-| `api` *(in services.web.app.static.workspace)* | 6 | 21 | 4 | **25** |
-| `toast` *(in services.web.app.static.workspace)* | 3 | 23 | 2 | **25** |
-| `_dispatch` *(in services.orchestrator.app.api.commands)* | 4 | 14 | 9 | **23** |
-| `refreshWorkspace` *(in services.web.app.static.workspace)* | 8 | 8 | 15 | **23** |
-| `search` *(in services.orchestrator.app.api.rag)* | 3 | 0 | 22 | **22** |
-| `format_logs_text` *(in services.orchestrator.app.observability.export)* | 7 | 1 | 19 | **20** |
-| `_create_task` *(in services.orchestrator.app.application.command_bus.CommandBus)* | 6 | 0 | 20 | **20** |
+| `toast` *(in services.web.app.static.workspace)* | 3 | 35 | 2 | **37** |
+| `get_or_create` *(in services.web.app.workspace)* | 3 | 26 | 5 | **31** |
+| `api` *(in services.web.app.static.workspace)* | 6 | 26 | 4 | **30** |
+| `aggregate_learnings` *(in services.web.app.routing_feedback)* | 11 ⚠ | 0 | 28 | **28** |
+| `refreshWorkspace` *(in services.web.app.static.workspace)* | 8 | 10 | 17 | **27** |
+| `_nfo_counts` *(in services.web.app.workspace)* | 1 | 2 | 20 | **22** |
+| `_append_export_sections` *(in services.web.app.workspace)* | 2 | 1 | 21 | **22** |
+| `escapeHtml` *(in services.web.app.static.workspace)* | 1 | 19 | 2 | **21** |
 
 ```toon markpact:analysis path=project/calls.toon.yaml
 # code2llm call graph | /home/tom/github/wronai/mullm
-# generated in 0.37s
-# nodes: 422 | edges: 500 | modules: 57
-# CC̄=2.8
+# generated in 0.20s
+# nodes: 381 | edges: 500 | modules: 25
+# CC̄=2.9
 
 HUBS[20]:
-  services.orchestrator.app.incidents.pipeline._rag_failure_result
-    CC=4  in:1  out:46  total:47
-  services.web.app.static.workspace.api
-    CC=6  in:21  out:4  total:25
   services.web.app.static.workspace.toast
-    CC=3  in:23  out:2  total:25
-  services.orchestrator.app.api.commands._dispatch
-    CC=4  in:14  out:9  total:23
+    CC=3  in:35  out:2  total:37
+  services.web.app.workspace.get_or_create
+    CC=3  in:26  out:5  total:31
+  services.web.app.static.workspace.api
+    CC=6  in:26  out:4  total:30
+  services.web.app.routing_feedback.aggregate_learnings
+    CC=11  in:0  out:28  total:28
   services.web.app.static.workspace.refreshWorkspace
-    CC=8  in:8  out:15  total:23
-  services.orchestrator.app.api.rag.search
-    CC=3  in:0  out:22  total:22
-  services.orchestrator.app.observability.export.format_logs_text
-    CC=7  in:1  out:19  total:20
-  services.orchestrator.app.application.command_bus.CommandBus._create_task
-    CC=6  in:0  out:20  total:20
-  services.orchestrator.app.observability.rag_diagnostics.RagDiagnostics.run
-    CC=3  in:0  out:20  total:20
-  services.orchestrator.app.api.access.upload_resource
-    CC=4  in:0  out:19  total:19
-  services.orchestrator.app.observability.export._nfo_counts
-    CC=9  in:2  out:17  total:19
-  services.orchestrator.app.observability.export._append_nfo
+    CC=8  in:10  out:17  total:27
+  services.web.app.workspace._nfo_counts
+    CC=1  in:2  out:20  total:22
+  services.web.app.workspace._append_export_sections
+    CC=2  in:1  out:21  total:22
+  services.web.app.static.workspace.escapeHtml
+    CC=1  in:19  out:2  total:21
+  services.web.app.workspace._append_nfo_section
     CC=7  in:1  out:17  total:18
-  services.projector.app.main._row_to_dict
-    CC=3  in:12  out:5  total:17
+  services.web.app.prompt_router._build_decision
+    CC=3  in:11  out:7  total:18
+  services.web.app.workspace.export_debug_logs
+    CC=2  in:0  out:18  total:18
+  services.web.app.routing_feedback.record_feedback
+    CC=7  in:0  out:17  total:17
   services.web.app.static.workspace.selectTicket
     CC=5  in:6  out:11  total:17
-  services.orchestrator.app.observability.logging.log_event
-    CC=3  in:6  out:10  total:16
-  services.web.src.main.App
-    CC=6  in:0  out:16  total:16
-  services.orchestrator.app.application.command_bus.CommandBus._register_resource
-    CC=5  in:0  out:16  total:16
-  services.orchestrator.app.observability.rag_pipeline.RagPipeline.ask
-    CC=5  in:0  out:15  total:15
+  services.projector.app.main._row_to_dict
+    CC=3  in:12  out:5  total:17
   services.web.app.static.workspace.ensureSession
-    CC=2  in:12  out:3  total:15
-  services.web.app.static.app.text
-    CC=16  in:0  out:15  total:15
+    CC=2  in:14  out:3  total:17
+  services.web.app.routing_trace.match_user_expectations
+    CC=8  in:2  out:13  total:15
+  services.web.app.workspace._list_section
+    CC=2  in:13  out:2  total:15
+  services.web.app.static.workspace.renderTasks
+    CC=12  in:6  out:8  total:14
+  services.web.app.static.workspace.appendMsgTo
+    CC=14  in:2  out:12  total:14
+  services.web.app.workspace._routing_optional_parts
+    CC=4  in:1  out:13  total:14
 
 MODULES:
-  agents.shell-agent.app.executor  [1 funcs]
-    run_shell_command  CC=4  out:3
-  agents.shell-agent.app.nats_consumer  [1 funcs]
-    handle_message  CC=4  out:8
-  services.orchestrator.app.access.adapters  [1 funcs]
-    get_adapter  CC=2  out:5
-  services.orchestrator.app.access.transport  [3 funcs]
-    copy  CC=4  out:10
-    fetch  CC=1  out:4
-    probe  CC=1  out:4
-  services.orchestrator.app.access.uri  [2 funcs]
-    build_uri  CC=2  out:1
-    parse_uri  CC=6  out:9
-  services.orchestrator.app.api.access  [3 funcs]
-    build_resource_uri  CC=1  out:2
-    register_resource  CC=2  out:6
-    upload_resource  CC=4  out:19
-  services.orchestrator.app.api.commands  [15 funcs]
-    _dispatch  CC=4  out:9
-    activate_plugin  CC=1  out:3
-    activate_workflow_version  CC=1  out:3
-    approve_request  CC=2  out:2
-    approve_workflow_version  CC=1  out:3
-    create_approval  CC=1  out:3
-    expire_approval  CC=1  out:2
-    install_plugin  CC=1  out:3
-    propose_plugin  CC=1  out:3
-    propose_workflow_version  CC=1  out:3
-  services.orchestrator.app.api.queries  [8 funcs]
-    _aggregate_state  CC=2  out:1
-    _event_to_dict  CC=2  out:10
-    _matches_task_filters  CC=5  out:2
-    _task_list_item  CC=3  out:2
-    get_agent  CC=6  out:7
-    get_task  CC=6  out:7
-    get_workflow  CC=6  out:7
-    list_tasks  CC=4  out:8
-  services.orchestrator.app.api.rag  [2 funcs]
-    ask  CC=1  out:6
-    search  CC=3  out:22
-  services.orchestrator.app.application.command_bus  [9 funcs]
-    _activate_plugin  CC=1  out:4
-    _activate_workflow_version  CC=3  out:6
-    _approve_request  CC=3  out:6
-    _create_task  CC=6  out:20
-    _record_task_outcome  CC=5  out:5
-    _register_resource  CC=5  out:16
-    _rollback_plugin  CC=1  out:5
-    _rollback_workflow_version  CC=1  out:5
-    _task_outcome_payload  CC=5  out:5
-  services.orchestrator.app.application.sagas.approval_gate  [5 funcs]
-    _is_skipped  CC=3  out:3
-    _required_approval_id  CC=2  out:2
-    _validate_approval_events  CC=5  out:7
-    ensure_approval  CC=3  out:6
-    follow_up_after_grant  CC=5  out:3
-  services.orchestrator.app.application.sagas.task_routing  [4 funcs]
-    _agent_matches  CC=4  out:3
-    _agent_route_state  CC=4  out:2
-    maybe_auto_assign  CC=5  out:6
-    pick_idle_agent  CC=4  out:4
-  services.orchestrator.app.config  [1 funcs]
-    model_post_init  CC=1  out:2
-  services.orchestrator.app.domain.aggregates.agent  [1 funcs]
-    heartbeat  CC=1  out:3
-  services.orchestrator.app.domain.aggregates.task  [10 funcs]
-    __init__  CC=4  out:5
-    apply  CC=2  out:5
-    assign_to_agent  CC=2  out:4
-    complete  CC=2  out:4
-    fail  CC=2  out:4
-    start  CC=3  out:5
-    _event_data  CC=2  out:3
-    _event_timestamp  CC=3  out:5
-    _event_type  CC=1  out:1
-    _utc_now  CC=1  out:1
-  services.orchestrator.app.evolution.policy_engine  [3 funcs]
-    validate_activation_metrics  CC=5  out:8
-    _activation_metrics_row  CC=1  out:1
-    _has_enough_activation_samples  CC=3  out:4
-  services.orchestrator.app.incidents.pipeline  [5 funcs]
-    handle_rag_failure  CC=2  out:9
-    _rag_failure_events  CC=3  out:7
-    _rag_failure_result  CC=4  out:46
-    _rag_root_cause  CC=5  out:7
-    classify_rag_error  CC=3  out:5
-  services.orchestrator.app.infrastructure.eventstore  [4 funcs]
-    _record_from_row  CC=1  out:3
-    append  CC=6  out:15
-    _loads_json  CC=3  out:3
-    _utc_now  CC=1  out:1
-  services.orchestrator.app.infrastructure.eventstore_esdb  [2 funcs]
-    __init__  CC=1  out:1
-    _parse_esdb_uri  CC=4  out:6
-  services.orchestrator.app.infrastructure.eventstore_factory  [4 funcs]
-    _dual_backend  CC=2  out:5
-    _eventstoredb_backend  CC=1  out:3
-    _require_eventstore_url  CC=2  out:1
-    build_event_store  CC=5  out:5
-  services.orchestrator.app.observability.context  [6 funcs]
-    get_chat_session_id  CC=1  out:1
-    get_correlation_id  CC=1  out:1
-    get_retrieval_trace_id  CC=1  out:1
-    new_correlation_id  CC=1  out:2
-    new_retrieval_trace_id  CC=1  out:1
-    observability_context  CC=5  out:8
-  services.orchestrator.app.observability.export  [12 funcs]
-    _append_incident_feed  CC=4  out:8
-    _append_incidents  CC=5  out:13
-    _append_nfo  CC=7  out:17
-    _append_rag_health  CC=6  out:13
-    _append_rag_snapshots  CC=3  out:5
-    _append_workspace_session  CC=5  out:10
-    _build_nfo_package  CC=2  out:8
-    _nfo_counts  CC=9  out:17
-    _nfo_errors  CC=5  out:6
-    _nfo_package_version  CC=1  out:2
-  services.orchestrator.app.observability.incidents  [1 funcs]
-    classify_rag_failure  CC=3  out:5
-  services.orchestrator.app.observability.logging  [2 funcs]
-    _emit_nfo_event  CC=3  out:2
-    log_event  CC=3  out:10
-  services.orchestrator.app.observability.middleware  [1 funcs]
-    dispatch  CC=3  out:5
-  services.orchestrator.app.observability.rag_diagnostics  [5 funcs]
-    run  CC=3  out:20
-    _checks_with_status  CC=3  out:1
-    _log_diagnostics_result  CC=2  out:2
-    _overall_status  CC=3  out:2
-    _primary_incident_code  CC=3  out:2
-  services.orchestrator.app.observability.rag_pipeline  [6 funcs]
-    _empty_result_payload  CC=1  out:3
-    _exception_payload  CC=1  out:6
-    _llm_error_payload  CC=2  out:6
-    _step_recorder  CC=1  out:4
-    ask  CC=5  out:15
-    _result_with_trace  CC=1  out:0
-  services.orchestrator.app.rag.chunking  [2 funcs]
-    _overlapping_chunks  CC=4  out:7
-    chunk_text  CC=4  out:3
-  services.orchestrator.app.rag.indexer  [5 funcs]
-    ingest_resource  CC=2  out:12
-    _chunks_for_body  CC=2  out:2
-    _failed_result  CC=1  out:1
-    _indexed_result  CC=1  out:1
-    _packed_chunks  CC=3  out:1
-  services.orchestrator.app.rag.openrouter  [5 funcs]
-    __init__  CC=2  out:3
-    chat  CC=4  out:6
-    _chat_response_error  CC=2  out:1
-    _chat_result  CC=6  out:4
-    normalize_openrouter_model  CC=3  out:3
-  services.orchestrator.app.rag.retriever  [6 funcs]
-    ask  CC=5  out:7
-    _context_from_hits  CC=2  out:1
-    _fragment_fallback_answer  CC=3  out:4
-    _no_hits_answer  CC=1  out:0
-    _rag_messages  CC=1  out:0
-    _unconfigured_answer  CC=1  out:0
-  services.orchestrator.app.rag.store  [15 funcs]
-    _keyword_fallback  CC=3  out:3
-    _vector_search  CC=3  out:2
-    list_documents  CC=2  out:2
-    search  CC=5  out:5
-    _chunk_hit  CC=2  out:5
-    _cosine  CC=5  out:5
-    _keyword_hits  CC=3  out:5
-    _keyword_score  CC=4  out:4
-    _parse_embedding  CC=5  out:6
-    _query_tokens  CC=3  out:3
   services.projector.app.main  [13 funcs]
     _row_to_dict  CC=3  out:5
     agent_fleet  CC=3  out:4
@@ -4176,6 +4546,8 @@ MODULES:
     _matrix_path  CC=2  out:4
     _merge_bool_matrix  CC=5  out:5
     _merged_bool_row  CC=3  out:3
+  services.web.app.agent_plugins.registry  [1 funcs]
+    analyze_shell_nl  CC=4  out:5
   services.web.app.agent_workroom  [27 funcs]
     _add_permission  CC=1  out:1
     _append_workroom_ledger  CC=5  out:6
@@ -4187,44 +4559,56 @@ MODULES:
     _record_file_list_result  CC=1  out:2
     _record_shell_result  CC=2  out:3
     _register_file_list_artifact  CC=2  out:3
-  services.web.app.api.chat_routes  [6 funcs]
-    _form_only_chat_message  CC=2  out:4
-    _form_only_message  CC=3  out:2
-    _update_nlp_conversation  CC=2  out:1
-    _upload_one_file  CC=5  out:8
-    chat_message  CC=3  out:7
-    upload_files  CC=3  out:7
-  services.web.app.api.router_routes  [1 funcs]
-    routing_policy_get  CC=1  out:3
-  services.web.app.api.task_routes  [10 funcs]
-    _archived_ids  CC=2  out:3
-    _assert_confirmable_task  CC=3  out:3
-    _assign_ticket  CC=3  out:3
-    _confirmable_task_and_agent  CC=2  out:5
-    _filter_tickets_view  CC=4  out:2
-    _first_idle_agent_id  CC=5  out:4
-    _task_from_board  CC=5  out:4
-    confirm_ticket  CC=5  out:9
-    get_ticket  CC=4  out:7
-    list_tickets  CC=3  out:6
-  services.web.app.api.workroom_routes  [3 funcs]
-    _workroom_or_404  CC=2  out:2
-    workroom_export  CC=1  out:5
-    workroom_get  CC=1  out:3
   services.web.app.conductor  [1 funcs]
-    handle_turn  CC=2  out:5
+    handle_turn  CC=2  out:7
+  services.web.app.planfile_bridge  [5 funcs]
+    _build_create_cmd  CC=3  out:6
+    _improvement_files  CC=3  out:3
+    _parse_created_id  CC=7  out:7
+    planfile_project_path  CC=5  out:7
+    sync_improvement_ticket  CC=9  out:9
+  services.web.app.prompt_router  [41 funcs]
+    _build_decision  CC=3  out:7
+    _candidate  CC=1  out:0
+    _command_looks_like_host_list  CC=3  out:3
+    _decision_from_expectations  CC=5  out:10
+    _decision_from_nlp2cmd  CC=5  out:8
+    _default_discuss_decision  CC=1  out:3
+    _default_route_decision  CC=2  out:2
+    _direct_route_decision  CC=3  out:5
+    _empty_route_decision  CC=1  out:2
+    _explicit_registry_list  CC=3  out:2
   services.web.app.resource_areas  [5 funcs]
     _area_policy_decision  CC=5  out:0
     _matrix_access_decision  CC=3  out:1
     agent_may_access  CC=4  out:5
     list_areas  CC=2  out:1
     list_groups  CC=1  out:0
+  services.web.app.routing_feedback  [16 funcs]
+    _append_jsonl  CC=1  out:3
+    _build_feedback_tags  CC=8  out:3
+    _create_improvement_ticket  CC=2  out:9
+    _feedback_path  CC=1  out:2
+    _find_turn_context  CC=9  out:9
+    _improvements_path  CC=1  out:2
+    _maybe_sync_planfile  CC=6  out:10
+    _now_iso  CC=1  out:2
+    _read_jsonl_tail  CC=5  out:6
+    _resolve_feedback_inputs  CC=6  out:4
   services.web.app.routing_policy  [1 funcs]
     load_policy  CC=5  out:6
-  services.web.app.static.access  [14 funcs]
+  services.web.app.routing_schemas  [6 funcs]
+    build_nlp2cmd_request  CC=1  out:3
+    llm_classifier_json_schema  CC=1  out:1
+    llm_system_prompt_with_schema  CC=1  out:2
+    parse_llm_classifier  CC=3  out:2
+    routing_analysis_use_explain  CC=1  out:3
+    schemas_bundle  CC=1  out:4
+  services.web.app.routing_trace  [1 funcs]
+    match_user_expectations  CC=8  out:13
+  services.web.app.static.access  [13 funcs]
     api  CC=5  out:3
     checked  CC=2  out:1
-    data  CC=2  out:1
     escapeHtml  CC=1  out:2
     id  CC=2  out:2
     load  CC=3  out:4
@@ -4232,50 +4616,34 @@ MODULES:
     renderAll  CC=1  out:2
     renderHumanAgentMatrix  CC=11  out:4
     res  CC=1  out:1
-  services.web.app.static.app  [7 funcs]
-    appendMessage  CC=2  out:2
-    ensureSession  CC=3  out:4
-    escapeHtml  CC=1  out:2
-    renderHistory  CC=7  out:2
-    rowTask  CC=6  out:2
-    text  CC=16  out:15
-    uploadFiles  CC=8  out:5
-  services.web.app.static.workroom  [22 funcs]
-    api  CC=5  out:3
-    buildFallbackExport  CC=12  out:8
-    buildLedgerExport  CC=7  out:5
-    copyText  CC=2  out:7
-    copyWorkroomAll  CC=3  out:5
-    copyWorkroomLogs  CC=4  out:6
-    data  CC=1  out:1
-    ensureWorkroom  CC=4  out:4
-    escapeHtml  CC=1  out:2
-    lastState  CC=3  out:2
-  services.web.app.static.workspace  [98 funcs]
+    resetAll  CC=1  out:3
+  services.web.app.static.workspace  [100 funcs]
     agentId  CC=2  out:2
     api  CC=6  out:4
+    appendFeedbackBar  CC=9  out:13
     appendMsg  CC=2  out:1
-    appendMsgTo  CC=14  out:11
+    appendMsgTo  CC=14  out:12
     appendPendingChatInput  CC=2  out:2
     appendRouteBadge  CC=3  out:4
     archiveTicket  CC=2  out:5
-    bindCopyChatButtons  CC=5  out:5
-    bindTicketDetailActions  CC=8  out:7
-    buildChatTextFromDom  CC=14  out:11
+    b  CC=3  out:5
+    bar  CC=3  out:6
   services.web.app.tickets  [4 funcs]
     enrich_task  CC=4  out:6
     status_meta  CC=3  out:2
     ticket_uri  CC=1  out:0
     ticket_web_path  CC=1  out:0
-  services.web.src.main  [8 funcs]
-    App  CC=6  out:16
-    createTask  CC=2  out:5
-    created  CC=1  out:1
-    fetchJson  CC=3  out:4
-    metrics  CC=4  out:6
-    postJson  CC=2  out:5
-    refresh  CC=4  out:6
-    taskMetrics  CC=1  out:2
+  services.web.app.workspace  [95 funcs]
+    _append_candidate_routes  CC=3  out:3
+    _append_chat_export_draft  CC=3  out:6
+    _append_chat_export_message  CC=6  out:13
+    _append_chat_export_trace  CC=3  out:4
+    _append_context_collections  CC=4  out:9
+    _append_context_scalars  CC=3  out:2
+    _append_context_section  CC=4  out:7
+    _append_draft_section  CC=3  out:7
+    _append_export_sections  CC=2  out:21
+    _append_history_message  CC=6  out:11
 
 EDGES:
   services.projector.app.main.operational_feed → services.projector.app.main._row_to_dict
@@ -4324,10 +4692,10 @@ EDGES:
   services.projector.app.projections.incidents._checks_payload → services.projector.app.projections.incidents._checks_list_payload
   services.projector.app.projections.incidents._checks_list_payload → services.projector.app.projections.incidents._check_payload
   services.projector.app.projections.incidents._root_cause → services.projector.app.projections.incidents._error_code
-  services.web.app.resource_areas.agent_may_access → services.web.app.resource_areas._matrix_access_decision
-  services.web.app.resource_areas.agent_may_access → services.web.app.resource_areas._area_policy_decision
-  services.web.app.resource_areas._matrix_access_decision → services.web.app.access_matrix.agent_may_access_resource
-  services.web.app.agent_workroom._plan_steps → services.web.app.agent_workroom._extract_shell
+  services.web.app.routing_feedback._feedback_path → services.web.app.routing_feedback.feedback_dir
+  services.web.app.routing_feedback._improvements_path → services.web.app.routing_feedback.feedback_dir
+  services.web.app.routing_feedback._resolve_feedback_inputs → services.web.app.routing_feedback._find_turn_context
+  services.web.app.routing_feedback.record_feedback → services.web.app.routing_feedback._resolve_feedback_inputs
 ```
 
 ## Test Contracts

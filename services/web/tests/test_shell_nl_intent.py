@@ -12,3 +12,17 @@ def test_shell_nl_disk_intent() -> None:
 
 def test_run_prefix_not_shell_nl() -> None:
     assert not chat_mod.is_shell_nl_intent("run ls -la")
+
+
+def test_nlp2cmd_candidate_jspaint() -> None:
+    msg = "wejdz na jspaint.app i narysuj biedronke"
+    assert chat_mod.is_nlp2cmd_candidate(msg)
+    assert not chat_mod.is_shell_nl_intent(msg)
+
+
+def test_nlp2cmd_candidate_install() -> None:
+    assert chat_mod.is_nlp2cmd_candidate("zainstaluj vlc")
+
+
+def test_nlp2cmd_candidate_excludes_file_list() -> None:
+    assert not chat_mod.is_nlp2cmd_candidate("lista plikow projektu")

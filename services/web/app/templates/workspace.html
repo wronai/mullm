@@ -94,8 +94,14 @@
       </ul>
       <section class="routing-trace-panel" id="routing-trace-panel">
         <div class="panel-head routing-head">
-          <span>Routing trace</span>
+          <span>Drzewo decyzji</span>
+          <button type="button" class="btn ghost btn-sm" id="btn-routing-explain" title="Podgląd dla pola wiadomości">?</button>
           <button type="button" class="btn ghost btn-sm" id="btn-routing-copy" title="Kopiuj trace routingu">⎘</button>
+        </div>
+        <div id="routing-learnings" class="routing-learnings muted">Ewolucja: oceń odpowiedzi w czacie (👍/👎)</div>
+        <div id="routing-decision-tree" class="routing-decision-tree muted">Brak — wyślij wiadomość lub użyj ?</div>
+        <div class="panel-head routing-head routing-subhead">
+          <span class="muted">Historia tras</span>
         </div>
         <div id="routing-trace" class="routing-trace muted">Brak decyzji — wyślij wiadomość w czacie.</div>
       </section>

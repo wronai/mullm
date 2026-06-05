@@ -1,10 +1,18 @@
-"""Shared fixtures for mullm-web tests (bez importu pełnego FastAPI app)."""
+"""Shared fixtures for mullm-web tests."""
 
 from __future__ import annotations
 
 from typing import Any
 
 import pytest
+
+
+@pytest.fixture(autouse=True)
+def _deterministic_routing_env(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Testy jednostkowe: rules-only (hybrid testowany osobno)."""
+    monkeypatch.setenv("PROMPT_ROUTER_MODE", "rules")
+    monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
+    monkeypatch.setenv("MULLM_SHELL_WAIT_SECONDS", "0")
 
 
 @pytest.fixture

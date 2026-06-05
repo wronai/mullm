@@ -136,16 +136,8 @@ services:
   nlp2cmd:
     profiles: [nlp2cmd, full]
     build:
-      context: ../nlp2cmd
-      dockerfile: Dockerfile
-      target: runtime
-    # CLI `python -m nlp2cmd service` wymaga click w pełnej wersji — uruchamiamy API bezpośrednio.
-    command:
-      - sh
-      - -c
-      - |
-        pip install --no-cache-dir --user fastapi uvicorn
-        python -c "from nlp2cmd.service import NLP2CMDService, ServiceConfig; c=ServiceConfig(); NLP2CMDService(c).run(host='0.0.0.0', port=8000)"
+      context: ..
+      dockerfile: mullm/docker/nlp2cmd-service.Dockerfile
     environment:
       - NLP2CMD_HOST=0.0.0.0
       - NLP2CMD_PORT=8000
@@ -157,7 +149,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 30s
+      start_period: 40s
     networks:
       - mullm_network
 
@@ -173,6 +165,11 @@ services:
       - PROJECTOR_URL=${MULLM_PROJECTOR_URL}
       - NLP2DSL_BACKEND_URL=${MULLM_NLP2DSL_BACKEND_URL:-http://nlp2dsl-backend:8000}
       - MULLM_NLP2CMD_BACKEND_URL=${MULLM_NLP2CMD_BACKEND_URL:-http://nlp2cmd:8000}
+      - PROMPT_ROUTER_MODE=${PROMPT_ROUTER_MODE:-auto}
+      - MULLM_ROUTING_NLP2CMD=${MULLM_ROUTING_NLP2CMD:-1}
+      - MULLM_SHELL_WAIT_SECONDS=${MULLM_SHELL_WAIT_SECONDS:-20}
+      - MULLM_SHELL_HOST_PREFIX=/host-home
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-}
     extra_hosts:
       - "host.docker.internal:host-gateway"
     ports:
@@ -193,6 +190,8 @@ services:
     environment:
       - NATS_URL=${MULLM_NATS_URL}
       - AGENT_ID=shell-agent-a
+    volumes:
+      - ${MULLM_SHELL_HOST_HOME:-${HOME}}:/host-home:ro
     depends_on:
       - nats
     networks:
@@ -208,6 +207,8 @@ services:
     environment:
       - NATS_URL=${MULLM_NATS_URL}
       - AGENT_ID=shell-agent-b
+    volumes:
+      - ${MULLM_SHELL_HOST_HOME:-${HOME}}:/host-home:ro
     depends_on:
       - nats
     networks:
